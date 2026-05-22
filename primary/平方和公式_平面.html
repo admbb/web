@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>踢三角：平方和公式的旋转证明</title>
+    <style>
+        body { margin: 0; overflow: hidden; background-color: #0f172a; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: white; user-select: none; }
+        #ui-container { position: absolute; top: 20px; left: 20px; background: rgba(30, 41, 59, 0.85); padding: 25px; border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.8); pointer-events: auto; backdrop-filter: blur(10px); border: 1px solid #334155; max-width: 420px; z-index: 10; }
+        h1 { margin: 0 0 10px 0; font-size: 22px; color: #38bdf8; text-align: center; font-weight: 800; }
+        .math-box { background: rgba(0, 0, 0, 0.4); padding: 15px; border-radius: 10px; margin-bottom: 20px; border-left: 4px solid #38bdf8; }
+        .math-text { font-size: 14px; color: #cbd5e1; margin-bottom: 8px; line-height: 1.6; }
+        .math-formula { font-size: 18px; color: #f472b6; font-weight: bold; text-align: center; margin-top: 10px; letter-spacing: 1px;}
+        
+        .control-group { margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px;}
+        input[type=range] { flex-grow: 1; margin: 0 15px; accent-color: #38bdf8; cursor: pointer; }
+        
+        .btn-group { display: flex; flex-direction: column; gap: 10px; }
+        button { padding: 12px; font-size: 15px; cursor: pointer; border: none; border-radius: 8px; background: #1e293b; color: #cbd5e1; font-weight: bold; transition: all 0.3s; text-align: left; padding-left: 20px; border-left: 5px solid transparent; }
+        button.active { background: #312e81; color: white; border-left: 5px solid #38bdf8; }
+        button:hover:not(.active) { background: #334155; }
+        
+        #canvas-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+        
+        .svg-layer { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); overflow: visible; }
+        text { font-family: 'Comic Sans MS', sans-serif; font-weight: bold; font-size: 14px; pointer-events: none; }
+        .grid-line { stroke: #475569; stroke-width: 1.5; stroke-dasharray: 4 4; }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+</head>
+<body>
+
+<div id="ui-container">
+    <h1>📐 “踢三角”旋转重合证明</h1>
+    
+    <div class="math-box">
+        <div class="math-text" id="desc-text">状态 1：第 k 行有 k 个数字 k。此时这一个三角形内所有数字的总和，恰好就是 1² + 2² + ... + n²。</div>
+        <div class="math-formula" id="formula-text">总和 S = Σk²</div>
+    </div>
+
+    <div class="control-group">
+        <label style="color:#38bdf8; font-weight:bold;">层数(n): <span id="n-value" style="color:#f472b6;font-size:18px;">4</span></label>
+        <input type="range" id="n-slider" min="2" max="6" step="1" value="4">
+    </div>
+
+    <div class="btn-group">
+        <button id="btn-s0" class="active" onclick="goToState(0)">1. 原始三角形 (图1-6)</button>
+        <button id="btn-s1" onclick="goToState(1)">2. 踢翻！旋转展开 (图1-7, 1-8)</button>
+        <button id="btn-s2" onclick="goToState(2)">3. 三图合一，魔法发生</button>
+    </div>
+</div>
+
+<div id="canvas-container">
+    </div>
+
+<script>
+    const SPACING = 55; // 节点间距
+    const NODE_RADIUS = 16;
+    
+    // 主题色彩
+    const COLOR_A = "#e11d48"; // 红色 (原图)
+    const COLOR_B = "#d97706"; // 橙色 (旋转 120)
+    const COLOR_C = "#0284c7"; // 蓝色 (旋转 240)
+    const COLOR_FUSED = "#10b981"; // 绿色 (重合后)
+
+    let currentN = 4;
+    let currentState = 0;
+    let svgs = {};
+
+    const descriptions = [
+        "状态 1：第 k 行填入数字 k。这一个三角形内所有数字的累加和，正是我们要算的 1² + 2² + ... + n²。",
+        "状态 2：一脚把三角形踢翻，分别顺时针旋转 120° 和 240°，生成两个全新的阵列。",
+        "状态 3：三图完美重叠！对应位置的 3 个数相加，惊奇地发现每一个节点的值都变成了 2n+1！"
+    ];
+
+    // 获取等边三角形网格内的坐标
+    function getCoords(r, c, n) {
+        const W = (n - 1) * SPACING;
+        const H = (n - 1) * SPACING * Math.sqrt(3) / 2;
+        // x 坐标计算：以底边中心为对称轴
+        const cx = (c - r / 2) * SPACING;
+        const cy = r * SPACING * Math.sqrt(3) / 2;
+        // 加上偏移量使其居中于 SVG
+        return { x: cx + W / 2 + 40, y: cy + 40 };
+    }
+
+    // 生成 SVG 字符串的通用函数
+    function createTriangleSVG(id, n, valFunc, color, isFused = false) {
+        const W = (n - 1) * SPACING + 80;
+        const H = (n - 1) * SPACING * Math.sqrt(3) / 2 + 80;
+        
+        let linesHTML = '';
+        let nodesHTML = '';
+
+        for (let r = 0; r < n; r++) {
+            for (let c = 0; c <= r; c++) {
+                const p1 = getCoords(r, c, n);
+                
+                // 绘制网格虚线
+                if (c < r) {
+                    const p2 = getCoords(r, c + 1, n);
+                    linesHTML += `<line class="grid-line" x1="${p1.x}" y1="${p1.y}" x2="${p2.x}" y2="${p2.y}" />`;
+                }
+                if (r < n - 1) {
+                    const p3 = getCoords(r + 1, c, n);
+                    linesHTML += `<line class="grid-line" x1="${p1.x}" y1="${p1.y}" x2="${p3.x}" y2="${p3.y}" />`;
+                    const p4 = getCoords(r + 1, c + 1, n);
+                    linesHTML += `<line class="grid-line" x1="${p1.x}" y1="${p1.y}" x2="${p4.x}" y2="${p4.y}" />`;
+                }
+
+                // 绘制节点 (如果重合，放大一点点并且变为闪亮色)
+                const val = valFunc(r, c, n);
+                const radius = isFused ? NODE_RADIUS + 3 : NODE_RADIUS;
+                const strokeWidth = isFused ? 3 : 0;
+                
+                nodesHTML += `<circle cx="${p1.x}" cy="${p1.y}" r="${radius}" fill="${color}" stroke="#fff" stroke-width="${strokeWidth}" />`;
+                nodesHTML += `<text x="${p1.x}" y="${p1.y + 5}" text-anchor="middle" fill="white">${val}</text>`;
+            }
+        }
+
+        return `<svg id="${id}" class="svg-layer" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
+                    ${linesHTML}
+                    ${nodesHTML}
+                </svg>`;
+    }
+
+    // 核心重建场景逻辑
+    function buildScene(n) {
+        currentN = n;
+        const container = document.getElementById('canvas-container');
+        container.innerHTML = ''; // 清除旧图层
+
+        // 核心数学映射：避免物理翻转导致文字倒立，直接计算旋转后对应坐标上的数值！
+        // 1. 原始三角形
+        const valA = (r, c, n) => r + 1; 
+        // 2. 顺时针旋转 120度 (顶角变右下角)
+        const valB = (r, c, n) => n - r + c; 
+        // 3. 顺时针旋转 240度 (顶角变左下角)
+        const valC = (r, c, n) => n - c; 
+        // 4. 重合后的状态 (每个节点必然是 2n + 1)
+        const valFused = (r, c, n) => 2 * n + 1;
+
+        // 生成并插入 SVG
+        container.insertAdjacentHTML('beforeend', createTriangleSVG('svg-b', n, valB, COLOR_B));
+        container.insertAdjacentHTML('beforeend', createTriangleSVG('svg-c', n, valC, COLOR_C));
+        container.insertAdjacentHTML('beforeend', createTriangleSVG('svg-a', n, valA, COLOR_A));
+        container.insertAdjacentHTML('beforeend', createTriangleSVG('svg-fused', n, valFused, COLOR_FUSED, true));
+
+        // 缓存 DOM 节点供 GSAP 动画使用
+        svgs = {
+            A: document.getElementById('svg-a'),
+            B: document.getElementById('svg-b'),
+            C: document.getElementById('svg-c'),
+            Fused: document.getElementById('svg-fused')
+        };
+
+        // 初始化所有 SVG 的隐藏/显示状态
+        gsap.set([svgs.A, svgs.B, svgs.C, svgs.Fused], { xPercent: -50, yPercent: -50, left: '50%', top: '50%' });
+        
+        goToState(currentState);
+    }
+
+    // 动画状态机
+    function goToState(stateIdx) {
+        currentState = stateIdx;
+        const config = { duration: 1.2, ease: "power3.inOut" };
+        
+        // 响应式偏移距离：屏幕大则分得开，屏幕小则靠拢并缩小
+        const isMobile = window.innerWidth < 800;
+        const spreadOffset = isMobile ? window.innerWidth * 0.28 : 320;
+        const scaleNormal = isMobile ? 0.6 : 1;
+        const scaleSpread = isMobile ? 0.45 : 0.75;
+
+        // 杀掉所有之前的动画防止冲突
+        gsap.killTweensOf(Object.values(svgs));
+
+        if (stateIdx === 0) {
+            // 状态 1：只显示 A
+            gsap.to(svgs.A, { x: 0, scale: scaleNormal, opacity: 1, rotation: 0, ...config });
+            gsap.to(svgs.B, { x: 0, scale: 0, opacity: 0, rotation: -120, ...config });
+            gsap.to(svgs.C, { x: 0, scale: 0, opacity: 0, rotation: 120, ...config });
+            gsap.to(svgs.Fused, { scale: scaleNormal, opacity: 0, duration: 0.3 });
+            
+        } else if (stateIdx === 1) {
+            // 状态 2：“踢翻”分散展示
+            // B 带有 -120度的起步旋转，模仿它是被旋转踢出来的
+            gsap.to(svgs.A, { x: 0, scale: scaleSpread, opacity: 1, rotation: 0, ...config });
+            gsap.to(svgs.B, { x: -spreadOffset, scale: scaleSpread, opacity: 1, rotation: 0, ...config });
+            gsap.to(svgs.C, { x: spreadOffset, scale: scaleSpread, opacity: 1, rotation: 0, ...config });
+            gsap.to(svgs.Fused, { opacity: 0, duration: 0.3 });
+
+        } else if (stateIdx === 2) {
+            // 状态 3：重叠与融合
+            // 先将 ABC 移动回中心
+            const tl = gsap.timeline();
+            tl.to([svgs.A, svgs.B, svgs.C], { x: 0, scale: scaleNormal, rotation: 0, duration: 1.0, ease: "power2.inOut" })
+              // 移动到位后，瞬间切换到 Fused (魔法变色阵列)
+              .to([svgs.A, svgs.B, svgs.C], { opacity: 0, duration: 0.2 }, "+=0.1")
+              .to(svgs.Fused, { opacity: 1, duration: 0.2 }, "<")
+              // 给融合后的阵列加一个心跳脉冲效果
+              .fromTo(svgs.Fused, { scale: scaleNormal * 1.08 }, { scale: scaleNormal, duration: 0.5, ease: "back.out(2)" });
+        }
+
+        // 更新 UI 文本状态
+        [0, 1, 2].forEach(i => document.getElementById('btn-s'+i).classList.remove('active'));
+        document.getElementById('btn-s'+stateIdx).classList.add('active');
+        document.getElementById('desc-text').innerText = descriptions[stateIdx];
+        
+        const fText = document.getElementById('formula-text');
+        if(stateIdx === 0) fText.innerHTML = `初始总和 S = 1² + 2² + ... + ${currentN}²`;
+        if(stateIdx === 1) fText.innerHTML = `得到 3 个相同的等量代换三角形`;
+        if(stateIdx === 2) {
+            const totalNodes = (currentN * (currentN + 1)) / 2;
+            fText.innerHTML = `3 × S = 共 ${totalNodes} 个 (${2*currentN+1}) <br><br> S = ${totalNodes} × ${2*currentN+1} ÷ 3`;
+        }
+    }
+
+    // 绑定事件
+    document.getElementById('n-slider').addEventListener('input', function() {
+        document.getElementById('n-value').innerText = this.value;
+        buildScene(parseInt(this.value));
+    });
+
+    window.addEventListener('resize', () => {
+        // 响应式重绘
+        buildScene(currentN);
+    });
+
+    // 启动！
+    buildScene(4);
+
+</script>
+</body>
+</html>

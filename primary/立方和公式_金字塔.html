@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>玩转金字塔：空间对称性求和</title>
+    <style>
+        body { margin: 0; overflow: hidden; background-color: #1a1a24; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: white; user-select: none; }
+        #ui-container { position: absolute; top: 20px; left: 20px; background: rgba(20, 20, 30, 0.85); padding: 25px; border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.8); pointer-events: auto; backdrop-filter: blur(10px); border: 1px solid #3d3d5c; max-width: 440px; z-index: 10; }
+        h1 { margin: 0 0 10px 0; font-size: 22px; color: #f9c74f; text-align: center; font-weight: 800; }
+        .math-box { background: rgba(0, 0, 0, 0.4); padding: 15px; border-radius: 10px; margin-bottom: 20px; border-left: 4px solid #f9c74f; }
+        .math-text { font-size: 14px; color: #a1a1b5; margin-bottom: 8px; line-height: 1.6; }
+        .math-formula { font-size: 17px; color: #43aa8b; font-weight: bold; text-align: center; margin-top: 10px; letter-spacing: 0.5px;}
+        
+        .control-group { margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px;}
+        input[type=range] { flex-grow: 1; margin: 0 15px; accent-color: #f9c74f; cursor: pointer; }
+        
+        .btn-group { display: flex; flex-direction: column; gap: 10px; }
+        button { padding: 12px; font-size: 15px; cursor: pointer; border: none; border-radius: 8px; background: #2b2b40; color: #c0caf5; font-weight: bold; transition: all 0.3s; text-align: left; padding-left: 20px; border-left: 5px solid transparent; }
+        button.active { background: #4d4d73; color: white; border-left: 5px solid #f9c74f; }
+        button:hover:not(.active) { background: #383854; }
+        
+        #loading { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 20px; color: #f9c74f; display: none; font-weight: bold; background: rgba(0,0,0,0.8); padding: 20px 40px; border-radius: 30px; z-index: 20;}
+        #canvas-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+</head>
+<body>
+
+<div id="ui-container">
+    <h1>🔺 玩转金字塔求和法</h1>
+    
+    <div class="math-box">
+        <div class="math-text" id="desc-text">状态 1：构建 4 个完全相同的三棱锥。这里为了直观，我们令 a_k = k。第 k 层有 k(k+1)/2 个节点。</div>
+        <div class="math-formula" id="formula-text">单个和 = Σ [ k(k+1)/2 × k ]</div>
+    </div>
+
+    <div class="control-group">
+        <label style="color:#f9c74f; font-weight:bold;">层数(n): <span id="n-value" style="color:#43aa8b;font-size:18px;">4</span></label>
+        <input type="range" id="n-slider" min="2" max="6" step="1" value="4">
+    </div>
+
+    <div class="btn-group">
+        <button id="btn-s0" class="active" onclick="goToState(0)">1. 独立的三棱锥 (图1-13)</button>
+        <button id="btn-s1" onclick="goToState(1)">2. 翻转至三个底角 (图1-14 ~ 1-16)</button>
+        <button id="btn-s2" onclick="goToState(2)">3. 四图重合！见证魔法 🪄</button>
+    </div>
+</div>
+
+<div id="loading">正在计算空间重心坐标...</div>
+<div id="canvas-container"></div>
+
+<script>
+    // --- 1. 场景初始化 ---
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(window.devicePixelRatio);
+    document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+    const controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+
+    // --- 2. 核心数学与变量 ---
+    let currentN = 4;
+    let currentState = 0;
+    const SPACING = 3.5; // 节点间距
+    
+    let globalNodes = [[], [], [], []]; // 4 个金字塔的节点对象
+    let fusedNodes = []; // 重合后的金色节点
+    let lineSegments = []; // 线框网格
+    let baseGroup = new THREE.Group();
+    scene.add(baseGroup);
+
+    // 4 个金字塔的基色
+    const colors = ['#ef476f', '#06d6a0', '#118ab2', '#f78c6b'];
+    
+    // 正四面体的 4 个标准顶点 (距离中心等距，构型完美)
+    const V = [
+        new THREE.Vector3(0, Math.sqrt(6)/4, 0),
+        new THREE.Vector3(0, -Math.sqrt(6)/12, Math.sqrt(3)/3),
+        new THREE.Vector3(-0.5, -Math.sqrt(6)/12, -Math.sqrt(3)/6),
+        new THREE.Vector3(0.5, -Math.sqrt(6)/12, -Math.sqrt(3)/6)
+    ];
+
+    // 旋转变换的置换群 (分别让 a1 留在顶部、去正前方、去左后方、去右后方)
+    const PERMUTATIONS = [
+        [0, 1, 2, 3], // 图1-13: 正常
+        [1, 0, 3, 2], // 图1-14: a1 到正前
+        [2, 3, 0, 1], // 图1-15: a1 到左后
+        [3, 2, 1, 0]  // 图1-16: a1 到右后
+    ];
+
+    // --- 3. 生成带数字的材质 ---
+    function createTextSprite(text, colorHex) {
+        const canvas = document.createElement('canvas');
+        canvas.width = 128; canvas.height = 128;
+        const ctx = canvas.getContext('2d');
+        
+        ctx.fillStyle = colorHex;
+        ctx.beginPath();
+        ctx.arc(64, 64, 56, 0, Math.PI*2);
+        ctx.fill();
+        
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 6;
+        ctx.stroke();
+        
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 55px Arial';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(text, 64, 66);
+        
+        const texture = new THREE.CanvasTexture(canvas);
+        const spriteMat = new THREE.SpriteMaterial({map: texture, depthTest: true, alphaTest: 0.5});
+        const sprite = new THREE.Sprite(spriteMat);
+        sprite.scale.set(1.2, 1.2, 1.2);
+        return sprite;
+    }
+
+    // --- 4. 构建场景 ---
+    function buildScene(N) {
+        document.getElementById('loading').style.display = 'block';
+        
+        setTimeout(() => {
+            currentN = N;
+            
+            // 清理旧资源
+            baseGroup.children.slice().forEach(child => {
+                if(child.material) child.material.dispose();
+                if(child.geometry) child.geometry.dispose();
+                baseGroup.remove(child);
+            });
+            globalNodes = [[], [], [], []];
+            fusedNodes = [];
+            lineSegments = [];
+
+            // 预计算节点权重组合 (Barycentric Coordinates)
+            let wList = [];
+            let edges = [];
+            for (let w0 = 0; w0 <= N-1; w0++) {
+                for (let w1 = 0; w1 <= N-1 - w0; w1++) {
+                    for (let w2 = 0; w2 <= N-1 - w0 - w1; w2++) {
+                        let w3 = (N-1) - w0 - w1 - w2;
+                        wList.push([w0, w1, w2, w3]);
+                    }
+                }
+            }
+
+            // 计算线框连接关系
+            for (let i = 0; i < wList.length; i++) {
+                for (let j = i + 1; j < wList.length; j++) {
+                    let diff = Math.abs(wList[i][0] - wList[j][0]) + Math.abs(wList[i][1] - wList[j][1]) +
+                               Math.abs(wList[i][2] - wList[j][2]) + Math.abs(wList[i][3] - wList[j][3]);
+                    if (diff === 2) edges.push({a: i, b: j});
+                }
+            }
+
+            // 4 个金字塔的基准偏移坐标
+            let offset = N * 1.5;
+            const Centers = [
+                new THREE.Vector3(-offset, 0, offset),
+                new THREE.Vector3(offset, 0, offset),
+                new THREE.Vector3(-offset, 0, -offset),
+                new THREE.Vector3(offset, 0, -offset)
+            ];
+
+            // 生成 4 个金字塔
+            for (let p = 0; p < 4; p++) {
+                let perm = PERMUTATIONS[p];
+                
+                // 初始化线框
+                let lineGeo = new THREE.BufferGeometry();
+                let positions = new Float32Array(edges.length * 6);
+                lineGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+                let lineMat = new THREE.LineBasicMaterial({ color: colors[p], transparent: true, opacity: 0.6 });
+                let line = new THREE.LineSegments(lineGeo, lineMat);
+                baseGroup.add(line);
+                lineSegments.push(line);
+
+                // 生成节点
+                wList.forEach((w, idx) => {
+                    let val = N - w[0]; // a_k = k，顶部权重最高对应 a_1
+                    let sprite = createTextSprite(val, colors[p]);
+                    baseGroup.add(sprite);
+
+                    // 计算三个状态的空间位置
+                    // State 0: 所有人正立
+                    let s0Pos = new THREE.Vector3()
+                        .addScaledVector(V[0], w[0]).addScaledVector(V[1], w[1])
+                        .addScaledVector(V[2], w[2]).addScaledVector(V[3], w[3])
+                        .multiplyScalar(SPACING).add(Centers[p]);
+                    
+                    // State 1: 发生旋转 (权重根据置换群重映射)
+                    let u = [ w[perm[0]], w[perm[1]], w[perm[2]], w[perm[3]] ];
+                    let s1Pos = new THREE.Vector3()
+                        .addScaledVector(V[0], u[0]).addScaledVector(V[1], u[1])
+                        .addScaledVector(V[2], u[2]).addScaledVector(V[3], u[3])
+                        .multiplyScalar(SPACING).add(Centers[p]);
+
+                    // State 2: 去除 Center 偏移，向原点聚合
+                    let s2Pos = s1Pos.clone().sub(Centers[p]);
+
+                    globalNodes[p].push({ mesh: sprite, s0: s0Pos, s1: s1Pos, s2: s2Pos });
+                });
+            }
+
+            // 预生成聚合后的金色节点 (初始隐藏)
+            wList.forEach(w => {
+                let targetSum = 3 * N + 1; // 魔法常数！(a1 + 3an)
+                let sprite = createTextSprite(targetSum, '#ffd166'); // 金色
+                sprite.material.opacity = 0;
+                
+                let s2Pos = new THREE.Vector3()
+                    .addScaledVector(V[0], w[0]).addScaledVector(V[1], w[1])
+                    .addScaledVector(V[2], w[2]).addScaledVector(V[3], w[3])
+                    .multiplyScalar(SPACING);
+                    
+                sprite.position.copy(s2Pos);
+                baseGroup.add(sprite);
+                fusedNodes.push(sprite);
+            });
+
+            // 更新线框函数绑定
+            baseGroup.userData.updateLines = function() {
+                for (let p = 0; p < 4; p++) {
+                    let posArr = lineSegments[p].geometry.attributes.position.array;
+                    let idx = 0;
+                    edges.forEach(e => {
+                        let n1 = globalNodes[p][e.a].mesh.position;
+                        let n2 = globalNodes[p][e.b].mesh.position;
+                        posArr[idx++] = n1.x; posArr[idx++] = n1.y; posArr[idx++] = n1.z;
+                        posArr[idx++] = n2.x; posArr[idx++] = n2.y; posArr[idx++] = n2.z;
+                    });
+                    lineSegments[p].geometry.attributes.position.needsUpdate = true;
+                }
+            };
+
+            camera.position.set(0, offset * 1.5 + 5, offset * 2 + 10);
+            controls.target.set(0, 0, 0);
+            
+            document.getElementById('loading').style.display = 'none';
+            goToState(currentState);
+        }, 50);
+    }
+
+    // --- 5. 动画控制 ---
+    function goToState(stateIdx) {
+        currentState = stateIdx;
+        gsap.killTweensOf(baseGroup.children); // 停止所有进行中的动画
+        
+        const tl = gsap.timeline({ onUpdate: () => baseGroup.userData.updateLines() });
+
+        if (stateIdx === 0 || stateIdx === 1) {
+            // 确保 Fused 节点不可见
+            fusedNodes.forEach(mesh => gsap.to(mesh.material, {opacity: 0, duration: 0.3}));
+            
+            // 恢复 4 个金字塔的可见性
+            for(let p=0; p<4; p++) {
+                globalNodes[p].forEach(item => gsap.to(item.mesh.material, {opacity: 1, duration: 0.3}));
+                gsap.to(lineSegments[p].material, {opacity: 0.6, duration: 0.3});
+            }
+
+            // 执行位移动画
+            for (let p = 0; p < 4; p++) {
+                globalNodes[p].forEach((item, i) => {
+                    let target = stateIdx === 0 ? item.s0 : item.s1;
+                    tl.to(item.mesh.position, {x: target.x, y: target.y, z: target.z, duration: 1.2, ease: "power2.inOut"}, 0);
+                });
+            }
+        } 
+        else if (stateIdx === 2) {
+            // 聚合魔法
+            for (let p = 0; p < 4; p++) {
+                globalNodes[p].forEach((item, i) => {
+                    // 1. 先移动到中心
+                    tl.to(item.mesh.position, {x: item.s2.x, y: item.s2.y, z: item.s2.z, duration: 1.2, ease: "back.inOut(1.2)"}, 0);
+                    // 2. 移动到位后淡出
+                    tl.to(item.mesh.material, {opacity: 0, duration: 0.5}, 1.2);
+                });
+                tl.to(lineSegments[p].material, {opacity: 0, duration: 0.5}, 1.2);
+            }
+            // 3. 完美重合时，金色节点点亮！
+            fusedNodes.forEach(mesh => {
+                tl.fromTo(mesh.scale, {x: 0.1, y: 0.1, z: 0.1}, {x: 1.5, y: 1.5, z: 1.5, duration: 0.6, ease: "back.out(2)"}, 1.3);
+                tl.to(mesh.material, {opacity: 1, duration: 0.4}, 1.3);
+            });
+        }
+
+        // UI 文本更新
+        [0, 1, 2].forEach(i => document.getElementById('btn-s'+i).classList.remove('active'));
+        document.getElementById('btn-s'+stateIdx).classList.add('active');
+        
+        const desc = document.getElementById('desc-text');
+        const form = document.getElementById('formula-text');
+        
+        if(stateIdx === 0) {
+            desc.innerText = `状态 1：构建 4 个完全相同的三棱锥。这里为了直观，我们令 a_k = k。`;
+            form.innerText = `总和 = 4 × Σ [ k(k+1)/2 × k ]`;
+        } else if(stateIdx === 1) {
+            desc.innerText = `状态 2：将另外三个金字塔翻转，确保 a_1 (即数字1) 分别落在底面的三个顶点上。`;
+            form.innerText = `准备叠加匹配相同位置...`;
+        } else if(stateIdx === 2) {
+            desc.innerText = `状态 3：四个图形完美重合！每一个空间位置上的 4 个数字相加，恒等于 a_1 + 3a_n。`;
+            form.innerText = `魔法常数 = 1 + 3×${currentN} = ${1 + 3*currentN}`;
+        }
+    }
+
+    // 绑定事件
+    document.getElementById('n-slider').addEventListener('change', function() {
+        document.getElementById('n-value').innerText = this.value;
+        buildScene(parseInt(this.value));
+    });
+
+    window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    // 启动渲染循环
+    buildScene(4);
+    function animate() {
+        requestAnimationFrame(animate);
+        controls.update();
+        renderer.render(scene, camera);
+    }
+    animate();
+</script>
+</body>
+</html>

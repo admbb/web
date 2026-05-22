@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>严格数学图解：平方和公式三步推导</title>
+    <style>
+        body { margin: 0; overflow: hidden; background-color: #111424; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: white; user-select: none; }
+        #ui-container { position: absolute; top: 20px; left: 20px; background: rgba(22, 33, 62, 0.85); padding: 25px; border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.8); pointer-events: auto; backdrop-filter: blur(10px); border: 1px solid #4a4e69; max-width: 380px; }
+        h1 { margin: 0 0 10px 0; font-size: 20px; color: #00d2d3; text-align: center; font-weight: 800; }
+        .math-box { background: rgba(0, 0, 0, 0.5); padding: 15px; border-radius: 10px; margin-bottom: 20px; border-left: 4px solid #00d2d3; }
+        .math-text { font-size: 14px; color: #c8d6e5; margin-bottom: 8px; line-height: 1.5; }
+        .math-formula { font-size: 18px; color: #ff9ff3; font-weight: bold; text-align: center; margin-top: 10px;}
+        
+        .control-group { margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px;}
+        input[type=range] { flex-grow: 1; margin: 0 15px; accent-color: #00d2d3; cursor: pointer; }
+        
+        .btn-group { display: flex; flex-direction: column; gap: 10px; }
+        button { padding: 12px; font-size: 14px; cursor: pointer; border: none; border-radius: 8px; background: #222f3e; color: #c8d6e5; font-weight: bold; transition: all 0.3s; text-align: left; padding-left: 20px; border-left: 5px solid transparent; }
+        button.active { background: #341f97; color: white; border-left: 5px solid #00d2d3; }
+        button:hover:not(.active) { background: #2c3e50; }
+        
+        #loading { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 20px; color: #00d2d3; display: none; font-weight: bold; background: rgba(0,0,0,0.8); padding: 20px 40px; border-radius: 30px; }
+        #canvas-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+</head>
+<body>
+
+<div id="ui-container">
+    <h1>📐 平方和公式 3D 推导</h1>
+    
+    <div class="math-box">
+        <div class="math-text" id="desc-text">状态 1：图中展示了 3 个完全相同的阶梯金字塔，每一个都代表 1² + 2² + ... + n²。</div>
+        <div class="math-formula" id="formula-text">3 × (1² + 2² + ... + 4²)</div>
+    </div>
+
+    <div class="control-group">
+        <label style="color:#00d2d3; font-weight:bold;">层数(n): <span id="n-value" style="color:#ff9ff3;font-size:18px;">4</span></label>
+        <input type="range" id="n-slider" min="2" max="6" step="1" value="4">
+    </div>
+
+    <div class="btn-group">
+        <button id="btn-s0" class="active" onclick="goToState(0)">1. 独立展开 (图1-2)</button>
+        <button id="btn-s1" onclick="goToState(1)">2. 拼合成阶梯长方体 (图1-3)</button>
+        <button id="btn-s2" onclick="goToState(2)">3. 顶层切割并平移填补 (图1-4, 1-5)</button>
+    </div>
+</div>
+
+<div id="loading">正在进行空间矩阵解算...</div>
+<div id="canvas-container"></div>
+
+<script>
+    // --- 1. 场景与光影初始化 ---
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+    const controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+
+    // 精细打光
+    scene.add(new THREE.AmbientLight(0xffffff, 0.65));
+    const dirLight1 = new THREE.DirectionalLight(0xffffff, 0.5);
+    dirLight1.position.set(20, 35, 25);
+    dirLight1.castShadow = true;
+    scene.add(dirLight1);
+    
+    // 【错误修复点】：拆开写，避免将 Vector3 当作 Light 添加入 scene
+    const dirLight2 = new THREE.DirectionalLight(0xaabbff, 0.4);
+    dirLight2.position.set(-20, 15, -20);
+    scene.add(dirLight2);
+
+    // --- 2. 核心数学求解器 ---
+    let globalMeshes = [];
+    let currentN = 4;
+    let currentState = 0;
+    const colors = [0xff6b6b, 0xfeca57, 0x48dbfb]; 
+    const descriptions = [
+        "状态 1：3个完全相同的阶梯积木。每一个体积为 1² + 2² + ... + n²。",
+        "状态 2：拼合后，底层长宽为 n × (n+1)。但高度为 n+1 的最顶层，只被铺了一半（阶梯状）。",
+        "状态 3：将顶层全部横向切开，上半层旋转 180° 平移填补空缺，最终形成高为 n+0.5 的完美长方体！"
+    ];
+
+    function getRotations() {
+        let rots = [];
+        const perms = [[0,1,2],[0,2,1],[1,0,2],[1,2,0],[2,0,1],[2,1,0]];
+        for(let p of perms) {
+            for(let sx of [1,-1]) {
+                for(let sy of [1,-1]) {
+                    let permDet = (p[0]===0&&p[1]===1) || (p[0]===1&&p[1]===2) || (p[0]===2&&p[1]===0) ? 1 : -1;
+                    let sz = permDet * sx * sy; 
+                    let m = new THREE.Matrix4();
+                    m.elements.fill(0); m.elements[15] = 1;
+                    m.elements[p[0] + 0] = sx; m.elements[p[1] + 4] = sy; m.elements[p[2] + 8] = sz;
+                    rots.push(m);
+                }
+            }
+        }
+        return rots;
+    }
+
+    function solveExactAssembly(N) {
+        let p0 = []; 
+        for(let y=0; y<N; y++)
+            for(let x=0; x<N-y; x++)
+                for(let z=0; z<N-y; z++)
+                    p0.push([x,y,z]);
+                    
+        let rots = getRotations();
+        let conditions = [
+            (x,z) => z <= x, (x,z) => z >= x + 1,
+            (x,z) => z <= (N - 1 - x), (x,z) => z >= (N - x)
+        ];
+
+        for (let condIdx = 0; condIdx < conditions.length; condIdx++) {
+            let cond = conditions[condIdx];
+            let targetSet = new Set();
+            for(let y=0; y<=N; y++) {
+                for(let x=0; x<N; x++) {
+                    for(let z=0; z<=N; z++) { 
+                        if(y < N || (y === N && cond(x,z))) {
+                            targetSet.add(`${x},${y},${z}`);
+                        }
+                    }
+                }
+            }
+            
+            let validPlacements = [];
+            for(let m of rots) {
+                let rotated = p0.map(pt => {
+                    let v = new THREE.Vector3(pt[0], pt[1], pt[2]).applyMatrix4(m);
+                    return [Math.round(v.x), Math.round(v.y), Math.round(v.z)];
+                });
+                
+                let minX = Math.min(...rotated.map(p=>p[0])), maxX = Math.max(...rotated.map(p=>p[0]));
+                let minY = Math.min(...rotated.map(p=>p[1])), maxY = Math.max(...rotated.map(p=>p[1]));
+                let minZ = Math.min(...rotated.map(p=>p[2])), maxZ = Math.max(...rotated.map(p=>p[2]));
+                
+                for(let dx = -minX; dx <= N-1 - maxX; dx++) {
+                    for(let dy = -minY; dy <= N - maxY; dy++) {
+                        for(let dz = -minZ; dz <= N - maxZ; dz++) {
+                            let fits = true;
+                            let pts = [];
+                            for(let pt of rotated) {
+                                let key = `${pt[0]+dx},${pt[1]+dy},${pt[2]+dz}`;
+                                if (!targetSet.has(key)) { fits = false; break; }
+                                pts.push(key);
+                            }
+                            if (fits) validPlacements.push({rotMatrix: m, dx, dy, dz, pts});
+                        }
+                    }
+                }
+            }
+
+            for(let i=0; i<validPlacements.length; i++) {
+                let p1 = validPlacements[i];
+                let rem1 = new Set(targetSet);
+                p1.pts.forEach(pt => rem1.delete(pt));
+                
+                for(let j=i+1; j<validPlacements.length; j++) {
+                    let p2 = validPlacements[j];
+                    if (p2.pts.some(pt => !rem1.has(pt))) continue;
+                    
+                    let rem2 = new Set(rem1);
+                    p2.pts.forEach(pt => rem2.delete(pt));
+                    
+                    for(let k=j+1; k<validPlacements.length; k++) {
+                        let p3 = validPlacements[k];
+                        if (p3.pts.every(pt => rem2.has(pt))) return { placements: [p1, p2, p3] }; 
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    // --- 3. 构建 3D 场景并映射动画 ---
+    function buildScene(N) {
+        document.getElementById('loading').style.display = 'block';
+        
+        setTimeout(() => {
+            currentN = N;
+            globalMeshes.forEach(item => {
+                scene.remove(item.mesh);
+                item.mesh.geometry.dispose();
+                item.mesh.material.dispose();
+            });
+            globalMeshes = [];
+
+            const result = solveExactAssembly(N);
+            if(!result) return alert("数学求解失败，请刷新页面！");
+
+            let p0 = [];
+            for(let y=0; y<N; y++)
+                for(let x=0; x<N-y; x++)
+                    for(let z=0; z<N-y; z++)
+                        p0.push([x,y,z]);
+
+            let explodedBases = [ new THREE.Vector3(-N*1.5, 0, N*1.2), new THREE.Vector3(0, 0, -N*1.5), new THREE.Vector3(N*1.5, 0, N*1.2) ];
+            let center = new THREE.Vector3((N-1)/2, N/2, N/2);
+            let fullGeo = new THREE.BoxGeometry(0.96, 0.96, 0.96);
+            let halfGeo = new THREE.BoxGeometry(0.96, 0.48, 0.96);
+
+            for(let i=0; i<3; i++) {
+                let placement = result.placements[i];
+                let m = placement.rotMatrix;
+                let mInv = m.clone().invert();
+                let eulerInv = new THREE.Euler().setFromRotationMatrix(mInv);
+                let T = new THREE.Vector3(placement.dx, placement.dy, placement.dz);
+                let pBase = explodedBases[i];
+                let mat = new THREE.MeshLambertMaterial({color: colors[i]});
+                
+                for(let pt of p0) {
+                    let local = new THREE.Vector3(pt[0], pt[1], pt[2]);
+                    let targetVec = local.clone().applyMatrix4(m).add(T);
+                    let X = Math.round(targetVec.x), Y = Math.round(targetVec.y), Z = Math.round(targetVec.z);
+                    
+                    if (Y === N) {
+                        // 下半部分 (不移动)
+                        let meshL = new THREE.Mesh(halfGeo, mat);
+                        meshL.castShadow = true; meshL.receiveShadow = true;
+                        scene.add(meshL);
+                        let s1PosL = new THREE.Vector3(X, Y - 0.25, Z); 
+                        let s0PosL = pBase.clone().add(s1PosL.clone().sub(T).applyMatrix4(mInv)); 
+                        globalMeshes.push({
+                            mesh: meshL,
+                            s0: { pos: s0PosL.sub(center), rot: eulerInv },
+                            s1: { pos: s1PosL.sub(center), rot: new THREE.Euler(0,0,0) },
+                            s2: { pos: s1PosL.clone(), rot: new THREE.Euler(0,0,0) } 
+                        });
+                        
+                        // 上半部分 (旋转填补)
+                        let meshU = new THREE.Mesh(halfGeo, mat);
+                        meshU.castShadow = true; meshU.receiveShadow = true;
+                        scene.add(meshU);
+                        let s1PosU = new THREE.Vector3(X, Y + 0.25, Z); 
+                        let s0PosU = pBase.clone().add(s1PosU.clone().sub(T).applyMatrix4(mInv));
+                        let s2PosU = new THREE.Vector3((N - 1) - X, Y - 0.25, N - Z); // 填平公式
+                        
+                        globalMeshes.push({
+                            mesh: meshU,
+                            s0: { pos: s0PosU.sub(center), rot: eulerInv },
+                            s1: { pos: s1PosU.sub(center), rot: new THREE.Euler(0,0,0) },
+                            s2: { pos: s2PosU.sub(center), rot: new THREE.Euler(Math.PI, 0, 0) } 
+                        });
+                    } else {
+                        // 普通满层
+                        let meshF = new THREE.Mesh(fullGeo, mat);
+                        meshF.castShadow = true; meshF.receiveShadow = true;
+                        scene.add(meshF);
+                        let s1PosF = new THREE.Vector3(X, Y, Z);
+                        let s0PosF = pBase.clone().add(s1PosF.clone().sub(T).applyMatrix4(mInv));
+                        
+                        globalMeshes.push({
+                            mesh: meshF,
+                            s0: { pos: s0PosF.sub(center), rot: eulerInv },
+                            s1: { pos: s1PosF.sub(center), rot: new THREE.Euler(0,0,0) },
+                            s2: { pos: s1PosF.clone(), rot: new THREE.Euler(0,0,0) }
+                        });
+                    }
+                }
+            }
+
+            camera.position.set(N * 1.8, N * 1.5, N * 2.5);
+            controls.target.set(0, 0, 0);
+            document.getElementById('loading').style.display = 'none';
+            goToState(currentState); 
+        }, 50);
+    }
+
+    function goToState(stateIdx) {
+        currentState = stateIdx;
+        const config = { duration: 1.5, ease: "power2.inOut" };
+        
+        globalMeshes.forEach(item => {
+            let target = item['s' + stateIdx];
+            gsap.to(item.mesh.position, {x: target.pos.x, y: target.pos.y, z: target.pos.z, ...config});
+            gsap.to(item.mesh.rotation, {x: target.rot.x, y: target.rot.y, z: target.rot.z, ...config});
+        });
+
+        [0, 1, 2].forEach(i => document.getElementById('btn-s'+i).classList.remove('active'));
+        document.getElementById('btn-s'+stateIdx).classList.add('active');
+        document.getElementById('desc-text').innerText = descriptions[stateIdx];
+        
+        const fText = document.getElementById('formula-text');
+        if(stateIdx === 0) fText.innerText = `3 × (1² + 2² + ... + ${currentN}²)`;
+        if(stateIdx === 1) fText.innerText = `拼合后体积 = 长方体底座 + 半个阶梯顶层`;
+        if(stateIdx === 2) fText.innerText = `最终体积 = ${currentN} × ${currentN+1} × (${currentN}+½)`;
+    }
+
+    document.getElementById('n-slider').addEventListener('change', function() {
+        document.getElementById('n-value').innerText = this.value;
+        buildScene(parseInt(this.value));
+    });
+
+    window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    buildScene(4);
+    function animate() {
+        requestAnimationFrame(animate);
+        controls.update(); 
+        renderer.render(scene, camera);
+    }
+    animate();
+</script>
+</body>
+</html>
