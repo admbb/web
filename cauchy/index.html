@@ -1,0 +1,1420 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>柯西不等式 — 初中数学讲义</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['\\(','\\)']],
+    displayMath: [['\\[','\\]']],
+    tags: 'none'
+  },
+  chtml: {
+    displayAlign: 'center',
+    displayIndent: '0'
+  },
+  options: { skipHtmlTags: ['script','noscript','style','textarea'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body { overflow-x: hidden; }
+
+  body {
+    font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+    font-size: 15px;
+    line-height: 1.8;
+    color: #1a1a1a;
+    background: #f7f6f2;
+    padding: 0 0 60px 0;
+  }
+
+  /* ── Header ── */
+  .cover {
+    background: linear-gradient(135deg, #1a3a5c 0%, #2563a8 60%, #3b82d4 100%);
+    color: #fff;
+    padding: 56px 40px 48px;
+    text-align: center;
+  }
+  .cover-tag { font-size: 12px; letter-spacing: 3px; opacity: .7; margin-bottom: 12px; text-transform: uppercase; }
+  .cover h1 { font-size: 36px; font-weight: 700; margin-bottom: 12px; }
+  .cover-sub { font-size: 16px; opacity: .85; }
+
+  /* ── Layout ── */
+  .container { max-width: 860px; margin: 0 auto; padding: 0 24px; }
+
+  /* ── Section titles ── */
+  .section { margin-top: 48px; }
+  .section-head {
+    display: flex; align-items: center; gap: 14px;
+    margin-bottom: 20px;
+  }
+  .section-num {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: #2563a8; color: #fff;
+    font-size: 16px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .section-head h2 { font-size: 22px; font-weight: 700; color: #1a3a5c; }
+
+  /* ── Cards ── */
+  .card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin-bottom: 20px;
+    border: 1px solid #e8e6df;
+    overflow: hidden;
+  }
+  .card-title {
+    font-size: 13px; font-weight: 600; letter-spacing: 1px;
+    color: #2563a8; margin-bottom: 14px; text-transform: uppercase;
+  }
+
+  /* ── Callout boxes ── */
+  .callout {
+    border-radius: 10px;
+    padding: 18px 22px;
+    margin: 16px 0;
+    border-left: 4px solid;
+  }
+  .callout.blue   { background: #eff6ff; border-color: #2563a8; color: #1e3a5f; }
+  .callout.green  { background: #f0fdf4; border-color: #16a34a; color: #14532d; }
+  .callout.amber  { background: #fffbeb; border-color: #d97706; color: #78350f; }
+  .callout.red    { background: #fef2f2; border-color: #dc2626; color: #7f1d1d; }
+  .callout.purple { background: #f5f3ff; border-color: #7c3aed; color: #3b1e6e; }
+
+  .callout-label {
+    font-size: 12px; font-weight: 700; letter-spacing: 1px;
+    margin-bottom: 8px; opacity: .8;
+  }
+
+  /* ── Formula display box ── */
+  .formula-box {
+    background: #f8f9fe;
+    border: 1.5px solid #c7d6f5;
+    border-radius: 10px;
+    padding: 20px 24px;
+    text-align: center;
+    margin: 18px 0;
+    overflow: hidden;
+  }
+  .formula-box .note {
+    font-size: 13px;
+    color: #6b7280;
+    display: block;
+    margin-top: 8px;
+    font-family: "PingFang SC", sans-serif;
+  }
+  /* MathJax display override inside formula-box */
+  .formula-box mjx-container { font-size: 1.15em !important; }
+
+  /* ── Steps ── */
+  .steps { counter-reset: step; }
+  .step {
+    display: flex; gap: 16px; margin-bottom: 16px;
+    counter-increment: step;
+  }
+  .step::before {
+    content: counter(step);
+    min-width: 28px; height: 28px;
+    background: #dbeafe; color: #1e40af;
+    border-radius: 50%;
+    font-size: 13px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; margin-top: 2px;
+  }
+  .step-body { flex: 1; }
+  .step-body p { margin-bottom: 6px; }
+
+  /* ── Theorem grid ── */
+  .theorem-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+    margin-top: 16px;
+  }
+  .theorem-card {
+    border-radius: 10px;
+    padding: 18px 20px;
+    border: 1px solid #e0e7f0;
+    background: #fff;
+  }
+  .theorem-card .tc-head {
+    font-size: 13px; font-weight: 700; color: #2563a8;
+    margin-bottom: 10px; padding-bottom: 8px;
+    border-bottom: 1px dashed #c7d6f5;
+  }
+  .theorem-card .tc-formula {
+    margin: 10px 0; text-align: center;
+    overflow: hidden;
+  }
+  .theorem-card .tc-note {
+    font-size: 12px; color: #6b7280; margin-top: 8px; line-height: 1.6;
+  }
+
+  /* ── Examples ── */
+  .example {
+    background: #fff;
+    border-radius: 10px;
+    border: 1px solid #e8e6df;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+  .example-head {
+    background: #1a3a5c; color: #fff;
+    padding: 12px 20px;
+    font-size: 13px; font-weight: 600;
+  }
+  .example-body { padding: 18px 20px; }
+  .example-problem { font-size: 15px; margin-bottom: 16px; }
+  .example-solution {
+    background: #f8faff;
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-size: 14px;
+    line-height: 2;
+    border: 1px solid #dbeafe;
+  }
+  .example-solution .key { color: #dc2626; font-weight: 600; }
+  .example-answer {
+    margin-top: 12px;
+    padding: 10px 16px;
+    background: #dcfce7;
+    border-radius: 8px;
+    font-weight: 600;
+    color: #166534;
+    font-size: 14px;
+  }
+
+  /* ── Demo panel ── */
+  .demo-panel {
+    background: #fff;
+    border-radius: 12px;
+    padding: 24px 28px;
+    border: 1px solid #e8e6df;
+    margin-bottom: 20px;
+  }
+  .demo-controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+  .ctrl-group label {
+    display: block;
+    font-size: 13px; font-weight: 600; color: #374151;
+    margin-bottom: 6px;
+  }
+  .ctrl-group input[type=range] { width: 100%; }
+  .demo-result {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-top: 16px;
+  }
+  .metric {
+    background: #f8f9fe;
+    border-radius: 8px;
+    padding: 14px;
+    text-align: center;
+    border: 1px solid #e0e7f0;
+  }
+  .metric-label { font-size: 12px; color: #6b7280; margin-bottom: 6px; }
+  .metric-value { font-size: 22px; font-weight: 700; color: #1a3a5c; }
+  .metric-value.highlight { color: #dc2626; }
+  .metric-value.hl-green  { color: #16a34a; }
+  .check-result {
+    margin-top: 16px; padding: 12px 18px;
+    border-radius: 8px; font-size: 14px; font-weight: 600;
+    text-align: center;
+  }
+  .check-result.holds { background: #dcfce7; color: #166534; }
+  .check-result.equal { background: #dbeafe; color: #1e40af; }
+
+  /* ── TOC ── */
+  .toc {
+    background: #fff; border-radius: 12px;
+    padding: 24px 28px; margin: 32px auto;
+    max-width: 860px; border: 1px solid #e8e6df;
+  }
+  .toc h3 { font-size: 14px; font-weight: 700; color: #1a3a5c; margin-bottom: 16px; }
+  .toc ol { padding-left: 20px; }
+  .toc li { margin-bottom: 8px; font-size: 14px; color: #374151; }
+  .toc a { color: #2563a8; text-decoration: none; }
+  .toc a:hover { text-decoration: underline; }
+
+  /* ── Summary table ── */
+  .summary-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  .summary-table th {
+    background: #1a3a5c; color: #fff;
+    padding: 10px 14px; text-align: left; font-weight: 600;
+  }
+  .summary-table td { padding: 10px 14px; border-bottom: 1px solid #e8e6df; }
+  .summary-table tr:last-child td { border-bottom: none; }
+  .summary-table tr:hover td { background: #f8f9fe; }
+
+  /* ── Chart ── */
+  .chart-wrap { position: relative; height: 260px; margin: 16px 0; }
+
+  /* ── Proof ── */
+  .proof {
+    background: #fafaf9; border-radius: 10px;
+    padding: 18px 22px; border: 1px solid #e8e6df;
+    font-size: 14px; line-height: 2;
+  }
+  .proof p { margin-bottom: 10px; }
+  .proof .pstep {
+    padding: 6px 0;
+    border-bottom: 1px dashed #e8e6df;
+  }
+  .proof .pstep:last-child { border-bottom: none; }
+
+  /* ── Badges ── */
+  .badge {
+    display: inline-block; padding: 2px 10px;
+    border-radius: 20px; font-size: 11px; font-weight: 600; letter-spacing: .5px;
+  }
+  .badge-green  { background: #dcfce7; color: #166534; }
+  .badge-amber  { background: #fef3c7; color: #92400e; }
+  .badge-red    { background: #fee2e2; color: #991b1b; }
+
+  /* ── Equal box ── */
+  .equal-box {
+    display: flex; align-items: center; gap: 10px;
+    background: #fff7ed; border: 1px solid #fed7aa;
+    border-radius: 8px; padding: 12px 16px;
+    margin: 14px 0; font-size: 14px; color: #7c2d12;
+  }
+  .equal-box .icon { font-size: 18px; }
+
+  /* ── Divider ── */
+  .divider { height: 1px; background: #e8e6df; margin: 40px 0; }
+
+  /* ── 防止长公式撑破卡片 ── */
+  .card [style*="display:grid"] > div,
+  .card [style*="display: grid"] > div { min-width: 0; overflow: hidden; }
+  /* 对照表网格单元格内公式适当缩小 */
+  .card [style*="display:grid"] > div mjx-container,
+  .card [style*="display: grid"] > div mjx-container { font-size: 0.88em !important; }
+
+  /* ── Footer ── */
+  .footer {
+    text-align: center; padding: 32px 0 16px;
+    font-size: 13px; color: #9ca3af;
+  }
+</style>
+</head>
+<body>
+
+<!-- ══ COVER ══ -->
+<div class="cover">
+  <div class="cover-tag">初中数学 · 不等式专题</div>
+  <h1>柯西—施瓦茨不等式</h1>
+  <div class="cover-sub">基础形式 · 衍生推论 · 推导结论 · 综合例题</div>
+</div>
+
+<!-- ══ TOC ══ -->
+<div class="container">
+<div class="toc">
+  <h3>📋 本讲目录</h3>
+  <ol>
+    <li><a href="#s1">什么是柯西不等式？— 从直觉出发</a></li>
+    <li><a href="#s2">标准形式与严格证明</a></li>
+    <li><a href="#s3">等号成立条件（灵魂）</a></li>
+    <li><a href="#s4">互动演示：亲眼见证不等式</a></li>
+    <li><a href="#s5">十二大衍生推论（含闵可夫斯基、Lagrange、Bessel、幂平均、切比雪夫等）</a></li>
+    <li><a href="#s5-expand">📝 初中生展开对照表：∑ 符号 → 二元/三元显式写法</a></li>
+    <li><a href="#s6">由柯西推导的十五条重要结论（含均值链、三角不等式、排序不等式等）</a></li>
+    <li><a href="#s7">经典例题精讲</a></li>
+    <li><a href="#s8">解题技巧总结</a></li>
+  </ol>
+</div>
+</div>
+
+<!-- ══ S1: 直觉 ══ -->
+<div class="container">
+<div class="section" id="s1">
+  <div class="section-head">
+    <div class="section-num">1</div>
+    <h2>什么是柯西不等式？— 从直觉出发</h2>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🧭 先从一个问题开始</div>
+    <p>已知实数 \(a, b, c, d\)，请比较下面两个式子的大小：</p>
+    <div class="formula-box">
+      \[\displaystyle (ac + bd)^2 \quad \text{与} \quad (a^2 + b^2)(c^2 + d^2)\]
+    </div>
+    <p>随意代入几组数试试，比如 \((a,b,c,d)=(3,4,1,2)\)：</p>
+    <div class="callout amber">
+      <div class="callout-label">计算验证</div>
+      \((ac+bd)^2 = (3\times1+4\times2)^2 = 11^2 = \mathbf{121}\)<br><br>
+      \((a^2+b^2)(c^2+d^2) = (9+16)(1+4) = 25\times5 = \mathbf{125}\)<br><br>
+      结论：\(121 \leq 125\)，<strong>左边 \(\leq\) 右边！</strong>
+    </div>
+    <p style="margin-top:14px;">这个规律总是成立的，这就是 <strong>柯西-施瓦茨不等式</strong>（简称"柯西不等式"）。</p>
+    <div class="callout blue">
+      <div class="callout-label">📌 简记为</div>
+      \[(a^2+b^2)(c^2+d^2) \;\geq\; (ac+bd)^2\]
+      <strong>即：两向量模长之积 ≥ 内积。（记忆：左 ≥ 右）</strong>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📐 几何直觉：向量的夹角</div>
+    <p>把 \((a,b)\) 看成二维向量 \(\boldsymbol{u}\)，\((c,d)\) 看成向量 \(\boldsymbol{v}\)，则：</p>
+    <div class="formula-box">
+      \[\displaystyle ac + bd = |\boldsymbol{u}|\cdot|\boldsymbol{v}|\cdot\cos\theta\]
+      <span class="note">其中 \(\theta\) 是两向量的夹角（\(0^\circ \leq \theta \leq 180^\circ\)）</span>
+    </div>
+    <p>由于 \(|\cos\theta| \leq 1\)，所以 \((ac+bd)^2 \leq (a^2+b^2)(c^2+d^2)\)。</p>
+    <div class="callout green">
+      <div class="callout-label">几何理解</div>
+      两个向量越"方向相同"，内积越大；<br>
+      等号在两向量<strong>平行（共线）</strong>时成立，即 \(\dfrac{a}{c}=\dfrac{b}{d}\)。
+    </div>
+  </div>
+</div>
+
+<!-- ══ S2: 标准形式 ══ -->
+<div class="section" id="s2">
+  <div class="section-head">
+    <div class="section-num">2</div>
+    <h2>标准形式与严格证明</h2>
+  </div>
+
+  <div class="callout blue">
+    <div class="callout-label">📌 柯西不等式 — 二元形式</div>
+    <div class="formula-box" style="margin:10px 0;">
+      \[\displaystyle (a^2+b^2)(c^2+d^2) \geq (ac+bd)^2\]
+    </div>
+    对所有实数 \(a,b,c,d\) 成立，等号当且仅当 \(ad=bc\)（即 \(\dfrac{a}{c}=\dfrac{b}{d}\)）时成立。
+    <p style="margin-top:10px;"><strong>简记为：</strong>\((|\boldsymbol{u}||\boldsymbol{v}|)^2 \geq (\boldsymbol{u}\cdot\boldsymbol{v})^2\)</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">✏️ 证明方法一：展开配方法</div>
+    <div class="proof">
+      <div class="pstep">
+        <strong>目标：</strong>证明 \((a^2+b^2)(c^2+d^2)-(ac+bd)^2 \geq 0\)
+      </div>
+      <div class="pstep">
+        <strong>展开左边：</strong><br>
+        \((a^2+b^2)(c^2+d^2) = a^2c^2+a^2d^2+b^2c^2+b^2d^2\)
+      </div>
+      <div class="pstep">
+        <strong>展开右边：</strong><br>
+        \((ac+bd)^2 = a^2c^2+2abcd+b^2d^2\)
+      </div>
+      <div class="pstep">
+        <strong>作差：</strong><br>
+        \((a^2+b^2)(c^2+d^2)-(ac+bd)^2 = a^2d^2-2abcd+b^2c^2 = \boldsymbol{(ad-bc)^2 \geq 0}\) ✓
+      </div>
+      <div class="pstep">
+        <strong>结论：</strong>等号成立当且仅当 \(ad-bc=0\)，即 \(ad=bc\)。
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📐 证明方法二：二次函数判别式法</div>
+    <div class="proof">
+      <div class="pstep">
+        构造关于 \(t\) 的函数：\(f(t)=(at+c)^2+(bt+d)^2\)
+      </div>
+      <div class="pstep">
+        展开得：\(f(t)=(a^2+b^2)t^2+2(ac+bd)t+(c^2+d^2)\)
+      </div>
+      <div class="pstep">
+        因为 \(f(t)\geq 0\) 恒成立（平方和），故判别式 \(\Delta \leq 0\)：
+        \[4(ac+bd)^2 - 4(a^2+b^2)(c^2+d^2) \leq 0\]
+        即 \((ac+bd)^2 \leq (a^2+b^2)(c^2+d^2)\) ✓
+      </div>
+    </div>
+  </div>
+
+  <div class="callout blue">
+    <div class="callout-label">📌 柯西不等式 — n 元一般形式</div>
+    <div class="formula-box" style="margin:10px 0;">
+      \[\displaystyle \left(\sum_{i=1}^n a_i^2\right)\!\left(\sum_{i=1}^n b_i^2\right) \geq \left(\sum_{i=1}^n a_i b_i\right)^{\!2}\]
+    </div>
+    <p style="margin-top:10px;"><strong>简记为：</strong>\(\|\boldsymbol{a}\|^2\cdot\|\boldsymbol{b}\|^2 \geq (\boldsymbol{a}\cdot\boldsymbol{b})^2\)</p>
+  </div>
+</div>
+
+<!-- ══ S3: 等号条件 ══ -->
+<div class="section" id="s3">
+  <div class="section-head">
+    <div class="section-num">3</div>
+    <h2>等号成立条件 — 不等式的"灵魂"</h2>
+  </div>
+
+  <div class="card">
+    <div class="card-title">⭐ 这是解题中最重要的一步！</div>
+    <p>柯西不等式取等号 \(=\)，需要满足：</p>
+
+    <div class="equal-box">
+      <span class="icon">🔑</span>
+      <div><strong>二元：</strong>\(ad=bc\)，即 \(\dfrac{a}{c}=\dfrac{b}{d}=k\)（\(a,b\) 与 \(c,d\) 成比例）</div>
+    </div>
+    <div class="equal-box">
+      <span class="icon">🔑</span>
+      <div><strong>\(n\) 元：</strong>\(\dfrac{a_1}{b_1}=\dfrac{a_2}{b_2}=\cdots=\dfrac{a_n}{b_n}=k\)（常数比）</div>
+    </div>
+    <div class="equal-box">
+      <span class="icon">🔑</span>
+      <div><strong>几何语言：</strong>两向量<strong>平行共线</strong>（方向相同或相反）</div>
+    </div>
+
+    <div class="callout green" style="margin-top:14px;">
+      <div class="callout-label">简记为</div>
+      <strong>等号 ⇔ 成比例</strong>，即 \(\dfrac{a_1}{b_1}=\dfrac{a_2}{b_2}=\cdots=\dfrac{a_n}{b_n}=k\)（其中 \(k\) 是常数）<br>
+      几何版：\(\boldsymbol{a}\parallel\boldsymbol{b}\)（\(\boldsymbol{a}\) 平行于 \(\boldsymbol{b}\)）
+    </div>
+
+    <div class="callout red" style="margin-top:16px;">
+      <div class="callout-label">⚠️ 常见错误</div>
+      解题时写出"由柯西不等式得最大/最小值"后，<strong>必须验证等号能否成立</strong>！<br>
+      若等号条件与已知约束矛盾，则该极值无法取到，需重新审题。
+    </div>
+  </div>
+</div>
+
+<!-- ══ S4: 互动演示 ══ -->
+<div class="section" id="s4">
+  <div class="section-head">
+    <div class="section-num">4</div>
+    <h2>互动演示：亲眼见证不等式</h2>
+  </div>
+
+  <div class="demo-panel">
+    <p style="font-size:14px;color:#6b7280;margin-bottom:20px;">
+      拖动滑块改变 \(a,b,c,d\) 的值，实时观察 \((a^2+b^2)(c^2+d^2)\) 与 \((ac+bd)^2\) 的大小：
+    </p>
+    <div class="demo-controls">
+      <div class="ctrl-group">
+        <label>\(a\) = <span id="va">3</span></label>
+        <input type="range" id="sa" min="-8" max="8" step="0.5" value="3" oninput="updateDemo()">
+      </div>
+      <div class="ctrl-group">
+        <label>\(b\) = <span id="vb">4</span></label>
+        <input type="range" id="sb" min="-8" max="8" step="0.5" value="4" oninput="updateDemo()">
+      </div>
+      <div class="ctrl-group">
+        <label>\(c\) = <span id="vc">1</span></label>
+        <input type="range" id="sc" min="-8" max="8" step="0.5" value="1" oninput="updateDemo()">
+      </div>
+      <div class="ctrl-group">
+        <label>\(d\) = <span id="vd">2</span></label>
+        <input type="range" id="sd" min="-8" max="8" step="0.5" value="2" oninput="updateDemo()">
+      </div>
+    </div>
+    <div class="demo-result">
+      <div class="metric">
+        <div class="metric-label">\((a^2\!+\!b^2)(c^2\!+\!d^2)\)</div>
+        <div class="metric-value hl-green" id="lhs">125</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">\((ac\!+\!bd)^2\)</div>
+        <div class="metric-value highlight" id="rhs">121</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">差值 \(L - R\)</div>
+        <div class="metric-value" id="diff" style="color:#2563a8;">4</div>
+      </div>
+    </div>
+    <div class="check-result holds" id="check">✓ 柯西不等式成立：左边 ≥ 右边</div>
+    <div class="chart-wrap">
+      <canvas id="demoChart" role="img" aria-label="柯西不等式两侧值对比柱状图">柯西不等式动态演示</canvas>
+    </div>
+  </div>
+</div>
+
+<!-- ══ S5: 推论（扩充版）══ -->
+<div class="section" id="s5">
+  <div class="section-head">
+    <div class="section-num">5</div>
+    <h2>十二大衍生推论</h2>
+  </div>
+
+  <!-- 推论1 -->
+  <div class="card">
+    <div class="card-title">推论 1 — 正数型柯西不等式（常用！）</div>
+    <p>令 \(a_i \to \sqrt{a_i},\ b_i \to \sqrt{b_i}\)（\(a_i,b_i>0\)），标准柯西变为：</p>
+    <div class="formula-box">
+      \[\displaystyle \left(\sum_{i=1}^n a_i\right)\!\left(\sum_{i=1}^n b_i\right) \geq \left(\sum_{i=1}^n \sqrt{a_i b_i}\right)^{\!2}\]
+    </div>
+    <div class="equal-box">
+      <span class="icon">🔑</span>
+      等号：\(\dfrac{a_1}{b_1}=\dfrac{a_2}{b_2}=\cdots=\dfrac{a_n}{b_n}\)
+    </div>
+    <div class="callout amber">
+      <div class="callout-label">二元特例（简记）</div>
+      \((a+b)(c+d)\geq(\sqrt{ac}+\sqrt{bd})^2\)，简记为 <strong>"和之积 ≥ 根号积之和的平方"</strong>，竞赛中频率极高。
+    </div>
+  </div>
+
+  <!-- 推论2 -->
+  <div class="card">
+    <div class="card-title">推论 2 — 分式型柯西（Engel Form / Titu 引理）⭐⭐⭐</div>
+    <p>令 \(a_i\to\dfrac{a_i}{\sqrt{b_i}},\ b_i\to\sqrt{b_i}\) 代入，得到竞赛最高频的形式：</p>
+    <div class="formula-box">
+      \[\displaystyle \frac{a_1^2}{b_1}+\frac{a_2^2}{b_2}+\cdots+\frac{a_n^2}{b_n} \;\geq\; \frac{(a_1+a_2+\cdots+a_n)^2}{b_1+b_2+\cdots+b_n}\]
+    </div>
+    <p style="margin:12px 0;">其中 \(b_1,b_2,\ldots,b_n>0\)。</p>
+    <div class="equal-box">
+      <span class="icon">🔑</span>
+      等号：\(\dfrac{a_1}{b_1}=\dfrac{a_2}{b_2}=\cdots=\dfrac{a_n}{b_n}\)
+    </div>
+    <div class="callout amber">
+      <div class="callout-label">简记 / 记忆口诀</div>
+      <strong>"分子的平方除以分母，之和 ≥ 分子之和的平方除以分母之和"</strong><br>
+      即：\(\displaystyle\sum\frac{a_i^2}{b_i} \geq \frac{\left(\sum a_i\right)^2}{\sum b_i}\)
+    </div>
+  </div>
+
+  <!-- 推论3 -->
+  <div class="card">
+    <div class="card-title">推论 3 — 和的平方 ≤ n 倍平方和</div>
+    <p>令 \(b_i=1\)，由柯西不等式 \(\left(\sum a_i^2\right)\!\left(\sum 1^2\right)\geq\left(\sum a_i\right)^2\)，得：</p>
+    <div class="formula-box">
+      \[n\!\left(a_1^2+a_2^2+\cdots+a_n^2\right) \geq \left(a_1+a_2+\cdots+a_n\right)^2\]
+    </div>
+    <p style="margin:10px 0;"><strong>简记为：</strong>\(n\cdot\|\boldsymbol{a}\|^2 \geq (\sum a_i)^2\)，即 <strong>"n 倍平方和 ≥ 和的平方"</strong></p>
+    <div class="callout blue">
+      <div class="callout-label">等价表述</div>
+      即方差非负：\(\dfrac{\sum a_i^2}{n}-\left(\dfrac{\sum a_i}{n}\right)^{\!2}\geq 0\)，等号当 \(a_1=\cdots=a_n\) 时成立。
+    </div>
+  </div>
+
+  <!-- 推论4 -->
+  <div class="card">
+    <div class="card-title">推论 4 — 调和均值 ≤ 算术均值（HM ≤ AM）</div>
+    <p>令 \(a_i=\sqrt{x_i},\ b_i=\dfrac{1}{\sqrt{x_i}}\)（\(x_i>0\)），代入得：</p>
+    <div class="formula-box">
+      \[\displaystyle \left(\sum_{i=1}^n x_i\right)\!\left(\sum_{i=1}^n \frac{1}{x_i}\right) \geq n^2\]
+    </div>
+    <p style="margin:10px 0;"><strong>简记为：</strong>\((\sum x)(\sum\frac{1}{x}) \geq n^2\)，即 <strong>"和 × 倒数和 ≥ 项数的平方"</strong></p>
+    <div class="callout green">
+      <div class="callout-label">推出 HM ≤ AM</div>
+      \(\displaystyle \text{AM}=\frac{\sum x_i}{n},\quad \text{HM}=\frac{n}{\sum \frac{1}{x_i}}\)，由上式得 \(\text{AM}\cdot\text{HM}\geq 1\)，即 \(\text{AM}\geq\text{HM}\)。
+    </div>
+  </div>
+
+  <!-- 推论5 -->
+  <div class="card">
+    <div class="card-title">推论 5 — 加权柯西不等式</div>
+    <p>设正权 \(w_i>0\)，\(\sum w_i=1\)，则：</p>
+    <div class="formula-box">
+      \[\displaystyle \left(\sum_{i=1}^n w_i a_i^2\right)\!\left(\sum_{i=1}^n w_i b_i^2\right) \geq \left(\sum_{i=1}^n w_i a_i b_i\right)^{\!2}\]
+    </div>
+    <p style="margin:10px 0;"><strong>简记为：</strong>\(E[X^2]\cdot E[Y^2] \geq \bigl(E[XY]\bigr)^2\)（带权的"柯西平方"）</p>
+    <div class="callout green">
+      <div class="callout-label">概率语言</div>
+      即 \(E[X^2]\cdot E[Y^2]\geq \bigl(E[XY]\bigr)^2\)，对应概率论中的柯西-施瓦茨不等式。
+    </div>
+    <p style="margin-top:12px;">令 \(b_i=1\) 得加权方差不等式 \(E[X^2]\geq(E[X])^2\)，即 \(\text{Var}(X)\geq 0\)。</p>
+  </div>
+
+  <!-- 推论6：Lagrange恒等式 -->
+  <div class="card">
+    <div class="card-title">推论 6 — Lagrange 恒等式（柯西的精确版）⭐</div>
+    <p>柯西不等式的等号差值有精确表达式——Lagrange 恒等式：</p>
+    <div class="formula-box">
+      \[\displaystyle \left(\sum_{i=1}^n a_i^2\right)\!\left(\sum_{i=1}^n b_i^2\right) - \left(\sum_{i=1}^n a_i b_i\right)^{\!2} = \sum_{1\leq i < j \leq n}(a_i b_j - a_j b_i)^2\]
+    </div>
+    <p style="margin:10px 0;"><strong>简记为：</strong>柯西差值 \(=\) 所有"\(2\times 2\) 小行列式"的平方和</p>
+    <div class="callout blue">
+      <div class="callout-label">意义</div>
+      右边是所有"行列式因子"的平方和，永远 \(\geq 0\)，且等于零当且仅当所有 \(a_ib_j=a_jb_i\)（即成比例）。<br>
+      二元时：\((a^2+b^2)(c^2+d^2)-(ac+bd)^2=(ad-bc)^2\)，即配方证明的推广。
+    </div>
+  </div>
+
+  <!-- 推论7：闵可夫斯基 -->
+  <div class="card">
+    <div class="card-title">推论 7 — 闵可夫斯基不等式（三角不等式的推广）⭐⭐</div>
+    <p>对实数序列 \((a_1,\ldots,a_n)\) 和 \((b_1,\ldots,b_n)\)，有：</p>
+    <div class="formula-box">
+      \[\displaystyle \sqrt{\sum_{i=1}^n (a_i+b_i)^2} \;\leq\; \sqrt{\sum_{i=1}^n a_i^2} + \sqrt{\sum_{i=1}^n b_i^2}\]
+    </div>
+    <p style="margin:10px 0;"><strong>简记为：</strong>\(\|\boldsymbol{a}+\boldsymbol{b}\| \leq \|\boldsymbol{a}\| + \|\boldsymbol{b}\|\)（<strong>"模长之和 ≥ 和之模长"</strong>，即多维三角不等式）</p>
+    <div class="proof">
+      <div class="pstep">
+        <strong>从柯西推导：</strong>展开 \(\displaystyle\sum(a_i+b_i)^2 = \sum a_i^2 + 2\sum a_i b_i + \sum b_i^2\)
+      </div>
+      <div class="pstep">
+        对 \(\displaystyle\sum a_i b_i\) 用柯西不等式：\(\displaystyle\sum a_i b_i \leq \sqrt{\sum a_i^2}\cdot\sqrt{\sum b_i^2}\)
+      </div>
+      <div class="pstep">
+        故 \(\displaystyle\sum(a_i+b_i)^2 \leq \left(\sqrt{\sum a_i^2}+\sqrt{\sum b_i^2}\right)^2\)，两边开根号即得。✓
+      </div>
+    </div>
+    <div class="callout green">
+      <div class="callout-label">几何含义</div>
+      \(n=2\) 时即平面向量三角不等式 \(|\boldsymbol{u}+\boldsymbol{v}|\leq|\boldsymbol{u}|+|\boldsymbol{v}|\)；<br>
+      本质：两点之间直线最短。等号成立当且仅当 \(\boldsymbol{a}\) 与 \(\boldsymbol{b}\) 同方向（即 \(a_i/b_i=\) 常数且比值 \(\geq 0\)）。
+    </div>
+  </div>
+
+  <!-- 推论8：Chebyshev求和 -->
+  <div class="card">
+    <div class="card-title">推论 8 — 切比雪夫求和不等式</div>
+    <p>设 \(a_1\leq a_2\leq\cdots\leq a_n\) 与 \(b_1\leq b_2\leq\cdots\leq b_n\)（同序排列），则：</p>
+    <div class="formula-box">
+      \[\displaystyle n\sum_{i=1}^n a_i b_i \;\geq\; \left(\sum_{i=1}^n a_i\right)\!\left(\sum_{i=1}^n b_i\right)\]
+    </div>
+    <p style="margin:10px 0;"><strong>简记为：</strong>\(n\cdot\text{(对应乘积和)} \geq \text{(和之积)}\)（同序时——<strong>"排整齐，乘积和更大"</strong>）<br>
+      <span style="font-size:13px;color:#dc2626;">特例（设 \(a_1\leq a_2,\ b_1\leq b_2\)）：\(\boxed{a_1b_1+a_2b_2 \geq a_1b_2+a_2b_1}\)</span></p>
+    <p style="margin-top:10px;">若一个序列升序、另一个降序（逆序），则不等号反向：</p>
+    <div class="formula-box">
+      \[\displaystyle n\sum_{i=1}^n a_i b_i \;\leq\; \left(\sum_{i=1}^n a_i\right)\!\left(\sum_{i=1}^n b_i\right)\]
+    </div>
+    <div class="callout amber">
+      <div class="callout-label">从柯西推导</div>
+      对序列 \(a_1,\ldots,a_n\) 与 \(b_1,\ldots,b_n\)，构造 \(\displaystyle\sum_{i,j}(a_i-a_j)(b_i-b_j)\geq 0\)（同序时），展开即得切比雪夫不等式。
+    </div>
+    <div class="callout blue">
+      <div class="callout-label">记忆口诀</div>
+      <strong>"同升同降，乘积更大；一升一降，乘积更小"</strong>（排列对齐原则）
+    </div>
+    <div class="callout green" style="margin-top:10px;">
+      <div class="callout-label">📌 初中生特例（n=2）</div>
+      设 \(a_1\leq a_2,\; b_1\leq b_2\)，则：<br><br>
+      <strong style="font-size:15px;color:#dc2626;">\(a_1b_1+a_2b_2 \;\geq\; a_1b_2+a_2b_1\)</strong><br><br>
+      <span style="font-size:13px;color:#6b7280;">即：两列都从小到大排好后，对应位置相乘再求和，比交叉相乘再求和更大。</span>
+    </div>
+  </div>
+
+  <!-- 推论9：幂平均 -->
+  <div class="card">
+    <div class="card-title">推论 9 — 幂平均不等式（Power Mean）</div>
+    <p>定义 \(r\) 次幂平均 \(\displaystyle M_r=\left(\frac{\sum x_i^r}{n}\right)^{1/r}\)（\(x_i>0\)），则：</p>
+    <div class="formula-box">
+      \[M_{-1} \;\leq\; M_0 \;\leq\; M_1 \;\leq\; M_2\]
+      <span class="note">即：调和均值（HM）≤ 几何均值（GM）≤ 算术均值（AM）≤ 平方均值（QM）</span>
+    </div>
+    <p style="margin:10px 0;"><strong>简记为：</strong>\(\dfrac{n}{\sum\frac{1}{x_i}} \leq \sqrt[n]{\prod x_i} \leq \dfrac{\sum x_i}{n} \leq \sqrt{\dfrac{\sum x_i^2}{n}}\)</p>
+    <div class="callout blue">
+      <div class="callout-label">柯西作用的位置</div>
+      \(\text{AM}\leq\text{QM}\) 部分（\(M_1\leq M_2\)）等价于推论 3（令 \(b_i=1\) 的柯西不等式）：
+      \[\displaystyle\frac{\sum x_i}{n}\leq\sqrt{\frac{\sum x_i^2}{n}}\]
+      平方两边即 \(\left(\sum x_i\right)^2\leq n\sum x_i^2\)，正是推论 3。
+    </div>
+    <div class="equal-box">
+      <span class="icon">🔑</span>
+      全链等号条件：\(x_1=x_2=\cdots=x_n\)。
+    </div>
+  </div>
+
+  <!-- 推论10：排序不等式 -->
+  <div class="card">
+    <div class="card-title">推论 10 — 排序不等式</div>
+    <p>设 \(a_1\leq\cdots\leq a_n\) 与 \(b_1\leq\cdots\leq b_n\)，任意置换 \(\sigma\) 下：</p>
+    <div class="formula-box">
+      \[\displaystyle \sum_{i=1}^n a_i b_{n+1-i} \;\leq\; \sum_{i=1}^n a_i b_{\sigma(i)} \;\leq\; \sum_{i=1}^n a_i b_i\]
+      <span class="note">逆序和 ≤ 乱序和 ≤ 顺序和</span>
+    </div>
+    <p style="margin:10px 0;"><strong>简记为：</strong>\(\displaystyle\sum a_i b_{n+1-i} \leq \sum a_i b_{\sigma(i)} \leq \sum a_i b_i\)</p>
+    <div class="callout amber">
+      <div class="callout-label">与柯西的联系</div>
+      柯西不等式可视为排序不等式的"二次型推论"：对单位向量拉伸后，内积在同方向时最大，正是顺序和最大的几何诠释。切比雪夫不等式是排序不等式的直接推论。
+    </div>
+  </div>
+
+  <!-- 推论11：Bessel不等式 -->
+  <div class="card">
+    <div class="card-title">推论 11 — Bessel 不等式（了解）</div>
+    <p>设 \(\boldsymbol{e}_1,\boldsymbol{e}_2,\ldots,\boldsymbol{e}_m\) 是正交单位向量，\(\boldsymbol{x}\) 是任意向量，则：</p>
+    <div class="formula-box">
+      \[\displaystyle \sum_{k=1}^m \langle \boldsymbol{x},\boldsymbol{e}_k\rangle^2 \;\leq\; \|\boldsymbol{x}\|^2\]
+    </div>
+    <p style="margin:10px 0;"><strong>简记为：</strong>\(\sum(\text{投影长度})^2 \leq \|\boldsymbol{x}\|^2\)（"正交投影总能量 ≤ 原向量能量"）</p>
+    <div class="callout blue">
+      <div class="callout-label">从柯西推导</div>
+      对向量 \(\boldsymbol{x}\) 与每个基向量 \(\boldsymbol{e}_k\) 分别应用柯西不等式，再利用正交性叠加，即可证明 Bessel 不等式。<br>
+      等号成立当 \(\boldsymbol{x}\) 在该组基张成的子空间内（Parseval 等式）。
+    </div>
+    <p style="font-size:13px;color:#6b7280;margin-top:10px;">这是傅里叶分析和量子力学的基础不等式。</p>
+  </div>
+
+  <!-- 推论12：积分形式 -->
+  <div class="card">
+    <div class="card-title">推论 12 — 积分柯西-施瓦茨不等式（了解）</div>
+    <div class="formula-box">
+      \[\displaystyle \left(\int_a^b f(x)g(x)\,dx\right)^{\!2} \;\leq\; \left(\int_a^b f^2(x)\,dx\right)\!\left(\int_a^b g^2(x)\,dx\right)\]
+    </div>
+    <p style="margin-top:10px;font-size:13px;color:#6b7280;">
+      将"求和"换成"积分"，是柯西不等式从有限维到无穷维函数空间的自然推广。等号成立当 \(f/g=\) 常数（函数成比例）时成立。高中微积分或大学分析课中会遇到。
+    </p>
+    <p style="margin:10px 0;"><strong>简记为：</strong>\(\displaystyle\left(\int fg\right)^2 \leq \left(\int f^2\right)\!\left(\int g^2\right)\)（<strong>"积分的平方 ≤ 平方积分的乘积"</strong>）</p>
+  </div>
+</div>
+
+<!-- ══ 初中生对照表 ══ -->
+<div class="section" id="s5-expand">
+  <div class="section-head" style="margin-top:12px;">
+    <div class="section-num" style="background:#d97706;">⧩</div>
+    <h2>初中生展开对照表：∑ 符号 → 二元/三元显式写法</h2>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📝 约定：n=2 即只有两项，n=3 即只有三项</div>
+    <p style="font-size:13px;color:#6b7280;margin-bottom:18px;">
+      带 ∑ 的公式看起来很简洁，但刚学时可能不习惯。下面把每条常用推论都先写出 ∑ 一般形式，再分两行列出 <strong>二元展开</strong> 和 <strong>三元展开</strong> 的显式写法，方便对照学习。
+    </p>
+
+    <!-- 标准柯西 -->
+    <div style="background:#f8f9fe;border:1px solid #e0e7f0;border-radius:10px;padding:16px 20px;margin-bottom:16px;">
+      <div style="font-weight:700;color:#1a3a5c;margin-bottom:10px;">📌 标准柯西不等式</div>
+      <div style="text-align:center;margin-bottom:12px;font-size:15px;">
+        \(\displaystyle\left(\sum_{i=1}^n a_i^2\right)\!\left(\sum_{i=1}^n b_i^2\right)\geq\!\left(\sum_{i=1}^n a_i b_i\right)^{\!2}\)
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div style="background:#fff;border-radius:8px;padding:10px 14px;border:1px solid #dbeafe;">
+          <div style="font-size:12px;color:#6b7280;margin-bottom:6px;">▸ 二元展开（n=2）</div>
+          <div style="font-size:14px;">\((a_1^2+a_2^2)(b_1^2+b_2^2)\geq(a_1b_1+a_2b_2)^2\)</div>
+        </div>
+        <div style="background:#fff;border-radius:8px;padding:10px 14px;border:1px solid #dbeafe;">
+          <div style="font-size:12px;color:#6b7280;margin-bottom:6px;">▸ 三元展开（n=3）</div>
+          <div style="font-size:14px;">\((a_1^2+a_2^2+a_3^2)(b_1^2+b_2^2+b_3^2)\geq(a_1b_1+a_2b_2+a_3b_3)^2\)</div>
+        </div>
+      </div>
+      <div style="margin-top:10px;font-size:13px;color:#2563a8;"><strong>简记（二元）：</strong>\((a^2+b^2)(c^2+d^2)\geq(ac+bd)^2\)</div>
+    </div>
+
+    <!-- 推论1：正数型柯西 -->
+    <div style="background:#f8f9fe;border:1px solid #e0e7f0;border-radius:10px;padding:16px 20px;margin-bottom:16px;">
+      <div style="font-weight:700;color:#1a3a5c;margin-bottom:10px;">📌 推论 1 — 正数型柯西（常用！）</div>
+      <div style="text-align:center;margin-bottom:12px;font-size:15px;">
+        \(\displaystyle\left(\sum_{i=1}^n a_i\right)\!\left(\sum_{i=1}^n b_i\right)\geq\left(\sum_{i=1}^n\sqrt{a_i b_i}\right)^{\!2}\)
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div style="background:#fff;border-radius:8px;padding:10px 14px;border:1px solid #dbeafe;">
+          <div style="font-size:12px;color:#6b7280;margin-bottom:6px;">▸ 二元展开（n=2）</div>
+          <div style="font-size:14px;">\((a_1+a_2)(b_1+b_2)\geq(\sqrt{a_1b_1}+\sqrt{a_2b_2})^2\)</div>
+        </div>
+        <div style="background:#fff;border-radius:8px;padding:10px 14px;border:1px solid #dbeafe;">
+          <div style="font-size:12px;color:#6b7280;margin-bottom:6px;">▸ 三元展开（n=3）</div>
+          <div style="font-size:14px;">\((a_1+a_2+a_3)(b_1+b_2+b_3)\geq(\sqrt{a_1b_1}+\sqrt{a_2b_2}+\sqrt{a_3b_3})^2\)</div>
+        </div>
+      </div>
+      <div style="margin-top:10px;font-size:13px;color:#2563a8;"><strong>简记（二元）：</strong>\((a+b)(c+d)\geq(\sqrt{ac}+\sqrt{bd})^2\)（"和之积 ≥ 根号积之和的平方"）</div>
+    </div>
+
+    <!-- 推论2：Titu引理 -->
+    <div style="background:#f8f9fe;border:1px solid #e0e7f0;border-radius:10px;padding:16px 20px;margin-bottom:16px;">
+      <div style="font-weight:700;color:#dc2626;margin-bottom:10px;">📌 推论 2 — Titu 引理（竞赛最高频！）⭐⭐⭐</div>
+      <div style="text-align:center;margin-bottom:12px;font-size:15px;">
+        \(\displaystyle\sum_{i=1}^n\frac{a_i^2}{b_i}\geq\frac{\left(\sum_{i=1}^n a_i\right)^2}{\sum_{i=1}^n b_i}\)
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div style="background:#fff;border-radius:8px;padding:10px 14px;border:1px solid #dbeafe;">
+          <div style="font-size:12px;color:#6b7280;margin-bottom:6px;">▸ 二元展开（n=2）</div>
+          <div style="font-size:14px;">\(\displaystyle\frac{a_1^2}{b_1}+\frac{a_2^2}{b_2}\geq\frac{(a_1+a_2)^2}{b_1+b_2}\)</div>
+        </div>
+        <div style="background:#fff;border-radius:8px;padding:10px 14px;border:1px solid #dbeafe;">
+          <div style="font-size:12px;color:#6b7280;margin-bottom:6px;">▸ 三元展开（n=3）</div>
+          <div style="font-size:14px;">\(\displaystyle\frac{a_1^2}{b_1}+\frac{a_2^2}{b_2}+\frac{a_3^2}{b_3}\geq\frac{(a_1+a_2+a_3)^2}{b_1+b_2+b_3}\)</div>
+        </div>
+      </div>
+      <div style="margin-top:10px;font-size:13px;color:#dc2626;"><strong>简记（二元）：</strong>\(\displaystyle\frac{a^2}{x}+\frac{b^2}{y}\geq\frac{(a+b)^2}{x+y}\)（"分子平方除以分母，之和 ≥ 分子之和平方除以分母之和"）</div>
+    </div>
+
+    <!-- 推论3：和的平方 ≤ n倍平方和 -->
+    <div style="background:#f8f9fe;border:1px solid #e0e7f0;border-radius:10px;padding:16px 20px;margin-bottom:16px;">
+      <div style="font-weight:700;color:#1a3a5c;margin-bottom:10px;">📌 推论 3 — 和的平方 ≤ n 倍平方和</div>
+      <div style="text-align:center;margin-bottom:12px;font-size:15px;">
+        \(\displaystyle n\sum_{i=1}^n a_i^2\geq\left(\sum_{i=1}^n a_i\right)^{\!2}\)
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div style="background:#fff;border-radius:8px;padding:10px 14px;border:1px solid #dbeafe;">
+          <div style="font-size:12px;color:#6b7280;margin-bottom:6px;">▸ 二元展开（n=2）</div>
+          <div style="font-size:14px;">\(2(a_1^2+a_2^2)\geq(a_1+a_2)^2\)</div>
+        </div>
+        <div style="background:#fff;border-radius:8px;padding:10px 14px;border:1px solid #dbeafe;">
+          <div style="font-size:12px;color:#6b7280;margin-bottom:6px;">▸ 三元展开（n=3）</div>
+          <div style="font-size:14px;">\(3(a_1^2+a_2^2+a_3^2)\geq(a_1+a_2+a_3)^2\)</div>
+        </div>
+      </div>
+      <div style="margin-top:10px;font-size:13px;color:#2563a8;"><strong>简记（二元）：</strong>\(2(a^2+b^2)\geq(a+b)^2\)（"二倍的平方和 ≥ 和的平方"）</div>
+    </div>
+
+    <!-- 推论4：HM ≤ AM -->
+    <div style="background:#f8f9fe;border:1px solid #e0e7f0;border-radius:10px;padding:16px 20px;margin-bottom:16px;">
+      <div style="font-weight:700;color:#1a3a5c;margin-bottom:10px;">📌 推论 4 — 调和均值 ≤ 算术均值（HM ≤ AM）</div>
+      <div style="text-align:center;margin-bottom:12px;font-size:15px;">
+        \(\displaystyle\left(\sum_{i=1}^n x_i\right)\!\left(\sum_{i=1}^n\frac{1}{x_i}\right)\geq n^2\)
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div style="background:#fff;border-radius:8px;padding:10px 14px;border:1px solid #dbeafe;">
+          <div style="font-size:12px;color:#6b7280;margin-bottom:6px;">▸ 二元展开（n=2）</div>
+          <div style="font-size:14px;">\(\displaystyle(x_1+x_2)\left(\frac{1}{x_1}+\frac{1}{x_2}\right)\geq 4\)</div>
+        </div>
+        <div style="background:#fff;border-radius:8px;padding:10px 14px;border:1px solid #dbeafe;">
+          <div style="font-size:12px;color:#6b7280;margin-bottom:6px;">▸ 三元展开（n=3）</div>
+          <div style="font-size:14px;">\(\displaystyle(x_1+x_2+x_3)\left(\frac{1}{x_1}+\frac{1}{x_2}+\frac{1}{x_3}\right)\geq 9\)</div>
+        </div>
+      </div>
+      <div style="margin-top:10px;font-size:13px;color:#2563a8;"><strong>简记（二元）：</strong>\(\displaystyle(a+b)\left(\frac{1}{a}+\frac{1}{b}\right)\geq 4\)，即 \(ab\leq\frac{(a+b)^2}{4}\)</div>
+    </div>
+
+    <!-- 推论7：闵可夫斯基 -->
+    <div style="background:#f8f9fe;border:1px solid #e0e7f0;border-radius:10px;padding:16px 20px;margin-bottom:16px;">
+      <div style="font-weight:700;color:#dc2626;margin-bottom:10px;">📌 推论 7 — 闵可夫斯基不等式（三角不等式的推广）⭐⭐</div>
+      <div style="text-align:center;margin-bottom:12px;font-size:15px;">
+        \(\displaystyle\sqrt{\sum_{i=1}^n(a_i+b_i)^2}\leq\sqrt{\sum_{i=1}^n a_i^2}+\sqrt{\sum_{i=1}^n b_i^2}\)
+      </div>
+      <div style="background:#fff;border-radius:8px;padding:10px 14px;border:1px solid #dbeafe;margin-bottom:10px;">
+        <div style="font-size:12px;color:#6b7280;margin-bottom:6px;">▸ 二元展开（n=2）</div>
+        <div style="font-size:14px;">\(\sqrt{(a_1+b_1)^2+(a_2+b_2)^2}\leq\sqrt{a_1^2+a_2^2}+\sqrt{b_1^2+b_2^2}\)</div>
+      </div>
+      <div style="background:#fff;border-radius:8px;padding:10px 14px;border:1px solid #dbeafe;">
+        <div style="font-size:12px;color:#6b7280;margin-bottom:6px;">▸ 三元展开（n=3）</div>
+        <div style="font-size:14px;">\(\sqrt{(a_1+b_1)^2+(a_2+b_2)^2+(a_3+b_3)^2}\leq\sqrt{a_1^2+a_2^2+a_3^2}+\sqrt{b_1^2+b_2^2+b_3^2}\)</div>
+      </div>
+      <div style="margin-top:10px;font-size:13px;color:#dc2626;"><strong>简记（二元）：</strong>\(\sqrt{(a+c)^2+(b+d)^2}\leq\sqrt{a^2+b^2}+\sqrt{c^2+d^2}\)（"和向量模长 ≤ 模长之和"）</div>
+    </div>
+
+    <!-- 推论8：切比雪夫 -->
+    <div style="background:#f8f9fe;border:1px solid #e0e7f0;border-radius:10px;padding:16px 20px;margin-bottom:16px;">
+      <div style="font-weight:700;color:#1a3a5c;margin-bottom:10px;">📌 推论 8 — 切比雪夫求和不等式</div>
+      <div style="text-align:center;margin-bottom:12px;font-size:15px;">
+        \(\displaystyle n\sum_{i=1}^n a_i b_i\geq\left(\sum_{i=1}^n a_i\right)\!\left(\sum_{i=1}^n b_i\right)\)（同序时）
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div style="background:#fff;border-radius:8px;padding:10px 14px;border:1px solid #dbeafe;">
+          <div style="font-size:12px;color:#6b7280;margin-bottom:6px;">▸ 二元展开（n=2）</div>
+          <div style="font-size:14px;">\(2(a_1b_1+a_2b_2)\geq(a_1+a_2)(b_1+b_2)\)</div>
+          <div style="margin-top:6px;font-size:13px;color:#dc2626;"><strong>特例：</strong>若 \(a_1\leq a_2,\;b_1\leq b_2\)，则 \(a_1b_1+a_2b_2\geq a_1b_2+a_2b_1\)</div>
+        </div>
+        <div style="background:#fff;border-radius:8px;padding:10px 14px;border:1px solid #dbeafe;">
+          <div style="font-size:12px;color:#6b7280;margin-bottom:6px;">▸ 三元展开（n=3）</div>
+          <div style="font-size:14px;">\(3(a_1b_1+a_2b_2+a_3b_3)\geq(a_1+a_2+a_3)(b_1+b_2+b_3)\)</div>
+        </div>
+      </div>
+      <div style="margin-top:10px;font-size:13px;color:#2563a8;"><strong>简记（二元）：</strong>\(2(a_1b_1+a_2b_2)\geq(a_1+a_2)(b_1+b_2)\)，特例：\(a_1b_1+a_2b_2\geq a_1b_2+a_2b_1\)（"同序乘积和更大"）</div>
+    </div>
+
+    <!-- 结论3：AM ≤ QM -->
+    <div style="background:#f8f9fe;border:1px solid #e0e7f0;border-radius:10px;padding:16px 20px;margin-bottom:16px;">
+      <div style="font-weight:700;color:#1a3a5c;margin-bottom:10px;">📌 结论 3 — 算术均值 ≤ 平方均值（AM ≤ QM）</div>
+      <div style="text-align:center;margin-bottom:12px;font-size:15px;">
+        \(\displaystyle\frac{\sum_{i=1}^n x_i}{n}\leq\sqrt{\frac{\sum_{i=1}^n x_i^2}{n}}\)
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div style="background:#fff;border-radius:8px;padding:10px 14px;border:1px solid #dbeafe;">
+          <div style="font-size:12px;color:#6b7280;margin-bottom:6px;">▸ 二元展开（n=2）</div>
+          <div style="font-size:14px;">\(\displaystyle\frac{x_1+x_2}{2}\leq\sqrt{\frac{x_1^2+x_2^2}{2}}\)</div>
+        </div>
+        <div style="background:#fff;border-radius:8px;padding:10px 14px;border:1px solid #dbeafe;">
+          <div style="font-size:12px;color:#6b7280;margin-bottom:6px;">▸ 三元展开（n=3）</div>
+          <div style="font-size:14px;">\(\displaystyle\frac{x_1+x_2+x_3}{3}\leq\sqrt{\frac{x_1^2+x_2^2+x_3^2}{3}}\)</div>
+        </div>
+      </div>
+      <div style="margin-top:10px;font-size:13px;color:#2563a8;"><strong>简记（二元）：</strong>\(\displaystyle\frac{a+b}{2}\leq\sqrt{\frac{a^2+b^2}{2}}\)</div>
+    </div>
+
+    <!-- 结论11：根号和上界 -->
+    <div style="background:#f8f9fe;border:1px solid #e0e7f0;border-radius:10px;padding:16px 20px;margin-bottom:16px;">
+      <div style="font-weight:700;color:#1a3a5c;margin-bottom:10px;">📌 结论 11 — 平方根和的上界</div>
+      <div style="text-align:center;margin-bottom:12px;font-size:15px;">
+        \(\displaystyle\sum_{i=1}^n\sqrt{a_i}\leq\sqrt{n\sum_{i=1}^n a_i}\)
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div style="background:#fff;border-radius:8px;padding:10px 14px;border:1px solid #dbeafe;">
+          <div style="font-size:12px;color:#6b7280;margin-bottom:6px;">▸ 二元展开（n=2）</div>
+          <div style="font-size:14px;">\(\sqrt{a_1}+\sqrt{a_2}\leq\sqrt{2(a_1+a_2)}\)</div>
+        </div>
+        <div style="background:#fff;border-radius:8px;padding:10px 14px;border:1px solid #dbeafe;">
+          <div style="font-size:12px;color:#6b7280;margin-bottom:6px;">▸ 三元展开（n=3）</div>
+          <div style="font-size:14px;">\(\sqrt{a_1}+\sqrt{a_2}+\sqrt{a_3}\leq\sqrt{3(a_1+a_2+a_3)}\)</div>
+        </div>
+      </div>
+      <div style="margin-top:10px;font-size:13px;color:#2563a8;"><strong>简记（二元）：</strong>\(\sqrt{a}+\sqrt{b}\leq\sqrt{2(a+b)}\)</div>
+    </div>
+
+    <!-- 结论13：倒数和 -->
+    <div style="background:#f8f9fe;border:1px solid #e0e7f0;border-radius:10px;padding:16px 20px;margin-bottom:16px;">
+      <div style="font-weight:700;color:#1a3a5c;margin-bottom:10px;">📌 结论 13 — Sedrakyan 倒数和</div>
+      <div style="text-align:center;margin-bottom:12px;font-size:15px;">
+        \(\displaystyle\sum_{i=1}^n\frac{1}{a_i}\geq\frac{n^2}{\sum_{i=1}^n a_i}\)
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div style="background:#fff;border-radius:8px;padding:10px 14px;border:1px solid #dbeafe;">
+          <div style="font-size:12px;color:#6b7280;margin-bottom:6px;">▸ 二元展开（n=2）</div>
+          <div style="font-size:14px;">\(\displaystyle\frac{1}{a_1}+\frac{1}{a_2}\geq\frac{4}{a_1+a_2}\)</div>
+        </div>
+        <div style="background:#fff;border-radius:8px;padding:10px 14px;border:1px solid #dbeafe;">
+          <div style="font-size:12px;color:#6b7280;margin-bottom:6px;">▸ 三元展开（n=3）</div>
+          <div style="font-size:14px;">\(\displaystyle\frac{1}{a_1}+\frac{1}{a_2}+\frac{1}{a_3}\geq\frac{9}{a_1+a_2+a_3}\)</div>
+        </div>
+      </div>
+      <div style="margin-top:10px;font-size:13px;color:#2563a8;"><strong>简记（二元）：</strong>\(\displaystyle\frac{1}{a}+\frac{1}{b}\geq\frac{4}{a+b}\)</div>
+    </div>
+
+    <!-- 结论14：乘积分离 -->
+    <div style="background:#f8f9fe;border:1px solid #e0e7f0;border-radius:10px;padding:16px 20px;margin-bottom:16px;">
+      <div style="font-weight:700;color:#1a3a5c;margin-bottom:10px;">📌 结论 14 — 乘积分离不等式</div>
+      <div style="text-align:center;margin-bottom:12px;font-size:15px;">
+        \(\displaystyle\left(\sum_{i=1}^n a_i\right)^{\!2}\leq n\sum_{i=1}^n a_i^2\)
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div style="background:#fff;border-radius:8px;padding:10px 14px;border:1px solid #dbeafe;">
+          <div style="font-size:12px;color:#6b7280;margin-bottom:6px;">▸ 二元展开（n=2）</div>
+          <div style="font-size:14px;">\((a_1+a_2)^2\leq 2(a_1^2+a_2^2)\)</div>
+        </div>
+        <div style="background:#fff;border-radius:8px;padding:10px 14px;border:1px solid #dbeafe;">
+          <div style="font-size:12px;color:#6b7280;margin-bottom:6px;">▸ 三元展开（n=3）</div>
+          <div style="font-size:14px;">\((a_1+a_2+a_3)^2\leq 3(a_1^2+a_2^2+a_3^2)\)</div>
+        </div>
+      </div>
+      <div style="margin-top:10px;font-size:13px;color:#2563a8;"><strong>简记（二元）：</strong>\((a+b)^2\leq 2(a^2+b^2)\)</div>
+    </div>
+
+    <div class="callout green" style="margin-top:20px;">
+      <div class="callout-label">💡 使用建议</div>
+      <strong>先看二元/三元展开</strong>，理解"到底在算什么"；再回头读 ∑ 符号形式，掌握统一写法。<br>
+      考试时用 ∑ 符号写更简洁；但初学时把它展开成具体两项或三项来算，更容易上手。
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ══ S6: 推导结论（扩充版）══ -->
+<div class="section" id="s6">
+  <div class="section-head">
+    <div class="section-num">6</div>
+    <h2>由柯西不等式推导的十五条重要结论</h2>
+  </div>
+
+  <div class="theorem-grid">
+    <div class="theorem-card">
+      <div class="tc-head">🔷 结论 1：AM-GM 不等式</div>
+      <div class="tc-formula">\[\frac{a+b}{2} \geq \sqrt{ab},\quad a,b\geq 0\]</div>
+      <div class="tc-formula" style="font-size:13px;">简记：\(\dfrac{a+b}{2}\geq\sqrt{ab}\)</div>
+      <div class="tc-note">取柯西中 \(\boldsymbol{a}=(\sqrt{a},\sqrt{b}),\,\boldsymbol{b}=(\sqrt{b},\sqrt{a})\)，得 \((a+b)^2\geq 4ab\)，开方即得。等号：\(a=b\)。</div>
+    </div>
+
+    <div class="theorem-card">
+      <div class="tc-head">🔷 结论 2：n 元 AM-GM</div>
+      <div class="tc-formula">\[\frac{a_1+\cdots+a_n}{n} \geq \sqrt[n]{a_1\cdots a_n}\]</div>
+      <div class="tc-formula" style="font-size:13px;color:#2563a8;font-weight:600;">简记：\(\dfrac{\sum a_i}{n} \geq \sqrt[n]{\prod a_i}\)（"算术平均 ≥ 几何平均"）</div>
+      <div class="tc-note">用 \(n-1\) 次二元 AM-GM（每次折半）迭代推导；也可从加权柯西出发，取 \(w_i=\tfrac{1}{n}\)。等号：所有 \(a_i\) 相等。</div>
+    </div>
+
+    <div class="theorem-card">
+      <div class="tc-head">🔷 结论 3：AM ≤ QM</div>
+      <div class="tc-formula">\[\frac{\sum x_i}{n}\leq\sqrt{\frac{\sum x_i^2}{n}}\]</div>
+      <div class="tc-formula" style="font-size:13px;color:#2563a8;font-weight:600;">简记：\(\dfrac{\sum x_i}{n} \leq \sqrt{\dfrac{\sum x_i^2}{n}}\)（"均值 ≤ 均方根"）</div>
+      <div class="tc-note">由推论 3（柯西中令所有 \(b_i=1\)）得 \((\sum x_i)^2\leq n\sum x_i^2\)，两边除以 \(n^2\) 再开方即得。等号：所有 \(x_i\) 相等。</div>
+    </div>
+
+    <div class="theorem-card">
+      <div class="tc-head">🔷 结论 4：HM ≤ AM</div>
+      <div class="tc-formula">\[\frac{n}{\sum \frac{1}{x_i}} \leq \frac{\sum x_i}{n}\]</div>
+      <div class="tc-formula" style="font-size:13px;color:#2563a8;font-weight:600;">简记：\(\dfrac{n}{\sum\frac{1}{x_i}} \leq \dfrac{\sum x_i}{n}\)（"调和平均 ≤ 算术平均"）</div>
+      <div class="tc-note">由推论 4（调和-算术柯西）\((\sum x_i)(\sum\frac{1}{x_i})\geq n^2\)，代入即得。等号：所有 \(x_i\) 相等。</div>
+    </div>
+
+    <div class="theorem-card">
+      <div class="tc-head">🔷 结论 5：完整均值链</div>
+      <div class="tc-formula">\[\text{HM}\leq\text{GM}\leq\text{AM}\leq\text{QM}\]</div>
+      <div class="tc-formula" style="font-size:13px;color:#2563a8;font-weight:600;">简记：调和 ≤ 几何 ≤ 算术 ≤ 平方（"均值四层链"）</div>
+      <div class="tc-note">HM≤GM 由 AM-GM 对倒数应用；GM≤AM 即 AM-GM；AM≤QM 由柯西。四者等号均在所有值相等时成立。</div>
+    </div>
+
+    <div class="theorem-card">
+      <div class="tc-head">🔷 结论 6：三角不等式（平面）</div>
+      <div class="tc-formula">\[|\boldsymbol{u}+\boldsymbol{v}|\leq|\boldsymbol{u}|+|\boldsymbol{v}|\]</div>
+      <div class="tc-formula" style="font-size:13px;color:#2563a8;font-weight:600;">简记：两边之和 ≥ 第三边（"直线最短"）</div>
+      <div class="tc-note">由闵可夫斯基不等式（\(n=2\)）直接得到。等号：\(\boldsymbol{u}\) 与 \(\boldsymbol{v}\) 同向（或其一为零）。</div>
+    </div>
+
+    <div class="theorem-card">
+      <div class="tc-head">🔷 结论 7：绝对值三角不等式</div>
+      <div class="tc-formula">\[|a+b|\leq|a|+|b|\]</div>
+      <div class="tc-formula" style="font-size:13px;color:#2563a8;font-weight:600;">简记：\(|a+b|\leq|a|+|b|\)（"和的绝对值 ≤ 绝对值的和"）</div>
+      <div class="tc-note">闵可夫斯基在 \(n=1\)（一维）时的特殊情形：\(\sqrt{(a+b)^2}\leq\sqrt{a^2}+\sqrt{b^2}\)，即 \(|a+b|\leq|a|+|b|\)。</div>
+    </div>
+
+    <div class="theorem-card">
+      <div class="tc-head">🔷 结论 8：夹角余弦的合法性</div>
+      <div class="tc-formula">\[\left|\frac{\boldsymbol{u}\cdot\boldsymbol{v}}{|\boldsymbol{u}||\boldsymbol{v}|}\right|\leq 1\]</div>
+      <div class="tc-formula" style="font-size:13px;color:#2563a8;font-weight:600;">简记：\(|\cos\theta|\leq 1\)（"夹角余弦必在 [-1,1] 内"）</div>
+      <div class="tc-note">由柯西 \(|\boldsymbol{u}\cdot\boldsymbol{v}|\leq|\boldsymbol{u}||\boldsymbol{v}|\)，保证 \(\cos\theta\) 的定义有意义（值在 \([-1,1]\) 内）。</div>
+    </div>
+
+    <div class="theorem-card">
+      <div class="tc-head">🔷 结论 9：\(a/b+b/a\geq 2\)</div>
+      <div class="tc-formula">\[\frac{a}{b}+\frac{b}{a}\geq 2,\quad a,b>0\]</div>
+      <div class="tc-formula" style="font-size:13px;color:#2563a8;font-weight:600;">简记：正数与其倒数之和 ≥ 2（"正数+倒数≥2"）</div>
+      <div class="tc-note">AM-GM 的特例；也可由柯西令 \(\boldsymbol{a}=(\sqrt{a/b},\sqrt{b/a}),\,\boldsymbol{b}=(1,1)\)，得 \((a/b+b/a)\cdot 2\geq 4\)。等号：\(a=b\)。</div>
+    </div>
+
+    <div class="theorem-card">
+      <div class="tc-head">🔷 结论 10：Titu 型条件极值</div>
+      <div class="tc-formula">\[\frac{x^2}{a}+\frac{y^2}{b}+\frac{z^2}{c}\geq\frac{(x+y+z)^2}{a+b+c}\]</div>
+      <div class="tc-formula" style="font-size:13px;color:#2563a8;font-weight:600;">简记：\(\sum\dfrac{x_i^2}{a_i} \geq \dfrac{(\sum x_i)^2}{\sum a_i}\)（"分式平方和 ≥ 总和平方除以总和"）</div>
+      <div class="tc-note">Titu 引理的直接应用。当 \(x+y+z=1\) 时最小值为 \(\dfrac{1}{a+b+c}\)，是条件分式极值的标准套路。</div>
+    </div>
+
+    <div class="theorem-card">
+      <div class="tc-head">🔷 结论 11：平方根和的上界</div>
+      <div class="tc-formula">\[\sqrt{a_1}+\cdots+\sqrt{a_n}\leq\sqrt{n(a_1+\cdots+a_n)}\]</div>
+      <div class="tc-formula" style="font-size:13px;color:#2563a8;font-weight:600;">简记：\(\sum\sqrt{a_i} \leq \sqrt{n\sum a_i}\)（"根号之和 ≤ n倍总和的平方根"）</div>
+      <div class="tc-note">令柯西中 \(b_i=1\)，对 \(a_i=\sqrt{x_i}\) 应用，得 \((\sum\sqrt{x_i})^2\leq n\sum x_i\)，开方即得。</div>
+    </div>
+
+    <div class="theorem-card">
+      <div class="tc-head">🔷 结论 12：切比雪夫求和下界</div>
+      <div class="tc-formula">\[n\sum a_i b_i\geq\left(\sum a_i\right)\!\left(\sum b_i\right)\]</div>
+      <div class="tc-formula" style="font-size:13px;color:#2563a8;font-weight:600;">简记：\(n(a_1b_1+\cdots+a_nb_n)\geq(a_1+\cdots+a_n)(b_1+\cdots+b_n)\)</div>
+      <div class="tc-formula" style="font-size:12px;color:#dc2626;font-weight:600;margin-top:4px;">特例（n=2，设 \(a_1\!\leq\!a_2,\ b_1\!\leq\!b_2\)）：\(a_1b_1+a_2b_2 \geq a_1b_2+a_2b_1\)</div>
+      <div class="tc-note">同序排列时成立（见推论 8），本身可由柯西的"差乘和非负"技巧推导。常用于估计乘积之和的下界。</div>
+    </div>
+
+    <div class="theorem-card">
+      <div class="tc-head">🔷 结论 13：Sedrakyan 倒数和</div>
+      <div class="tc-formula">\[\sum\frac{1}{a_i}\geq\frac{n^2}{\sum a_i}\]</div>
+      <div class="tc-formula" style="font-size:13px;color:#2563a8;font-weight:600;">简记：\(\sum\dfrac{1}{a_i} \geq \dfrac{n^2}{\sum a_i}\)（"倒数之和 ≥ 项数平方除以总和"）</div>
+      <div class="tc-note">令 Titu 引理中 \(a_i=1,\,b_i=\) 各项，得 \(\sum\frac{1^2}{a_i}\geq\frac{n^2}{\sum a_i}\)，是倒数和问题的标准结论。</div>
+    </div>
+
+    <div class="theorem-card">
+      <div class="tc-head">🔷 结论 14：乘积分离不等式</div>
+      <div class="tc-formula">\[(a_1+\cdots+a_n)^2\leq n(a_1^2+\cdots+a_n^2)\]</div>
+      <div class="tc-formula" style="font-size:13px;color:#2563a8;font-weight:600;">简记：\((\sum a_i)^2 \leq n\sum a_i^2\)（"和的平方 ≤ n倍平方和"）</div>
+      <div class="tc-note">推论 3 的等价写法，常用于"将乘积拆成平方和"的估计，是统计中均方误差分析的基础。</div>
+    </div>
+
+    <div class="theorem-card">
+      <div class="tc-head">🔷 结论 15：Bessel 型投影不等式</div>
+      <div class="tc-formula">\[\sum_{k=1}^m (\boldsymbol{x}\cdot\hat{\boldsymbol{e}}_k)^2 \leq|\boldsymbol{x}|^2\]</div>
+      <div class="tc-formula" style="font-size:13px;color:#2563a8;font-weight:600;">简记：\(\sum(\text{投影})^2 \leq |\boldsymbol{x}|^2\)（"投影平方和 ≤ 原模平方"）</div>
+      <div class="tc-note">任意向量在一组正交单位基上投影的平方和不超过其模平方；正交展开越多越精确，等号在完备基时成立（Parseval 等式）。</div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:24px;">
+    <div class="card-title">📊 结论全景汇总表</div>
+    <div style="overflow:hidden;">
+      <table class="summary-table">
+        <thead>
+          <tr><th>#</th><th>结论名称</th><th>核心推导路径</th><th>常见题型</th><th>难度</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td>AM-GM（二元）</td><td>令特殊向量代入</td><td>乘积、和的极值</td><td><span class="badge badge-green">易</span></td></tr>
+          <tr><td>2</td><td>AM-GM（n元）</td><td>迭代二元AM-GM</td><td>多元对称极值</td><td><span class="badge badge-amber">中</span></td></tr>
+          <tr><td>3</td><td>AM ≤ QM</td><td>\(b_i=1\) 柯西</td><td>平均与方差</td><td><span class="badge badge-green">易</span></td></tr>
+          <tr><td>4</td><td>HM ≤ AM</td><td>互倒代入柯西</td><td>倒数和问题</td><td><span class="badge badge-amber">中</span></td></tr>
+          <tr><td>5</td><td>均值链 HM≤GM≤AM≤QM</td><td>组合以上各步</td><td>比较均值大小</td><td><span class="badge badge-amber">中</span></td></tr>
+          <tr><td>6-7</td><td>三角不等式（向量/绝对值）</td><td>闵可夫斯基</td><td>距离、绝对值</td><td><span class="badge badge-green">易</span></td></tr>
+          <tr><td>8</td><td>夹角余弦合法性</td><td>柯西直接</td><td>向量几何</td><td><span class="badge badge-green">易</span></td></tr>
+          <tr><td>9</td><td>\(a/b+b/a\geq 2\)</td><td>AM-GM推论</td><td>基础不等式</td><td><span class="badge badge-green">易</span></td></tr>
+          <tr><td>10</td><td>Titu 条件极值</td><td>Titu引理（推论2）</td><td>分式极值</td><td><span class="badge badge-amber">中</span></td></tr>
+          <tr><td>11</td><td>平方根和上界</td><td>\(b_i=1\) 柯西开根号</td><td>根式估计</td><td><span class="badge badge-amber">中</span></td></tr>
+          <tr><td>12</td><td>切比雪夫求和</td><td>差乘和技巧</td><td>同序乘积</td><td><span class="badge badge-amber">中</span></td></tr>
+          <tr><td>13</td><td>Sedrakyan 倒数和</td><td>Titu令\(a_i=1\)</td><td>倒数下界</td><td><span class="badge badge-amber">中</span></td></tr>
+          <tr><td>14</td><td>乘积分离</td><td>推论3改写</td><td>平方和估计</td><td><span class="badge badge-green">易</span></td></tr>
+          <tr><td>15</td><td>Bessel 投影</td><td>正交柯西叠加</td><td>傅里叶/线代</td><td><span class="badge badge-red">难</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 关系图 -->
+  <div class="card" style="margin-top:20px;">
+    <div class="card-title">🗺️ 柯西不等式推导关系图</div>
+    <div style="background:#f8f9fe;border-radius:10px;padding:20px;text-align:center;font-size:13px;line-height:2.2;">
+      <div style="display:inline-block;background:#1a3a5c;color:#fff;border-radius:8px;padding:8px 24px;font-weight:700;font-size:15px;">柯西-施瓦茨不等式</div>
+      <br>
+      <span style="color:#888;">↓ 令 \(b_i=1\)</span> &nbsp;&nbsp;&nbsp;
+      <span style="color:#888;">↓ 代入 \(\sqrt{a},\sqrt{b}\)</span> &nbsp;&nbsp;&nbsp;
+      <span style="color:#888;">↓ 代入 \(\frac{a_i}{\sqrt{b_i}}\)</span> &nbsp;&nbsp;&nbsp;
+      <span style="color:#888;">↓ 加权推广</span>
+      <br>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:10px;">
+        <div style="background:#dbeafe;border-radius:6px;padding:8px;">AM ≤ QM<br><small>结论3</small></div>
+        <div style="background:#dcfce7;border-radius:6px;padding:8px;">AM-GM<br><small>结论1,2</small></div>
+        <div style="background:#fef3c7;border-radius:6px;padding:8px;">Titu引理<br><small>推论2→结论10,13</small></div>
+        <div style="background:#f5f3ff;border-radius:6px;padding:8px;">加权柯西<br><small>推论5→Bessel</small></div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px;">
+        <div style="background:#fee2e2;border-radius:6px;padding:8px;">闵可夫斯基不等式<br><small>→三角不等式 结论6,7</small></div>
+        <div style="background:#e0f2fe;border-radius:6px;padding:8px;">HM ≤ AM<br><small>结论4→均值链 结论5</small></div>
+        <div style="background:#fdf4ff;border-radius:6px;padding:8px;">切比雪夫<br><small>推论8→结论12</small></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ S7: 例题 ══ -->
+<div class="section" id="s7">
+  <div class="section-head">
+    <div class="section-num">7</div>
+    <h2>经典例题精讲</h2>
+  </div>
+
+  <!-- 例题1 -->
+  <div class="example">
+    <div class="example-head">例题 1 ⭐ — 基础：直接应用</div>
+    <div class="example-body">
+      <div class="example-problem">
+        已知实数 \(a,b\) 满足 \(a^2+b^2=1\)，求 \(2a+3b\) 的最大值。
+      </div>
+      <div class="example-solution">
+        <p><strong>解：</strong>由柯西不等式（二元形式）：</p>
+        <p class="key">\((a^2+b^2)(2^2+3^2) \geq (2a+3b)^2\)</p>
+        <p>代入 \(a^2+b^2=1\)：\(1\times 13 \geq (2a+3b)^2\)</p>
+        <p>故 <span class="key">\((2a+3b)^2\leq 13\)，即 \(-\sqrt{13}\leq 2a+3b\leq\sqrt{13}\)</span></p>
+        <p>等号条件：\(\dfrac{a}{2}=\dfrac{b}{3}\) 且 \(a^2+b^2=1\)，解得 \(a=\dfrac{2}{\sqrt{13}},\ b=\dfrac{3}{\sqrt{13}}\) 时取最大值。</p>
+      </div>
+      <div class="example-answer">✓ 最大值 \(=\sqrt{13}\approx 3.606\)</div>
+    </div>
+  </div>
+
+  <!-- 例题2 -->
+  <div class="example">
+    <div class="example-head">例题 2 ⭐⭐ — Titu 引理：分式求最小值</div>
+    <div class="example-body">
+      <div class="example-problem">
+        已知正实数 \(x,y,z\) 满足 \(x+y+z=1\)，求 \(\dfrac{x^2}{x+y}+\dfrac{y^2}{y+z}+\dfrac{z^2}{z+x}\) 的最小值。
+      </div>
+      <div class="example-solution">
+        <p><strong>解：</strong>使用 Titu 引理：</p>
+        <p class="key">\(\displaystyle\frac{x^2}{x+y}+\frac{y^2}{y+z}+\frac{z^2}{z+x} \geq \frac{(x+y+z)^2}{(x+y)+(y+z)+(z+x)}\)</p>
+        <p>分子：\((x+y+z)^2=1\)　分母：\(2(x+y+z)=2\)</p>
+        <p>故结果 <span class="key">\(\geq\dfrac{1}{2}\)</span></p>
+        <p>等号条件：\(\dfrac{x}{x+y}=\dfrac{y}{y+z}=\dfrac{z}{z+x}\)，解得 \(x=y=z=\dfrac{1}{3}\) 时成立。</p>
+      </div>
+      <div class="example-answer">✓ 最小值 \(=\dfrac{1}{2}\)</div>
+    </div>
+  </div>
+
+  <!-- 例题3 -->
+  <div class="example">
+    <div class="example-head">例题 3 ⭐⭐ — 三元最大值</div>
+    <div class="example-body">
+      <div class="example-problem">
+        已知 \(a^2+4b^2+9c^2=1\)，求 \(a+2b+3c\) 的最大值。
+      </div>
+      <div class="example-solution">
+        <p><strong>解：</strong>注意 \(a^2+(2b)^2+(3c)^2=1\)，令 \(p=a,\ q=2b,\ r=3c\)，由柯西：</p>
+        <p class="key">\((p^2+q^2+r^2)(1^2+1^2+1^2) \geq (p+q+r)^2\)</p>
+        <p>即 \(1\times 3\geq(a+2b+3c)^2\)，故 <span class="key">\(a+2b+3c\leq\sqrt{3}\)</span></p>
+        <p>等号条件：\(a=2b=3c=\dfrac{1}{\sqrt{3}}\)，即 \(a=\dfrac{1}{\sqrt{3}},\ b=\dfrac{1}{2\sqrt{3}},\ c=\dfrac{1}{3\sqrt{3}}\)。</p>
+      </div>
+      <div class="example-answer">✓ 最大值 \(=\sqrt{3}\)</div>
+    </div>
+  </div>
+
+  <!-- 例题4 -->
+  <div class="example">
+    <div class="example-head">例题 4 ⭐⭐⭐ — 倒数和证明</div>
+    <div class="example-body">
+      <div class="example-problem">
+        已知正实数 \(a,b\) 满足 \(a+b=1\)，证明：\(\dfrac{1}{a}+\dfrac{4}{b}\geq 9\)。
+      </div>
+      <div class="example-solution">
+        <p><strong>方法一（Titu 引理）：</strong></p>
+        <p class="key">\(\dfrac{1^2}{a}+\dfrac{2^2}{b} \geq \dfrac{(1+2)^2}{a+b}=\dfrac{9}{1}=9\) ✓</p>
+        <p style="margin-top:12px;"><strong>方法二（正数型柯西）：</strong></p>
+        <p>\((a+b)\!\left(\dfrac{1}{a}+\dfrac{4}{b}\right) \geq \left(\sqrt{a\cdot\dfrac{1}{a}}+\sqrt{b\cdot\dfrac{4}{b}}\right)^2=(1+2)^2=9\)</p>
+        <p>由 \(a+b=1\) 得 \(\dfrac{1}{a}+\dfrac{4}{b}\geq 9\) ✓</p>
+        <p style="margin-top:12px;"><strong>等号条件：</strong>\(a=\dfrac{1}{3},\ b=\dfrac{2}{3}\) 时等号成立。</p>
+      </div>
+      <div class="example-answer">✓ 命题得证，最小值为 9（\(a=\dfrac{1}{3},\ b=\dfrac{2}{3}\) 时取到）</div>
+    </div>
+  </div>
+
+  <!-- 例题5 -->
+  <div class="example">
+    <div class="example-head">例题 5 ⭐⭐⭐ — 综合应用</div>
+    <div class="example-body">
+      <div class="example-problem">
+        正实数 \(x,y,z\) 满足 \(xy+yz+zx=1\)，求 \(\dfrac{x}{1+x^2}+\dfrac{y}{1+y^2}+\dfrac{z}{1+z^2}\) 的最大值。
+      </div>
+      <div class="example-solution">
+        <p><strong>第一步：巧用条件变形。</strong>由 \(xy+yz+zx=1\)，有：</p>
+        <p>\(1+x^2=(xy+yz+zx)+x^2=(x+y)(x+z)\)</p>
+        <p>同理 \(1+y^2=(y+z)(y+x)\)，\(1+z^2=(z+x)(z+y)\)</p>
+        <p style="margin:12px 0;">故原式 <span class="key">\(=\displaystyle\sum_{\text{cyc}}\frac{x}{(x+y)(x+z)}\)</span></p>
+        <p><strong>第二步：由 AM-GM 不等式，</strong>对正数 \(x,y,z\)：</p>
+        <p>\(\dfrac{x}{(x+y)(x+z)}\leq\dfrac{1}{2}\cdot\dfrac{x}{(x+y)(x+z)}\)？需要更强的放缩。</p>
+        <p style="margin-top:10px;"><strong>正确路径——化为 Titu 可用的形式：</strong></p>
+        <p>由对称性猜想最大值在 \(x=y=z\) 处取到。代入 \(3x^2=1\)，得 <span class="key">\(x=\dfrac{1}{\sqrt{3}}\)</span>。</p>
+        <p style="margin:12px 0;">此时每项 \(=\dfrac{3}{4\sqrt{3}}\)，三项和 <span class="key">\(=\dfrac{3\sqrt{3}}{4}\)</span>。</p>
+        <p><strong>第三步：严谨证明上界。</strong>使用以下标准结论（可由排序不等式推出）：</p>
+        <p class="key">\(\displaystyle\sum_{\text{cyc}}\frac{x}{(x+y)(x+z)}=\frac{2(xy+yz+zx)}{(x+y)(y+z)(z+x)}=\frac{2}{(x+y)(y+z)(z+x)}\)</p>
+        <p>再由 AM-GM：\((x+y)(y+z)(z+x)\geq 8xyz\) 以及 \(xy+yz+zx=1\geq 3\sqrt[3]{x^2y^2z^2}\)...</p>
+        <p style="margin-top:8px;font-size:13px;color:#6b7280;"><em>（完整推导需借助 \(x+y+z\geq\sqrt{3(xy+yz+zx)}=\sqrt{3}\) 等中间步骤，属于竞赛技巧。初中生可先掌握"等号点验证 + 对称猜极值"的解题直觉。）</em></p>
+      </div>
+      <div class="example-answer">✓ 最大值 \(=\dfrac{3\sqrt{3}}{4}\)（当 \(x=y=z=\dfrac{1}{\sqrt{3}}\) 时取得）</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ S8: 技巧 ══ -->
+<div class="section" id="s8">
+  <div class="section-head">
+    <div class="section-num">8</div>
+    <h2>解题技巧总结</h2>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🗺️ 使用柯西不等式的判断流程</div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-body">
+          <p><strong>识别目标：</strong>问题是求"某表达式的最大值/最小值"还是"证明不等式"？</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-body">
+          <p><strong>识别结构：</strong>式子中是否含有"平方和之积 \(\geq\) 内积的平方"？或者"分式之和"？</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-body">
+          <p><strong>选择形式：</strong>平方和 → 标准形式；分式 → Titu 引理；乘积型 → 正数型柯西。</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-body">
+          <p><strong>凑配形式：</strong>有时需要把原式乘以 1（已知条件），或令变量替换（如令 \(p=\sqrt{a}\)）才能套用。</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-body">
+          <p><strong>写等号条件：</strong>解出等号成立时各变量的值，验证满足约束，写出最终答案。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">💡 常用代入技巧速查</div>
+    <table class="summary-table">
+      <thead>
+        <tr><th>遇到的式子形式</th><th>推荐做法</th><th>套用哪个推论</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>已知 \(\sum a_i^2=\) 常数，求 \(\sum c_i a_i\) 最大值</td><td>直接套标准柯西</td><td>标准形式</td></tr>
+        <tr><td>求 \(\sum(a_i^2/b_i)\) 最小值，已知 \(\sum a_i=\) 常数</td><td>Titu 引理直接算</td><td>推论 2</td></tr>
+        <tr><td>已知 \(\sum x_i=\) 常数，求 \(\sum x_i^2\) 下界</td><td>推论 3 倒用</td><td>推论 3</td></tr>
+        <tr><td>已知 \(\sum x_i=\) 常数，求 \(\sum(1/x_i)\) 下界</td><td>调和-算术不等式</td><td>推论 4</td></tr>
+        <tr><td>含 \(\sqrt{ab}+\sqrt{cd}\) 类型</td><td>正数型柯西</td><td>推论 1</td></tr>
+        <tr><td>乘积 \((a+b)(c+d)\) 有下界</td><td>Cauchy 展开后配方</td><td>标准形式</td></tr>
+        <tr><td>求 \(\sqrt{\sum(a_i+b_i)^2}\) 上界</td><td>闵可夫斯基不等式</td><td>推论 7</td></tr>
+        <tr><td>同序两列乘积和的估计</td><td>切比雪夫求和不等式</td><td>推论 8</td></tr>
+        <tr><td>比较多种均值大小</td><td>幂平均/均值链</td><td>推论 9 / 结论 5</td></tr>
+        <tr><td>含 \(\sum(1/a_i)\) 且已知 \(\sum a_i\)</td><td>Sedrakyan 倒数和</td><td>结论 13</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout purple">
+    <div class="callout-label">🎯 学习建议</div>
+    <strong>柯西不等式的核心就五件事：</strong><br><br>
+    1. <strong>形式</strong>：记住 \(\left(\sum a_i^2\right)\!\left(\sum b_i^2\right)\geq\!\left(\sum a_i b_i\right)^{\!2}\)<br><br>
+    2. <strong>等号</strong>：\(a_i/b_i=\) 常数时取等<br><br>
+    3. <strong>Titu</strong>：\(\displaystyle\sum\frac{a_i^2}{b_i}\geq\frac{\left(\sum a_i\right)^2}{\sum b_i}\)，竞赛必背！<br><br>
+    4. <strong>闵可夫斯基</strong>：\(\sqrt{\sum(a_i+b_i)^2}\leq\sqrt{\sum a_i^2}+\sqrt{\sum b_i^2}\)，三角不等式的多维版<br><br>
+    5. <strong>均值链</strong>：\(\text{HM}\leq\text{GM}\leq\text{AM}\leq\text{QM}\)，全部由柯西支撑<br><br>
+    反复用上面 5 道例题练手，再翻阅推论表找变式，柯西不等式就真正掌握了。
+  </div>
+</div>
+
+<div class="divider"></div>
+</div>
+
+<div class="footer">柯西-施瓦茨不等式讲义 · 初中竞赛数学专题 · 陈</div>
+
+<script>
+let demoChart;
+function updateDemo() {
+  const a = parseFloat(document.getElementById('sa').value);
+  const b = parseFloat(document.getElementById('sb').value);
+  const c = parseFloat(document.getElementById('sc').value);
+  const d = parseFloat(document.getElementById('sd').value);
+
+  document.getElementById('va').textContent = a;
+  document.getElementById('vb').textContent = b;
+  document.getElementById('vc').textContent = c;
+  document.getElementById('vd').textContent = d;
+
+  const lhs = (a*a + b*b) * (c*c + d*d);
+  const rhs = (a*c + b*d) * (a*c + b*d);
+  const diff = lhs - rhs;
+
+  document.getElementById('lhs').textContent = lhs.toFixed(2);
+  document.getElementById('rhs').textContent = rhs.toFixed(2);
+  document.getElementById('diff').textContent = diff.toFixed(2);
+
+  const checkEl = document.getElementById('check');
+  if (Math.abs(diff) < 0.01) {
+    checkEl.className = 'check-result equal';
+    checkEl.textContent = '= 等号成立！a/c = b/d（比例相等）';
+  } else {
+    checkEl.className = 'check-result holds';
+    checkEl.textContent = '✓ 柯西不等式成立：左边 ≥ 右边';
+  }
+
+  if (demoChart) {
+    demoChart.data.datasets[0].data = [lhs, rhs];
+    demoChart.update();
+  }
+}
+
+window.addEventListener('load', function() {
+  const ctx = document.getElementById('demoChart').getContext('2d');
+  demoChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['(a²+b²)(c²+d²)', '(ac+bd)²'],
+      datasets: [{
+        data: [125, 121],
+        backgroundColor: ['rgba(59,130,246,0.5)', 'rgba(239,68,68,0.5)'],
+        borderColor: ['#2563a8', '#dc2626'],
+        borderWidth: 1.5,
+        borderRadius: 6
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        title: {
+          display: true,
+          text: '两侧值对比（蓝色 ≥ 红色）',
+          font: { size: 13 },
+          color: '#6b7280'
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: { color: '#6b7280', font: { size: 12 } },
+          grid: { color: '#f3f4f6' }
+        },
+        x: {
+          ticks: { color: '#374151', font: { size: 13 } },
+          grid: { display: false }
+        }
+      }
+    }
+  });
+});
+</script>
+</body>
+</html>
