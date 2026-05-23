@@ -1,0 +1,1921 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>三角函数公式全攻略：和差角·倍角·和差化积·辅助角</title>
+<style>
+/* ══════════════════════════════════════════════════
+   初中数学讲义 - 三角函数专题
+   配色：深蓝主题，middle-school-math-lecture 标准
+   ══════════════════════════════════════════════════ */
+:root {
+  --primary: #1a3a5c;
+  --primary-light: #2563a8;
+  --accent: #dc2626;
+  --accent-orange: #d97706;
+  --bg-page: #f8f9fe;
+  --bg-card: #ffffff;
+  --bg-expand: #f8f9fe;
+  --bg-formula: #f0f4ff;
+  --border-light: #e0e7f0;
+  --border-blue: #dbeafe;
+  --text-primary: #1a3a5c;
+  --text-secondary: #6b7280;
+  --text-accent: #dc2626;
+  --text-blue: #2563a8;
+  --success: #059669;
+  --warning: #d97706;
+  --error: #dc2626;
+}
+
+* { box-sizing:border-box; margin:0; padding:0; }
+
+html, body {
+  font-family: -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+  background: var(--bg-page);
+  color: var(--text-primary);
+  line-height: 1.8;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+.container { max-width: 900px; margin:0 auto; padding: 32px 24px 80px; }
+
+/* ═══ 封面 ═══ */
+.lecture-header {
+  text-align:center; padding:56px 24px 44px; margin-bottom:48px;
+  background:linear-gradient(135deg,var(--primary) 0%,var(--primary-light) 50%,#3b82f6 100%);
+  border-radius:20px; color:#fff; position:relative; overflow:hidden;
+}
+.lecture-header::before {
+  content:''; position:absolute; top:-40px; right:-40px; width:200px; height:200px;
+  background:rgba(255,255,255,0.06); border-radius:50%;
+}
+.lecture-header::after {
+  content:''; position:absolute; bottom:-30px; left:-30px; width:140px; height:140px;
+  background:rgba(255,255,255,0.04); border-radius:50%;
+}
+.lecture-header .tag {
+  display:inline-block; background:rgba(255,255,255,0.15); color:#fbbf24;
+  padding:4px 16px; border-radius:20px; font-size:13px; font-weight:600; letter-spacing:1px;
+  margin-bottom:16px; position:relative; z-index:1;
+}
+.lecture-header h1 { font-size:36px; font-weight:900; margin:0 0 10px; letter-spacing:2px; position:relative; z-index:1; }
+.lecture-header .subtitle { font-size:16px; opacity:0.85; position:relative; z-index:1; }
+.lecture-header .formula-preview {
+  display:inline-block; margin-top:24px; padding:10px 28px;
+  background:rgba(255,255,255,0.12); border-radius:30px; font-size:20px;
+  position:relative; z-index:1;
+}
+
+/* ═══ 章节 ═══ */
+.section { margin-bottom:48px; }
+.section-head { display:flex; align-items:center; gap:14px; margin-bottom:18px; }
+.section-num {
+  width:42px; height:42px; border-radius:12px; display:flex; align-items:center; justify-content:center;
+  font-size:20px; font-weight:800; flex-shrink:0; color:#fff;
+  background:linear-gradient(135deg,var(--primary) 0%,var(--primary-light) 100%);
+}
+.section-num.orange { background:linear-gradient(135deg,var(--accent-orange) 0%,#f59e0b 100%); }
+h2 { font-size:22px; color:var(--primary); margin:0; }
+
+/* ═══ 卡片 ═══ */
+.card {
+  background:var(--bg-card); border-radius:14px; padding:28px 32px; margin-bottom:20px;
+  border:1px solid var(--border-light); box-shadow:0 2px 8px rgba(26,58,92,0.06);
+  overflow:visible;
+}
+.card-title { font-size:17px; font-weight:700; color:var(--primary); margin-bottom:14px; padding-bottom:10px; border-bottom:1px solid var(--border-blue); }
+
+/* ═══ 公式框 ═══ */
+.formula-box {
+  background:var(--bg-formula); border-radius:10px; padding:18px 24px; margin:16px 0;
+  text-align:center; font-size:17px; border:1px solid var(--border-blue); overflow:visible;
+}
+.formula-box.hl-red { border-color:var(--accent); border-width:2px; background:#fef2f2; }
+.formula-box.hl-green { border-color:var(--success); border-width:2px; background:#ecfdf5; }
+
+.jianji { margin-top:10px; font-size:13px; color:var(--text-blue); }
+.jianji strong { color:var(--primary-light); }
+
+/* ═══ 证明框 ═══ */
+.proof-box {
+  border-radius:12px; padding:24px; margin:16px 0; overflow:visible;
+}
+.proof-box.alg {
+  background:linear-gradient(135deg,#f0fdf4 0%,#ecfdf5 100%);
+  border:1px solid #a7f3d0;
+}
+.proof-box.geom {
+  background:linear-gradient(135deg,#eff6ff 0%,#f0f4ff 100%);
+  border:1px solid #bfdbfe;
+}
+.proof-box .proof-title { font-weight:800; font-size:16px; margin-bottom:14px; display:flex; align-items:center; gap:8px; }
+.proof-box.alg .proof-title { color:var(--success); }
+.proof-box.geom .proof-title { color:var(--primary-light); }
+.proof-step { margin-bottom:14px; padding-left:16px; font-size:14px; line-height:2; overflow:visible; }
+.proof-box.alg .proof-step { border-left:3px solid #a7f3d0; }
+.proof-box.geom .proof-step { border-left:3px solid #bfdbfe; }
+
+/* ═══ 展开对照 ═══ */
+.expand-block {
+  background:var(--bg-expand); border:1px solid var(--border-light);
+  border-radius:10px; padding:16px 20px; margin-bottom:16px; overflow:visible;
+}
+.expand-block .expand-title { font-weight:700; color:var(--primary); margin-bottom:10px; font-size:15px; }
+.expand-block .expand-general { text-align:center; margin-bottom:12px; font-size:15px; }
+.expand-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.expand-item {
+  background:#fff; border-radius:8px; padding:10px 14px;
+  border:1px solid var(--border-blue); min-width:0; overflow:visible;
+}
+.expand-item .expand-label { font-size:12px; color:var(--text-secondary); margin-bottom:6px; }
+.expand-item .expand-formula { font-size:0.88em; }
+
+/* ═══ 记忆卡片 ═══ */
+.memory-card {
+  background:linear-gradient(135deg,#fef3c7 0%,#fffbeb 100%); border:2px solid #fcd34d;
+  border-radius:14px; padding:24px; margin:16px 0; overflow:visible;
+}
+.memory-card .mem-icon { font-size:28px; margin-bottom:8px; }
+.memory-card .mem-title { font-size:18px; font-weight:800; color:var(--accent-orange); margin-bottom:10px; }
+.memory-card .mem-body { font-size:14px; line-height:1.9; }
+
+/* ═══ 例题 ═══ */
+.example-box {
+  background:var(--bg-expand); border-left:5px solid var(--primary);
+  border-radius:0 12px 12px 0; padding:20px 24px; margin:20px 0; overflow:visible;
+}
+.example-num { font-size:17px; font-weight:800; color:var(--primary); margin-bottom:10px; }
+.example-problem { font-size:15px; margin-bottom:14px; color:var(--primary); }
+.example-solution { font-size:14px; line-height:2; color:var(--text-secondary); margin-bottom:12px; }
+.example-note { background:#fffbea; border-radius:8px; padding:10px 16px; font-size:13px; color:#92400e; border:1px solid #fde68a; }
+
+/* ═══ 提示框 ═══ */
+.callout { border-radius:10px; padding:16px 22px; margin:20px 0; font-size:14px; line-height:1.7; overflow:visible; }
+.callout.blue { background:#eff6ff; border-left:5px solid var(--primary-light); color:#1e40af; }
+.callout.green { background:#ecfdf5; border-left:5px solid var(--success); color:#064e3b; }
+.callout.orange { background:#fffbea; border-left:5px solid var(--accent-orange); color:#92400e; }
+.callout.red { background:#fef2f2; border-left:5px solid var(--accent); color:#991b1b; }
+.callout-label { font-weight:700; margin-bottom:6px; font-size:15px; }
+
+/* ═══ 推导链 ═══ */
+.derive-chain {
+  display:flex; flex-wrap:wrap; gap:6px; align-items:center; justify-content:center;
+  margin:20px 0; font-size:13px;
+}
+.derive-node {
+  background:var(--bg-formula); border:1px solid var(--border-blue); border-radius:8px;
+  padding:8px 14px; font-family:'Courier New',monospace; font-weight:700; color:var(--primary);
+}
+.derive-arrow { color:var(--accent-orange); font-size:18px; font-weight:800; }
+
+/* ═══ 公式表格 ═══ */
+.formula-table { width:100%; border-collapse:collapse; font-size:14px; margin:12px 0; }
+.formula-table th { background:var(--primary); color:#fff; padding:10px 8px; text-align:center; font-weight:700; }
+.formula-table td { padding:10px 8px; text-align:center; border-bottom:1px solid var(--border-light); background:#fff; }
+.formula-table tr:nth-child(even) td { background:var(--bg-expand); }
+.formula-table .fn-name { text-align:left; font-weight:700; color:var(--primary); padding-left:14px; }
+.formula-table .fn-note { font-size:13px; color:var(--text-secondary); }
+
+/* ═══ 四宫格对比 ═══ */
+.quad-grid {
+  display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:16px 0;
+}
+.quad-cell {
+  background:var(--bg-expand); border:1px solid var(--border-light);
+  border-radius:10px; padding:16px; text-align:center; overflow:visible;
+}
+.quad-cell .quad-label { font-size:12px; color:var(--text-secondary); font-weight:600; margin-bottom:8px; }
+.quad-cell .quad-formula { font-size:15px; line-height:1.6; }
+
+/* ═══ 互动 ═══ */
+.demo-controls { text-align:center; margin:16px 0; }
+.demo-controls button {
+  background:var(--primary); color:#fff; border:none; padding:8px 20px;
+  border-radius:8px; cursor:pointer; font-size:14px; margin:0 6px; transition:background 0.2s;
+}
+.demo-controls button:hover { background:var(--primary-light); }
+.demo-controls button.reset { background:var(--text-secondary); }
+.demo-controls button.reset:hover { background:#555; }
+.angle-display { text-align:center; font-size:18px; color:var(--primary); font-weight:700; margin:12px 0; }
+
+/* ═══ 知识树 ═══ */
+.knowledge-tree {
+  display:flex; flex-direction:column; align-items:center; gap:14px; margin:24px 0;
+  font-size:14px;
+}
+.tree-root {
+  background:var(--bg-formula); border:2px solid var(--success); border-radius:12px;
+  padding:11px 22px; font-weight:800; font-size:16px; color:var(--success);
+}
+.tree-branch-title { font-weight:700; color:var(--primary); margin:8px 0 4px; }
+.tree-row { display:flex; gap:8px; flex-wrap:wrap; justify-content:center; }
+.tree-leaf {
+  background:#fff; border:1px solid var(--border-blue); border-radius:8px;
+  padding:7px 14px; font-size:13px; color:var(--text-primary);
+}
+
+/* ═══ 响应式 ═══ */
+@media (max-width:640px) {
+  .container { padding:20px 14px 60px; }
+  .lecture-header h1 { font-size:26px; }
+  .card { padding:20px 18px; }
+  .expand-grid, .quad-grid { grid-template-columns:1fr; }
+  .derive-chain { flex-direction:column; }
+  .lecture-header .formula-preview { font-size:15px; }
+}
+</style>
+
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']], processEscapes: true },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre'] },
+  chtml: { displayAlign:'center', displayIndent:'0' },
+  startup: { pageReady:()=>MathJax.startup.defaultPageReady().then(()=>console.log('MathJax ready')) }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<div class="container">
+
+<!-- ══════════════════════════════════════════════════
+     封面
+     ══════════════════════════════════════════════════ -->
+<div class="lecture-header">
+  <div class="tag">初中数学 · 三角函数专题</div>
+  <h1>三角函数公式全攻略</h1>
+  <div class="subtitle">和差角 · 倍角 · 半角 · 和差化积 · 辅助角</div>
+  <div class="formula-preview">
+    \(\sin(\alpha+\beta)=\sin\alpha\cos\beta+\cos\alpha\sin\beta\)
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     1. 总览：知识树
+     ══════════════════════════════════════════════════ -->
+<div class="section" id="s0-overview">
+  <div class="section-head">
+    <div class="section-num">0</div>
+    <h2>公式体系总览：一棵大树一条根</h2>
+  </div>
+
+  <div class="card">
+    <div class="card-title">从一条「母公式」长出一棵大树</div>
+    <div class="knowledge-tree">
+      <div class="tree-root">\(\cos(\alpha-\beta) = \cos\alpha\cos\beta + \sin\alpha\sin\beta\) <span style="font-size:12px;font-weight:400;">← 母公式（根）</span></div>
+
+      <div class="tree-branch-title">▸ 和差角公式（树干）</div>
+      <div class="tree-row">
+        <div class="tree-leaf">\(\cos(\alpha+\beta)\)</div>
+        <div class="tree-leaf">\(\sin(\alpha+\beta)\)</div>
+        <div class="tree-leaf">\(\sin(\alpha-\beta)\)</div>
+        <div class="tree-leaf">\(\tan(\alpha\pm\beta)\)</div>
+      </div>
+
+      <div class="tree-branch-title">▸ 倍角 &amp; 降幂（树枝）</div>
+      <div class="tree-row">
+        <div class="tree-leaf">\(\sin(2\alpha)\)</div>
+        <div class="tree-leaf">\(\cos(2\alpha)\) ×3</div>
+        <div class="tree-leaf">\(\tan(2\alpha)\)</div>
+        <div class="tree-leaf">降幂公式</div>
+        <div class="tree-leaf">半角公式</div>
+      </div>
+
+      <div class="tree-branch-title">▸ 和差与积的互化（树叶）</div>
+      <div class="tree-row">
+        <div class="tree-leaf">和差化积 ×4</div>
+        <div class="tree-leaf">积化和差 ×4</div>
+        <div class="tree-leaf">辅助角公式</div>
+      </div>
+
+      <div class="tree-branch-title">▸ 特殊角构造法（果实）</div>
+      <div class="tree-row">
+        <div class="tree-leaf">45°→22.5°</div>
+        <div class="tree-leaf">30°→15°</div>
+        <div class="tree-leaf">常见角速查表</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout blue">
+    <div class="callout-label">📌 学习路线图</div>
+    ① 先理解 <strong>cos(α-β) 的几何证明</strong> → ② 掌握<strong>三角形构造法</strong>（叠两个直角三角形）→ ③ 用代数推导出所有和差角公式 → ④ 从和差角推出倍角、降幂、半角 → ⑤ 用<strong>等腰三角形外扩法</strong>巧记 22.5° 和 15° → ⑥ 掌握和差化积、积化和差、辅助角公式。一步套一步，环环相扣。
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     2. 直觉引入
+     ══════════════════════════════════════════════════ -->
+<div class="section" id="s1-intuition">
+  <div class="section-head">
+    <div class="section-num">1</div>
+    <h2>直觉引入：三角函数不是「加法」</h2>
+  </div>
+
+  <div class="card">
+    <div class="card-title">直角三角形的三角比</div>
+    <p style="font-size:14px;color:var(--text-secondary);margin-bottom:14px;">
+      直角三角形中，角度 θ 决定了三条边的比例关系：
+    </p>
+    <div class="formula-box">
+      \[
+      \sin\theta=\frac{\text{对边}}{\text{斜边}},\quad
+      \cos\theta=\frac{\text{邻边}}{\text{斜边}},\quad
+      \tan\theta=\frac{\sin\theta}{\cos\theta}
+      \]
+    </div>
+    <p style="font-size:14px;color:var(--text-secondary);">
+      关键问题：已知 \(\sin 30^\circ=0.5\) 和 \(\sin 45^\circ\approx 0.707\)，
+      能否直接算出 \(\sin(30^\circ+45^\circ)=\sin 75^\circ\)？
+    </p>
+  </div>
+
+  <div class="callout red">
+    <div class="callout-label">⚠️ 最常见的错误！</div>
+    \(\sin(30^\circ+45^\circ) \neq \sin 30^\circ + \sin 45^\circ\)<br>
+    如果直接相加：\(0.5+0.707=1.207\)，但正弦函数的值域是 \([-1,1]\)，不可能超过 1！<br>
+    实际值：\(\sin 75^\circ \approx 0.966\)。差这么多，说明 <strong>三角函数不是线性的</strong>。
+  </div>
+
+  <div class="card">
+    <div class="card-title">单位圆：推广到任意角</div>
+    <p style="font-size:14px;color:var(--text-secondary);margin-bottom:14px;">
+      在坐标系中画半径为 1 的圆。角 α 的终边与单位圆交点坐标为：
+    </p>
+    <div class="formula-box hl-red">
+      \[
+      (\cos\alpha,\;\sin\alpha)
+      \]
+    </div>
+    <p style="font-size:14px;color:var(--text-secondary);">
+      这个视角是后面几何证明的基石——单位圆上每个点的<strong>横坐标就是 cos，纵坐标就是 sin</strong>。
+    </p>
+    <div style="text-align:center;margin:20px 0;">
+      <canvas id="unitCircleCanvas" width="500" height="420"
+        style="max-width:100%;height:auto;"></canvas>
+    </div>
+    <div class="angle-display" id="angleDisplay">当前角度：α = 53°</div>
+    <div class="demo-controls">
+      <button onclick="setAngle(30)">30°</button>
+      <button onclick="setAngle(45)">45°</button>
+      <button onclick="setAngle(60)">60°</button>
+      <button onclick="setAngle(120)">120°</button>
+      <button onclick="animateAngle()" class="reset">▶ 动画</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     3. 母公式几何证明
+     ══════════════════════════════════════════════════ -->
+<div class="section" id="s2-mother-proof">
+  <div class="section-head">
+    <div class="section-num">2</div>
+    <h2>母公式的几何证明：\(\cos(\alpha-\beta)\)</h2>
+  </div>
+
+  <!-- 证明思路：用纯文字，公式放独立行以避免 inline MathJax 截断 -->
+  <div class="card">
+    <div class="card-title">证明思路（核心）</div>
+    <div style="font-size:15px;color:var(--text-primary);line-height:2.2;">
+      <p style="margin-bottom:12px;">
+        在<strong>单位圆</strong>上，取两个点：
+      </p>
+      <p style="margin-bottom:8px;">
+        <strong>点 P</strong> = ( cos α , sin α )
+      </p>
+      <p style="margin-bottom:12px;">
+        <strong>点 Q</strong> = ( cos β , sin β )
+      </p>
+      <p style="margin-bottom:8px;">
+        连接 P 和 Q，得到<span style="color:var(--accent-orange);font-weight:700;">弦长 |PQ|</span>。
+      </p>
+      <p style="color:var(--accent);font-weight:700;">
+        核心技巧：弦长 |PQ| 可以用「两种不同的方法」计算，结果必然相等！
+      </p>
+    </div>
+    <!-- 示意图 -->
+    <div style="text-align:center;margin:20px 0;">
+      <canvas id="proofCanvas" width="450" height="420"
+        style="max-width:100%;height:auto;background:#fff;border-radius:12px;border:1px solid var(--border-light);"></canvas>
+    </div>
+  </div>
+
+  <div class="proof-box geom">
+    <div class="proof-title">🔵 方法一：余弦定理（从角度出发）</div>
+    <div class="proof-step">
+      在三角形 OPQ 中：<br>
+      &bull; |OP| = |OQ| = 1（都是半径）<br>
+      &bull; 角 POQ = α − β（P在α处，Q在β处）<br>
+      由<strong>余弦定理</strong>：
+      \[
+      |PQ|^2 = 1^2 + 1^2 - 2\cdot 1\cdot 1 \cdot \cos(\alpha-\beta)
+      = 2 - 2\cos(\alpha-\beta) \qquad \text{--- (式①)}
+      \]
+    </div>
+  </div>
+
+  <div class="proof-box geom">
+    <div class="proof-title">🔵 方法二：距离公式（从坐标出发）</div>
+    <div class="proof-step">
+      由两点间距离公式：
+      \[
+      \begin{aligned}
+      |PQ|^2 &= (\cos\alpha - \cos\beta)^2 + (\sin\alpha - \sin\beta)^2 \\[4pt]
+             &= \cos^2{\alpha} - 2\cos\alpha\cos\beta + \cos^2{\beta} \\
+             &\quad + \sin^2{\alpha} - 2\sin\alpha\sin\beta + \sin^2{\beta} \\[4pt]
+             &= (\cos^2{\alpha}+\sin^2{\alpha}) + (\cos^2{\beta}+\sin^2{\beta})
+                - 2(\cos\alpha\cos\beta + \sin\alpha\sin\beta) \\[4pt]
+             &= 1 + 1 - 2(\cos\alpha\cos\beta + \sin\alpha\sin\beta) \\[4pt]
+             &= 2 - 2(\cos\alpha\cos\beta + \sin\alpha\sin\beta) \qquad \text{--- (式②)}
+      \end{aligned}
+      \]
+    </div>
+  </div>
+
+  <div class="proof-box alg" style="background:linear-gradient(135deg,#ecfdf5,#f0fdf4);border-color:var(--success);">
+    <div class="proof-title" style="color:var(--success);">🎯 令式① = 式②：</div>
+    <div class="proof-step" style="border-left-color:var(--success);">
+      \[
+      2 - 2\cos(\alpha-\beta) = 2 - 2(\cos\alpha\cos\beta + \sin\alpha\sin\beta)
+      \]
+      两边消去 2，再除以 −2：
+      \[
+      \boxed{\;\cos(\alpha-\beta) = \cos\alpha\cos\beta + \sin\alpha\sin\beta\;}
+      \]
+    </div>
+    <p style="font-size:14px;color:var(--success);text-align:center;margin-top:10px;font-weight:700;">
+      ✅ 母公式得证！以下所有公式都从这里推导出来。
+    </p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     3. 初中几何构造法：用直角三角形「看」出公式
+     ══════════════════════════════════════════════════ -->
+<div class="section" id="s3-sin-geom">
+  <div class="section-head">
+    <div class="section-num">3</div>
+    <h2>初中几何构造法：叠两个直角三角形</h2>
+  </div>
+
+  <div class="callout blue">
+    <div class="callout-label">📌 为什么要有这一章？</div>
+    用纯欧氏几何的方法，<strong>不需要任何高等代数</strong>，只靠初中就会的相似三角形和勾股定理，直接「构造」出和角公式。对于初中生来说，这是<strong>最直观</strong>的证明方式。
+  </div>
+
+  <!-- 方法一：sin(α+β) -->
+  <div class="card">
+    <div class="card-title">方法一：构造法证明 \(\sin(\alpha+\beta)\)</div>
+
+    <div style="font-size:14px;color:var(--text-primary);line-height:2.1;padding:14px 18px;background:var(--bg-formula);border-radius:10px;margin-bottom:14px;">
+      <strong>构造步骤（跟着图走）：</strong><br>
+      ① 作直角 △OAB，∠B = 90°，∠AOB = <strong>α</strong>，斜边 OA = 1<br>
+      &nbsp;&nbsp;&nbsp;→ 则 AB = sinα，OB = cosα<br><br>
+      ② 以 OA 为斜边，在 △OAB 上方再作直角 △OAC，∠C = 90°，∠AOC = <strong>β</strong><br>
+      &nbsp;&nbsp;&nbsp;→ AC = sinβ，OC = cosβ （注意 OA = 1）<br><br>
+      ③ 从 C 向 OB 的延长线作垂线 CD（D 在 OB 延长线上）<br>
+      &nbsp;&nbsp;&nbsp;→ ∠DOC = α + β（两个角叠在一起！）<br><br>
+      ④ 在直角 △COD 中：<strong>sin(α+β) = CD / OC</strong> = CD / cosβ（因为 OC = cosβ）<br><br>
+      ⑤ CD 可以拆成 CE + ED。通过相似三角形可求出 CE 和 ED：<br>
+      &nbsp;&nbsp;&nbsp;CE = sinα · cosβ（△OAB ∽ △CAE）<br>
+      &nbsp;&nbsp;&nbsp;ED = cosα · sinβ<br><br>
+      ⑥ 因此 CD = sinα · cosβ + cosα · sinβ，除以 cosβ 即得公式！
+    </div>
+
+    <div style="text-align:center;margin-top:16px;">
+      <canvas id="sinGeomCanvas" width="480" height="340"
+        style="max-width:100%;height:auto;background:#fff;border-radius:10px;border:1px solid var(--border-light);"></canvas>
+    </div>
+
+    <div class="formula-box hl-green" style="margin-top:12px;">
+      \[
+      \boxed{\sin(\alpha+\beta) = \sin\alpha\cos\beta + \cos\alpha\sin\beta}
+      \]
+    </div>
+  </div>
+
+  <!-- 方法二：cos(α+β) -->
+  <div class="card">
+    <div class="card-title">方法二：构造法证明 \(\cos(\alpha+\beta)\)</div>
+
+    <div style="font-size:14px;color:var(--text-primary);line-height:2.1;padding:14px 18px;background:var(--bg-formula);border-radius:10px;margin-bottom:14px;">
+      <strong>继续使用上图：</strong><br>
+      在同一个构造中，\(\cos(\alpha+\beta) = OD / OC = OD / \cos\beta\)<br><br>
+      OD = OB − DB，其中 OB = cosα，而通过相似三角形：<br>
+      &nbsp;&nbsp;DB = sinα · sinβ<br><br>
+      因此 OD = cosα − sinα · sinβ … 但是要除以 cosβ？<br><br>
+      实际上 OD = OB · cosβ − AB · sinβ = cosα · cosβ − sinα · sinβ<br><br>
+      代入：\(\cos(\alpha+\beta) = OD / 1 = \cos\alpha\cos\beta - \sin\alpha\sin\beta\)
+    </div>
+
+    <div class="formula-box hl-red">
+      \[
+      \boxed{\cos(\alpha+\beta) = \cos\alpha\cos\beta - \sin\alpha\sin\beta}
+      \]
+    </div>
+
+    <div class="callout green">
+      <div class="callout-label">💡 关键领悟</div>
+      这个构造法只用到了初中知识：<strong>相似三角形</strong> + <strong>勾股定理</strong>。两个直角三角形「叠」在一起，角度自然相加，边长关系自然呈现。这就是「<strong>几何直观</strong>」的力量！
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     5. 代数推导：从母公式到全部和差角
+     ══════════════════════════════════════════════════ -->
+<div class="section" id="s4-algebraic">
+  <div class="section-head">
+    <div class="section-num">4</div>
+    <h2>代数推导：一条公式，生出全家</h2>
+  </div>
+
+  <div class="card">
+    <div class="card-title">推导一：\(\cos(\alpha+\beta)\) —— 把 β 换成 −β</div>
+    <div class="proof-box alg">
+      <div class="proof-step">
+        \[
+        \begin{aligned}
+        \cos(\alpha+\beta) &= \cos(\alpha-(-\beta)) \\
+        &= \cos\alpha\cos(-\beta) + \sin\alpha\sin(-\beta) \\
+        &= \cos\alpha\cos\beta + \sin\alpha(-\sin\beta) \quad (\because \cos(-\theta)=\cos\theta,\;\sin(-\theta)=-\sin\theta) \\
+        &= \cos\alpha\cos\beta - \sin\alpha\sin\beta
+        \end{aligned}
+        \]
+      </div>
+    </div>
+    <div class="formula-box hl-red">
+      \[ \boxed{\cos(\alpha+\beta) = \cos\alpha\cos\beta - \sin\alpha\sin\beta} \]
+    </div>
+    <div class="jianji">
+      <strong>简记：</strong>\(\cos(\alpha+\beta)=cc - ss\)（「余余减正正」，符号 <strong style="color:var(--accent);">反着</strong>来）
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">推导二：\(\sin(\alpha+\beta)\) —— 利用互余关系</div>
+    <div class="proof-box alg">
+      <div class="proof-step">
+        \[
+        \begin{aligned}
+        \sin(\alpha+\beta) &= \cos\!\left(\tfrac{\pi}{2} - (\alpha+\beta)\right) \\
+        &= \cos\!\left((\tfrac{\pi}{2}-\alpha) - \beta\right) \\
+        &= \cos(\tfrac{\pi}{2}-\alpha)\cos\beta + \sin(\tfrac{\pi}{2}-\alpha)\sin\beta \\
+        &= \sin\alpha\cos\beta + \cos\alpha\sin\beta
+        \end{aligned}
+        \]
+      </div>
+    </div>
+    <div class="formula-box hl-red">
+      \[ \boxed{\sin(\alpha+\beta) = \sin\alpha\cos\beta + \cos\alpha\sin\beta} \]
+    </div>
+    <div class="jianji">
+      <strong>简记：</strong>\(\sin(\alpha+\beta)=sc + cs\)（「正余 + 余正」，符号<strong>跟着</strong>角号走）
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">推导三：\(\sin(\alpha-\beta)\) —— 再次换 −β</div>
+    <div class="formula-box hl-red">
+      \[ \boxed{\sin(\alpha-\beta) = \sin\alpha\cos\beta - \cos\alpha\sin\beta} \]
+    </div>
+    <div class="jianji">
+      <strong>简记：</strong>\(\sin(\alpha-\beta)=sc - cs\)（符号跟着角号走）
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">推导四：\(\tan(\alpha\pm\beta)\) —— 分子分母同除</div>
+    <div class="formula-box hl-red">
+      \[ \boxed{\tan(\alpha+\beta) = \frac{\tan\alpha + \tan\beta}{1 - \tan\alpha\tan\beta}} \]
+    </div>
+    <div class="jianji"><strong>简记：</strong>上加下减（分子跟角号，分母反着来）</div>
+    <div class="formula-box">
+      \[ \boxed{\tan(\alpha-\beta) = \frac{\tan\alpha - \tan\beta}{1 + \tan\alpha\tan\beta}} \]
+    </div>
+    <div class="jianji"><strong>简记：</strong>上减下加</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     6. 倍角公式
+     ══════════════════════════════════════════════════ -->
+<div class="section" id="s5-double">
+  <div class="section-head">
+    <div class="section-num">5</div>
+    <h2>倍角公式：令 β = α，一切豁然开朗</h2>
+  </div>
+
+  <div class="card">
+    <div class="card-title">① \(\sin(2\alpha)\) —— 代数 + 几何双证明</div>
+    <div class="proof-box alg">
+      <div class="proof-title">代数法</div>
+      <div class="proof-step">\(\sin(2\alpha)=\sin(\alpha+\alpha)=\sin\alpha\cos\alpha+\cos\alpha\sin\alpha=2\sin\alpha\cos\alpha\)</div>
+    </div>
+    <div class="proof-box geom">
+      <div class="proof-title">几何法（等腰三角形面积）</div>
+      <div class="proof-step">
+        单位圆中，顶角 2α 的等腰三角形：<br>
+        面积法1（两边夹一角）：\(S=\tfrac{1}{2}\cdot 1\cdot 1\cdot\sin(2\alpha)=\tfrac{1}{2}\sin(2\alpha)\)<br>
+        面积法2（底×高÷2）：底=2sinα，高=cosα → \(S=\sin\alpha\cos\alpha\)<br>
+        令两式相等：\(\tfrac{1}{2}\sin(2\alpha)=\sin\alpha\cos\alpha\) → \(\sin(2\alpha)=2\sin\alpha\cos\alpha\)
+      </div>
+    </div>
+    <div class="formula-box hl-green">
+      \[ \boxed{\sin(2\alpha) = 2\sin\alpha\cos\alpha} \]
+    </div>
+    <div class="jianji"><strong>简记：</strong>\(\sin(2\alpha)=2sc\)（二倍 sin，两倍 s 乘 c）</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">② \(\cos(2\alpha)\) —— 一式三形，按需选用</div>
+    <div class="formula-box">
+      \[ \boxed{\cos(2\alpha) = \cos^2\alpha - \sin^2\alpha} \quad \text{（形式一：标准形）} \]
+    </div>
+    <div class="jianji"><strong>简记：</strong>\(\cos(2\alpha)=cc-ss\)</div>
+    <div class="formula-box">
+      \[ \boxed{\cos(2\alpha) = 2\cos^2\alpha - 1} \quad \text{（形式二：全\(\cos\)形）} \]
+    </div>
+    <div class="jianji"><strong>推导：</strong>由 \(cc-ss = cc-(1-cc) = 2cc-1\)</div>
+    <div class="formula-box">
+      \[ \boxed{\cos(2\alpha) = 1 - 2\sin^2\alpha} \quad \text{（形式三：全\(\sin\)形）} \]
+    </div>
+    <div class="jianji"><strong>推导：</strong>由 \(cc-ss = (1-ss)-ss = 1-2ss\)</div>
+    <div class="callout orange">
+      <div class="callout-label">💡 三种形式怎么选？</div>
+      给 \(\sin\alpha\) → 用形式三 \(1-2\sin^2\alpha\)<br>
+      给 \(\cos\alpha\) → 用形式二 \(2\cos^2\alpha-1\)<br>
+      都给或都没给 → 用形式一 \(\cos^2\alpha-\sin^2\alpha\)
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">③ \(\tan(2\alpha)\)</div>
+    <div class="formula-box hl-red">
+      \[ \boxed{\tan(2\alpha) = \frac{2\tan\alpha}{1 - \tan^2\alpha}} \]
+    </div>
+    <div class="jianji"><strong>简记：</strong>\(\tan(2\alpha)=\dfrac{2T}{1-T^2}\)（分子 2 倍 T，分母 1 减 T 方）</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     5a. 构造法巧记 22.5°：从 45° 出发
+     ══════════════════════════════════════════════════ -->
+<div class="section" id="s5a-construct-22">
+  <div class="section-head">
+    <div class="section-num orange">5a</div>
+    <h2>构造法巧记 \(22.5^\circ\)：从 45° 直角三角形出发</h2>
+  </div>
+
+  <div class="card">
+    <div class="card-title">核心思路：等腰三角形「外扩」产生半角</div>
+    <p style="font-size:14px;color:var(--text-secondary);margin-bottom:14px;">
+      从一个等腰直角三角形（45°−45°−90°）出发，<strong>在直角边上接一个等腰三角形</strong>，
+      就能巧妙地制造出 22.5° 的角（正好是 45° 的一半）。
+    </p>
+
+    <div style="font-size:14px;color:var(--text-primary);line-height:2.1;padding:14px 18px;background:var(--bg-formula);border-radius:10px;margin-bottom:14px;">
+      <strong>构造步骤：</strong><br>
+      ① 作直角 △ABC，∠C = 90°，<strong>AC = BC = 1</strong> → 斜边 AB = √2<br>
+      &nbsp;&nbsp;&nbsp;此时 ∠A = ∠B = <strong>45°</strong>（等腰直角三角形）<br><br>
+      ② <strong style="color:var(--accent);">关键一步：</strong>延长 CB 到 D，使 <strong>BD = AB = √2</strong><br>
+      &nbsp;&nbsp;&nbsp;（以 B 为顶点，构造等腰三角形 ABD）<br><br>
+      ③ 在等腰 △ABD 中：∠ABD = 180° − 45° = <strong>135°</strong><br>
+      &nbsp;&nbsp;&nbsp;底角 ∠BAD = ∠BDA = (180°−135°)/2 = <strong style="color:var(--accent);">22.5°</strong>！<br><br>
+      ④ 在直角 △ACD 中：AC = 1，CD = CB + BD = <strong>1 + √2</strong>，∠CDA = <strong>22.5°</strong>
+    </div>
+
+    <div style="text-align:center;margin:16px 0;">
+      <canvas id="construct22Canvas" width="480" height="360"
+        style="max-width:100%;height:auto;background:#fff;border-radius:10px;border:1px solid var(--border-light);"></canvas>
+    </div>
+
+    <div style="font-size:14px;color:var(--text-primary);line-height:2.1;padding:14px 18px;background:#f0fdf4;border-radius:10px;">
+      <strong>计算 22.5° 的三角函数：</strong><br>
+      在直角 △ACD 中，∠D = 22.5°，∠A = 67.5°，∠C = 90°<br><br>
+      &bull; 对边 AC = 1，邻边 CD = 1+√2<br><br>
+      由勾股定理求斜边：AD² = 1² + (1+√2)² = 1 + (1 + 2√2 + 2) = 4 + 2√2<br>
+      AD = √(4+2√2)
+    </div>
+
+    <div class="formula-box hl-green" style="margin-top:12px;">
+      \[
+      \boxed{\sin 22.5^\circ = \frac{\sqrt{2-\sqrt{2}}}{2}}
+      \]
+    </div>
+    <div class="jianji"><strong>推导：</strong>sin = AC/AD = 1/√(4+2√2) = √(2−√2)/2</div>
+
+    <div class="formula-box hl-green">
+      \[
+      \boxed{\cos 22.5^\circ = \frac{\sqrt{2+\sqrt{2}}}{2}}
+      \]
+    </div>
+    <div class="jianji"><strong>推导：</strong>cos = CD/AD = (1+√2)/√(4+2√2) = √(2+√2)/2</div>
+
+    <div class="formula-box hl-green">
+      \[
+      \boxed{\tan 22.5^\circ = \sqrt{2} - 1}
+      \]
+    </div>
+    <div class="jianji"><strong>推导：</strong>tan = AC/CD = 1/(1+√2) = (√2−1)/[(√2+1)(√2−1)] = √2−1</div>
+
+    <div class="memory-card">
+      <div class="mem-icon">🧩</div>
+      <div class="mem-title">同时得到 67.5° 的值（互余关系）</div>
+      <div class="mem-body">
+        \(\sin 67.5^\circ = \cos 22.5^\circ = \dfrac{\sqrt{2+\sqrt{2}}}{2}\)<br>
+        \(\cos 67.5^\circ = \sin 22.5^\circ = \dfrac{\sqrt{2-\sqrt{2}}}{2}\)<br>
+        \(\tan 67.5^\circ = \dfrac{1}{\tan 22.5^\circ} = \sqrt{2}+1\)
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     5b. 构造法巧记 15°：从 30° 出发
+     ══════════════════════════════════════════════════ -->
+<div class="section" id="s5b-construct-15">
+  <div class="section-head">
+    <div class="section-num orange">5b</div>
+    <h2>构造法巧记 \(15^\circ\)：从 30° 直角三角形出发</h2>
+  </div>
+
+  <div class="card">
+    <div class="card-title">同样的思路，从 30° 出发得到 15°</div>
+    <p style="font-size:14px;color:var(--text-secondary);margin-bottom:14px;">
+      从 30°−60°−90° 三角形出发，延长长直角边制造等腰三角形，得到 15°。
+    </p>
+
+    <div style="font-size:14px;color:var(--text-primary);line-height:2.1;padding:14px 18px;background:var(--bg-formula);border-radius:10px;margin-bottom:14px;">
+      <strong>构造步骤：</strong><br>
+      ① 作直角 △ABC，∠C = 90°，<strong>∠A = 30°</strong>，∠B = 60°<br>
+      &nbsp;&nbsp;&nbsp;AB = 2（斜边），BC = 1（对30°），AC = √3（对60°）<br><br>
+      ② <strong style="color:var(--accent);">关键一步：</strong>延长 CA 到 D，使 <strong>AD = AB = 2</strong><br>
+      &nbsp;&nbsp;&nbsp;（以 A 为顶点，构造等腰三角形 ABD）<br><br>
+      ③ ∠DAB = 180° − 30° = 150°<br>
+      &nbsp;&nbsp;&nbsp;在等腰 △ABD 中：∠ADB = ∠ABD = (180°−150°)/2 = <strong style="color:var(--accent);">15°</strong>！<br><br>
+      ④ 在直角 △BDC 中：DC = DA + AC = 2 + √3，BC = 1，∠BDC = 15°
+    </div>
+
+    <div style="text-align:center;margin:16px 0;">
+      <canvas id="construct15Canvas" width="480" height="360"
+        style="max-width:100%;height:auto;background:#fff;border-radius:10px;border:1px solid var(--border-light);"></canvas>
+    </div>
+
+    <div style="font-size:14px;color:var(--text-primary);line-height:2.1;padding:14px 18px;background:#f0fdf4;border-radius:10px;">
+      <strong>计算 15° 的三角函数：</strong><br>
+      在直角 △BDC 中，∠D = 15°，∠B = 75°，∠C = 90°<br><br>
+      &bull; 对边 BC = 1，邻边 DC = 2+√3<br><br>
+      由勾股定理求斜边：DB² = 1² + (2+√3)² = 1 + (4+4√3+3) = 8+4√3 = 4(2+√3)<br>
+      DB = 2√(2+√3)
+    </div>
+
+    <div class="formula-box hl-green" style="margin-top:12px;">
+      \[
+      \boxed{\sin 15^\circ = \frac{\sqrt{6} - \sqrt{2}}{4}}
+      \]
+    </div>
+    <div class="jianji"><strong>简记：</strong>「六减二，除以四」（√6−√2 在分子，除以 4）</div>
+
+    <div class="formula-box hl-green">
+      \[
+      \boxed{\cos 15^\circ = \frac{\sqrt{6} + \sqrt{2}}{4}}
+      \]
+    </div>
+    <div class="jianji"><strong>简记：</strong>「六加二，除以四」（sin 用减号，cos 用加号——对称！）</div>
+
+    <div class="formula-box hl-green">
+      \[
+      \boxed{\tan 15^\circ = 2 - \sqrt{3}}
+      \]
+    </div>
+    <div class="jianji"><strong>推导：</strong>tan = BC/DC = 1/(2+√3) = (2−√3)/[(2+√3)(2−√3)] = 2−√3</div>
+
+    <div class="memory-card">
+      <div class="mem-icon">🧩</div>
+      <div class="mem-title">同时得到 75° 的值（互余关系）</div>
+      <div class="mem-body">
+        \(\sin 75^\circ = \cos 15^\circ = \dfrac{\sqrt{6} + \sqrt{2}}{4}\)<br>
+        \(\cos 75^\circ = \sin 15^\circ = \dfrac{\sqrt{6} - \sqrt{2}}{4}\)<br>
+        \(\tan 75^\circ = \dfrac{1}{\tan 15^\circ} = 2 + \sqrt{3}\)
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     5c. 常见特殊角三角函数值全表
+     ══════════════════════════════════════════════════ -->
+<div class="section" id="s5c-special-angles">
+  <div class="section-head">
+    <div class="section-num orange">5c</div>
+    <h2>常见特殊角三角函数值全表</h2>
+  </div>
+
+  <div class="card" style="padding:20px;">
+    <div class="card-title" style="text-align:center;">一张表覆盖所有常见角度（0° ~ 90°）</div>
+    <table class="formula-table">
+      <tr>
+        <th style="width:8%;">角度</th>
+        <th style="width:12%;">\(\sin\)</th>
+        <th style="width:12%;">\(\cos\)</th>
+        <th style="width:14%;">\(\tan\)</th>
+        <th style="width:54%;">由来 / 关系</th>
+      </tr>
+      <tr>
+        <td style="font-weight:700;">0°</td>
+        <td>\(0\)</td><td>\(1\)</td><td>\(0\)</td>
+        <td class="fn-note">退化三角形 / 单位圆右端点</td>
+      </tr>
+      <tr style="background:var(--bg-formula);">
+        <td style="font-weight:700;color:var(--accent);">15°</td>
+        <td style="font-weight:700;">\(\frac{\sqrt{6}-\sqrt{2}}{4}\)</td>
+        <td style="font-weight:700;">\(\frac{\sqrt{6}+\sqrt{2}}{4}\)</td>
+        <td style="font-weight:700;">\(2-\sqrt{3}\)</td>
+        <td class="fn-note">30°→15° 构造法 / 45°−30°=15°</td>
+      </tr>
+      <tr>
+        <td style="font-weight:700;">18°</td>
+        <td>\(\frac{\sqrt{5}-1}{4}\)</td>
+        <td>\(\frac{\sqrt{10+2\sqrt{5}}}{4}\)</td>
+        <td>\(\frac{\sqrt{25-10\sqrt{5}}}{5}\)</td>
+        <td class="fn-note">黄金三角形（36°−72°−72°）</td>
+      </tr>
+      <tr style="background:var(--bg-formula);">
+        <td style="font-weight:700;color:var(--accent);">22.5°</td>
+        <td style="font-weight:700;">\(\frac{\sqrt{2-\sqrt{2}}}{2}\)</td>
+        <td style="font-weight:700;">\(\frac{\sqrt{2+\sqrt{2}}}{2}\)</td>
+        <td style="font-weight:700;">\(\sqrt{2}-1\)</td>
+        <td class="fn-note">45°→22.5° 构造法</td>
+      </tr>
+      <tr>
+        <td style="font-weight:700;">30°</td>
+        <td>\(\frac{1}{2}\)</td>
+        <td>\(\frac{\sqrt{3}}{2}\)</td>
+        <td>\(\frac{\sqrt{3}}{3}\)</td>
+        <td class="fn-note">30°−60°−90° 标准三角形</td>
+      </tr>
+      <tr>
+        <td style="font-weight:700;">36°</td>
+        <td>\(\frac{\sqrt{10-2\sqrt{5}}}{4}\)</td>
+        <td>\(\frac{\sqrt{5}+1}{4}\)</td>
+        <td>\(\sqrt{5-2\sqrt{5}}\)</td>
+        <td class="fn-note">黄金三角形 / cos36°=φ/2</td>
+      </tr>
+      <tr>
+        <td style="font-weight:700;">45°</td>
+        <td>\(\frac{\sqrt{2}}{2}\)</td>
+        <td>\(\frac{\sqrt{2}}{2}\)</td>
+        <td>\(1\)</td>
+        <td class="fn-note">等腰直角三角形</td>
+      </tr>
+      <tr>
+        <td style="font-weight:700;">54°</td>
+        <td>\(\frac{\sqrt{5}+1}{4}\)</td>
+        <td>\(\frac{\sqrt{10-2\sqrt{5}}}{4}\)</td>
+        <td>\(\frac{\sqrt{25+10\sqrt{5}}}{5}\)</td>
+        <td class="fn-note">90°−36°（互余）</td>
+      </tr>
+      <tr>
+        <td style="font-weight:700;">60°</td>
+        <td>\(\frac{\sqrt{3}}{2}\)</td>
+        <td>\(\frac{1}{2}\)</td>
+        <td>\(\sqrt{3}\)</td>
+        <td class="fn-note">30°−60°−90° 标准三角形</td>
+      </tr>
+      <tr style="background:var(--bg-formula);">
+        <td style="font-weight:700;color:var(--accent);">67.5°</td>
+        <td style="font-weight:700;">\(\frac{\sqrt{2+\sqrt{2}}}{2}\)</td>
+        <td style="font-weight:700;">\(\frac{\sqrt{2-\sqrt{2}}}{2}\)</td>
+        <td style="font-weight:700;">\(\sqrt{2}+1\)</td>
+        <td class="fn-note">90°−22.5°（互余）</td>
+      </tr>
+      <tr>
+        <td style="font-weight:700;">72°</td>
+        <td>\(\frac{\sqrt{10+2\sqrt{5}}}{4}\)</td>
+        <td>\(\frac{\sqrt{5}-1}{4}\)</td>
+        <td>\(\sqrt{5+2\sqrt{5}}\)</td>
+        <td class="fn-note">90°−18°（互余）</td>
+      </tr>
+      <tr style="background:var(--bg-formula);">
+        <td style="font-weight:700;color:var(--accent);">75°</td>
+        <td style="font-weight:700;">\(\frac{\sqrt{6}+\sqrt{2}}{4}\)</td>
+        <td style="font-weight:700;">\(\frac{\sqrt{6}-\sqrt{2}}{4}\)</td>
+        <td style="font-weight:700;">\(2+\sqrt{3}\)</td>
+        <td class="fn-note">90°−15° / 45°+30°=75°</td>
+      </tr>
+      <tr>
+        <td style="font-weight:700;">90°</td>
+        <td>\(1\)</td><td>\(0\)</td><td>—</td>
+        <td class="fn-note">单位圆上端点</td>
+      </tr>
+    </table>
+
+    <div class="memory-card" style="margin-top:14px;">
+      <div class="mem-icon">🧠</div>
+      <div class="mem-title">记忆策略（四层递进）</div>
+      <div class="mem-body">
+        <strong>① 必背五角：</strong>0°、30°、45°、60°、90° — 用标准三角形+单位圆记<br>
+        <strong>② 15° &amp; 75°：</strong>用 30°→15° 构造法，口诀「六减二/六加二，都除以四」<br>
+        <strong>③ 22.5° &amp; 67.5°：</strong>用 45°→22.5° 构造法，记 tan22.5°=√2−1 作为锚点<br>
+        <strong>④ 18° &amp; 36° &amp; 54° &amp; 72°：</strong>与黄金比例 φ=(√5+1)/2 相关，竞赛可选<br><br>
+        <strong style="color:var(--accent);">核心原则：理解构造，忘公式也能当场推出！</strong>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     7. 降幂 & 半角公式
+     ══════════════════════════════════════════════════ -->
+<div class="section" id="s6-half">
+  <div class="section-head">
+    <div class="section-num">6</div>
+    <h2>降幂公式与半角公式：倍角的「逆运算」</h2>
+  </div>
+
+  <div class="card">
+    <div class="card-title">降幂公式（把平方降到一次）</div>
+    <p style="font-size:14px;color:var(--text-secondary);margin-bottom:10px;">
+      从 \(\cos(2\alpha)\) 的形式二和形式三反解，立即得到：
+    </p>
+    <div class="formula-box hl-green">
+      \[ \boxed{\sin^2\alpha = \frac{1 - \cos(2\alpha)}{2}} \]
+    </div>
+    <div class="jianji"><strong>口诀：</strong>正弦降幂用减号 —— \(\sin^2=\frac{1-\cos}{2}\)</div>
+    <div class="formula-box hl-green">
+      \[ \boxed{\cos^2\alpha = \frac{1 + \cos(2\alpha)}{2}} \]
+    </div>
+    <div class="jianji"><strong>口诀：</strong>余弦降幂用加号 —— \(\cos^2=\frac{1+\cos}{2}\)</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">半角公式（从降幂再开方）</div>
+    <p style="font-size:14px;color:var(--text-secondary);margin-bottom:10px;">
+      把降幂公式中的 α 换成 α/2，2α 换成 α，再开方即得：
+    </p>
+    <div class="formula-box">
+      \[ \boxed{\sin\frac{\alpha}{2} = \pm\sqrt{\frac{1 - \cos\alpha}{2}}} \]
+    </div>
+    <div class="formula-box">
+      \[ \boxed{\cos\frac{\alpha}{2} = \pm\sqrt{\frac{1 + \cos\alpha}{2}}} \]
+    </div>
+    <div class="formula-box">
+      \[ \boxed{\tan\frac{\alpha}{2} = \frac{\sin\alpha}{1 + \cos\alpha} = \frac{1 - \cos\alpha}{\sin\alpha}} \]
+    </div>
+    <div class="callout orange">
+      <div class="callout-label">⚠️ 注意：正负号由 α/2 所在象限决定！</div>
+      半角公式带 ± 号，需要根据 α/2 是第几象限角来确定取正还是取负。
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     8. 和差化积公式
+     ══════════════════════════════════════════════════ -->
+<div class="section" id="s7-sum2prod">
+  <div class="section-head">
+    <div class="section-num">7</div>
+    <h2>和差化积：把「加减」变成「乘积」</h2>
+  </div>
+
+  <div class="card">
+    <div class="card-title">推导思路：换元法</div>
+    <p style="font-size:14px;color:var(--text-secondary);margin-bottom:14px;">
+      令：\(x = \alpha+\beta,\; y = \alpha-\beta\)，
+      则 \(\alpha = \frac{x+y}{2},\; \beta = \frac{x-y}{2}\)。
+      代入和差角公式展开后化简即得。
+    </p>
+  </div>
+
+  <div class="quad-grid">
+    <div class="quad-cell">
+      <div class="quad-label">▸ sin + sin</div>
+      <div class="quad-formula">
+        \(\displaystyle \sin x + \sin y = 2\sin\frac{x+y}{2}\cos\frac{x-y}{2}\)
+      </div>
+    </div>
+    <div class="quad-cell">
+      <div class="quad-label">▸ sin − sin</div>
+      <div class="quad-formula">
+        \(\displaystyle \sin x - \sin y = 2\cos\frac{x+y}{2}\sin\frac{x-y}{2}\)
+      </div>
+    </div>
+    <div class="quad-cell">
+      <div class="quad-label">▸ cos + cos</div>
+      <div class="quad-formula">
+        \(\displaystyle \cos x + \cos y = 2\cos\frac{x+y}{2}\cos\frac{x-y}{2}\)
+      </div>
+    </div>
+    <div class="quad-cell">
+      <div class="quad-label">▸ cos − cos</div>
+      <div class="quad-formula">
+        \(\displaystyle \cos x - \cos y = -2\sin\frac{x+y}{2}\sin\frac{x-y}{2}\)
+      </div>
+    </div>
+  </div>
+
+  <div class="memory-card">
+    <div class="mem-icon">🎵</div>
+    <div class="mem-title">和差化积记忆口诀</div>
+    <div class="mem-body">
+      <strong>「正加正，正在前；正减正，余在前；余加余，余并肩；余减余，负正弦」</strong><br><br>
+      展开来说：<br>
+      • \(\sin+\sin\) → 2 <strong>sin</strong> cos（sin在前）<br>
+      • \(\sin-\sin\) → 2 <strong>cos</strong> sin（cos在前）<br>
+      • \(\cos+\cos\) → 2 cos cos（两个cos）<br>
+      • \(\cos-\cos\) → −2 sin sin（两个sin，带负号）<br><br>
+      <strong>所有公式都有共同结构：</strong>系数 2、半角和在前、半角差在后。
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     9. 积化和差公式
+     ══════════════════════════════════════════════════ -->
+<div class="section" id="s8-prod2sum">
+  <div class="section-head">
+    <div class="section-num">8</div>
+    <h2>积化和差：把「乘积」变回「加减」</h2>
+  </div>
+
+  <div class="card">
+    <div class="card-title">推导思路：从和差角公式展开式反推</div>
+    <p style="font-size:14px;color:var(--text-secondary);margin-bottom:14px;">
+      观察：\(\sin(\alpha+\beta) = \sin\alpha\cos\beta + \cos\alpha\sin\beta\)<br>
+      和 \(\sin(\alpha-\beta) = \sin\alpha\cos\beta - \cos\alpha\sin\beta\)<br>
+      两式相加：\(\sin(\alpha+\beta)+\sin(\alpha-\beta) = 2\sin\alpha\cos\beta\)<br>
+      移项即得：\(\sin\alpha\cos\beta = \frac{\sin(\alpha+\beta)+\sin(\alpha-\beta)}{2}\)
+    </p>
+  </div>
+
+  <div class="quad-grid">
+    <div class="quad-cell">
+      <div class="quad-label">▸ sin·cos</div>
+      <div class="quad-formula">
+        \(\displaystyle \sin\alpha\cos\beta = \frac{\sin(\alpha+\beta) + \sin(\alpha-\beta)}{2}\)
+      </div>
+    </div>
+    <div class="quad-cell">
+      <div class="quad-label">▸ cos·sin</div>
+      <div class="quad-formula">
+        \(\displaystyle \cos\alpha\sin\beta = \frac{\sin(\alpha+\beta) - \sin(\alpha-\beta)}{2}\)
+      </div>
+    </div>
+    <div class="quad-cell">
+      <div class="quad-label">▸ cos·cos</div>
+      <div class="quad-formula">
+        \(\displaystyle \cos\alpha\cos\beta = \frac{\cos(\alpha+\beta) + \cos(\alpha-\beta)}{2}\)
+      </div>
+    </div>
+    <div class="quad-cell">
+      <div class="quad-label">▸ sin·sin</div>
+      <div class="quad-formula">
+        \(\displaystyle \sin\alpha\sin\beta = \frac{\cos(\alpha-\beta) - \cos(\alpha+\beta)}{2}\)
+      </div>
+    </div>
+  </div>
+
+  <div class="memory-card">
+    <div class="mem-icon">🧩</div>
+    <div class="mem-title">积化和差记忆技巧</div>
+    <div class="mem-body">
+      <strong>核心规律：</strong>两个三角函数的乘积 = 两个余弦（或正弦）之和/差的一半<br><br>
+      • sin·cos 或 cos·sin → 结果是 sin 的和差（「正余得正弦」）<br>
+      • cos·cos → 结果是 cos 的和差（余弦乘余弦，得余弦）<br>
+      • sin·sin → 结果是 cos 的差（正弦乘正弦，得余弦之差）<br><br>
+      <strong>注意</strong>：sin·sin 的结果是 \(\frac{\cos(-) - \cos(+)}{2}\)，先差后和！
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     10. 辅助角公式
+     ══════════════════════════════════════════════════ -->
+<div class="section" id="s9-aux">
+  <div class="section-head">
+    <div class="section-num">9</div>
+    <h2>辅助角公式：线性组合 → 单一正弦</h2>
+  </div>
+
+  <div class="card">
+    <div class="card-title">核心公式</div>
+    <p style="font-size:14px;color:var(--text-secondary);margin-bottom:14px;">
+      形如 \(a\sin x + b\cos x\) 的表达式，可以化为一个单一的三角函数：
+    </p>
+    <div class="formula-box hl-green">
+      \[
+      \boxed{a\sin x + b\cos x = \sqrt{a^2+b^2}\;\sin(x+\varphi)}
+      \]
+    </div>
+    <p style="text-align:center;font-size:14px;">
+      其中 \(\displaystyle \cos\varphi = \frac{a}{\sqrt{a^2+b^2}},\;\;
+      \sin\varphi = \frac{b}{\sqrt{a^2+b^2}},\;\;
+      \tan\varphi = \frac{b}{a}\)
+    </p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">推导过程（逆用和角公式）</div>
+    <div class="proof-box alg">
+      <div class="proof-step">
+        \[
+        \begin{aligned}
+        a\sin x + b\cos x
+        &= \sqrt{a^2+b^2}\left(\frac{a}{\sqrt{a^2+b^2}}\sin x + \frac{b}{\sqrt{a^2+b^2}}\cos x\right) \\[6pt]
+        &= \sqrt{a^2+b^2}\big(\cos\varphi\sin x + \sin\varphi\cos x\big) \\[6pt]
+        &= \sqrt{a^2+b^2}\;\sin(x+\varphi)
+        \end{aligned}
+        \]
+      </div>
+    </div>
+  </div>
+
+  <div class="callout green">
+    <div class="callout-label">💡 两种常见形式</div>
+    也可以写成余弦形式：\(a\sin x + b\cos x = \sqrt{a^2+b^2}\;\cos(x-\theta)\)<br>
+    其中 \(\cos\theta = \frac{b}{\sqrt{a^2+b^2}},\;\sin\theta = \frac{a}{\sqrt{a^2+b^2}}\)
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     11. 记忆方法大全
+     ══════════════════════════════════════════════════ -->
+<div class="section" id="s10-memory">
+  <div class="section-head">
+    <div class="section-num orange">10</div>
+    <h2>记忆方法大全：告别死记硬背</h2>
+  </div>
+
+  <div class="memory-card">
+    <div class="mem-icon">🧠</div>
+    <div class="mem-title">方法一：「正余余正」口诀法（最推荐）</div>
+    <div class="mem-body">
+      <table class="formula-table" style="margin:10px 0;">
+        <tr><th>公式</th><th>展开口诀</th><th>符号规律</th></tr>
+        <tr><td class="fn-name">\(\sin(\alpha+\beta)\)</td><td>正余 + 余正</td><td style="color:var(--success);">符号=角号 ✓</td></tr>
+        <tr><td class="fn-name">\(\sin(\alpha-\beta)\)</td><td>正余 − 余正</td><td style="color:var(--success);">符号=角号 ✓</td></tr>
+        <tr><td class="fn-name">\(\cos(\alpha+\beta)\)</td><td>余余 − 正正</td><td style="color:var(--accent);">符号≠角号！</td></tr>
+        <tr><td class="fn-name">\(\cos(\alpha-\beta)\)</td><td>余余 + 正正</td><td style="color:var(--accent);">符号≠角号！</td></tr>
+        <tr><td class="fn-name">\(\tan(\alpha+\beta)\)</td><td>(T+T)/(1−TT)</td><td>上加下减</td></tr>
+        <tr><td class="fn-name">\(\tan(\alpha-\beta)\)</td><td>(T−T)/(1+TT)</td><td>上减下加</td></tr>
+      </table>
+      <p style="font-size:13px;color:var(--accent);margin-top:6px;">
+        ⚠️ 核心规律：<strong>sin</strong> 符号跟着角走，<strong>cos</strong> 符号反着来！
+      </p>
+    </div>
+  </div>
+
+  <div class="memory-card">
+    <div class="mem-icon">🖼️</div>
+    <div class="mem-title">方法二：图形联想法</div>
+    <div class="mem-body">
+      <strong>sin 的公式</strong>：\(\sin\alpha\cos\beta + \cos\alpha\sin\beta\)<br>
+      → 想象两个人传递接力棒：<strong>s 先接 c，然后 c 再接 s</strong> —— 「交替传递」<br><br>
+      <strong>cos 的公式</strong>：\(\cos\alpha\cos\beta - \sin\alpha\sin\beta\)<br>
+      → 想象 <strong>c 和 c 是好朋友（在一起），s 和 s 是好朋友（在一起），但两组人之间有矛盾（用减号）</strong> —— 「同类相聚，异类相斥」
+    </div>
+  </div>
+
+  <div class="memory-card">
+    <div class="mem-icon">📐</div>
+    <div class="mem-title">方法三：「只记一条」极限省心法</div>
+    <div class="mem-body">
+      只记 \(\cos(\alpha-\beta) = \cos\alpha\cos\beta + \sin\alpha\sin\beta\)，剩下的考场上推：<br>
+      ① β → −β 得 \(\cos(\alpha+\beta)=cc-ss\)<br>
+      ② 利用 \(\sin\theta=\cos(90^\circ-\theta)\) 得 \(\sin(\alpha+\beta)=sc+cs\)<br>
+      ③ β → −β 得 \(\sin(\alpha-\beta)=sc-cs\)<br>
+      ④ β = α 得倍角公式<br>
+      <strong>缺点</strong>：考试紧张容易推错。建议配合方法一，双重保险！
+    </div>
+  </div>
+
+  <div class="memory-card">
+    <div class="mem-icon">🎵</div>
+    <div class="mem-title">方法四：和差化积的口诀韵律</div>
+    <div class="mem-body">
+      <strong>「正加正，正在前；余加余，余并肩；正减正，余在前；余减余，负正弦」</strong><br><br>
+      对应的公式：
+      \(\sin+\sin = 2\sin\cos\)（正在前）<br>
+      \(\sin-\sin = 2\cos\sin\)（余在前）<br>
+      \(\cos+\cos = 2\cos\cos\)（余并肩）<br>
+      \(\cos-\cos = -2\sin\sin\)（负正弦）
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     12. 公式速查表
+     ══════════════════════════════════════════════════ -->
+<div class="section" id="s11-reference">
+  <div class="section-head">
+    <div class="section-num orange">11</div>
+    <h2>公式速查：一张表查全部</h2>
+  </div>
+
+  <div class="card" style="padding:20px;">
+    <div class="card-title" style="text-align:center;">和差角 &amp; 倍角 &amp; 降幂 &amp; 半角</div>
+    <table class="formula-table">
+      <tr><th style="width:22%;">类型</th><th style="width:48%;">公式</th><th style="width:30%;">口诀/备注</th></tr>
+      <tr><td class="fn-name">\(\sin(\alpha+\beta)\)</td><td>\(\sin\alpha\cos\beta + \cos\alpha\sin\beta\)</td><td class="fn-note">正余余正，加号</td></tr>
+      <tr><td class="fn-name">\(\sin(\alpha-\beta)\)</td><td>\(\sin\alpha\cos\beta - \cos\alpha\sin\beta\)</td><td class="fn-note">正余余正，减号</td></tr>
+      <tr><td class="fn-name">\(\cos(\alpha+\beta)\)</td><td>\(\cos\alpha\cos\beta - \sin\alpha\sin\beta\)</td><td class="fn-note" style="color:var(--accent);">符号反！</td></tr>
+      <tr><td class="fn-name">\(\cos(\alpha-\beta)\)</td><td>\(\cos\alpha\cos\beta + \sin\alpha\sin\beta\)</td><td class="fn-note" style="color:var(--accent);">母公式（根）</td></tr>
+      <tr><td class="fn-name">\(\tan(\alpha+\beta)\)</td><td>\(\frac{\tan\alpha + \tan\beta}{1 - \tan\alpha\tan\beta}\)</td><td class="fn-note">上加下减</td></tr>
+      <tr><td class="fn-name">\(\tan(\alpha-\beta)\)</td><td>\(\frac{\tan\alpha - \tan\beta}{1 + \tan\alpha\tan\beta}\)</td><td class="fn-note">上减下加</td></tr>
+      <tr><td class="fn-name">\(\sin(2\alpha)\)</td><td>\(2\sin\alpha\cos\alpha\)</td><td class="fn-note">二倍 s c 相乘</td></tr>
+      <tr><td class="fn-name">\(\cos(2\alpha)\)</td><td>\(\cos^2\alpha-\sin^2\alpha\) / \(2\cos^2\alpha-1\) / \(1-2\sin^2\alpha\)</td><td class="fn-note">三选一</td></tr>
+      <tr><td class="fn-name">\(\tan(2\alpha)\)</td><td>\(\frac{2\tan\alpha}{1 - \tan^2\alpha}\)</td><td class="fn-note">二倍 T</td></tr>
+      <tr><td class="fn-name">\(\sin^2\alpha\)</td><td>\(\frac{1 - \cos(2\alpha)}{2}\)</td><td class="fn-note">降幂用减号</td></tr>
+      <tr><td class="fn-name">\(\cos^2\alpha\)</td><td>\(\frac{1 + \cos(2\alpha)}{2}\)</td><td class="fn-note">降幂用加号</td></tr>
+      <tr><td class="fn-name">\(\sin\frac{\alpha}{2}\)</td><td>\(\pm\sqrt{\frac{1 - \cos\alpha}{2}}\)</td><td class="fn-note">注意±</td></tr>
+      <tr><td class="fn-name">\(\cos\frac{\alpha}{2}\)</td><td>\(\pm\sqrt{\frac{1 + \cos\alpha}{2}}\)</td><td class="fn-note">注意±</td></tr>
+      <tr><td class="fn-name">\(\tan\frac{\alpha}{2}\)</td><td>\(\frac{\sin\alpha}{1+\cos\alpha} = \frac{1-\cos\alpha}{\sin\alpha}\)</td><td class="fn-note">无±号</td></tr>
+    </table>
+
+    <div class="card-title" style="text-align:center;margin-top:24px;">和差化积 &amp; 积化和差</div>
+    <table class="formula-table">
+      <tr><th style="width:25%;">类型</th><th style="width:50%;">公式</th><th style="width:25%;">备注</th></tr>
+      <tr><td class="fn-name">\(\sin x + \sin y\)</td><td>\(2\sin\frac{x+y}{2}\cos\frac{x-y}{2}\)</td><td class="fn-note">正在前</td></tr>
+      <tr><td class="fn-name">\(\sin x - \sin y\)</td><td>\(2\cos\frac{x+y}{2}\sin\frac{x-y}{2}\)</td><td class="fn-note">余在前</td></tr>
+      <tr><td class="fn-name">\(\cos x + \cos y\)</td><td>\(2\cos\frac{x+y}{2}\cos\frac{x-y}{2}\)</td><td class="fn-note">余并肩</td></tr>
+      <tr><td class="fn-name">\(\cos x - \cos y\)</td><td>\(-2\sin\frac{x+y}{2}\sin\frac{x-y}{2}\)</td><td class="fn-note" style="color:var(--accent);">负正弦</td></tr>
+      <tr><td class="fn-name">\(\sin\alpha\cos\beta\)</td><td>\(\frac{\sin(\alpha+\beta)+\sin(\alpha-\beta)}{2}\)</td><td class="fn-note">正余得正弦</td></tr>
+      <tr><td class="fn-name">\(\cos\alpha\sin\beta\)</td><td>\(\frac{\sin(\alpha+\beta)-\sin(\alpha-\beta)}{2}\)</td><td class="fn-note">余正得正弦</td></tr>
+      <tr><td class="fn-name">\(\cos\alpha\cos\beta\)</td><td>\(\frac{\cos(\alpha+\beta)+\cos(\alpha-\beta)}{2}\)</td><td class="fn-note">余余得余弦</td></tr>
+      <tr><td class="fn-name">\(\sin\alpha\sin\beta\)</td><td>\(\frac{\cos(\alpha-\beta)-\cos(\alpha+\beta)}{2}\)</td><td class="fn-note">正正得余弦</td></tr>
+    </table>
+
+    <div class="card-title" style="text-align:center;margin-top:24px;">辅助角公式</div>
+    <table class="formula-table">
+      <tr><th>公式</th><th>条件</th></tr>
+      <tr><td>\(a\sin x + b\cos x = \sqrt{a^2+b^2}\sin(x+\varphi)\)</td><td>\(\tan\varphi = b/a\)</td></tr>
+      <tr><td>\(a\sin x + b\cos x = \sqrt{a^2+b^2}\cos(x-\theta)\)</td><td>\(\tan\theta = a/b\)</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     13. 互动验证
+     ══════════════════════════════════════════════════ -->
+<div class="section" id="s12-demo">
+  <div class="section-head">
+    <div class="section-num orange">12</div>
+    <h2>互动验证：拖一拖，算一算</h2>
+  </div>
+
+  <div class="card">
+    <div class="card-title">和角公式数值对比验证</div>
+    <p style="font-size:14px;color:var(--text-secondary);margin-bottom:14px;">
+      拖动滑块改变 α 和 β，实时对比「公式计算值」和「直接计算值」：
+    </p>
+
+    <div style="max-width:550px;margin:0 auto;">
+      <canvas id="verifyChart" width="500" height="300" style="max-width:100%;height:auto;"></canvas>
+    </div>
+
+    <div style="margin:16px 0;">
+      <label style="font-size:13px;color:var(--text-secondary);">
+        α = <span id="alphaVal" style="color:var(--primary);font-weight:700;">45</span>°
+      </label>
+      <input type="range" id="alphaSlider" min="0" max="90" value="45" step="1"
+        style="width:100%;margin:6px 0;" oninput="updateVerify()">
+    </div>
+    <div style="margin:16px 0;">
+      <label style="font-size:13px;color:var(--text-secondary);">
+        β = <span id="betaVal" style="color:var(--accent);font-weight:700;">30</span>°
+      </label>
+      <input type="range" id="betaSlider" min="0" max="90" value="30" step="1"
+        style="width:100%;margin:6px 0;" oninput="updateVerify()">
+    </div>
+
+    <div class="formula-box" id="verifyResult" style="background:#fff;font-size:14px;line-height:2;overflow:visible;">
+      等待计算...
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     14. 例题精讲
+     ══════════════════════════════════════════════════ -->
+<div class="section" id="s13-examples">
+  <div class="section-head">
+    <div class="section-num orange">13</div>
+    <h2>例题精讲：从听懂到做对</h2>
+  </div>
+
+  <div class="example-box">
+    <div class="example-num">例 1 ⭐⭐ 直接套用和角公式</div>
+    <div class="example-problem">
+      <strong>题目：</strong>已知 \(\sin\alpha = \frac{3}{5},\;\alpha\in(0,\frac{\pi}{2})\)，
+      \(\cos\beta = \frac{5}{13},\;\beta\in(0,\frac{\pi}{2})\)，求 \(\sin(\alpha+\beta)\) 和 \(\cos(\alpha+\beta)\)。
+    </div>
+    <div class="example-solution">
+      <strong>第1步</strong>：由 \(\sin\alpha=\frac{3}{5}\)，α在第一象限 → \(\cos\alpha=\sqrt{1-\frac{9}{25}}=\frac{4}{5}\)<br>
+      <strong>第2步</strong>：由 \(\cos\beta=\frac{5}{13}\)，β在第一象限 → \(\sin\beta=\sqrt{1-\frac{25}{169}}=\frac{12}{13}\)<br>
+      <strong>第3步</strong>：\(\sin(\alpha+\beta)=\sin\alpha\cos\beta+\cos\alpha\sin\beta
+        = \frac{3}{5}\cdot\frac{5}{13}+\frac{4}{5}\cdot\frac{12}{13}
+        = \frac{15+48}{65}=\frac{63}{65}\)<br>
+      <strong>第4步</strong>：\(\cos(\alpha+\beta)=\cos\alpha\cos\beta-\sin\alpha\sin\beta
+        = \frac{4}{5}\cdot\frac{5}{13}-\frac{3}{5}\cdot\frac{12}{13}
+        = \frac{20-36}{65}=-\frac{16}{65}\)
+    </div>
+    <div class="example-note">
+      <strong>💡 小结：</strong>先用 \(\sin^2+\cos^2=1\) 补全所有三角比，再直接代入和角公式。第五步 cos 为负说明 α+β 超过了 90°。
+    </div>
+  </div>
+
+  <div class="example-box">
+    <div class="example-num">例 2 ⭐⭐⭐ 逆用和角公式</div>
+    <div class="example-problem">
+      <strong>题目：</strong>化简 \(\sin 23^\circ\cos 37^\circ + \cos 23^\circ\sin 37^\circ\)。
+    </div>
+    <div class="example-solution">
+      观察结构：\(\sin A\cos B + \cos A\sin B\) —— 这正是 \(\sin(A+B)\) 的展开式！<br>
+      \[
+      \text{原式} = \sin(23^\circ+37^\circ) = \sin 60^\circ = \frac{\sqrt{3}}{2}
+      \]
+    </div>
+    <div class="example-note">
+      <strong>💡 小结：</strong>「逆用」是和差角公式最重要的考法之一。看到 \(sc+cs\) → 立刻想到 \(\sin(A+B)\)。
+    </div>
+  </div>
+
+  <div class="example-box">
+    <div class="example-num">例 3 ⭐⭐⭐ 倍角公式选形</div>
+    <div class="example-problem">
+      <strong>题目：</strong>已知 \(\sin\alpha = \frac{1}{3}\)，求 \(\cos(2\alpha)\)。
+    </div>
+    <div class="example-solution">
+      选形式三：\(\cos(2\alpha) = 1 - 2\sin^2\alpha\)<br>
+      \[
+      \cos(2\alpha) = 1 - 2\cdot\left(\frac{1}{3}\right)^2 = 1 - \frac{2}{9} = \frac{7}{9}
+      \]
+    </div>
+    <div class="example-note">
+      <strong>💡 小结：</strong>给了 sin 就用 \(1-2\sin^2\alpha\)；给了 cos 就用 \(2\cos^2\alpha-1\)。正确选形省去求另一个值！
+    </div>
+  </div>
+
+  <div class="example-box">
+    <div class="example-num">例 4 ⭐⭐⭐⭐ 求非特殊角的精确值</div>
+    <div class="example-problem">
+      <strong>题目：</strong>求 \(\sin 15^\circ\) 和 \(\cos 75^\circ\) 的精确值。
+    </div>
+    <div class="example-solution">
+      <strong>方法一（差角公式）：</strong><br>
+      \(\sin 15^\circ = \sin(45^\circ-30^\circ)
+        = \sin45^\circ\cos30^\circ - \cos45^\circ\sin30^\circ
+        = \frac{\sqrt{2}}{2}\cdot\frac{\sqrt{3}}{2} - \frac{\sqrt{2}}{2}\cdot\frac{1}{2}
+        = \frac{\sqrt{6}-\sqrt{2}}{4}\)<br><br>
+      <strong>方法二（降幂公式）：</strong><br>
+      \(\sin^2 15^\circ = \frac{1-\cos30^\circ}{2} = \frac{1-\sqrt{3}/2}{2}\)，开方再化简也得 \(\frac{\sqrt{6}-\sqrt{2}}{4}\)<br><br>
+      \(\cos 75^\circ = \cos(45^\circ+30^\circ)
+        = \cos45^\circ\cos30^\circ - \sin45^\circ\sin30^\circ
+        = \frac{\sqrt{6}-\sqrt{2}}{4}\)
+    </div>
+    <div class="example-note">
+      <strong>💡 小结：</strong>15°=45°−30°，75°=45°+30°。看到 15°、75°、105° 自动拆成特殊角的和/差。有趣的是 \(\sin15^\circ=\cos75^\circ\)。
+    </div>
+  </div>
+
+  <div class="example-box">
+    <div class="example-num">例 5 ⭐⭐⭐⭐ 和差化积应用</div>
+    <div class="example-problem">
+      <strong>题目：</strong>化简 \(\sin 75^\circ - \sin 15^\circ\)。
+    </div>
+    <div class="example-solution">
+      利用和差化积公式 \(\sin x - \sin y = 2\cos\frac{x+y}{2}\sin\frac{x-y}{2}\)：<br>
+      \[
+      \begin{aligned}
+      \sin 75^\circ - \sin 15^\circ
+      &= 2\cos\frac{75^\circ+15^\circ}{2}\sin\frac{75^\circ-15^\circ}{2} \\[4pt]
+      &= 2\cos 45^\circ \sin 30^\circ \\[4pt]
+      &= 2\cdot\frac{\sqrt{2}}{2}\cdot\frac{1}{2} = \frac{\sqrt{2}}{2}
+      \end{aligned}
+      \]
+    </div>
+    <div class="example-note">
+      <strong>💡 小结：</strong>两个 sine 的差，用和差化积一步到位，比先展开再合并快得多！
+    </div>
+  </div>
+
+  <div class="example-box">
+    <div class="example-num">例 6 ⭐⭐⭐⭐ 辅助角公式</div>
+    <div class="example-problem">
+      <strong>题目：</strong>求 \(\sin x + \sqrt{3}\cos x\) 的最大值和最小值。
+    </div>
+    <div class="example-solution">
+      \(a=1,\; b=\sqrt{3},\; \sqrt{a^2+b^2}=\sqrt{1+3}=2\)<br>
+      \(\tan\varphi = \frac{\sqrt{3}}{1} = \sqrt{3} \Rightarrow \varphi = 60^\circ\)<br>
+      \[
+      \sin x + \sqrt{3}\cos x = 2\sin(x+60^\circ)
+      \]
+      因为 \(\sin(x+60^\circ) \in [-1,1]\)，所以：<br>
+      最大值 = 2，最小值 = −2。
+    </div>
+    <div class="example-note">
+      <strong>💡 小结：</strong>辅助角公式把两个三角函数的线性组合化成一个，求最值时特别方便！
+    </div>
+  </div>
+
+  <div class="example-box">
+    <div class="example-num">例 7 ⭐⭐⭐⭐⭐ 竞赛思维：连乘积</div>
+    <div class="example-problem">
+      <strong>题目：</strong>化简 \(\cos 20^\circ\cos 40^\circ\cos 80^\circ\)。
+    </div>
+    <div class="example-solution">
+      乘以 \(\frac{\sin 20^\circ}{\sin 20^\circ}\)，连续使用 \(\sin\theta\cos\theta=\frac{1}{2}\sin(2\theta)\)：<br>
+      \[
+      \begin{aligned}
+      \text{原式} &= \frac{\sin 20^\circ \cos 20^\circ \cos 40^\circ \cos 80^\circ}{\sin 20^\circ} \\[4pt]
+      &= \frac{\frac{1}{2}\sin 40^\circ \cos 40^\circ \cos 80^\circ}{\sin 20^\circ}
+       = \frac{\frac{1}{4}\sin 80^\circ \cos 80^\circ}{\sin 20^\circ}
+       = \frac{\frac{1}{8}\sin 160^\circ}{\sin 20^\circ} \\[4pt]
+      &= \frac{\frac{1}{8}\sin 20^\circ}{\sin 20^\circ} = \frac{1}{8}
+      \end{aligned}
+      \]
+    </div>
+    <div class="example-note">
+      <strong>💡 小结：</strong>经典「连锁反应」技巧。关键点：①乘以 sin20°/sin20° ②连续使用倍角公式 ③利用 sin160°=sin20°。
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     15. 易错点清单
+     ══════════════════════════════════════════════════ -->
+<div class="section" id="s14-pitfalls">
+  <div class="section-head">
+    <div class="section-num">14</div>
+    <h2>避坑指南：初中生最常犯的错误</h2>
+  </div>
+
+  <div class="callout red">
+    <div class="callout-label">❌ 错误 1：把三角函数当成线性的</div>
+    \(\sin(A+B) \neq \sin A + \sin B\)，\(\cos(A+B) \neq \cos A + \cos B\)。
+  </div>
+  <div class="callout red">
+    <div class="callout-label">❌ 错误 2：cos 的和角符号搞反</div>
+    \(\cos(A+B)\) 的符号与角号<strong>相反</strong>（+ 变 −），\(\cos(A-B)\) 也反（− 变 +）。sin 不反！
+  </div>
+  <div class="callout red">
+    <div class="callout-label">❌ 错误 3：\(\sin(2A) = 2\sin A\)（丢掉了 cosA）</div>
+    倍角公式是 \(\sin(2A) = 2\sin A\cos A\)。除非 \(\cos A = 1\) 才成立，基本不会出现。
+  </div>
+  <div class="callout orange">
+    <div class="callout-label">⚠️ 陷阱 4：半角公式的正负号</div>
+    \(\sin(\alpha/2) = \pm\sqrt{\cdots}\)，\(\pm\) 取决于 α/2 在哪个象限。
+  </div>
+  <div class="callout orange">
+    <div class="callout-label">⚠️ 陷阱 5：tan 分母为零</div>
+    \(\tan A \cdot \tan B = 1\) 时分母为 0，此时 \(A+B=90^\circ\) 或 \(270^\circ\)，tan 无定义。
+  </div>
+  <div class="callout orange">
+    <div class="callout-label">⚠️ 陷阱 6：和差化积的 cos−cos 带负号</div>
+    \(\cos x - \cos y = -2\sin\frac{x+y}{2}\sin\frac{x-y}{2}\)，注意最前面的负号！
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     16. 总结
+     ══════════════════════════════════════════════════ -->
+<div class="section" id="s15-summary">
+  <div class="section-head">
+    <div class="section-num">15</div>
+    <h2>总结：从根到叶的完整体系</h2>
+  </div>
+
+  <div class="card" style="text-align:center;">
+    <div class="formula-box hl-green" style="font-size:15px;line-height:2.4;overflow:visible;">
+      <strong style="font-size:18px;">一图胜千言：三角函数公式体系</strong><br><br>
+      <strong>母公式：</strong>\(\cos(\alpha-\beta)=\cos\alpha\cos\beta+\sin\alpha\sin\beta\)<br><br>
+      <strong>和差角：</strong>
+      \(\sin(\alpha+\beta)=sc+cs\) &nbsp; \(\sin(\alpha-\beta)=sc-cs\)<br>
+      \(\cos(\alpha+\beta)=cc-ss\) &nbsp; \(\cos(\alpha-\beta)=cc+ss\)<br>
+      \(\tan(\alpha+\beta)=\frac{T+T}{1-TT}\) &nbsp; \(\tan(\alpha-\beta)=\frac{T-T}{1+TT}\)<br><br>
+      <strong>倍角：</strong>
+      \(\sin(2\alpha)=2sc\)<br>
+      \(\cos(2\alpha)=cc-ss=2c^2-1=1-2s^2\)<br>
+      \(\tan(2\alpha)=\frac{2T}{1-T^2}\)<br><br>
+      <strong>降幂：</strong>\(\sin^2\alpha=\frac{1-\cos(2\alpha)}{2}\) &nbsp; \(\cos^2\alpha=\frac{1+\cos(2\alpha)}{2}\)<br><br>
+      <strong>和差化积：</strong>
+      \(\sin x+\sin y = 2\sin\frac{x+y}{2}\cos\frac{x-y}{2}\)<br>
+      \(\sin x-\sin y = 2\cos\frac{x+y}{2}\sin\frac{x-y}{2}\)<br>
+      \(\cos x+\cos y = 2\cos\frac{x+y}{2}\cos\frac{x-y}{2}\)<br>
+      \(\cos x-\cos y = -2\sin\frac{x+y}{2}\sin\frac{x-y}{2}\)<br><br>
+      <strong>辅助角：</strong>\(a\sin x+b\cos x=\sqrt{a^2+b^2}\sin(x+\varphi)\)
+    </div>
+  </div>
+
+  <div class="memory-card">
+    <div class="mem-icon">🎯</div>
+    <div class="mem-title">学习建议（五步走）</div>
+    <div class="mem-body">
+      <strong>第一步</strong>：看懂 \(\cos(\alpha-\beta)\) 的几何证明（单位圆+距离公式）<br>
+      <strong>第二步</strong>：跟一遍从母公式到所有和差角公式的代数推导<br>
+      <strong>第三步</strong>：用口诀法记住核心公式（正余余正、余余正正）<br>
+      <strong>第四步</strong>：做 5-10 道题，正用、逆用、变着花样用<br>
+      <strong>第五步</strong>：挑战综合题，体会不同公式组合的威力<br><br>
+      <strong style="color:var(--accent);">记住：公式不是背出来的，是用出来的！</strong>
+    </div>
+  </div>
+</div>
+
+</div><!-- .container -->
+
+<!-- ══════════════════════════════════════════════════
+     脚本
+     ══════════════════════════════════════════════════ -->
+<script>
+// ===== 单位圆交互 =====
+(function(){
+  var c=document.getElementById('unitCircleCanvas');
+  if(!c)return;
+  var ctx=c.getContext('2d'), cx=250, cy=200, r=170, ang=53, af=null;
+  function rd(d){return d*Math.PI/180;}
+  function draw(d){
+    var rad=rd(d); ctx.clearRect(0,0,500,420);
+    ctx.strokeStyle='#d1d5db'; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(40,cy); ctx.lineTo(460,cy); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx,30); ctx.lineTo(cx,370); ctx.stroke();
+    ctx.fillStyle='#6b7280'; ctx.font='12px sans-serif';
+    ctx.fillText('O',cx-8,cy+14); ctx.fillText('x',456,cy+4); ctx.fillText('y',cx-4,26);
+    ctx.strokeStyle='#2563a8'; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2); ctx.stroke();
+    ctx.fillStyle='#1a3a5c'; ctx.beginPath(); ctx.arc(cx,cy,4,0,Math.PI*2); ctx.fill();
+    var px=cx+r*Math.cos(rad), py=cy-r*Math.sin(rad);
+    ctx.strokeStyle='#dc2626'; ctx.lineWidth=3;
+    ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(px,py); ctx.stroke();
+    ctx.fillStyle='#dc2626'; ctx.beginPath(); ctx.arc(px,py,7,0,Math.PI*2); ctx.fill();
+    var cosV=Math.cos(rad), sinV=Math.sin(rad);
+    ctx.fillStyle='#dc2626'; ctx.font='bold 13px sans-serif';
+    ctx.fillText('P('+cosV.toFixed(2)+', '+sinV.toFixed(2)+')',px+10,py-14);
+    ctx.strokeStyle='#fca5a5'; ctx.lineWidth=1; ctx.setLineDash([5,5]);
+    ctx.beginPath(); ctx.moveTo(px,py); ctx.lineTo(px,cy); ctx.stroke(); ctx.setLineDash([]);
+    ctx.strokeStyle='#f59e0b'; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.arc(cx,cy,38,-Math.PI/2,-Math.PI/2+rad,d>180); ctx.stroke();
+    ctx.fillStyle='#d97706'; ctx.font='13px sans-serif'; ctx.fillText(d+'°',cx+42,cy-24);
+    ctx.fillStyle='#1a3a5c'; ctx.font='bold 12px sans-serif';
+    ctx.fillText('cosα',px-6,cy+14); ctx.fillText('sinα',cx+8,py-6);
+  }
+  window.setAngle=function(d){
+    ang=d; document.getElementById('angleDisplay').innerHTML='当前角度：α = '+d+'°'; draw(d);
+  };
+  window.animateAngle=function(){
+    if(af)cancelAnimationFrame(af);
+    var a=0;
+    function step(){
+      a+=1; if(a>180)a=0; ang=a;
+      document.getElementById('angleDisplay').innerHTML='当前角度：α = '+a+'°';
+      draw(a); af=requestAnimationFrame(step);
+    }
+    step();
+  };
+  draw(53);
+})();
+
+// ========== Canvas 工具函数 ==========
+function BG(ctx,W,H){
+  ctx.fillStyle="#fafbff"; ctx.fillRect(0,0,W,H);
+  ctx.strokeStyle="#eef0f6"; ctx.lineWidth=0.35;
+  for(var i=0;i<W;i+=25){ctx.beginPath();ctx.moveTo(i,0);ctx.lineTo(i,H);ctx.stroke();}
+  for(var i=0;i<H;i+=25){ctx.beginPath();ctx.moveTo(0,i);ctx.lineTo(W,i);ctx.stroke();}
+}
+function P(ctx,x,y,r,c){
+  ctx.fillStyle="#fff"; ctx.beginPath(); ctx.arc(x,y,r+2.5,0,7); ctx.fill();
+  ctx.fillStyle=c; ctx.beginPath(); ctx.arc(x,y,r,0,7); ctx.fill();
+}
+function L(ctx,x1,y1,x2,y2,c,w,d){
+  ctx.strokeStyle=c; ctx.lineWidth=w; ctx.lineCap="round"; ctx.lineJoin="round";
+  if(d){ctx.setLineDash(d)}else{ctx.setLineDash([])}
+  ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+  ctx.setLineDash([]);
+}
+function A(ctx,vx,vy,p1x,p1y,p2x,p2y,r,fc,sc,sw){
+  var a1=Math.atan2(p1y-vy,p1x-vx), a2=Math.atan2(p2y-vy,p2x-vx);
+  // 取最短弧（≤180°）
+  var d=a2-a1;
+  while(d>Math.PI)d-=2*Math.PI;
+  while(d<-Math.PI)d+=2*Math.PI;
+  var ccw=d<0;
+  ctx.fillStyle=fc; ctx.beginPath(); ctx.moveTo(vx,vy);
+  ctx.arc(vx,vy,r,a1,a1+d,ccw); ctx.closePath(); ctx.fill();
+  ctx.strokeStyle=sc; ctx.lineWidth=sw; ctx.lineCap="round";
+  ctx.beginPath(); ctx.arc(vx,vy,r,a1,a1+d,ccw); ctx.stroke();
+}
+function R(ctx,x,y,s,c){
+  ctx.strokeStyle=c; ctx.lineWidth=1.4; ctx.lineCap="round"; ctx.lineJoin="round";
+  ctx.strokeRect(x-s,y-s,s,s);
+}
+function T(ctx,W,txt){
+  ctx.font='bold 14px "PingFang SC","Microsoft YaHei",sans-serif';
+  var tw=ctx.measureText(txt).width;
+  ctx.fillStyle="rgba(26,58,92,0.06)"; ctx.beginPath();
+  var rx=12,ry=6,rw=W-24,rh=28,r=10;
+  ctx.moveTo(rx+r,ry); ctx.lineTo(rx+rw-r,ry);
+  ctx.arcTo(rx+rw,ry,rx+rw,ry+r,r); ctx.lineTo(rx+rw,ry+rh-r);
+  ctx.arcTo(rx+rw,ry+rh,rx+rw-r,ry+rh,r); ctx.lineTo(rx+r,ry+rh);
+  ctx.arcTo(rx,ry+rh,rx,ry+rh-r,r); ctx.lineTo(rx,ry+r);
+  ctx.arcTo(rx,ry,rx+r,ry,r); ctx.closePath(); ctx.fill();
+  ctx.fillStyle="#1a3a5c"; ctx.fillText(txt,(W-tw)/2,26);
+}
+
+// ===== 1. 证明示意图 =====
+(function(){
+  var c=document.getElementById("proofCanvas");
+  if(!c)return;
+  var ctx=c.getContext("2d"), W=450, H=420, cx=225, cy=210, r=155;
+  BG(ctx,W,H); ctx.lineCap="round"; ctx.lineJoin="round";
+
+  var aR=1.0472, bR=0.2618;
+  var px=cx+r*Math.cos(aR), py=cy-r*Math.sin(aR);
+  var qx=cx+r*Math.cos(bR), qy=cy-r*Math.sin(bR);
+
+  L(ctx,25,cy,W-8,cy,"#c8d0dc",1.1);
+  L(ctx,cx,H-20,cx,20,"#c8d0dc",1.1);
+
+  ctx.strokeStyle="#2563a8"; ctx.lineWidth=2.4; ctx.setLineDash([]);
+  ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2); ctx.stroke();
+
+  L(ctx,cx,cy,px,py,"#dc2626",3);
+  L(ctx,cx,cy,qx,qy,"#2563a8",3);
+  L(ctx,px,py,qx,qy,"#d97706",2.2,[7,5]);
+
+  A(ctx,cx,cy,qx,qy,px,py,36,"rgba(217,119,6,0.08)","#d97706",2);
+
+  P(ctx,cx,cy,4,"#1a3a5c");
+  P(ctx,px,py,5.5,"#dc2626");
+  P(ctx,qx,qy,5.5,"#2563a8");
+
+  ctx.font='bold 14px "PingFang SC","Microsoft YaHei",sans-serif';
+  ctx.fillStyle="#1a3a5c"; ctx.fillText("O",cx-10,cy+13);
+  ctx.fillStyle="#dc2626"; ctx.fillText("P (cosα, sinα)",px+10,py-10);
+  ctx.fillStyle="#2563a8"; ctx.fillText("Q (cosβ, sinβ)",qx-125,qy-12);
+  ctx.fillStyle="#d97706"; ctx.fillText("α−β",cx+52,cy-28);
+
+  T(ctx,W,"cos(α−β) 几何证明：两种方法算 |PQ|");
+
+  ctx.font='11px "PingFang SC","Microsoft YaHei",sans-serif';
+  ctx.fillStyle="#64748b";
+  ctx.fillText("方法一（余弦定理）：|PQ|² = 1+1−2·cos(α−β) = 2−2cos(α−β)",16,380);
+  ctx.fillText("方法二（距离公式）：|PQ|² = (cosα−cosβ)²+(sinα−sinβ)² = 2−2(cosαcosβ+sinαsinβ)",16,398);
+  ctx.fillText("令两式相等 → 消去 2 → cos(α−β) = cosαcosβ + sinαsinβ  ✓",16,416);
+})();
+
+// ===== 2. 三角形叠合构造 =====
+(function(){
+  var c=document.getElementById("sinGeomCanvas");
+  if(!c)return;
+  var ctx=c.getContext("2d"), W=480, H=340;
+  BG(ctx,W,H); ctx.lineCap="round"; ctx.lineJoin="round";
+
+  var Ox=58, Oy=288;
+  var alpha=0.61;
+  var r=172;
+  var Ax=Ox+r*Math.cos(alpha), Ay=Oy-r*Math.sin(alpha);
+  var Bx=Ax, By=Oy;
+  var acLen=110;
+  var Cx=Ax-acLen*Math.sin(alpha), Cy=Ay-acLen*Math.cos(alpha);
+  var Dx=Cx, Dy=Oy;
+
+  ctx.fillStyle="rgba(37,99,168,0.05)";
+  ctx.beginPath(); ctx.moveTo(Ox,Oy); ctx.lineTo(Ax,Ay); ctx.lineTo(Bx,By); ctx.closePath(); ctx.fill();
+  ctx.fillStyle="rgba(5,150,105,0.04)";
+  ctx.beginPath(); ctx.moveTo(Ox,Oy); ctx.lineTo(Cx,Cy); ctx.lineTo(Dx,Dy); ctx.closePath(); ctx.fill();
+
+  L(ctx,12,Oy,W-8,Oy,"#c8d0dc",1.1);
+  L(ctx,Ox,Oy,Ax,Ay,"#2563a8",3);
+  L(ctx,Ax,Ay,Bx,By,"#059669",2.5);
+  L(ctx,Ox,Oy,Bx,By,"#94a3b8",1.3,[5,4]);
+  L(ctx,Ax,Ay,Cx,Cy,"#dc2626",2.5);
+  L(ctx,Ox,Oy,Cx,Cy,"#d97706",2,[6,4]);
+  L(ctx,Cx,Cy,Dx,Dy,"#7c3aed",1.5,[3,3]);
+
+  R(ctx,Bx,By,12,"#059669");
+  R(ctx,Dx,Dy,12,"#7c3aed");
+
+  A(ctx,Ox,Oy,Bx,By,Ax,Ay,32,"rgba(37,99,168,0.08)","#2563a8",1.8);
+  A(ctx,Ax,Ay,Ox,Oy,Cx,Cy,24,"rgba(220,38,38,0.08)","#dc2626",1.8);
+  A(ctx,Ox,Oy,Bx,By,Cx,Cy,54,"rgba(217,119,6,0.06)","#d97706",1.8);
+
+  P(ctx,Ox,Oy,4.5,"#1a3a5c");
+  P(ctx,Ax,Ay,5,"#2563a8");
+  P(ctx,Bx,By,4,"#059669");
+  P(ctx,Cx,Cy,5.5,"#dc2626");
+  P(ctx,Dx,Dy,4,"#7c3aed");
+
+  ctx.font='bold 15px "PingFang SC","Microsoft YaHei",sans-serif';
+  ctx.fillStyle="#1a3a5c"; ctx.fillText("O",Ox-16,Oy+5);
+  ctx.fillStyle="#2563a8"; ctx.fillText("A",Ax+8,Ay-8);
+  ctx.fillStyle="#059669"; ctx.fillText("B",Bx+6,By+17);
+  ctx.fillStyle="#dc2626"; ctx.fillText("C",Cx-20,Cy-8);
+  ctx.fillStyle="#7c3aed"; ctx.fillText("D",Dx+6,Dy+17);
+
+  ctx.font='bold 12px "PingFang SC","Microsoft YaHei",sans-serif';
+  ctx.fillStyle="#2563a8"; ctx.fillText("α",Ox+42,Oy-14);
+  ctx.fillStyle="#dc2626"; ctx.fillText("β",Ax-8,Ay-32);
+  ctx.fillStyle="#d97706"; ctx.fillText("α+β",Ox+56,Oy-48);
+
+  ctx.font='11px "PingFang SC","Microsoft YaHei",sans-serif';
+  ctx.fillStyle="#64748b";
+  ctx.fillText("OA=1",Ox+64,Oy-56);
+  ctx.fillText("AB=sinα",Ax+12,(Ay+By)/2+4);
+  ctx.fillText("OB=cosα",(Ox+Bx)/2-48,Oy+17);
+  ctx.fillText("AC=sinβ",Ax-52,Ay-36);
+  ctx.fillText("CD=sin(α+β)",Cx-60,(Cy+Dy)/2+4);
+  ctx.fillText("OD=cos(α+β)",(Ox+Dx)/2-42,Oy+17);
+
+  T(ctx,W,"叠两个直角三角形 → sin(α+β) 和 cos(α+β)");
+})();
+
+// ===== 3. 45°→22.5° =====
+(function(){
+  var c=document.getElementById("construct22Canvas");
+  if(!c)return;
+  var ctx=c.getContext("2d"), W=480, H=360;
+  BG(ctx,W,H); ctx.lineCap="round"; ctx.lineJoin="round";
+
+  var Cx=50, Cy=305, leg=155;
+  var Ax=Cx, Ay=Cy-leg;
+  var Bx=Cx+leg, By=Cy;
+  var Dx=Bx+220, Dy=Cy;
+
+  ctx.fillStyle="rgba(37,99,168,0.06)";
+  ctx.beginPath(); ctx.moveTo(Ax,Ay); ctx.lineTo(Cx,Cy); ctx.lineTo(Dx,Dy); ctx.closePath(); ctx.fill();
+
+  L(ctx,Ax,Ay,Cx,Cy,"#2563a8",3);
+  L(ctx,Cx,Cy,Dx,Dy,"#059669",2.5);
+  L(ctx,Ax,Ay,Dx,Dy,"#dc2626",2.8);
+  L(ctx,Ax,Ay,Bx,By,"#d97706",1.8,[5,4]);
+
+  R(ctx,Cx,Cy,14,"#059669");
+
+  A(ctx,Cx,Cy,Dx,Dy,Ax,Ay,18,"rgba(100,116,139,0.06)","#94a3b8",1.2);
+  A(ctx,Ax,Ay,Bx,By,Cx,Cy,28,"rgba(37,99,168,0.08)","#2563a8",1.8);
+  A(ctx,Dx,Dy,Ax,Ay,Cx,Cy,32,"rgba(220,38,38,0.08)","#dc2626",2);
+
+  P(ctx,Ax,Ay,5,"#2563a8");
+  P(ctx,Cx,Cy,4.5,"#1a3a5c");
+  P(ctx,Bx,By,4.5,"#d97706");
+  P(ctx,Dx,Dy,5.5,"#dc2626");
+
+  ctx.font='bold 15px "PingFang SC","Microsoft YaHei",sans-serif';
+  ctx.fillStyle="#2563a8"; ctx.fillText("A",Ax-16,Ay-8);
+  ctx.fillStyle="#1a3a5c"; ctx.fillText("C",Cx-18,Cy+6);
+  ctx.fillStyle="#d97706"; ctx.fillText("B",Bx-6,By+18);
+  ctx.fillStyle="#dc2626"; ctx.fillText("D",Dx+8,Dy+6);
+
+  ctx.font='bold 12px "PingFang SC","Microsoft YaHei",sans-serif';
+  ctx.fillStyle="#94a3b8"; ctx.fillText("90°",Cx+10,Cy-24);
+  ctx.fillStyle="#2563a8"; ctx.fillText("45°",Ax+20,Ay+66);
+  ctx.fillStyle="#dc2626"; ctx.fillText("22.5°",Dx-128,Dy-14);
+
+  ctx.font='11px "PingFang SC","Microsoft YaHei",sans-serif';
+  ctx.fillStyle="#64748b";
+  ctx.fillText("AC=1",Ax-42,(Ay+Cy)/2);
+  ctx.fillText("BC=1",(Cx+Bx)/2-16,Cy+17);
+  ctx.fillText("AB=√2",(Ax+Bx)/2+10,(Ay+By)/2-2);
+  ctx.fillText("BD=√2",Bx+104,By-14);
+  ctx.fillText("CD=1+√2",(Cx+Dx)/2-36,Cy+17);
+
+  T(ctx,W,"45° 等腰直角 △ → 外扩得 22.5°");
+
+  ctx.font='11px "PingFang SC","Microsoft YaHei",sans-serif';
+  ctx.fillStyle="#64748b";
+  ctx.fillText("△ABC: AC=BC=1, ∠C=90°, ∠A=∠B=45°",240,46);
+  ctx.fillText("延长CB至D, BD=AB=√2",240,64);
+  ctx.fillText("∠ABD=135° → 底角∠D=(180°−135°)/2=22.5°",240,82);
+})();
+
+// ===== 4. 30°→15° =====
+(function(){
+  var c=document.getElementById("construct15Canvas");
+  if(!c)return;
+  var ctx=c.getContext("2d"), W=480, H=360;
+  BG(ctx,W,H); ctx.lineCap="round"; ctx.lineJoin="round";
+
+  var Cx=50, Cy=300;
+  var sLeg=85, lLeg=147;
+  var Bx=Cx, By=Cy-sLeg;
+  var Ax=Cx+lLeg, Ay=Cy;
+  var Dx=Ax+170, Dy=Cy;
+
+  ctx.fillStyle="rgba(5,150,105,0.05)";
+  ctx.beginPath(); ctx.moveTo(Bx,By); ctx.lineTo(Cx,Cy); ctx.lineTo(Dx,Dy); ctx.closePath(); ctx.fill();
+
+  L(ctx,Bx,By,Cx,Cy,"#dc2626",2.8);
+  L(ctx,Cx,Cy,Dx,Dy,"#059669",2.5);
+  L(ctx,Bx,By,Dx,Dy,"#2563a8",3);
+  L(ctx,Bx,By,Ax,Ay,"#d97706",1.8,[5,4]);
+
+  R(ctx,Cx,Cy,14,"#059669");
+
+  A(ctx,Cx,Cy,Dx,Dy,Bx,By,17,"rgba(100,116,139,0.05)","#94a3b8",1.2);
+  A(ctx,Ax,Ay,Cx,Cy,Bx,By,26,"rgba(217,119,6,0.08)","#d97706",1.8);
+  A(ctx,Bx,By,Ax,Ay,Cx,Cy,24,"rgba(220,38,38,0.06)","#dc2626",1.3);
+  A(ctx,Dx,Dy,Bx,By,Cx,Cy,32,"rgba(37,99,168,0.08)","#2563a8",2);
+  A(ctx,Bx,By,Dx,Dy,Ax,Ay,34,"rgba(245,158,11,0.06)","#f59e0b",1.3);
+
+  P(ctx,Bx,By,5,"#dc2626");
+  P(ctx,Cx,Cy,4.5,"#1a3a5c");
+  P(ctx,Ax,Ay,4.5,"#d97706");
+  P(ctx,Dx,Dy,5.5,"#2563a8");
+
+  ctx.font='bold 15px "PingFang SC","Microsoft YaHei",sans-serif';
+  ctx.fillStyle="#dc2626"; ctx.fillText("B",Bx-16,By-4);
+  ctx.fillStyle="#1a3a5c"; ctx.fillText("C",Cx-18,Cy+6);
+  ctx.fillStyle="#d97706"; ctx.fillText("A",Ax-6,Ay-14);
+  ctx.fillStyle="#2563a8"; ctx.fillText("D",Dx+8,Dy+6);
+
+  ctx.font='bold 12px "PingFang SC","Microsoft YaHei",sans-serif';
+  ctx.fillStyle="#94a3b8"; ctx.fillText("90°",Cx+10,Cy-24);
+  ctx.fillStyle="#d97706"; ctx.fillText("30°",Bx+8,By+44);
+  ctx.fillStyle="#dc2626"; ctx.fillText("60°",Cx-24,Cy-62);
+  ctx.fillStyle="#2563a8"; ctx.fillText("15°",Dx-88,Dy-14);
+  ctx.fillStyle="#f59e0b"; ctx.fillText("75°",Bx+86,By+10);
+
+  ctx.font='11px "PingFang SC","Microsoft YaHei",sans-serif';
+  ctx.fillStyle="#64748b";
+  ctx.fillText("BC=1",Bx+14,(By+Cy)/2);
+  ctx.fillText("AC=√3",(Cx+Ax)/2-14,Cy-18);
+  ctx.fillText("AB=2",Ax+26,(Ay+By)/2-6);
+  ctx.fillText("AD=2",(Ax+Dx)/2-10,Cy-18);
+  ctx.fillText("DC=2+√3",Cx+108,Cy-18);
+
+  T(ctx,W,"30°−60°−90° 直角三角形 → 外扩得 15°");
+
+  ctx.font='11px "PingFang SC","Microsoft YaHei",sans-serif';
+  ctx.fillStyle="#64748b";
+  ctx.fillText("△ABC: ∠A=30°, ∠B=60°, ∠C=90°",232,46);
+  ctx.fillText("延长CA至D, AD=AB=2",232,64);
+  ctx.fillText("∠DAB=150° → 底角∠D=(180°−150°)/2=15°",232,82);
+})();
+
+// ===== 互动验证 =====
+(function(){
+  var c2=document.getElementById('verifyChart');
+  if(!c2)return;
+  window.verifyChart = new Chart(c2.getContext('2d'),{
+    type:'bar',
+    data:{
+      labels:['sin(45°+30°)','cos(45°+30°)'],
+      datasets:[{
+        label:'公式计算', data:[0,0],
+        backgroundColor:'rgba(37,99,168,0.7)', borderColor:'#2563a8', borderWidth:1
+      },{
+        label:'直接计算', data:[0,0],
+        backgroundColor:'rgba(5,150,105,0.5)', borderColor:'#059669', borderWidth:1
+      }]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:true,
+      plugins:{
+        legend:{labels:{color:'#1a3a5c',font:{size:12}}},
+        title:{display:true,text:'和角公式数值验证',color:'#1a3a5c',font:{size:14}}
+      },
+      scales:{
+        x:{ticks:{color:'#6b7280'},grid:{color:'#e0e7f0'}},
+        y:{ticks:{color:'#6b7280'},grid:{color:'#e0e7f0'},min:-1,max:1}
+      }
+    }
+  });
+})();
+
+window.updateVerify = function(){
+  var a=parseFloat(document.getElementById('alphaSlider').value);
+  var b=parseFloat(document.getElementById('betaSlider').value);
+  document.getElementById('alphaVal').textContent=a;
+  document.getElementById('betaVal').textContent=b;
+  var aR=a*Math.PI/180, bR=b*Math.PI/180;
+  var sA=Math.sin(aR),cA=Math.cos(aR),sB=Math.sin(bR),cB=Math.cos(bR);
+  var sF=sA*cB+cA*sB, sD=Math.sin(aR+bR);
+  var cF=cA*cB-sA*sB, cD=Math.cos(aR+bR);
+  var okS=Math.abs(sF-sD)<1e-6, okC=Math.abs(cF-cD)<1e-6;
+  document.getElementById('verifyResult').innerHTML=
+    '<div style="margin-bottom:8px;"><strong>sin('+a+'°+'+b+'°)</strong></div>'+
+    '<div>公式：sin'+a+'°·cos'+b+'°+cos'+a+'°·sin'+b+'° = <span style="color:#059669;font-weight:700;">'+sF.toFixed(6)+'</span></div>'+
+    '<div>直接：sin('+(a+b)+'°) = <span style="color:#059669;font-weight:700;">'+sD.toFixed(6)+'</span></div>'+
+    '<div style="color:'+(okS?'#059669':'#dc2626')+';font-weight:700;">'+(okS?'✅ 吻合':'❌ 不一致')+'</div>'+
+    '<div style="margin:10px 0 8px;"><strong>cos('+a+'°+'+b+'°)</strong></div>'+
+    '<div>公式：cos'+a+'°·cos'+b+'°−sin'+a+'°·sin'+b+'° = <span style="color:#059669;font-weight:700;">'+cF.toFixed(6)+'</span></div>'+
+    '<div>直接：cos('+(a+b)+'°) = <span style="color:#059669;font-weight:700;">'+cD.toFixed(6)+'</span></div>'+
+    '<div style="color:'+(okC?'#059669':'#dc2626')+';font-weight:700;">'+(okC?'✅ 吻合':'❌ 不一致')+'</div>';
+  if(window.verifyChart){
+    window.verifyChart.data.labels=['sin('+a+'°+'+b+'°)','cos('+a+'°+'+b+'°)'];
+    window.verifyChart.data.datasets[0].data=[sF,cF];
+    window.verifyChart.data.datasets[1].data=[sD,cD];
+    window.verifyChart.update();
+  }
+};
+setTimeout(function(){window.updateVerify();},500);
+</script>
+
+</body>
+</html>
