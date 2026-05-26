@@ -2,46 +2,91 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, maximum-scale=2.0">
 <title>共边定理 — 六大模型</title>
 <script src="https://cdn.geogebra.org/apps/deployggb.js"></script>
 <style>
 :root {
   --bg-page:#f7f8fb;--bg-card:#ffffff;--border-light:#ecf0f5;
   --text:#1a2332;--text-muted:#5e6d82;--emerald:#0b8a5c;
-  --r-md:13px;--shadow-sm:0 2px 8px rgba(11,22,34,.05);
+  --r-md:12px;--shadow-sm:0 2px 8px rgba(11,22,34,.05);
+  --card-px:28px;--card-py:22px;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 body{
   font-family:system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
   font-size:15px;line-height:1.7;color:var(--text);background:var(--bg-page);
-  max-width:960px;margin:0 auto;padding:24px 18px 48px;
+  max-width:960px;margin:0 auto;padding:20px 12px 40px;
+  -webkit-tap-highlight-color:transparent;
 }
-h1{text-align:center;font-size:28px;margin-bottom:8px;color:#172c45}
-.sub{text-align:center;color:var(--text-muted);font-size:14px;margin-bottom:36px}
+h1{text-align:center;font-size:26px;margin-bottom:6px;color:#172c45}
+.sub{text-align:center;color:var(--text-muted);font-size:13px;margin-bottom:28px}
 
 .model-card{
   background:var(--bg-card);border-radius:var(--r-md);
-  padding:22px 28px 18px;margin-bottom:30px;
+  padding:var(--card-py) var(--card-px) 16px;margin-bottom:24px;
   border:1px solid var(--border-light);box-shadow:var(--shadow-sm);
 }
-.model-title{font-size:18px;font-weight:800;color:#172c45;margin-bottom:6px}
-.model-desc{font-size:13px;color:var(--text-muted);margin-bottom:14px}
+.model-title{font-size:17px;font-weight:800;color:#172c45;margin-bottom:4px}
+.model-desc{font-size:12.5px;color:var(--text-muted);margin-bottom:12px}
 
-.diagram{display:flex;justify-content:center;margin:14px 0 4px}
-.ggb-wrap{line-height:0;display:inline-block;overflow:hidden}
-.ggb-wrap .ggb-applet{border:0!important;display:block;margin:0!important;padding:0!important}
+.diagram{display:flex;justify-content:center;margin:10px 0 4px;overflow:hidden}
+.ggb-wrap{line-height:0;display:inline-block;overflow:hidden;width:100%;max-width:480px;margin:0 auto}
+.ggb-wrap .ggb-applet{border:0!important;display:block;margin:0!important;padding:0!important;max-width:100%}
 .diagram-caption{text-align:center;font-size:12px;color:var(--text-muted);margin-bottom:6px}
 
 /* Slider area */
-.slider-wrap{text-align:center;margin:16px 0;background:#f1f3f8;padding:22px;border-radius:var(--r-md)}
-.slider-wrap input[type=range]{width:78%;cursor:pointer;height:6px;border-radius:3px;outline:none;-webkit-appearance:none;appearance:none;background:linear-gradient(90deg,#172c45,#3870e0,#6c30d8,#0b8a5c)}
-.slider-wrap input[type=range]::-webkit-slider-thumb{appearance:none;width:28px;height:28px;border-radius:50%;background:#fff;border:3px solid #3870e0;cursor:pointer}
-.slider-label{font-weight:800;margin-top:12px;font-size:16px;transition:color .28s}
-.angle-display{display:inline-block;margin-left:10px;font-weight:700;font-size:14px;color:#172c45;background:#eef3ff;padding:3px 12px;border-radius:6px;vertical-align:middle}
+.slider-wrap{text-align:center;margin:14px 0;background:#f1f3f8;padding:18px 14px;border-radius:var(--r-md)}
+.slider-wrap input[type=range]{
+  width:82%;min-width:200px;cursor:pointer;height:8px;border-radius:4px;outline:none;
+  -webkit-appearance:none;appearance:none;
+  background:linear-gradient(90deg,#172c45,#3870e0,#6c30d8,#0b8a5c)
+}
+.slider-wrap input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:32px;height:32px;border-radius:50%;
+  background:#fff;border:3px solid #3870e0;cursor:pointer;box-shadow:0 1px 6px rgba(0,0,0,.15)
+}
+.slider-wrap input[type=range]::-moz-range-thumb{
+  width:32px;height:32px;border-radius:50%;
+  background:#fff;border:3px solid #3870e0;cursor:pointer;box-shadow:0 1px 6px rgba(0,0,0,.15)
+}
+.slider-label{font-weight:800;margin-top:10px;font-size:15px;transition:color .28s}
+.angle-display{display:inline-block;margin-left:8px;font-weight:700;font-size:13px;color:#172c45;background:#eef3ff;padding:3px 12px;border-radius:6px;vertical-align:middle}
 
 /* Priority highlight */
 .model-card.highlight{border-color:rgba(11,138,92,.25);box-shadow:0 0 16px rgba(11,138,92,.12)}
+
+/* ── Tablet ── */
+@media (max-width:768px){
+  :root{--card-px:20px;--card-py:18px;--r-md:10px}
+  body{font-size:14px;padding:16px 8px 32px}
+  h1{font-size:22px}
+  .model-title{font-size:16px}
+  .model-desc{font-size:12px}
+  .model-card{margin-bottom:18px;padding:var(--card-py) var(--card-px) 14px}
+  .slider-wrap{padding:16px 10px}
+  .slider-wrap input[type=range]{width:90%}
+  .slider-label{font-size:14px}
+  .ggb-wrap{max-width:100%}
+}
+
+/* ── Phone ── */
+@media (max-width:480px){
+  :root{--card-px:12px;--card-py:14px;--r-md:8px}
+  body{font-size:13px;padding:10px 4px 24px}
+  h1{font-size:19px}
+  .sub{font-size:12px;margin-bottom:20px}
+  .model-title{font-size:15px}
+  .model-desc{font-size:11px;margin-bottom:8px}
+  .model-card{margin-bottom:14px;padding:var(--card-py) var(--card-px) 10px}
+  .slider-wrap{padding:12px 8px;margin:8px 0}
+  .slider-wrap input[type=range]{width:96%;height:10px}
+  .slider-wrap input[type=range]::-webkit-slider-thumb{width:36px;height:36px}
+  .slider-wrap input[type=range]::-moz-range-thumb{width:36px;height:36px}
+  .slider-label{font-size:13px;margin-top:8px}
+  .angle-display{font-size:12px}
+  .ggb-wrap{max-width:100%}
+}
 </style>
 </head>
 <body>
@@ -53,8 +98,8 @@ h1{text-align:center;font-size:28px;margin-bottom:8px;color:#172c45}
   <div class="model-title">0. 等积变形</div>
   <div class="model-desc">顶点沿平行线拉动，面积不变（拖动 C' ）</div>
   <div class="diagram">
-    <div class="ggb-wrap" style="width:480px;height:260px">
-      <div id="ggb-model0" class="ggb-applet" style="width:480px;height:260px"></div>
+    <div class="ggb-wrap" id="wrap-model0">
+      <div id="ggb-model0" class="ggb-applet"></div>
     </div>
   </div>
 </div>
@@ -64,8 +109,8 @@ h1{text-align:center;font-size:28px;margin-bottom:8px;color:#172c45}
   <div class="model-title">1. 山脊型（同底等高）</div>
   <div class="model-desc">C-A-D 三点共线，交点退化为 A</div>
   <div class="diagram">
-    <div class="ggb-wrap" style="width:480px;height:300px">
-      <div id="ggb-model1" class="ggb-applet" style="width:480px;height:300px"></div>
+    <div class="ggb-wrap" id="wrap-model1">
+      <div id="ggb-model1" class="ggb-applet"></div>
     </div>
   </div>
 </div>
@@ -75,8 +120,8 @@ h1{text-align:center;font-size:28px;margin-bottom:8px;color:#172c45}
   <div class="model-title">2. 燕尾型</div>
   <div class="model-desc">C、D在AB同侧，CD延长线与AB延长线交于外部O</div>
   <div class="diagram">
-    <div class="ggb-wrap" style="width:480px;height:320px">
-      <div id="ggb-model2" class="ggb-applet" style="width:480px;height:320px"></div>
+    <div class="ggb-wrap" id="wrap-model2">
+      <div id="ggb-model2" class="ggb-applet"></div>
     </div>
   </div>
 </div>
@@ -86,8 +131,8 @@ h1{text-align:center;font-size:28px;margin-bottom:8px;color:#172c45}
   <div class="model-title">3. 风筝型 ⭐（重点）</div>
   <div class="model-desc">CD与AB交于内部O，同侧比=对边比，交叉相乘相等</div>
   <div class="diagram">
-    <div class="ggb-wrap" style="width:480px;height:320px">
-      <div id="ggb-model3" class="ggb-applet" style="width:480px;height:320px"></div>
+    <div class="ggb-wrap" id="wrap-model3">
+      <div id="ggb-model3" class="ggb-applet"></div>
     </div>
   </div>
 </div>
@@ -97,8 +142,8 @@ h1{text-align:center;font-size:28px;margin-bottom:8px;color:#172c45}
   <div class="model-title">4. 山峰型</div>
   <div class="model-desc">C、D在AB同侧，CD延长线与BA延长线交于远端O</div>
   <div class="diagram">
-    <div class="ggb-wrap" style="width:480px;height:320px">
-      <div id="ggb-model4" class="ggb-applet" style="width:480px;height:320px"></div>
+    <div class="ggb-wrap" id="wrap-model4">
+      <div id="ggb-model4" class="ggb-applet"></div>
     </div>
   </div>
 </div>
@@ -108,8 +153,8 @@ h1{text-align:center;font-size:28px;margin-bottom:8px;color:#172c45}
   <div class="model-title">5. 蝴蝶型 ⭐（重点）</div>
   <div class="model-desc">梯形CD∥AB，对角线交点O，两翼面积相等</div>
   <div class="diagram">
-    <div class="ggb-wrap" style="width:480px;height:320px">
-      <div id="ggb-model5" class="ggb-applet" style="width:480px;height:320px"></div>
+    <div class="ggb-wrap" id="wrap-model5">
+      <div id="ggb-model5" class="ggb-applet"></div>
     </div>
   </div>
 </div>
@@ -119,8 +164,8 @@ h1{text-align:center;font-size:28px;margin-bottom:8px;color:#172c45}
   <div class="model-title">6. 导航型</div>
   <div class="model-desc">C在AB上侧，D在AB下侧，DC反向延长线与AB延长线交于O</div>
   <div class="diagram">
-    <div class="ggb-wrap" style="width:480px;height:320px">
-      <div id="ggb-model6" class="ggb-applet" style="width:480px;height:320px"></div>
+    <div class="ggb-wrap" id="wrap-model6">
+      <div id="ggb-model6" class="ggb-applet"></div>
     </div>
   </div>
 </div>
@@ -135,8 +180,8 @@ h1{text-align:center;font-size:28px;margin-bottom:8px;color:#172c45}
     <div id="modelLabel" class="slider-label">加载中...</div>
   </div>
   <div class="diagram">
-    <div class="ggb-wrap" style="width:420px;height:315px">
-      <div id="ggb-rotate" class="ggb-applet" style="width:420px;height:315px"></div>
+    <div class="ggb-wrap" id="wrap-rotate">
+      <div id="ggb-rotate" class="ggb-applet"></div>
     </div>
   </div>
 </div>
@@ -146,7 +191,37 @@ h1{text-align:center;font-size:28px;margin-bottom:8px;color:#172c45}
 if (typeof GGBApplet === 'undefined') { console.warn('GeoGebra not loaded'); return; }
 
 var AppState = { instances: {}, sliderVal: 230, loadedCount: 0, totalApplets: 8 };
-var W = 480;
+
+// ── 响应式尺寸计算 ──
+function calcSize(ratioWtoH) {
+  var ww = window.innerWidth;
+  var cardPx = ww <= 480 ? 12 : (ww <= 768 ? 20 : 28);
+  var avail = Math.min(ww - cardPx * 2 - 16, 480);
+  avail = Math.max(avail, 260);
+  var rounded = Math.round(avail / 10) * 10;
+  var h = Math.round(rounded / ratioWtoH);
+  return [rounded, h];
+}
+
+var sz0 = calcSize(480 / 260);   // ≈1.846
+var sz1 = calcSize(480 / 300);   // ≈1.6
+var sz2 = calcSize(480 / 320);   // ≈1.5
+var szR = calcSize(420 / 315);   // ≈1.333
+
+// 设置包裹器尺寸
+function setWrapSize(wrapId, w, h) {
+  var el = document.getElementById(wrapId);
+  if (el) { el.style.width = w + 'px'; el.style.height = h + 'px'; }
+}
+setWrapSize('wrap-model0', sz0[0], sz0[1]);
+setWrapSize('wrap-model1', sz1[0], sz1[1]);
+setWrapSize('wrap-model2', sz2[0], sz2[1]);
+setWrapSize('wrap-model3', sz2[0], sz2[1]);
+setWrapSize('wrap-model4', sz2[0], sz2[1]);
+setWrapSize('wrap-model5', sz2[0], sz2[1]);
+setWrapSize('wrap-model6', sz2[0], sz2[1]);
+setWrapSize('wrap-rotate',  szR[0], szR[1]);
+
 var Navy=[23,44,69], Blue=[56,112,224], Red=[212,32,44];
 var Emerald=[11,138,92], Amber=[199,117,16], Violet=[108,48,216];
 
@@ -179,31 +254,40 @@ function styleLine(a,n,c,t,d){a.setColor(n,c[0],c[1],c[2]);a.setLineThickness(n,
 function fitView(a,x1,x2,y1,y2,w,h){var r=h/w,p=.6,cx=(x1+x2)/2,cy=(y1+y2)/2,HW=(x2-x1)/2+p,HH=(y2-y1)/2+p;HW=Math.max(HW,HH/r);HH=Math.max(HH,HW*r);a.setCoordSystem(cx-HW,cx+HW,cy-HH,cy+HH)}
 
 // MODEL 0 — 等积变形
-createApplet('ggb-model0',["A=(0.8,1.5)","B=(7,1.5)","sAB=Segment(A,B)","h=Line(A,B)","k=Translate(h,Vector((0,2.8)))","C=(2.5,4.3)","t1=Polygon(A,B,C)","C2=Point(k)","t2=Polygon(A,B,C2)","SetValue(C2,(4.5,4.3))","lCC2=Segment(C,C2)"],W,260,function(a){styleSegment(a,'sAB',Navy,4);stylePoint(a,'A',Navy,6);stylePoint(a,'B',Navy,6);stylePoint(a,'C',Blue,6);stylePoint(a,'C2',Red,6);a.setLabelStyle('C2',"C'");styleTriangle(a,'t1',Blue);styleTriangle(a,'t2',Red);styleLine(a,'h',[200,200,200],1.2,false);styleLine(a,'k',[200,200,210],1.2,true);a.setColor('lCC2',199,117,16);a.setLineThickness('lCC2',2);a.setLineStyle('lCC2',1);a.setFixed('A',true);a.setFixed('B',true);a.setFixed('C',true);fitView(a,0.8,7,1.5,4.3,480,260)});
+createApplet('ggb-model0',["A=(0.8,1.5)","B=(7,1.5)","sAB=Segment(A,B)","h=Line(A,B)","k=Translate(h,Vector((0,2.8)))","C=(2.5,4.3)","t1=Polygon(A,B,C)","C2=Point(k)","t2=Polygon(A,B,C2)","SetValue(C2,(4.5,4.3))","lCC2=Segment(C,C2)"],sz0[0],sz0[1],function(a){styleSegment(a,'sAB',Navy,4);stylePoint(a,'A',Navy,6);stylePoint(a,'B',Navy,6);stylePoint(a,'C',Blue,6);stylePoint(a,'C2',Red,6);a.setLabelStyle('C2',"C'");styleTriangle(a,'t1',Blue);styleTriangle(a,'t2',Red);styleLine(a,'h',[200,200,200],1.2,false);styleLine(a,'k',[200,200,210],1.2,true);a.setColor('lCC2',199,117,16);a.setLineThickness('lCC2',2);a.setLineStyle('lCC2',1);a.setFixed('A',true);a.setFixed('B',true);a.setFixed('C',true);fitView(a,0.8,7,1.5,4.3,sz0[0],sz0[1])});
 
 // MODEL 1 — 山脊型
-createApplet('ggb-model1',["A=(2.2,2.2)","B=(5.2,2.2)","sAB=Segment(A,B)","C=(6.2,4.2)","t1=Polygon(A,B,C)","lCA=Line(C,A)","D=Point(lCA)","SetValue(D,(0.5,1.4))","t2=Polygon(A,B,D)"],W,300,function(a){styleSegment(a,'sAB',Navy,4.5);stylePoint(a,'A',Navy,6);stylePoint(a,'B',Navy,6);stylePoint(a,'C',Blue,6);stylePoint(a,'D',Red,6);styleTriangle(a,'t1',Blue);styleTriangle(a,'t2',Red);styleLine(a,'lCA',Amber,1.5,true);a.setFixed('A',true);a.setFixed('B',true);a.setFixed('C',true);fitView(a,0.5,6.2,1.4,4.2,480,300)});
+createApplet('ggb-model1',["A=(2.2,2.2)","B=(5.2,2.2)","sAB=Segment(A,B)","C=(6.2,4.2)","t1=Polygon(A,B,C)","lCA=Line(C,A)","D=Point(lCA)","SetValue(D,(0.5,1.4))","t2=Polygon(A,B,D)"],sz1[0],sz1[1],function(a){styleSegment(a,'sAB',Navy,4.5);stylePoint(a,'A',Navy,6);stylePoint(a,'B',Navy,6);stylePoint(a,'C',Blue,6);stylePoint(a,'D',Red,6);styleTriangle(a,'t1',Blue);styleTriangle(a,'t2',Red);styleLine(a,'lCA',Amber,1.5,true);a.setFixed('A',true);a.setFixed('B',true);a.setFixed('C',true);fitView(a,0.5,6.2,1.4,4.2,sz1[0],sz1[1])});
 
 // MODEL 2 — 燕尾型
-createApplet('ggb-model2',["A=(1.2,2.8)","B=(4.8,2.8)","sAB=Segment(A,B)","lAB=Line(A,B)","C=(3.6,5.4)","t1=Polygon(A,B,C)","D=(6.4,2.0)","t2=Polygon(A,B,D)","lCD=Line(C,D)","O=Intersect(lAB,lCD)"],W,320,function(a){styleSegment(a,'sAB',Navy,4.5);stylePoint(a,'A',Navy,6);stylePoint(a,'B',Navy,6);stylePoint(a,'C',Blue,6);stylePoint(a,'D',Red,6);stylePoint(a,'O',Emerald,8);styleTriangle(a,'t1',Blue);styleTriangle(a,'t2',Red);styleLine(a,'lCD',Amber,1.8,true);styleLine(a,'lAB',[160,170,185],1.2,true);a.setLineStyle('sAB',0);a.setFixed('A',true);a.setFixed('B',true);a.setFixed('C',true);a.setFixed('D',true);a.setLayer('O',5);fitView(a,1.2,6.4,2.0,5.4,480,320)});
+createApplet('ggb-model2',["A=(1.2,2.8)","B=(4.8,2.8)","sAB=Segment(A,B)","lAB=Line(A,B)","C=(3.6,5.4)","t1=Polygon(A,B,C)","D=(6.4,2.0)","t2=Polygon(A,B,D)","lCD=Line(C,D)","O=Intersect(lAB,lCD)"],sz2[0],sz2[1],function(a){styleSegment(a,'sAB',Navy,4.5);stylePoint(a,'A',Navy,6);stylePoint(a,'B',Navy,6);stylePoint(a,'C',Blue,6);stylePoint(a,'D',Red,6);stylePoint(a,'O',Emerald,8);styleTriangle(a,'t1',Blue);styleTriangle(a,'t2',Red);styleLine(a,'lCD',Amber,1.8,true);styleLine(a,'lAB',[160,170,185],1.2,true);a.setLineStyle('sAB',0);a.setFixed('A',true);a.setFixed('B',true);a.setFixed('C',true);a.setFixed('D',true);a.setLayer('O',5);fitView(a,1.2,6.4,2.0,5.4,sz2[0],sz2[1])});
 
 // MODEL 3 — 风筝型
-createApplet('ggb-model3',["A=(0.8,2.8)","B=(6.5,2.8)","sAB=Segment(A,B)","C=(5.5,6.0)","t1=Polygon(A,B,C)","D=(2.0,0.5)","t2=Polygon(A,B,D)","lCD=Segment(C,D)","O=Intersect(sAB,lCD)"],W,320,function(a){styleSegment(a,'sAB',Navy,4.5);stylePoint(a,'A',Navy,6);stylePoint(a,'B',Navy,6);stylePoint(a,'C',Blue,6);stylePoint(a,'D',Red,6);stylePoint(a,'O',Emerald,8);styleTriangle(a,'t1',Blue);styleTriangle(a,'t2',Red);styleSegment(a,'lCD',Emerald,2.8,false);a.setFixed('A',true);a.setFixed('B',true);a.setFixed('C',true);a.setFixed('D',true);a.setLayer('O',5);a.setLayer('lCD',3);fitView(a,0.8,6.5,0.5,6.0,480,320)});
+createApplet('ggb-model3',["A=(0.8,2.8)","B=(6.5,2.8)","sAB=Segment(A,B)","C=(5.5,6.0)","t1=Polygon(A,B,C)","D=(2.0,0.5)","t2=Polygon(A,B,D)","lCD=Segment(C,D)","O=Intersect(sAB,lCD)"],sz2[0],sz2[1],function(a){styleSegment(a,'sAB',Navy,4.5);stylePoint(a,'A',Navy,6);stylePoint(a,'B',Navy,6);stylePoint(a,'C',Blue,6);stylePoint(a,'D',Red,6);stylePoint(a,'O',Emerald,8);styleTriangle(a,'t1',Blue);styleTriangle(a,'t2',Red);styleSegment(a,'lCD',Emerald,2.8,false);a.setFixed('A',true);a.setFixed('B',true);a.setFixed('C',true);a.setFixed('D',true);a.setLayer('O',5);a.setLayer('lCD',3);fitView(a,0.8,6.5,0.5,6.0,sz2[0],sz2[1])});
 
 // MODEL 4 — 山峰型
-createApplet('ggb-model4',["A=(1.5,2.0)","B=(5.0,2.8)","sAB=Segment(A,B)","lAB=Line(A,B)","C=(1.0,3.2)","t1=Polygon(A,B,C)","D=(2.0,5.0)","t2=Polygon(A,B,D)","lCD=Line(C,D)","O=Intersect(lAB,lCD)"],W,320,function(a){styleSegment(a,'sAB',Navy,4);stylePoint(a,'A',Navy,6);stylePoint(a,'B',Navy,6);stylePoint(a,'C',Blue,6);stylePoint(a,'D',Red,6);stylePoint(a,'O',Emerald,8);styleTriangle(a,'t1',Blue);styleTriangle(a,'t2',Red);styleLine(a,'lCD',Amber,1.8,true);a.evalCommand('SetVisibleInView(lAB,1,false)');a.setFixed('A',true);a.setFixed('B',true);a.setFixed('C',true);a.setFixed('D',true);a.setLayer('O',5);fitView(a,0.0,6.0,1.0,5.5,480,320)});
+createApplet('ggb-model4',["A=(1.5,2.0)","B=(5.0,2.8)","sAB=Segment(A,B)","lAB=Line(A,B)","C=(1.0,3.2)","t1=Polygon(A,B,C)","D=(2.0,5.0)","t2=Polygon(A,B,D)","lCD=Line(C,D)","O=Intersect(lAB,lCD)"],sz2[0],sz2[1],function(a){styleSegment(a,'sAB',Navy,4);stylePoint(a,'A',Navy,6);stylePoint(a,'B',Navy,6);stylePoint(a,'C',Blue,6);stylePoint(a,'D',Red,6);stylePoint(a,'O',Emerald,8);styleTriangle(a,'t1',Blue);styleTriangle(a,'t2',Red);styleLine(a,'lCD',Amber,1.8,true);a.evalCommand('SetVisibleInView(lAB,1,false)');a.setFixed('A',true);a.setFixed('B',true);a.setFixed('C',true);a.setFixed('D',true);a.setLayer('O',5);fitView(a,0.0,6.0,1.0,5.5,sz2[0],sz2[1])});
 
 // MODEL 5 — 蝴蝶型
-createApplet('ggb-model5',["A=(1.0,4.0)","B=(6.5,4.0)","sAB=Segment(A,B)","C=(5.5,1.2)","t1=Polygon(A,B,C)","lPar=Line(C,Line(A,B))","D=Point(lPar)","SetValue(D,(2.0,1.2))","t2=Polygon(A,B,D)","sCD=Segment(C,D)","lAC=Segment(A,C)","lBD=Segment(B,D)","O=Intersect(lAC,lBD)"],W,320,function(a){styleSegment(a,'sAB',Navy,4);stylePoint(a,'A',Navy,6);stylePoint(a,'B',Navy,6);stylePoint(a,'C',Blue,6);stylePoint(a,'D',Red,6);stylePoint(a,'O',Emerald,8);styleTriangle(a,'t1',Blue);styleTriangle(a,'t2',Red);styleSegment(a,'sCD',[100,110,120],2.5);styleLine(a,'lAC',Amber,1.8,true);styleLine(a,'lBD',Amber,1.8,true);a.evalCommand('SetVisibleInView(lPar,1,false)');a.setFixed('A',true);a.setFixed('B',true);a.setFixed('C',true);a.setFixed('D',true);a.setLayer('O',5);a.setLayer('sCD',2);fitView(a,0.0,7.5,0.5,5.0,480,320)});
+createApplet('ggb-model5',["A=(1.0,4.0)","B=(6.5,4.0)","sAB=Segment(A,B)","C=(5.5,1.2)","t1=Polygon(A,B,C)","lPar=Line(C,Line(A,B))","D=Point(lPar)","SetValue(D,(2.0,1.2))","t2=Polygon(A,B,D)","sCD=Segment(C,D)","lAC=Segment(A,C)","lBD=Segment(B,D)","O=Intersect(lAC,lBD)"],sz2[0],sz2[1],function(a){styleSegment(a,'sAB',Navy,4);stylePoint(a,'A',Navy,6);stylePoint(a,'B',Navy,6);stylePoint(a,'C',Blue,6);stylePoint(a,'D',Red,6);stylePoint(a,'O',Emerald,8);styleTriangle(a,'t1',Blue);styleTriangle(a,'t2',Red);styleSegment(a,'sCD',[100,110,120],2.5);styleLine(a,'lAC',Amber,1.8,true);styleLine(a,'lBD',Amber,1.8,true);a.evalCommand('SetVisibleInView(lPar,1,false)');a.setFixed('A',true);a.setFixed('B',true);a.setFixed('C',true);a.setFixed('D',true);a.setLayer('O',5);a.setLayer('sCD',2);fitView(a,0.0,7.5,0.5,5.0,sz2[0],sz2[1])});
 
 // MODEL 6 — 导航型
-createApplet('ggb-model6',["A=(1.2,2.8)","B=(4.8,2.8)","sAB=Segment(A,B)","lAB=Line(A,B)","C=(6.0,1.4)","t1=Polygon(A,B,C)","D=(4.2,4.6)","t2=Polygon(A,B,D)","lDC=Line(D,C)","O=Intersect(lAB,lDC)"],W,320,function(a){styleSegment(a,'sAB',Navy,4.5);stylePoint(a,'A',Navy,6);stylePoint(a,'B',Navy,6);stylePoint(a,'C',Blue,6);stylePoint(a,'D',Red,6);stylePoint(a,'O',Emerald,8);styleTriangle(a,'t1',Blue);styleTriangle(a,'t2',Red);styleLine(a,'lDC',Amber,1.8,true);styleLine(a,'lAB',[160,170,185],1.2,true);a.setFixed('A',true);a.setFixed('B',true);a.setFixed('C',true);a.setFixed('D',true);a.setLayer('O',5);fitView(a,1.2,6.0,1.4,4.6,480,320)});
+createApplet('ggb-model6',["A=(1.2,2.8)","B=(4.8,2.8)","sAB=Segment(A,B)","lAB=Line(A,B)","C=(6.0,1.4)","t1=Polygon(A,B,C)","D=(4.2,4.6)","t2=Polygon(A,B,D)","lDC=Line(D,C)","O=Intersect(lAB,lDC)"],sz2[0],sz2[1],function(a){styleSegment(a,'sAB',Navy,4.5);stylePoint(a,'A',Navy,6);stylePoint(a,'B',Navy,6);stylePoint(a,'C',Blue,6);stylePoint(a,'D',Red,6);stylePoint(a,'O',Emerald,8);styleTriangle(a,'t1',Blue);styleTriangle(a,'t2',Red);styleLine(a,'lDC',Amber,1.8,true);styleLine(a,'lAB',[160,170,185],1.2,true);a.setFixed('A',true);a.setFixed('B',true);a.setFixed('C',true);a.setFixed('D',true);a.setLayer('O',5);fitView(a,1.2,6.0,1.4,4.6,sz2[0],sz2[1])});
 
 // ROTATION DEMO
 var sld=document.getElementById('angleSlider'),lbl=document.getElementById('modelLabel'),aVal=document.getElementById('angleVal');
-createApplet('ggb-rotate',["A=(2,2)","B=(5,5)","sAB=Segment(A,B)","lAB=Line(A,B)","C=(6.5,2.5)","t1=Polygon(A,B,C)","center=(4,3.5)","R=3.5","α=200°","D=center+(R;α)","t2=Polygon(A,B,D)","lCD=Line(C,D)","O=Intersect(lAB,lCD)","cirD=Circle(center,R)"],420,315,function(a){AppState.instances.rotate=a;styleSegment(a,'sAB',Navy,4);stylePoint(a,'A',Navy,7);stylePoint(a,'B',Navy,7);stylePoint(a,'C',Blue,7);stylePoint(a,'D',Red,7);stylePoint(a,'O',Emerald,8);styleTriangle(a,'t1',Blue);styleTriangle(a,'t2',Red);styleLine(a,'lCD',Amber,1.5,true);a.setColor('cirD',140,155,175);a.setLineThickness('cirD',1.5);a.setLineStyle('cirD',1);a.setLayer('cirD',-1);a.setLayer('O',5);a.setFixed('A',true);a.setFixed('B',true);a.setFixed('C',true);a.setFixed('center',true);fitView(a,0,8.5,0,7.5,420,315);a.evalCommand('SetVisibleInView(center,1,false)');a.evalCommand('SetVisibleInView(R,1,false)');a.evalCommand('SetVisibleInView(α,1,false)');setInterval(function(){if(!lbl)return;try{var a=AppState.instances.rotate,dx=a.getXcoord('D'),dy=a.getYcoord('D'),ax2=a.getXcoord('A'),ay2=a.getYcoord('A'),bx2=a.getXcoord('B'),by2=a.getYcoord('B'),cx2=a.getXcoord('C'),cy2=a.getYcoord('C'),ox2=a.getXcoord('O'),oy2=a.getYcoord('O'),sAB=(bx2-ax2===0)?Infinity:(by2-ay2)/(bx2-ax2),sCD=(dx-cx2===0)?Infinity:(dy-cy2)/(dx-cx2),isP=(!isFinite(sAB)&&Math.abs(dx-cx2)<.2)||(isFinite(sAB)&&Math.abs(sCD-sAB)<.05),nm='',c0='#c77510';if(isP){nm='\u{1F98B} \u8774\u8776\u578B (CD \u2225 AB)';c0='#6c30d8'}else{var mnY=Math.min(ay2,by2),mxY=Math.max(ay2,by2),onS=(oy2>=mnY-.1&&oy2<=mxY+.1),dR=dx>ax2;if(onS){nm=dR?'\u{1F9ED} \u5BFC\u822A\u578B':'\u{1FA81} \u98CE\u7B5D\u578B';c0=dR?'#3870e0':'#0b8a5c'}else{nm=dR?'\u26F0\uFE0F \u5C71\u5CF0\u578B':'\u{1F426} \u71D5\u5C3E\u578B'}}lbl.textContent='\u5F53\u524D\u5448\u73B0\uFF1A'+nm;lbl.style.color=c0}catch(e){}},180)});
+createApplet('ggb-rotate',["A=(2,2)","B=(5,5)","sAB=Segment(A,B)","lAB=Line(A,B)","C=(6.5,2.5)","t1=Polygon(A,B,C)","center=(4,3.5)","R=3.5","α=200°","D=center+(R;α)","t2=Polygon(A,B,D)","lCD=Line(C,D)","O=Intersect(lAB,lCD)","cirD=Circle(center,R)"],szR[0],szR[1],function(a){AppState.instances.rotate=a;styleSegment(a,'sAB',Navy,4);stylePoint(a,'A',Navy,7);stylePoint(a,'B',Navy,7);stylePoint(a,'C',Blue,7);stylePoint(a,'D',Red,7);stylePoint(a,'O',Emerald,8);styleTriangle(a,'t1',Blue);styleTriangle(a,'t2',Red);styleLine(a,'lCD',Amber,1.5,true);a.setColor('cirD',140,155,175);a.setLineThickness('cirD',1.5);a.setLineStyle('cirD',1);a.setLayer('cirD',-1);a.setLayer('O',5);a.setFixed('A',true);a.setFixed('B',true);a.setFixed('C',true);a.setFixed('center',true);fitView(a,0,8.5,0,7.5,szR[0],szR[1]);a.evalCommand('SetVisibleInView(center,1,false)');a.evalCommand('SetVisibleInView(R,1,false)');a.evalCommand('SetVisibleInView(α,1,false)');setInterval(function(){if(!lbl)return;try{var a=AppState.instances.rotate,dx=a.getXcoord('D'),dy=a.getYcoord('D'),ax2=a.getXcoord('A'),ay2=a.getYcoord('A'),bx2=a.getXcoord('B'),by2=a.getYcoord('B'),cx2=a.getXcoord('C'),cy2=a.getYcoord('C'),ox2=a.getXcoord('O'),oy2=a.getYcoord('O'),sAB=(bx2-ax2===0)?Infinity:(by2-ay2)/(bx2-ax2),sCD=(dx-cx2===0)?Infinity:(dy-cy2)/(dx-cx2),isP=(!isFinite(sAB)&&Math.abs(dx-cx2)<.2)||(isFinite(sAB)&&Math.abs(sCD-sAB)<.05),nm='',c0='#c77510';if(isP){nm='\u{1F98B} \u8774\u8776\u578B (CD \u2225 AB)';c0='#6c30d8'}else{var mnY=Math.min(ay2,by2),mxY=Math.max(ay2,by2),onS=(oy2>=mnY-.1&&oy2<=mxY+.1),dR=dx>ax2;if(onS){nm=dR?'\u{1F9ED} \u5BFC\u822A\u578B':'\u{1FA81} \u98CE\u7B5D\u578B';c0=dR?'#3870e0':'#0b8a5c'}else{nm=dR?'\u26F0\uFE0F \u5C71\u5CF0\u578B':'\u{1F426} \u71D5\u5C3E\u578B'}}lbl.textContent='\u5F53\u524D\u5448\u73B0\uFF1A'+nm;lbl.style.color=c0}catch(e){}},180)});
 
 if(sld)sld.addEventListener('input',function(){AppState.sliderVal=Number(this.value);if(aVal)aVal.textContent=AppState.sliderVal+'\u00B0';var a=AppState.instances.rotate;if(a)try{a.evalCommand('SetValue(\u03B1,'+AppState.sliderVal+'\u00B0)')}catch(e){}});
+
+// ── 窗口 resize 时刷新页面，使 GeoGebra 尺寸生效 ──
+var resizeTimer;
+window.addEventListener('resize', function() {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(function() {
+    location.reload();
+  }, 500);
+});
 
 })();
 </script>
