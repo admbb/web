@@ -1,199 +1,404 @@
 <!DOCTYPE html>
 <html lang="zh-hans">
-
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>高斯向上 的静态页面</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 30px;
-            background: #fff;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
-            -webkit-font-smoothing: antialiased;
-        }
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>高斯向上的目录</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        main {
-            max-width: 920px;
-        }
+  :root {
+    --bg:         #f5f5f7;
+    --card-bg:    #ffffff;
+    --text:       #1d1d1f;
+    --text-sec:   #86868b;
+    --text-ter:   #6e6e73;
+    --border:     #e5e5e7;
+    --accent:     #0071e3;
+    --accent-hover: #0060c0;
+    --shadow:     0 1px 3px rgba(0,0,0,.04), 0 1px 2px rgba(0,0,0,.06);
+    --radius:     16px;
+    --radius-sm:  10px;
+  }
 
-        header {
-            display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
-        }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", "PingFang SC", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    line-height: 1.6;
+    min-height: 100vh;
+    overflow-x: hidden;
+    -webkit-tap-highlight-color: transparent;
+  }
 
-        h1 {
-            font-size: 18px;
-            font-weight: 500;
-            margin-top: 0;
-            color: #000;
-        }
+  /* ─── Container ─── */
+  .wrapper {
+    width: 100%;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 48px 32px 80px;
+  }
 
-        header h1 a {
-            font-size: 18px;
-            font-weight: 500;
-            margin-top: 0;
-            color: #000;
-        }
+  /* ─── Header ─── */
+  .header {
+    margin-bottom: 48px;
+  }
+  .header-title {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -.022em;
+    color: var(--text);
+  }
+  .header-sub {
+    font-size: 17px;
+    font-weight: 400;
+    color: var(--text-sec);
+    margin-top: 4px;
+    letter-spacing: -.01em;
+  }
 
-        h1 i {
-            font-style: normal;
-        }
+  /* ─── Section ─── */
+  .section {
+    margin-bottom: 40px;
+  }
+  .section-title {
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: var(--text-ter);
+    margin-bottom: 16px;
+    padding-left: 4px;
+  }
 
-        ul {
-            margin: 0 0 0 -2px;
-            padding: 20px 0 0 0;
-        }
+  /* ─── Card Group ─── */
+  .card {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    overflow: hidden;
+  }
+  .card + .card { margin-top: 16px; }
 
-        ul li {
-            list-style: none;
-            font-size: 14px;
-            display: flex;
-            justify-content: space-between;
-        }
+  /* ─── Card Header ─── */
+  .card-head {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .04em;
+    color: var(--text-ter);
+    text-transform: uppercase;
+    padding: 16px 28px 0;
+  }
 
-        a {
-            text-decoration: none;
-        }
+  /* ─── Link Grid ─── */
+  .link-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 2px;
+    padding: 16px 24px 20px;
+  }
 
-        ul a {
-            color: #000;
-            padding: 10px 5px;
-            margin: 0 -5px;
-            white-space: nowrap;
-            overflow: hidden;
-            display: block;
-            width: 100%;
-            text-overflow: ellipsis;
-        }
+  .link-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 450;
+    letter-spacing: -.01em;
+    transition: background .15s ease;
+    white-space: nowrap;
+  }
+  .link-item:hover {
+    background: rgba(0,0,0,.04);
+  }
+  .link-item:active {
+    background: rgba(0,0,0,.08);
+  }
 
-        header a {
-            color: #0076FF;
-            font-size: 11px;
-            font-weight: 400;
-            display: inline-block;
-            line-height: 20px;
-        }
+  /* ─── Icons ─── */
+  .link-icon {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: .55;
+  }
+  .link-icon svg { display: block; }
 
-        svg {
-            height: 13px;
-            vertical-align: text-bottom;
-        }
+  .link-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 
-        ul a::before {
-            display: inline-block;
-            vertical-align: middle;
-            margin-right: 10px;
-            width: 24px;
-            text-align: center;
-            line-height: 12px;
-        }
+  .link-item.empty {
+    color: var(--text-ter);
+    pointer-events: none;
+    opacity: .45;
+  }
 
-        ul a.file::before {
-            content: url("data:image/svg+xml;utf8,<svg width='15' height='19' fill='none' xmlns='http://www.w3.org/2000/svg'><path d='M10 8C8.34 8 7 6.66 7 5V1H3c-1.1 0-2 .9-2 2v13c0 1.1.9 2 2 2h9c1.1 0 2-.9 2-2V8h-4zM8 5c0 1.1.9 2 2 2h3.59L8 1.41V5zM3 0h5l7 7v9c0 1.66-1.34 3-3 3H3c-1.66 0-3-1.34-3-3V3c0-1.66 1.34-3 3-3z' fill='black'/></svg>");
-        }
+  /* ─── Empty state ─── */
+  .empty-state {
+    padding: 24px;
+    text-align: center;
+    color: var(--text-ter);
+    font-size: 14px;
+  }
 
-        ul a:hover {
-            text-decoration: underline;
-        }
+  /* ─── Footer ─── */
+  .footer {
+    margin-top: 64px;
+    text-align: center;
+    font-size: 13px;
+    color: var(--text-ter);
+  }
 
-        ul a.folder::before {
-            content: url("data:image/svg+xml;utf8,<svg width='20' height='16' fill='none' xmlns='http://www.w3.org/2000/svg'><path d='M18.784 3.87a1.565 1.565 0 0 0-.565-.356V2.426c0-.648-.523-1.171-1.15-1.171H8.996L7.908.25A.89.89 0 0 0 7.302 0H2.094C1.445 0 .944.523.944 1.171v2.3c-.21.085-.398.21-.565.356a1.348 1.348 0 0 0-.377 1.004l.398 9.83C.42 15.393 1.048 16 1.8 16h15.583c.753 0 1.36-.586 1.4-1.339l.398-9.83c.021-.313-.125-.69-.397-.962zM1.843 3.41V1.191c0-.146.104-.272.25-.272H7.26l1.234 1.088c.083.042.167.104.293.104h8.282c.125 0 .25.126.25.272V3.41H1.844zm15.54 11.712H1.78a.47.47 0 0 1-.481-.46l-.397-9.83c0-.147.041-.252.125-.356a.504.504 0 0 1 .377-.147H17.78c.125 0 .272.063.377.147.083.083.125.209.125.334l-.418 9.83c-.021.272-.23.482-.481.482z' fill='black'/></svg>");
-        }
+  /* ─── Selection ─── */
+  ::selection {
+    background: rgba(0,113,227,.2);
+    color: var(--text);
+  }
 
-        ul a.lambda::before {
-            content: url("data:image/svg+xml; utf8,<svg width='15' height='19' fill='none' xmlns='http://www.w3.org/2000/svg'><path d='M3.5 14.4354H5.31622L7.30541 9.81311H7.43514L8.65315 13.0797C9.05676 14.1643 9.55405 14.5 10.7 14.5C11.0171 14.5 11.291 14.4677 11.5 14.4032V13.1572C11.3847 13.1766 11.2622 13.2024 11.1541 13.2024C10.6351 13.2024 10.3829 13.0281 10.1595 12.4664L8.02613 7.07586C7.21171 5.01646 6.54865 4.5 5.11441 4.5C4.83333 4.5 4.62432 4.53228 4.37207 4.59038V5.83635C4.56667 5.81052 4.66036 5.79761 4.77568 5.79761C5.64775 5.79761 5.9 6.0042 6.4045 7.19852L6.64234 7.77954L3.5 14.4354Z' fill='black'/><rect x='0.5' y='0.5' width='14' height='18' rx='2.5' stroke='black'/></svg>");
-        }
+  /* ─── Responsive ─── */
 
-        ul a.file.gif::before,
-        ul a.file.jpg::before,
-        ul a.file.png::before,
-        ul a.file.svg::before {
-            content: url("data:image/svg+xml;utf8,<svg width='16' height='16' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='black' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'><rect x='6' y='6' width='68' height='68' rx='5' ry='5'/><circle cx='24' cy='24' r='8'/><path d='M73 49L59 34 37 52m16 20L27 42 7 58'/></svg>");
-        }
+  /* Tablet: 768px and below */
+  @media (max-width: 768px) {
+    .wrapper {
+      max-width: 100%;
+      padding: 32px 20px 64px;
+    }
+    .header { margin-bottom: 36px; }
+    .header-title { font-size: 26px; }
+    .header-sub { font-size: 16px; }
+    .section { margin-bottom: 32px; }
+    .section-title { font-size: 12px; margin-bottom: 12px; }
+    .card-head { padding: 14px 18px 0; }
+    .link-grid {
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 2px;
+      padding: 12px 14px 16px;
+    }
+    .link-item {
+      font-size: 14px;
+      padding: 11px 10px;
+      white-space: normal;
+    }
+    .link-icon {
+      width: 18px;
+      height: 18px;
+    }
+    .footer { margin-top: 48px; font-size: 12px; }
+  }
 
-        ::selection {
-            background-color: #79FFE1;
-            color: #000;
-        }
+  /* Phone: 480px and below */
+  @media (max-width: 480px) {
+    .wrapper {
+      padding: 24px 14px 48px;
+    }
+    .header { margin-bottom: 28px; }
+    .header-title { font-size: 22px; }
+    .header-sub { font-size: 15px; margin-top: 2px; }
+    .section { margin-bottom: 28px; }
+    .section-title {
+      font-size: 11px;
+      margin-bottom: 10px;
+      padding-left: 2px;
+    }
+    .card + .card { margin-top: 12px; }
+    .card-head {
+      font-size: 11px;
+      padding: 12px 14px 0;
+    }
+    .link-grid {
+      grid-template-columns: 1fr;
+      padding: 10px 10px 14px;
+    }
+    .link-item {
+      font-size: 15px;
+      padding: 13px 12px;
+      min-height: 48px;
+      gap: 10px;
+      white-space: normal;
+      word-break: break-word;
+    }
+    .link-icon {
+      width: 20px;
+      height: 20px;
+    }
+    .link-item.empty {
+      font-size: 14px;
+      justify-content: center;
+    }
+    .empty-state {
+      padding: 20px;
+      font-size: 13px;
+    }
+    .footer {
+      margin-top: 40px;
+      font-size: 12px;
+    }
+  }
 
-        ::-moz-selection {
-            background-color: #79FFE1;
-            color: #000;
-        }
-
-        @media (min-width: 768px) {
-            ul {
-                display: flex;
-                flex-wrap: wrap;
-            }
-
-            ul li {
-                width: 230px;
-                padding-right: 20px;
-            }
-        }
-
-        @media (min-width: 992px) {
-            body {
-                padding: 45px;
-            }
-
-            h1,
-            header h1 a {
-                font-size: 15px;
-            }
-
-            ul li {
-                font-size: 13px;
-                box-sizing: border-box;
-                justify-content: flex-start;
-            }
-        }
-    </style>
+  /* Small phone: 360px and below */
+  @media (max-width: 360px) {
+    .wrapper { padding: 20px 10px 40px; }
+    .header-title { font-size: 20px; }
+    .header-sub { font-size: 14px; }
+    .link-item { font-size: 14px; padding: 12px 10px; }
+    .card-head { padding: 10px 12px 0; }
+    .link-grid { padding: 8px 8px 12px; }
+  }
+</style>
 </head>
-
 <body>
-    <main>
-        <header>
-            <h1>
-                <a href="https://www-d-google-d-com-s-gmn.v.tuangouai.com">高斯向上</a>
-                <i>&nbsp;的目录</i>
-            </h1>
-        </header>
 
-        <!-- 小学分类 -->
-        <section>
-            <h2>小学</h2>
-            <ul id="primary-files">
-                <li><a href="\primary\立方和公式_金字塔.html" class="file html">立方和公式_金字塔</a></li>
-                <li><a href="\primary\立方和公式_正方体.html" class="file html">立方和公式_正方体</a></li>
-                <li><a href="\primary\平方和公式_立体.html" class="file html">平方和公式_立体</a></li>
-                <li><a href="\primary\平方和公式_平面.html" class="file html">平方和公式_平面</a></li>
-                <li><a href="\primary\Conjoint-edge-theorem.html" class="file html">共边定理</a></li>
-            </ul>
-        </section>
+<div class="wrapper">
 
-        <!-- 初中分类 -->
-        <section>
-            <h2>初中</h2>
-            <ul id="junior-files">
-                <li><a href="\junior\cauchy&#47;" class="folder">柯西不等式</a></li>
-                <li><a href="\junior\trigonometric&#47;" class="folder">三角函数</a></li>
-            </ul>
-        </section>
+  <!-- ═══ Header ═══ -->
+  <header class="header">
+    <h1 class="header-title">高斯向上</h1>
+    <p class="header-sub">数学教学资源目录</p>
+  </header>
 
-        <!-- 其他工具分类 -->
-        <section>
-            <h2>实用工具</h2>
-            <ul id="tools">
-                <li><a href="\ac&#47;" class="folder">便携式空调</a></li>
-                <li><a href="\password-generator&#47;" class="folder">随机密码生成器</a></li>
-                <li><a href="\periodic-table&#47;" class="folder">3D元素周期表</a></li>
-                <li><a href="\rubiks-cube&#47;" class="folder">转转魔方</a></li>
-            </ul>
-        </section>
-    </main>
+  <!-- ═══ 小学 ═══ -->
+  <section class="section">
+    <h2 class="section-title">小学</h2>
+
+    <div class="card">
+      <div class="card-head">讲义</div>
+      <div class="link-grid">
+        <span class="link-item empty">暂无文件</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">Geo 交互演示</div>
+      <div class="link-grid">
+        <a class="link-item" href="/primary/立方和公式_金字塔.html">
+          <span class="link-icon"><!-- cube-pyramid -->
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+          </span>
+          <span class="link-text">立方和·金字塔</span>
+        </a>
+        <a class="link-item" href="/primary/立方和公式_正方体.html">
+          <span class="link-icon"><!-- cube -->
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+          </span>
+          <span class="link-text">立方和·正方体</span>
+        </a>
+        <a class="link-item" href="/primary/平方和公式_立体.html">
+          <span class="link-icon"><!-- layers -->
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2"/><line x1="12" y1="22" x2="12" y2="15.5"/></svg>
+          </span>
+          <span class="link-text">平方和·立体</span>
+        </a>
+        <a class="link-item" href="/primary/平方和公式_平面.html">
+          <span class="link-icon"><!-- square -->
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18"/></svg>
+          </span>
+          <span class="link-text">平方和·平面</span>
+        </a>
+        <a class="link-item" href="/primary/Conjoint-edge-theorem.html">
+          <span class="link-icon"><!-- triangle -->
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>
+          </span>
+          <span class="link-text">共边定理</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ 初中 ═══ -->
+  <section class="section">
+    <h2 class="section-title">初中</h2>
+
+    <div class="card">
+      <div class="card-head">讲义</div>
+      <div class="link-grid">
+        <a class="link-item" href="/junior/cauchy/">
+          <span class="link-icon"><!-- file-text -->
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          </span>
+          <span class="link-text">柯西不等式</span>
+        </a>
+        <a class="link-item" href="/junior/trigonometric/">
+          <span class="link-icon"><!-- file-text -->
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          </span>
+          <span class="link-text">三角函数</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">Geo 交互演示</div>
+      <div class="link-grid">
+        <span class="link-item empty">暂无文件</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ 高中 ═══ -->
+  <section class="section">
+    <h2 class="section-title">高中</h2>
+
+    <div class="card">
+      <div class="card-head">讲义</div>
+      <div class="link-grid">
+        <span class="link-item empty">暂无文件</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">Geo 交互演示</div>
+      <div class="link-grid">
+        <span class="link-item empty">暂无文件</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ 实用工具 ═══ -->
+  <section class="section">
+    <h2 class="section-title">实用工具</h2>
+    <div class="card">
+      <div class="link-grid">
+        <a class="link-item" href="/ac/">
+          <span class="link-icon"><!-- wind -->
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2"/></svg>
+          </span>
+          <span class="link-text">便携式空调</span>
+        </a>
+        <a class="link-item" href="/password-generator/">
+          <span class="link-icon"><!-- key -->
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+          </span>
+          <span class="link-text">密码生成器</span>
+        </a>
+        <a class="link-item" href="/periodic-table/">
+          <span class="link-icon"><!-- grid -->
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+          </span>
+          <span class="link-text">3D 元素周期表</span>
+        </a>
+        <a class="link-item" href="/rubiks-cube/">
+          <span class="link-icon"><!-- box -->
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+          </span>
+          <span class="link-text">转转魔方</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">高斯向上 · 数学教学资源</footer>
+
+</div>
 </body>
+</html>
