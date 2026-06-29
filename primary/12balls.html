@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>12球称重问题 - 三次称量找出坏球</title>
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<style>
+:root {
+  --blue: #4A90D9;
+  --blue-light: #7AB8F5;
+  --blue-dark: #2D6DA4;
+  --orange: #E8833A;
+  --orange-light: #F5A623;
+  --orange-dark: #C56A2A;
+  --green: #5CB85C;
+  --green-light: #7DD87D;
+  --green-dark: #3D8B3D;
+  --gray: #9E9E9E;
+  --gray-light: #BDBDBD;
+  --gray-dark: #757575;
+  --red: #E74C3C;
+  --red-light: #FF6B6B;
+  --bg: #f8f9fb;
+  --card: #ffffff;
+  --text: #2c3e50;
+  --text-secondary: #7f8c8d;
+  --border: rgba(0,0,0,0.06);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  line-height: 1.6;
+}
+
+.app-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.header {
+  text-align: center;
+  padding: 20px 0 10px;
+}
+.header h1 {
+  font-size: 28px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #4A90D9, #5CB85C);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.header .subtitle {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+.main-layout {
+  display: flex;
+  gap: 20px;
+  margin-top: 16px;
+}
+.left-panel {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.right-panel {
+  width: 360px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.card {
+  background: var(--card);
+  border-radius: 8px;
+  padding: 24px;
+  box-shadow: none;
+  border: 1px solid var(--border);
+}
+.card-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.card-title .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.dot.blue   { background: var(--blue); }
+.dot.orange { background: var(--orange); }
+.dot.green  { background: var(--green); }
+.dot.gray   { background: var(--gray); }
+.dot.red    { background: var(--red); }
+
+.god-card {
+  border-left: 3px solid #f0c040;
+  background: #fffef8;
+}
+.god-card .card-title { color: #b8860b; }
+.god-select {
+  padding: 7px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 13px;
+  background: #fff;
+  color: var(--text);
+  cursor: pointer;
+  min-width: 100px;
+}
+.god-select:focus { outline: none; border-color: #f0c040; }
+.god-btn {
+  padding: 7px 16px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  background: #fff;
+  color: var(--text-secondary);
+  transition: all 0.2s;
+}
+.god-btn:hover { border-color: #bbb; }
+.god-btn.selected-heavy { background: #e74c3c; color: #fff; border-color: #e74c3c; }
+.god-btn.selected-light { background: #3498db; color: #fff; border-color: #3498db; }
+.god-clear {
+  font-size: 12px;
+  color: #999;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 4px 8px;
+}
+.god-clear:hover { color: #e74c3c; }
+.god-hint {
+  font-size: 12px;
+  color: #999;
+  margin-top: 6px;
+}
+
+/* Ball Grid */
+.ball-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+  padding: 8px 0;
+}
+.ball-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  transition: transform 0.3s, opacity 0.3s;
+}
+.ball-item.dimmed  { opacity: 0.35; }
+.ball-item.suspect { transform: scale(1.08); }
+.ball {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+  cursor: default;
+  transition: all 0.4s;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.15), inset 0 -3px 6px rgba(0,0,0,0.12);
+}
+.ball.blue   { background: radial-gradient(circle at 35% 30%, var(--blue-light), var(--blue-dark)); }
+.ball.orange { background: radial-gradient(circle at 35% 30%, var(--orange-light), var(--orange-dark)); }
+.ball.green  { background: radial-gradient(circle at 35% 30%, var(--green-light), var(--green-dark)); }
+.ball.gray   { background: radial-gradient(circle at 35% 30%, #ccc, #888); }
+.ball.red    { background: radial-gradient(circle at 35% 30%, var(--red-light), var(--red)); animation: pulse 0.8s ease-in-out infinite; }
+.ball.pan-ball {
+  width: 30px; height: 30px; font-size: 12px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.15), inset 0 -2px 3px rgba(0,0,0,0.10);
+}
+.ball-tag { font-size: 11px; color: var(--text-secondary); font-weight: 500; }
+.ball-item.suspect .ball {
+  box-shadow: 0 0 0 3px var(--red), 0 3px 8px rgba(0,0,0,0.15), inset 0 -3px 6px rgba(0,0,0,0.12);
+}
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 0 3px var(--red), 0 3px 8px rgba(0,0,0,0.15), inset 0 -3px 6px rgba(0,0,0,0.12); }
+  50% { box-shadow: 0 0 0 6px rgba(231,76,60,0.4), 0 3px 8px rgba(0,0,0,0.15), inset 0 -3px 6px rgba(0,0,0,0.12); }
+}
+
+/* ═══════ 天平 - 精确几何 ═══════ */
+.scale-wrapper {
+  display: flex;
+  justify-content: center;
+  padding: 20px 0 10px;
+}
+.scale-container {
+  position: relative;
+  width: 340px;
+  height: 230px;
+}
+
+/* 支点三角形 */
+.pivot-triangle {
+  position: absolute;
+  top: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 14px solid transparent;
+  border-right: 14px solid transparent;
+  border-bottom: 26px solid #555;
+  z-index: 3;
+}
+
+/* 基座 */
+.scale-base {
+  position: absolute;
+  bottom: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 16px;
+  background: linear-gradient(to bottom, #666, #444);
+  border-radius: 4px;
+}
+
+/* 旋转体：横梁 + 两盘 + 标签统一旋转 */
+.scale-body {
+  position: absolute;
+  top: 33px;
+  left: 50%;
+  /* 用 translateX 居中，不干扰 rotate */
+  transform: translateX(-130px);
+  transform-origin: 130px 0;
+  transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+/* JS 通过 style 直接设 transform，需要合并 translateX */
+/* 将 scaleAngle 绑定改为用 CSS 变量或额外 wrapper */
+
+/* 内层定位参考 */
+.scale-inner {
+  position: relative;
+  width: 260px;
+}
+
+/* 横梁 */
+.scale-beam {
+  width: 260px;
+  height: 5px;
+  background: linear-gradient(to bottom, #555, #333);
+  border-radius: 3px;
+  position: relative;
+}
+.scale-beam::before,
+.scale-beam::after {
+  content: '';
+  position: absolute;
+  top: -3px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #444;
+}
+.scale-beam::before { left: -4px; }
+.scale-beam::after  { right: -4px; }
+
+/* 盘子 wrapper：以横梁端点为中轴 */
+.scale-pan {
+  position: absolute;
+  top: 8px;
+  width: 90px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.scale-pan.left  { left: -45px;  }  /* 中心对准横梁 x=0   */
+.scale-pan.right { left: 215px; }  /* 中心对准横梁 x=260 */
+
+/* 标签 */
+.pan-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 2px;
+}
+
+/* 连接线 */
+.pan-line {
+  width: 2px;
+  height: 28px;
+  background: #555;
+}
+
+/* 盘子本体 */
+.pan-dish {
+  width: 90px;
+  height: 50px;
+  border-radius: 0 0 45px 45px;
+  background: linear-gradient(to bottom, #e8e8e8, #ccc);
+  border: 2px solid #999;
+  border-top: none;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  flex-wrap: wrap;
+  padding: 6px 4px;
+  gap: 3px;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.12);
+}
+
+/* Side balls */
+.side-balls {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+.side-balls-label {
+  font-size: 12px;
+  color: var(--text-secondary);
+  text-align: center;
+  margin-bottom: 4px;
+}
+
+/* Step Indicator */
+.step-indicator { display: flex; align-items: center; justify-content: center; gap: 0; }
+.step-dot {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #e8ecf0;
+  color: #999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 14px;
+  transition: all 0.4s;
+}
+.step-dot.active { background: var(--blue); color: #fff; }
+.step-dot.done   { background: var(--green); color: #fff; }
+.step-line {
+  width: 40px;
+  height: 3px;
+  background: #e8ecf0;
+  transition: background 0.4s;
+}
+.step-line.done { background: var(--green); }
+
+/* Decision Tree */
+.decision-tree {
+  font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+  font-size: 13px;
+  line-height: 1.8;
+}
+.tree-node {
+  padding: 4px 10px;
+  border-left: 3px solid transparent;
+  margin: 2px 0;
+  transition: all 0.3s;
+  border-radius: 0 6px 6px 0;
+}
+.tree-node.active-path { border-left-color: var(--blue); background: rgba(74,144,217,0.06); font-weight: 600; }
+.tree-node.current     { border-left-color: var(--red);  background: rgba(231,76,60,0.05); font-weight: 700; }
+.tree-node .branch-label { font-size: 11px; color: var(--text-secondary); margin-right: 4px; }
+
+/* Buttons */
+.btn-group { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+.btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.btn:hover   { transform: translateY(-1px); }
+.btn:active  { transform: scale(0.97); }
+.btn-primary { background: var(--blue); color: #fff; }
+.btn-primary:hover { background: var(--blue-dark); }
+.btn-balance { background: #27ae60; color: #fff; }
+.btn-balance:hover { background: #219a52; }
+.btn-left    { background: #e67e22; color: #fff; }
+.btn-left:hover    { background: #d35400; }
+.btn-right   { background: #8e44ad; color: #fff; }
+.btn-right:hover   { background: #7d3c98; }
+.btn-reset   { background: #fff; color: var(--text-secondary); border: 1px solid #ddd; }
+.btn-reset:hover   { background: #f5f6f8; }
+.btn-start   { background: linear-gradient(135deg, var(--blue), var(--green)); color: #fff; font-size: 16px; padding: 12px 28px; }
+.btn-auto-weigh {
+  background: linear-gradient(135deg, #f0c040, #e6a800);
+  color: #4a3800;
+  font-size: 17px;
+  padding: 13px 36px;
+  box-shadow: 0 2px 12px rgba(240,192,64,0.35);
+  letter-spacing: 1px;
+}
+.btn-auto-weigh:hover {
+  background: linear-gradient(135deg, #f5c840, #e6a800);
+  box-shadow: 0 4px 18px rgba(240,192,64,0.5);
+  transform: translateY(-2px);
+}
+
+/* Description */
+.desc-text { font-size: 14px; line-height: 1.7; }
+.desc-text strong { color: var(--blue); }
+.desc-text .highlight {
+  background: rgba(74,144,217,0.08);
+  padding: 1px 4px;
+  border-radius: 3px;
+  font-weight: 600;
+}
+
+/* Result Banner */
+.result-banner {
+  border-radius: 10px;
+  padding: 16px 20px;
+  text-align: center;
+  font-weight: 700;
+  font-size: 16px;
+  animation: fadeInUp 0.5s;
+}
+.result-banner.found {
+  background: linear-gradient(135deg, #e74c3c, #c0392b);
+  color: #fff;
+}
+.result-banner .big-ball {
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #fff;
+  color: #e74c3c;
+  line-height: 40px;
+  font-size: 18px;
+  margin: 0 6px;
+  vertical-align: middle;
+}
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ═══════ Responsive ═══════ */
+@media (max-width: 860px) {
+  .main-layout { flex-direction: column; }
+  .right-panel { width: 100%; }
+
+  /* 天平缩小 */
+  .scale-container { width: 270px; height: 200px; }
+  .pivot-triangle {
+    border-left-width: 11px;
+    border-right-width: 11px;
+    border-bottom-width: 22px;
+  }
+  .scale-body {
+    transform: translateX(-95px);
+    transform-origin: 95px 0;
+  }
+  .scale-inner { width: 190px; }
+  .scale-beam  { width: 190px; }
+  .scale-pan    { width: 70px; }
+  .scale-pan.left  { left: -35px; }
+  .scale-pan.right { left: 155px; }
+  .pan-line   { height: 24px; }
+  .pan-dish   { width: 70px; height: 40px; border-radius: 0 0 35px 35px; padding: 4px 3px; gap: 2px; }
+  .ball.pan-ball { width: 22px; height: 22px; font-size: 10px; }
+  .pan-label  { font-size: 11px; }
+}
+
+.fade-enter-active, .fade-leave-active { transition: opacity 0.4s; }
+.fade-enter-from, .fade-leave-to { opacity: 0; }
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="app-container">
+    <div class="header">
+      <h1>12 球称重问题 · 三次找出坏球</h1>
+      <div class="subtitle">一颗重量不对（不知轻重），无砝码天平，仅 3 次称量</div>
+    </div>
+
+    <div class="main-layout">
+      <!-- Left Panel -->
+      <div class="left-panel">
+        <!-- Ball Display -->
+        <div class="card">
+          <div class="card-title">
+            12 颗球 · 三组
+            <span class="dot blue"></span> A(1-4)
+            <span class="dot orange"></span> B(5-8)
+            <span class="dot green"></span> C(9-12)
+          </div>
+          <div class="ball-grid">
+            <div v-for="ball in allBalls" :key="ball.id"
+                 :class="['ball-item', { dimmed: ball.dimmed, suspect: ball.suspect }]">
+              <div :class="['ball', ball.colorClass, { red: ball.isBad }]">{{ ball.id }}</div>
+              <span class="ball-tag">{{ ball.groupLabel }}</span>
+            </div>
+          </div>
+          <div v-if="phase >= 2" style="margin-top:8px; font-size:12px; color:var(--text-secondary); text-align:center;">
+            <span class="dot gray"></span> 灰色 = 标准球
+            <span style="margin-left:12px;"><span class="dot red"></span> 红框 = 嫌疑球</span>
+          </div>
+        </div>
+
+        <!-- Scale -->
+        <div class="card" v-if="phase >= 1">
+          <div class="card-title">第 {{ currentScaleNumber }} 次称量</div>
+          <div class="scale-wrapper">
+            <div class="scale-container">
+              <div class="scale-body" :style="{ transform: 'translateX(-130px) rotate(' + scaleAngle + 'deg)' }">
+                <div class="scale-inner">
+                  <div class="scale-beam"></div>
+                  <div class="scale-pan left">
+                    <div class="pan-label">左盘</div>
+                    <div class="pan-line"></div>
+                    <div class="pan-dish">
+                      <div v-for="b in leftPan" :key="b" :class="['ball', 'pan-ball', getBallColorClass(b)]">{{ b }}</div>
+                    </div>
+                  </div>
+                  <div class="scale-pan right">
+                    <div class="pan-label">右盘</div>
+                    <div class="pan-line"></div>
+                    <div class="pan-dish">
+                      <div v-for="b in rightPan" :key="b" :class="['ball', 'pan-ball', getBallColorClass(b)]">{{ b }}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="pivot-triangle"></div>
+              <div class="scale-base"></div>
+            </div>
+          </div>
+          <div v-if="sideBalls.length > 0" style="margin-top:8px;">
+            <div class="side-balls-label">场下待定</div>
+            <div class="side-balls">
+              <div v-for="b in sideBalls" :key="b" :class="['ball', 'pan-ball', getBallColorClass(b)]">{{ b }}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="btn-group">
+          <button v-if="phase === 0" class="btn btn-start" @click="startWeighing">开始第一次称量</button>
+
+          <button v-if="godMode && phase >= 1 && phase <= 3 && !finalConclusion"
+                  class="btn btn-auto-weigh" @click="autoWeigh">⚡ 自动称量（上帝视角）</button>
+
+          <template v-if="!godMode && phase >= 1 && !finalConclusion">
+            <button class="btn btn-balance" @click="chooseResult('balance')">⚖ 平衡</button>
+            <button class="btn btn-left" @click="chooseResult('left')">⬅ 左边重</button>
+            <button class="btn btn-right" @click="chooseResult('right')">➡ 右边重</button>
+          </template>
+
+          <button v-if="phase > 0" class="btn btn-reset" @click="reset">↺ 重新开始</button>
+        </div>
+
+        <!-- Result -->
+        <div v-if="finalConclusion" class="result-banner found">
+          坏球是 <span class="big-ball">{{ badBallId }}</span> 号，
+          比标准球<span style="text-decoration:underline;">{{ badBallType === 'heavy' ? '重' : '轻' }}</span>
+        </div>
+      </div>
+
+      <!-- Right Panel -->
+      <div class="right-panel">
+        <div class="card god-card">
+          <div class="card-title">🔮 上帝视角设定</div>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+            <select class="god-select" v-model.number="secretBall">
+              <option :value="null">选择坏球…</option>
+              <option v-for="i in 12" :key="i" :value="i">{{ i }} 号球</option>
+            </select>
+            <button class="god-btn" :class="{ 'selected-heavy': secretWeight === 'heavy' }"
+                    @click="secretWeight = 'heavy'">重</button>
+            <button class="god-btn" :class="{ 'selected-light': secretWeight === 'light' }"
+                    @click="secretWeight = 'light'">轻</button>
+            <button class="god-clear" @click="clearGodMode" v-if="godMode">清除</button>
+          </div>
+          <div class="god-hint" v-if="godMode">
+            已设定 {{ secretBall }} 号为坏球（{{ secretWeight === 'heavy' ? '偏重' : '偏轻' }}）
+          </div>
+          <div class="god-hint" v-else>
+            先选择坏球编号和轻重，然后点击「自动称量」让天平自动判断
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">称量进度</div>
+          <div class="step-indicator">
+            <div :class="['step-dot', stepClass(1)]">1</div>
+            <div :class="['step-line', stepClass(1) === 'done' ? 'done' : '']"></div>
+            <div :class="['step-dot', stepClass(2)]">2</div>
+            <div :class="['step-line', stepClass(2) === 'done' ? 'done' : '']"></div>
+            <div :class="['step-dot', stepClass(3)]">3</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">当前分析</div>
+          <div class="desc-text" v-html="currentDescription"></div>
+        </div>
+
+        <div class="card" v-if="phase >= 1">
+          <div class="card-title">决策路径</div>
+          <div class="decision-tree">
+            <div v-for="(node, idx) in decisionPathNodes" :key="idx"
+                 :class="['tree-node', node.cssClass]">
+              <span v-if="node.branch" class="branch-label">{{ node.branch }}</span>
+              {{ node.label }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const { createApp } = Vue;
+
+createApp({
+  data() {
+    return {
+      phase: 0,
+      firstResult: null,
+      secondResult: null,
+      thirdResult: null,
+      scaleAngle: 0,
+      secretBall: null,
+      secretWeight: null,
+    };
+  },
+
+  computed: {
+    godMode() {
+      return this.secretBall !== null && this.secretWeight !== null;
+    },
+
+    allBalls() {
+      const balls = [];
+      for (let i = 1; i <= 12; i++) {
+        const inA = i <= 4;
+        const inB = i >= 5 && i <= 8;
+        let groupLabel = '';
+        let colorBase = '';
+        if (inA)      { groupLabel = 'A组'; colorBase = 'blue'; }
+        else if (inB) { groupLabel = 'B组'; colorBase = 'orange'; }
+        else          { groupLabel = 'C组'; colorBase = 'green'; }
+
+        let dimmed = false, suspect = false, isBad = false;
+        let colorClass = colorBase;
+
+        if (this.phase >= 1 && this.isKnownGood(i)) {
+          colorClass = 'gray'; dimmed = true;
+        }
+        if (this.phase >= 1 && this.isSuspect(i)) {
+          suspect = true; dimmed = false; colorClass = colorBase;
+        }
+        if (this.finalConclusion && i === this.badBallId) {
+          isBad = true; colorClass = 'red'; suspect = false; dimmed = false;
+        }
+
+        balls.push({ id: i, groupLabel, colorClass, dimmed, suspect, isBad });
+      }
+      return balls;
+    },
+
+    currentScaleNumber() {
+      if (this.phase === 1 || (this.phase === 2 && !this.secondResult)) return 1;
+      if ((this.phase === 2 && this.secondResult) || (this.phase === 3 && !this.thirdResult)) return 2;
+      if (this.phase >= 3) return 3;
+      return 1;
+    },
+
+    leftPan() {
+      if (this.phase === 1) return [1, 2, 3, 4];
+      if (this.phase === 2) return this.secondWeighingLeft();
+      if (this.phase >= 3) return this.thirdWeighingLeft();
+      return [];
+    },
+    rightPan() {
+      if (this.phase === 1) return [5, 6, 7, 8];
+      if (this.phase === 2) return this.secondWeighingRight();
+      if (this.phase >= 3) return this.thirdWeighingRight();
+      return [];
+    },
+    sideBalls() {
+      if (this.phase === 1) return [9, 10, 11, 12];
+      if (this.phase === 2) return this.secondWeighingSide();
+      if (this.phase >= 3) return this.thirdWeighingSide();
+      return [];
+    },
+
+    finalConclusion() {
+      return this.phase >= 4 && this.badBallId !== null;
+    },
+    badBallId() {
+      if (this.phase < 4) return null;
+      const r1 = this.firstResult, r2 = this.secondResult, r3 = this.thirdResult;
+      if (r1 === 'balance') {
+        if (r2 === 'balance') return 12;
+        if (r2 === 'left')  return r3 === 'left' ? 9 : (r3 === 'right' ? 10 : 11);
+        if (r2 === 'right') return r3 === 'left' ? 10 : (r3 === 'right' ? 9 : 11);
+      }
+      if (r1 === 'left') {
+        if (r2 === 'balance') return r3 === 'left' ? 6 : (r3 === 'right' ? 7 : 8);
+        if (r2 === 'left')    return r3 === 'left' ? 1 : (r3 === 'right' ? 2 : 3);
+        if (r2 === 'right')   return r3 === 'left' ? 5 : 4;
+      }
+      if (r1 === 'right') {
+        if (r2 === 'balance') return r3 === 'left' ? 2 : (r3 === 'right' ? 3 : 4);
+        if (r2 === 'left')    return r3 === 'left' ? 5 : (r3 === 'right' ? 6 : 7);
+        if (r2 === 'right')   return r3 === 'left' ? 1 : 8;
+      }
+      return null;
+    },
+    badBallType() {
+      if (!this.badBallId) return null;
+      const r1 = this.firstResult, r2 = this.secondResult, r3 = this.thirdResult;
+      if (r1 === 'balance') {
+        if (r2 === 'balance') return '?';
+        return r2 === 'left' ? 'heavy' : 'light';
+      }
+      if (r1 === 'left') {
+        if (r2 === 'balance') return 'light';
+        if (r2 === 'left')    return 'heavy';
+        return r3 === 'left' ? 'light' : 'heavy';
+      }
+      if (r1 === 'right') {
+        if (r2 === 'balance') return 'light';
+        if (r2 === 'left')    return 'heavy';
+        return r3 === 'left' ? 'heavy' : 'light';
+      }
+      return '?';
+    },
+
+    currentDescription() {
+      if (this.phase === 0) {
+        return `<strong>准备工作：</strong>12 颗球编号 1~12，分成三组：<br>
+        <span class="highlight">A 组 (1-4)</span> · <span class="highlight">B 组 (5-8)</span> · <span class="highlight">C 组 (9-12)</span><br>
+        第一次称量：A 组 vs B 组，各 4 颗。`;
+      }
+      if (this.phase === 1) {
+        return `<strong>第一次称量：</strong>左盘 A(1,2,3,4) vs 右盘 B(5,6,7,8)<br>
+        C 组 (9-12) 在场下待定。`;
+      }
+      if (this.phase === 2 && !this.secondResult) {
+        if (this.firstResult === 'balance') {
+          return `<strong>情况一：平衡</strong><br>坏球在 C 组 (9-12)，1-8 号全是标准球。<br>
+          <strong>第二次：</strong>{9,10,11} vs {1,2,3}`;
+        }
+        if (this.firstResult === 'left') {
+          return `<strong>情况二：左边重 (A > B)</strong><br>C 组全是标准球。坏球：A 组(重) 或 B 组(轻)。<br>
+          <strong>第二次（对调+替换）：</strong>左 {1,2,3,<em>5</em>}，右 {4,<em>9,10,11</em>}`;
+        }
+        return `<strong>情况二（镜像）：右边重 (A < B)</strong><br>C 组全是标准球。坏球：A 组(轻) 或 B 组(重)。<br>
+          <strong>第二次（对调+替换）：</strong>左 {5,6,7,<em>1</em>}，右 {8,<em>9,10,11</em>}`;
+      }
+      if (this.phase === 3 && this.thirdResult === null) {
+        return this._thirdDesc();
+      }
+      if (this.phase >= 4) {
+        return `<strong>结论已出！</strong>坏球是 <strong>${this.badBallId} 号</strong>，比标准球<strong>${this.badBallType === 'heavy' ? '重' : '轻'}</strong>。`;
+      }
+      return '';
+    },
+
+    decisionPathNodes() {
+      const nodes = [];
+      nodes.push({ label: '第一次: A(1-4) vs B(5-8)', branch: '', cssClass: 'active-path' });
+      if (!this.firstResult) return nodes;
+      const r1Label = this.firstResult === 'balance' ? '平衡 → 坏球在C组'
+        : (this.firstResult === 'left' ? '左边重 → A重或B轻' : '右边重 → A轻或B重');
+      nodes.push({ label: r1Label, branch: this._emoji(this.firstResult), cssClass: 'active-path' });
+      if (!this.secondResult) {
+        nodes.push({ label: this._secondLabel(), branch: '', cssClass: 'current' });
+        return nodes;
+      }
+      nodes.push({ label: this.secondResult === 'balance' ? '平衡' : (this.secondResult === 'left' ? '左边重' : '右边重'),
+                   branch: this._emoji(this.secondResult), cssClass: 'active-path' });
+      if (!this.thirdResult) {
+        nodes.push({ label: '第三次称量', branch: '', cssClass: 'current' });
+        return nodes;
+      }
+      nodes.push({ label: this.thirdResult === 'balance' ? '平衡' : (this.thirdResult === 'left' ? '左边重' : '右边重'),
+                   branch: this._emoji(this.thirdResult), cssClass: 'active-path' });
+      if (this.badBallId) {
+        nodes.push({ label: `坏球: ${this.badBallId}号 (${this.badBallType === 'heavy' ? '重' : '轻'})`, branch: '', cssClass: 'current' });
+      }
+      return nodes;
+    }
+  },
+
+  methods: {
+    clearGodMode() { this.secretBall = null; this.secretWeight = null; },
+
+    autoWeigh() {
+      if (!this.secretBall || !this.secretWeight) return;
+      const delta = this.secretWeight === 'heavy' ? 1 : -1;
+      let lw = this.leftPan.length, rw = this.rightPan.length;
+      if (this.leftPan.includes(this.secretBall))  lw += delta;
+      if (this.rightPan.includes(this.secretBall)) rw += delta;
+      if (lw > rw) this.chooseResult('left');
+      else if (lw < rw) this.chooseResult('right');
+      else this.chooseResult('balance');
+    },
+
+    startWeighing() { this.phase = 1; this.scaleAngle = 0; },
+
+    chooseResult(result) {
+      if (this.phase === 1) {
+        this.firstResult = result; this.phase = 2;
+        this._tilt(result, 6); this.secondResult = null; this.thirdResult = null;
+        setTimeout(() => { this.scaleAngle = 0; }, 700);
+      } else if (this.phase === 2) {
+        this.secondResult = result; this.phase = 3;
+        this._tilt(result, 5); this.thirdResult = null;
+        setTimeout(() => { this.scaleAngle = 0; }, 700);
+      } else if (this.phase === 3) {
+        this.thirdResult = result; this.phase = 4;
+        this._tilt(result, 4);
+      }
+    },
+
+    reset() {
+      this.phase = 0;
+      this.firstResult = this.secondResult = this.thirdResult = null;
+      this.scaleAngle = 0;
+      this.clearGodMode();
+    },
+
+    /* ── 球状态 ── */
+    isKnownGood(i) {
+      if (this.phase < 1) return false;
+      if (this.firstResult === 'balance') return this.phase >= 2 && i <= 8;
+      if (this.firstResult === 'left' || this.firstResult === 'right') {
+        if (this.phase >= 2) {
+          let g = [9,10,11,12];
+          if (this.secondResult && this.phase >= 3) this._add2(g);
+          if (this.thirdResult && this.phase >= 4) this._add3(g);
+          return g.includes(i);
+        }
+        return i >= 9 && i <= 12;
+      }
+      return false;
+    },
+    isSuspect(i) {
+      if (this.phase < 2 || this.finalConclusion || this.isKnownGood(i)) return false;
+      if (this.firstResult === 'balance') return i >= 9 && i <= 12;
+      const r1 = this.firstResult, r2 = this.secondResult;
+      if (this.phase === 2) return i <= 8;
+      if (r1 === 'left') {
+        if (r2 === 'balance') return [6,7,8].includes(i);
+        if (r2 === 'left')    return [1,2,3].includes(i);
+        if (r2 === 'right')   return [4,5].includes(i);
+      }
+      if (r1 === 'right') {
+        if (r2 === 'balance') return [2,3,4].includes(i);
+        if (r2 === 'left')    return [1,8].includes(i);
+        if (r2 === 'right')   return [5,6,7].includes(i);
+      }
+      return false;
+    },
+    getBallColorClass(i) {
+      if (this.isKnownGood(i) && this.phase >= 2) return 'gray';
+      if (i <= 4) return 'blue';
+      if (i <= 8) return 'orange';
+      return 'green';
+    },
+
+    /* ── 称量配置 ── */
+    secondWeighingLeft() {
+      if (this.firstResult === 'balance') return [9,10,11];
+      if (this.firstResult === 'left')    return [1,2,3,5];
+      return [5,6,7,1];
+    },
+    secondWeighingRight() {
+      if (this.firstResult === 'balance') return [1,2,3];
+      if (this.firstResult === 'left')    return [4,9,10,11];
+      return [8,9,10,11];
+    },
+    secondWeighingSide() {
+      if (this.firstResult === 'balance') return [12];
+      if (this.firstResult === 'left')    return [6,7,8];
+      return [2,3,4];
+    },
+    thirdWeighingLeft() {
+      const r1=this.firstResult, r2=this.secondResult;
+      if (r1==='balance') return r2==='balance'?[12]:[9];
+      if (r1==='left')    return r2==='balance'?[6]:r2==='left'?[1]:[4];
+      return r2==='balance'?[2]:r2==='left'?[8]:[5];
+    },
+    thirdWeighingRight() {
+      const r1=this.firstResult, r2=this.secondResult;
+      if (r1==='balance') return r2==='balance'?[1]:[10];
+      if (r1==='left')    return r2==='balance'?[7]:r2==='left'?[2]:[9];
+      return r2==='balance'?[3]:r2==='left'?[9]:[6];
+    },
+    thirdWeighingSide() {
+      const on = [...this.thirdWeighingLeft(), ...this.thirdWeighingRight()];
+      return Array.from({length:12},(_,i)=>i+1).filter(i=>!on.includes(i));
+    },
+
+    /* ── UI helpers ── */
+    stepClass(s) {
+      if (this.phase===0 && s===1) return 'active';
+      if (this.phase===1) return s===1?'active':'';
+      if (this.phase===2) return s===1?'done':(s===2?'active':'');
+      if (this.phase===3) return s<=2?'done':(s===3?'active':'');
+      return 'done';
+    },
+    _emoji(r) { return r==='balance'?'平衡 ⚖':(r==='left'?'左重 ⬅':'右重 ➡'); },
+    _tilt(result, deg) {
+      if (result==='left') this.scaleAngle=-deg;
+      else if (result==='right') this.scaleAngle=deg;
+      else this.scaleAngle=0;
+    },
+    _secondLabel() {
+      if (this.firstResult==='balance') return '第二次: {9,10,11} vs {1,2,3}';
+      if (this.firstResult==='left')    return '第二次: {1,2,3,5} vs {4,9,10,11}';
+      return '第二次: {5,6,7,1} vs {8,9,10,11}';
+    },
+    _thirdDesc() {
+      const k = this.firstResult+'_'+this.secondResult;
+      const m = {
+        balance_balance:'第二次平衡：9,10,11 都是好球，坏球是 <strong>12 号</strong>。<br>第三次：12 vs 1 确定轻重。',
+        balance_left:'第二次左边重：坏球在 {9,10,11}，<strong>重球</strong>。<br>第三次：9 vs 10。谁重谁是；平衡则 11。',
+        balance_right:'第二次右边重：坏球在 {9,10,11}，<strong>轻球</strong>。<br>第三次：9 vs 10。谁轻谁是；平衡则 11。',
+        left_balance:'第二次平衡：坏球在场下 {6,7,8}，<strong>轻球</strong>。<br>第三次：6 vs 7。谁轻谁是；平衡则 8。',
+        left_left:'第二次仍左边重（方向未变）：排除 4,5。坏球在 {1,2,3}，<strong>重球</strong>。<br>第三次：1 vs 2。谁重谁是；平衡则 3。',
+        left_right:'第二次变为右边重（反转！）：仅 4 和 5 换了位置。<br>若 4 重→右盘沉；若 5 轻→左盘升。<br>第三次：4 vs 9。4 重则坏；平衡则 5 轻。',
+        right_balance:'第二次平衡：坏球在场下 {2,3,4}，<strong>轻球</strong>。<br>第三次：2 vs 3。谁轻谁是；平衡则 4。',
+        right_left:'第二次变为左边重（反转！）：仅 1 和 8 换了位置。<br>第三次：8 vs 9。8 重则坏；平衡则 1 轻。',
+        right_right:'第二次仍右边重（方向未变）：坏球在 {5,6,7}，<strong>重球</strong>。<br>第三次：5 vs 6。谁重谁是；平衡则 7。',
+      };
+      return m[k] || '';
+    },
+    _add2(g) {
+      const r1=this.firstResult, r2=this.secondResult;
+      if (r1==='left') {
+        if (r2==='balance') g.push(1,2,3,4,5);
+        if (r2==='left')    g.push(4,5,6,7,8);
+        if (r2==='right')   g.push(1,2,3,6,7,8);
+      } else {
+        if (r2==='balance') g.push(1,5,6,7,8);
+        if (r2==='left')    g.push(1,2,3,4,8);
+        if (r2==='right')   g.push(2,3,4,5,6,7);
+      }
+    },
+    _add3(g) {
+      const r1=this.firstResult, r2=this.secondResult, r3=this.thirdResult;
+      if (r1==='left' && r2==='right')   r3==='left'?g.push(4):g.push(5);
+      if (r1==='right' && r2==='left')   r3==='left'?g.push(1):g.push(8);
+    }
+  }
+}).mount('#app');
+</script>
+</body>
+</html>

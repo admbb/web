@@ -1,0 +1,1155 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>正方形与三角形面积定值 — 互动几何证明</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] },
+  options: { ignoreHtmlClass: 'no-mathjax' }
+};
+</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<style>
+:root {
+  --bg: #f8f9fb;
+  --card-bg: #ffffff;
+  --text: #2c3e50;
+  --accent: #4a90d9;
+  --accent2: #e74c3c;
+  --accent3: #27ae60;
+  --accent4: #f39c12;
+  --border: #e0e5ec;
+  --shadow: 0 2px 12px rgba(0,0,0,0.06);
+  --radius: 14px;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  padding: 20px;
+}
+.header {
+  text-align: center;
+  padding: 30px 20px 20px;
+  max-width: 960px;
+  margin: 0 auto;
+}
+.header h1 {
+  font-size: 1.8em;
+  background: linear-gradient(135deg, var(--accent), #6c5ce7);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px;
+}
+.header .subtitle {
+  color: #888;
+  font-size: 0.95em;
+}
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+}
+.card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 28px 30px;
+  margin-bottom: 24px;
+  border: 1px solid var(--border);
+}
+.card h2 {
+  font-size: 1.35em;
+  margin-bottom: 16px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--accent);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.card h2 .badge {
+  font-size: 0.7em;
+  background: var(--accent);
+  color: #fff;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-weight: 400;
+}
+.card h3 {
+  font-size: 1.05em;
+  margin: 16px 0 10px;
+  color: #555;
+}
+.problem-box {
+  background: #fef9e7;
+  border-left: 4px solid var(--accent4);
+  padding: 16px 20px;
+  border-radius: 0 10px 10px 0;
+  margin: 12px 0;
+  font-size: 0.95em;
+}
+.proof-box {
+  background: #eaf7ee;
+  border-left: 4px solid var(--accent3);
+  padding: 14px 18px;
+  border-radius: 0 10px 10px 0;
+  margin: 12px 0;
+  font-size: 0.93em;
+}
+.formula {
+  font-family: "Cambria Math", "Times New Roman", serif;
+  font-style: italic;
+  font-size: 1.1em;
+}
+canvas {
+  display: block;
+  margin: 16px auto;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: #fff;
+  max-width: 100%;
+  height: auto;
+}
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  align-items: center;
+  justify-content: center;
+  margin: 12px 0;
+}
+.controls label {
+  font-size: 0.9em;
+  font-weight: 500;
+  color: #555;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.controls input[type="range"] {
+  width: 130px;
+  accent-color: var(--accent);
+}
+.controls input[type="number"] {
+  width: 60px;
+  padding: 4px 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 0.9em;
+  text-align: center;
+}
+.slider-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #f4f6f9;
+  border-radius: 10px;
+  padding: 8px 14px;
+}
+.slider-group label {
+  font-weight: 600;
+  font-size: 0.95em;
+  white-space: nowrap;
+}
+.slider-group input[type="range"] {
+  width: 180px;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+.slider-group .slider-val {
+  font-weight: 700;
+  font-size: 1.05em;
+  color: var(--accent);
+  min-width: 36px;
+  text-align: center;
+}
+.btn {
+  padding: 8px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9em;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-primary:hover { background: #357abd; }
+.btn-outline { background: #fff; border: 2px solid var(--accent); color: var(--accent); }
+.btn-outline:hover { background: #f0f5ff; }
+.btn-secondary { background: #eee; color: #555; }
+.btn-secondary:hover { background: #ddd; }
+.btn.active { background: var(--accent3); color: #fff; }
+.tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 14px;
+  background: #f0f2f5;
+  border-radius: 10px;
+  padding: 4px;
+}
+.tab-btn {
+  flex: 1;
+  padding: 8px 16px;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9em;
+  font-weight: 500;
+  color: #777;
+  transition: all 0.2s;
+}
+.tab-btn.active {
+  background: #fff;
+  color: var(--accent);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
+.result-display {
+  text-align: center;
+  font-size: 1.05em;
+  font-weight: 500;
+  margin: 10px 0;
+  padding: 12px 20px;
+  background: linear-gradient(135deg, #f0f7ff 0%, #fafcfe 100%);
+  border-radius: 8px;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+.result-display .val { color: var(--accent2); font-size: 1.25em; font-weight: 700; }
+.step-list { list-style: none; padding: 0; }
+.step-list li {
+  padding: 6px 0 6px 28px;
+  position: relative;
+  font-size: 0.93em;
+  opacity: 0.5;
+  transition: all 0.4s;
+}
+.step-list li::before {
+  content: "▸";
+  position: absolute;
+  left: 8px;
+  color: var(--accent);
+}
+.step-list li.highlight {
+  opacity: 1;
+  font-weight: 600;
+  color: var(--accent2);
+}
+.step-list li.done {
+  opacity: 1;
+  color: #555;
+}
+.step-list li.done::before { content: "✓"; color: var(--accent3); }
+#squareCount { width: 50px; }
+.note { font-size: 0.85em; color: #999; margin-top: 6px; }
+
+/* MathJax 美观优化 */
+mjx-container {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+.result-display mjx-container {
+  font-size: 1.05em;
+}
+.problem-box mjx-container,
+.proof-box mjx-container {
+  line-height: 1.6;
+}
+.step-list mjx-container {
+  font-size: 0.97em;
+}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>正方形与三角形面积定值</h1>
+  <p class="subtitle">从两正方形到 \(n\) 个正方形 — 等积变形的力量</p>
+</div>
+<div class="container">
+
+<!-- ===== 第一部分：基础问题 ===== -->
+<div class="card" id="sec-basic">
+  <h2><span class="badge">基础</span>两正方形共线问题</h2>
+  <div class="problem-box">
+    <strong>已知：</strong>正方形 \(ABCD\) 和正方形 \(CEFG\) 位于同一平面内，点 \(B\)、\(C\)、\(E\) 共线，且 \(C\) 位于线段 \(BE\) 上。连接 \(B\)、\(D\)、\(F\) 构成 \(\triangle BDF\)。若正方形 \(ABCD\) 边长为 \(a\)，正方形 \(CEFG\) 边长为 \(b\)。<br>
+    <strong>求证：</strong>无论 \(a\) 和 \(b\) 如何改变，\(\triangle BDF\) 面积恒等于正方形 \(ABCD\) 面积的一半。
+  </div>
+  <div class="controls">
+    <div class="slider-group">
+      <label style="color:#4a90d9;">\(a =\)</label>
+      <input type="range" id="sliderA" min="40" max="200" value="120" step="2">
+      <span class="slider-val" id="sliderAVal" style="color:#4a90d9;">120</span>
+    </div>
+    <div class="slider-group">
+      <label style="color:#27ae60;">\(b =\)</label>
+      <input type="range" id="sliderB" min="30" max="180" value="80" step="2">
+      <span class="slider-val" id="sliderBVal" style="color:#27ae60;">80</span>
+    </div>
+    <button class="btn btn-outline" id="btnRandom">🎲 随机</button>
+  </div>
+  <canvas id="canvasBasic"></canvas>
+  <div class="result-display">
+    <span>\(\dfrac{a^2}{2} =\)</span> <span class="val" id="halfSquareArea">7200</span>
+    <span style="margin:0 12px;color:#ccc;">|</span>
+    <span>\(S_{\triangle BDF} =\)</span> <span class="val" id="triArea">7200</span>
+  </div>
+</div>
+<!-- ===== 第二部分：两种证明方法 ===== -->
+<div class="card" id="sec-methods">
+  <h2><span class="badge">证明</span>两种证法对比</h2>
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="tab-cut">✂️ 方法一：割补法</button>
+    <button class="tab-btn" data-tab="tab-parallel">∥ 方法二：平行线等积变形</button>
+  </div>
+
+  <!-- 割补法 -->
+  <div class="tab-content" id="tab-cut">
+    <p style="margin-bottom:10px;font-size:0.93em;">将 \(\triangle BDF\) 放入一个更大的矩形中，通过「总面积 − 空白面积」即可得证。</p>
+    <canvas id="canvasCut"></canvas>
+    <ol class="step-list" id="cutSteps">
+      <li data-step="1">① 画出辅助矩形：以 \(B\) 为左下角、\((a+b,\;a)\) 为右上角的矩形</li>
+      <li data-step="2">② 矩形总面积 \(= (a+b) \times a\)</li>
+      <li data-step="3">③ 减去左上角空白 \(\triangle ABD\)：面积 \(= \dfrac{a^2}{2}\)</li>
+      <li data-step="4">④ 减去右下角空白三角形：面积 \(= \dfrac{b^2}{2}\)</li>
+      <li data-step="5">⑤ 减去右上角空白三角形：面积 \(= \dfrac{(a-b)b}{2}\)（当 \(a \ge b\)）</li>
+      <li data-step="6">⑥ 计算结果：\((a+b)a - \dfrac{a^2}{2} - \dfrac{b^2}{2} - \dfrac{(a-b)b}{2} = \mathbf{\dfrac{a^2}{2}}\) ✓</li>
+    </ol>
+    <div class="note">滑动下方进度条可逐步查看割补过程：</div>
+    <div class="controls">
+      <button class="btn btn-secondary" id="cutPrev">◀ 上一步</button>
+      <input type="range" id="cutStepSlider" min="1" max="6" value="1" step="1" style="width:200px;">
+      <button class="btn btn-secondary" id="cutNext">下一步 ▶</button>
+    </div>
+  </div>
+
+  <!-- 平行线法 -->
+  <div class="tab-content" id="tab-parallel" style="display:none;">
+    <p style="margin-bottom:10px;font-size:0.93em;">核心发现：<strong>\(BD \parallel CF\)</strong>（都是对角线方向，斜率均为 \(1\)），因此可用等积变形！</p>
+    <canvas id="canvasParallel"></canvas>
+    <ol class="step-list" id="parallelSteps">
+      <li data-step="1">① 连接 \(BD\)（正方形 \(ABCD\) 的对角线）</li>
+      <li data-step="2">② 连接 \(CF\)（正方形 \(CEFG\) 的对角线）</li>
+      <li data-step="3">③ 发现：\(BD \parallel CF\)（斜率均为 \(1\)，即 \(45^\circ\)）</li>
+      <li data-step="4">④ \(\triangle BDF\) 与 \(\triangle BDC\) 有公共底边 \(BD\)</li>
+      <li data-step="5">⑤ \(F\) 和 \(C\) 都在平行于 \(BD\) 的直线上 → 等高</li>
+      <li data-step="6">⑥ \(S_{\triangle BDF} = S_{\triangle BDC} = \mathbf{a^2/2}\) ✓</li>
+    </ol>
+    <div class="controls">
+      <button class="btn btn-secondary" id="parPrev">◀ 上一步</button>
+      <input type="range" id="parStepSlider" min="1" max="6" value="1" step="1" style="width:200px;">
+      <button class="btn btn-secondary" id="parNext">下一步 ▶</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 第三部分：进阶推广 ===== -->
+<div class="card" id="sec-advanced">
+  <h2><span class="badge">进阶</span>\(n\) 个正方形 — 任选相邻对，面积皆定值</h2>
+  <div class="problem-box">
+    <strong>题目：</strong>在同一水平底线上，依次并排紧贴着放置 \(n\) 个边长可变的正方形。在其中<strong>任意选取相邻的两个正方形</strong>（设左侧正方形的边长为 \(L\)）。选取左侧正方形的<strong>左下角</strong>和<strong>右上角</strong>，以及与其紧邻的右侧正方形的<strong>右上角</strong>，将这三点相连构成一个三角形。<br>
+    <strong>求证：</strong>无论正方形的总数 \(n\) 是多少，也无论其他正方形的边长如何改变，只要聚焦于这对相邻正方形，该三角形的面积始终等于 \(\dfrac{L^2}{2}\)。
+  </div>
+
+  <div class="controls">
+    <div class="slider-row">
+      <label>正方形数 \(n\) = <span class="slider-val" id="advNVal">5</span></label>
+      <input type="range" id="advSliderN" min="2" max="8" value="5" step="1">
+    </div>
+    <div class="slider-row">
+      <label>选中第 <span class="slider-val" id="advPairVal">3</span> 对相邻正方形（第 <span class="slider-val" id="advPairLabel">3</span> 和 <span class="slider-val" id="advPairLabel2">4</span> 个）</label>
+      <input type="range" id="advSliderPair" min="1" max="4" value="3" step="1">
+    </div>
+    <div class="slider-row">
+      <label>左侧边长 \(L\) = <span class="slider-val" id="advLVal">120</span></label>
+      <input type="range" id="advSliderL" min="40" max="160" value="120" step="5">
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;">
+      <button class="btn btn-outline" id="btnRandomN">🎲 随机边长</button>
+      <button class="btn btn-primary" id="btnAnimateTransform">▶ 演示等积变形</button>
+      <button class="btn btn-secondary" id="btnResetTransform">↺ 重置</button>
+    </div>
+  </div>
+  <canvas id="canvasAdvanced"></canvas>
+  <div class="result-display">
+    <span>恒为 \(\dfrac{L^2}{2} =\)</span> <span class="val" id="halfLArea">7200</span>
+    <span style="margin:0 12px;color:#ccc;">|</span>
+    <span>当前面积 \(=\)</span> <span class="val" id="advTriArea">7200</span>
+  </div>
+  <div class="proof-box" style="margin-top:12px;">
+    <strong>核心思路：</strong>不论你在 \(n\) 个正方形中抽取哪一对相邻的局部，由于 \(BD \parallel CF\)（对角线斜率均为 \(1\)），利用「平行线间同底等高」的性质，右邻正方形的右上角 \(F\) 总能沿对角线平移到左侧正方形的底点 \(C\)，完成<strong>一次</strong>等积变形：\(S_{\triangle BDF}=S_{\triangle BDC}=\dfrac{L^2}{2}\)。面积定值只与左侧正方形相关，免疫右侧任何形变。
+  </div>
+  <ol class="step-list" id="advSteps">
+    <li data-step="1">① 在 \(n\) 个正方形中，<strong>任选一对相邻正方形</strong>：第 \(p\) 个（边长 \(L\)）和第 \(p+1\) 个</li>
+    <li data-step="2">② 三角形顶点：\(B\)（左下方左下角）、\(D\)（左上方右上角）、\(F\)（右邻正方形右上角）</li>
+    <li data-step="3">③ 连接对角线 \(BD\) 和 \(CF\)，发现 \(BD \parallel CF\)（斜率均为 \(1\)，即 \(45^\circ\)）</li>
+    <li data-step="4">④ 以 \(BD\) 为公共底边，\(F\) 和 \(C\) 在同一条平行线上 → 同底等高</li>
+    <li data-step="5">⑤ <strong>等积变形</strong>：\(S_{\triangle BDF} = S_{\triangle BDC}\)（沿平行线滑到 \(C\) 点）</li>
+    <li data-step="6">⑥ \(\triangle BDC\) 恰为左侧正方形对角线三角形 → \(S = \mathbf{L^2/2}\) ✓</li>
+  </ol>
+</div>
+</div>
+<script>
+// ========== 全局工具 ==========
+function triArea(x1,y1,x2,y2,x3,y3) {
+  return Math.abs(x1*(y2-y3)+x2*(y3-y1)+x3*(y1-y2))/2;
+}
+function drawGrid(ctx,w,h,step,color){
+  ctx.strokeStyle=color||'#e8ecf1';ctx.lineWidth=0.5;
+  for(let x=0;x<=w;x+=step){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h);ctx.stroke();}
+  for(let y=0;y<=h;y+=step){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke();}
+}
+function fillPoly(ctx,pts,color,alpha){
+  ctx.fillStyle=color;ctx.globalAlpha=alpha||0.3;
+  ctx.beginPath();ctx.moveTo(pts[0][0],pts[0][1]);
+  for(let i=1;i<pts.length;i++)ctx.lineTo(pts[i][0],pts[i][1]);
+  ctx.closePath();ctx.fill();ctx.globalAlpha=1;
+}
+function strokePoly(ctx,pts,color,width,dash){
+  ctx.strokeStyle=color;ctx.lineWidth=width||2;
+  if(dash)ctx.setLineDash(dash);else ctx.setLineDash([]);
+  ctx.beginPath();ctx.moveTo(pts[0][0],pts[0][1]);
+  for(let i=1;i<pts.length;i++)ctx.lineTo(pts[i][0],pts[i][1]);
+  ctx.closePath();ctx.stroke();ctx.setLineDash([]);
+}
+function drawLabel(ctx,x,y,text,color,size,align){
+  ctx.fillStyle=color||'#2c3e50';
+  ctx.font=`${size||14}px -apple-system,"PingFang SC","Microsoft YaHei",sans-serif`;
+  ctx.textAlign=align||'center';ctx.textBaseline='middle';
+  ctx.fillText(text,x,y);
+}
+function dot(ctx,x,y,r,c){ctx.fillStyle=c||'#e74c3c';ctx.beginPath();ctx.arc(x,y,r||4,0,Math.PI*2);ctx.fill();}
+
+// ========== 高 DPI Canvas 初始化 ==========
+function setupHiDPI(canvas, logW, logH) {
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = logW * dpr;
+  canvas.height = logH * dpr;
+  canvas.style.width = logW + 'px';
+  canvas.style.height = logH + 'px';
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  // 存储逻辑尺寸
+  canvas._logW = logW;
+  canvas._logH = logH;
+  return ctx;
+}
+
+// ============================================================
+// Part 1: 基础问题
+// ============================================================
+const cvB = document.getElementById('canvasBasic');
+setupHiDPI(cvB, 700, 320);
+const ctxB = cvB.getContext('2d');
+const sliderA = document.getElementById('sliderA');
+const sliderB = document.getElementById('sliderB');
+const lblA = document.getElementById('sliderAVal');
+const lblB = document.getElementById('sliderBVal');
+let aV = 120, bV = 80; // 逻辑像素坐标值（不含缩放）
+
+/* 标签安全裁剪：确保坐标不超出画布 */
+function clampX(x, w) { return Math.max(12, Math.min(x, w - 12)); }
+function clampY(y, h) { return Math.max(10, Math.min(y, h - 10)); }
+
+function getBasicScale(a, b) {
+  const mLeft = 65, mRight = 55, mTop = 70, mBottom = 75;
+  const maxW = cvB._logW - mLeft - mRight;
+  const maxH = cvB._logH - mTop - mBottom;
+  return Math.min(maxW / (a + b), maxH / Math.max(a, b));
+}
+
+function coords(a, b) {
+  const s = getBasicScale(a, b);
+  const B = [65, cvB._logH - 75];
+  const C = [B[0] + a * s, B[1]];
+  const E = [C[0] + b * s, B[1]];
+  const A = [B[0], B[1] - a * s];
+  const D = [C[0], B[1] - a * s];
+  const G = [C[0], B[1] - b * s];
+  const F = [E[0], B[1] - b * s];
+  return { A, B, C, D, E, F, G, s };
+}
+
+function drawBasic() {
+  const w = cvB._logW, h = cvB._logH;
+  ctxB.clearRect(0, 0, w, h);
+  const gridStep = Math.max(15, Math.round(Math.min(aV, bV) * getBasicScale(aV, bV) / 6));
+  drawGrid(ctxB, w, h, gridStep, '#f0f3f7');
+  const { A, B, C, D, E, F, G, s } = coords(aV, bV);
+  fillPoly(ctxB, [A, B, C, D], '#4a90d9', 0.18);
+  strokePoly(ctxB, [A, B, C, D], '#4a90d9', 2.2);
+  fillPoly(ctxB, [C, E, F, G], '#27ae60', 0.18);
+  strokePoly(ctxB, [C, E, F, G], '#27ae60', 2.2);
+  fillPoly(ctxB, [B, D, F], '#e74c3c', 0.28);
+  strokePoly(ctxB, [B, D, F], '#e74c3c', 2.5);
+  const lbs = [[A, 'A', '#4a90d9'], [B, 'B', '#4a90d9'], [C, 'C', '#555'], [D, 'D', '#4a90d9'], [E, 'E', '#27ae60'], [F, 'F', '#e74c3c'], [G, 'G', '#27ae60']];
+  lbs.forEach(([p, n, c]) => {
+    dot(ctxB, p[0], p[1], 5, c);
+    const ox = n === 'A' ? -16 : n === 'B' ? -16 : n === 'G' ? 16 : n === 'F' ? 14 : n === 'E' ? 14 : 12;
+    const oy = n === 'A' ? -12 : n === 'D' ? -12 : n === 'G' ? -12 : n === 'F' ? -12 : 12;
+    drawLabel(ctxB, clampX(p[0] + ox, w), clampY(p[1] + oy, h), n, c, 15);
+  });
+  const midAB = [(A[0] + B[0]) / 2, (A[1] + B[1]) / 2], midCE = [(C[0] + E[0]) / 2, (C[1] + E[1]) / 2];
+  drawLabel(ctxB, midAB[0] - 18, midAB[1], 'a', '#4a90d9', 13, 'right');
+  drawLabel(ctxB, midCE[0], midCE[1] + 16, 'b', '#27ae60', 13);
+  ctxB.setLineDash([5, 4]); ctxB.strokeStyle = '#bbb'; ctxB.lineWidth = 1.2;
+  ctxB.beginPath(); ctxB.moveTo(B[0], B[1]); ctxB.lineTo(D[0], D[1]); ctxB.stroke();
+  ctxB.beginPath(); ctxB.moveTo(C[0], C[1]); ctxB.lineTo(F[0], F[1]); ctxB.stroke();
+  ctxB.setLineDash([]);
+  const ar = triArea(B[0], B[1], D[0], D[1], F[0], F[1]);
+  // 纯数字更新，不走 MathJax
+  document.getElementById('triArea').textContent = Math.round(ar);
+  document.getElementById('halfSquareArea').textContent = Math.round(aV * aV * s * s / 2);
+}
+
+function onABChange() {
+  aV = parseInt(sliderA.value); bV = parseInt(sliderB.value);
+  lblA.textContent = aV; lblB.textContent = bV;
+  // 只重绘当前可见 Tab 的 Canvas
+  drawBasic();
+  const activeTab = document.querySelector('.tab-btn.active');
+  if (activeTab && activeTab.dataset.tab === 'tab-cut') drawCutMethod();
+  else if (activeTab && activeTab.dataset.tab === 'tab-parallel') drawParallelMethod();
+}
+sliderA.addEventListener('input', onABChange);
+sliderB.addEventListener('input', onABChange);
+document.getElementById('btnRandom').addEventListener('click', () => {
+  aV = 40 + Math.floor(Math.random() * 140);
+  bV = 30 + Math.floor(Math.random() * 130);
+  sliderA.value = aV; sliderB.value = bV;
+  lblA.textContent = aV; lblB.textContent = bV;
+  onABChange();
+});
+drawBasic();
+
+// ============================================================
+// Part 2: 两种证法
+// ============================================================
+const cvCut = document.getElementById('canvasCut');
+setupHiDPI(cvCut, 700, 340);
+const ctxC = cvCut.getContext('2d');
+const cvPar = document.getElementById('canvasParallel');
+setupHiDPI(cvPar, 700, 340);
+const ctxP = cvPar.getContext('2d');
+const cutSlider = document.getElementById('cutStepSlider');
+const parSlider = document.getElementById('parStepSlider');
+let cutStep = 1, parStep = 1;
+
+function getMethodScale(a, b) {
+  const H = Math.max(a, b);
+  const mL = 65, mR = 60, mT = 65, mB = 75;
+  const maxW = cvCut._logW - mL - mR;
+  const maxH = cvCut._logH - mT - mB;
+  return Math.min(maxW / (a + b), maxH / H);
+}
+
+function coordsMethod(a, b) {
+  const s = getMethodScale(a, b);
+  const H = Math.max(a, b);
+  const B = [65, cvCut._logH - 75];
+  const C = [B[0] + a * s, B[1]];
+  const E = [C[0] + b * s, B[1]];
+  const A = [B[0], B[1] - a * s];
+  const D = [C[0], B[1] - a * s];
+  const G = [C[0], B[1] - b * s];
+  const F = [E[0], B[1] - b * s];
+  const rectTop = B[1] - H * s; // 辅助矩形顶部 y
+  return { A, B, C, D, E, F, G, s, H, rectTop };
+}
+
+// --- 割补法（修复 b > a）---
+function drawCutMethod() {
+  const w = cvCut._logW, h = cvCut._logH;
+  ctxC.clearRect(0, 0, w, h);
+  const a = aV, b = bV;
+  const { A, B, C, D, E, F, G, s, H, rectTop } = coordsMethod(a, b);
+  const totalW = (a + b) * s, totalH = H * s;
+  const totalArea = (a + b) * H;
+
+  // 动态网格
+  const gs = Math.max(15, Math.round(Math.min(a,b) * s / 6));
+  drawGrid(ctxC, w, h, gs, '#f0f3f7');
+
+  // 正方形
+  fillPoly(ctxC, [A, B, C, D], '#4a90d9', 0.15);
+  strokePoly(ctxC, [A, B, C, D], '#4a90d9', 2);
+  fillPoly(ctxC, [C, E, F, G], '#27ae60', 0.15);
+  strokePoly(ctxC, [C, E, F, G], '#27ae60', 2);
+  // △BDF
+  fillPoly(ctxC, [B, D, F], '#e74c3c', 0.25);
+  strokePoly(ctxC, [B, D, F], '#e74c3c', 2.5);
+
+  const lbs = [[A, 'A'], [B, 'B'], [C, 'C'], [D, 'D'], [E, 'E'], [F, 'F']];
+  lbs.forEach(([p, n]) => {
+    dot(ctxC, p[0], p[1], 4, '#555');
+    drawLabel(ctxC,
+      clampX(p[0] + (n === 'A' ? -14 : n === 'B' ? -14 : 12), w),
+      clampY(p[1] + (n === 'A' ? -12 : n === 'D' ? -12 : -12), h),
+      n, '#555', 13);
+  });
+
+  if (cutStep >= 1) {
+    // 辅助矩形：高度 = max(a,b)
+    ctxC.setLineDash([6, 3]); ctxC.strokeStyle = '#f39c12'; ctxC.lineWidth = 2;
+    ctxC.strokeRect(B[0], rectTop, totalW, totalH);
+    ctxC.setLineDash([]);
+    const rLabel = a >= b ? `辅助矩形 (a+b)×a` : `辅助矩形 (a+b)×b`;
+    drawLabel(ctxC, B[0] + totalW / 2, Math.max(10, rectTop - 12), rLabel, '#f39c12', 13);
+    // 动态更新步骤文本
+    updateCutStepText();
+  }
+  if (cutStep >= 2) {
+    const yLabel = Math.max(40, rectTop - 8);
+    drawLabel(ctxC, Math.min(E[0] + 60, w - 150), yLabel, `总面积 = (a+b)·${H} = ${totalArea}`, '#f39c12', 13, 'left');
+  }
+  if (cutStep >= 3) {
+    fillPoly(ctxC, [A, B, D], '#e67e22', 0.35);
+    strokePoly(ctxC, [A, B, D], '#e67e22', 2);
+    drawLabel(ctxC, A[0] + a * s * 0.4, A[1] + a * s * 0.55, 'a²/2', '#e67e22', 12);
+  }
+  if (cutStep >= 4) {
+    // 右侧空白区域：矩形内、不在 ABD 也不在 BDF 的部分
+    // 计算该多边形并填充
+    const rightBlankArea = totalArea - a * a / 2 - a * a / 2; // Total - ABD - expected_BDF
+    // 填充右侧空白区（通过裁剪方式：先填整个矩形右侧，再擦除BDF）
+    ctxC.save();
+    ctxC.beginPath();
+    ctxC.moveTo(B[0], B[1]); // B
+    ctxC.lineTo(C[0], C[1]); // C — 矩形下边
+    ctxC.lineTo(E[0], E[1]); // E
+    ctxC.lineTo(E[0], rectTop); // 右上角
+    ctxC.lineTo(B[0], rectTop); // 左上角
+    ctxC.lineTo(B[0], B[1]);
+    ctxC.closePath();
+    ctxC.fillStyle = '#9b59b6'; ctxC.globalAlpha = 0.25;
+    ctxC.fill();
+    ctxC.globalAlpha = 1;
+    // 覆盖掉 BDF 区域（挖洞效果）
+    fillPoly(ctxC, [B, D, F], '#ffffff', 1.0);
+    // 重新画 BDF 边框
+    strokePoly(ctxC, [B, D, F], '#e74c3c', 2.5);
+    ctxC.restore();
+    drawLabel(ctxC, E[0] + 20, rectTop + totalH / 2, `剩余空白\n=${rightBlankArea}`, '#9b59b6', 12, 'left');
+  }
+  if (cutStep >= 5) {
+    ctxC.fillStyle = '#f39c12'; ctxC.font = 'bold 13px sans-serif';
+    const vLabel = `验证：总面积 − a²/2 − 空白 = (a+b)${H} − a²/2 − (${totalArea}−a²) = a²/2`;
+    ctxC.fillText(vLabel, Math.min(B[0] + 10, w - 360), h - 14);
+  }
+  if (cutStep >= 6) {
+    ctxC.fillStyle = '#27ae60'; ctxC.font = 'bold 16px sans-serif';
+    ctxC.fillText('= a²/2 ✓', Math.min(E[0] + 30, w - 120), Math.min(70, rectTop - 6));
+  }
+}
+
+function updateCutStepText() {
+  const a = aV, b = bV;
+  const H = Math.max(a, b);
+  const items = document.querySelectorAll('#cutSteps li');
+  if (items.length >= 6) {
+    items[0].innerHTML = `① 画出辅助矩形：以 \\(B\\) 为左下角、\\((a+b,\\;${H})\\) 为右上角的矩形`;
+    items[1].innerHTML = `② 矩形总面积 \\(= (a+b) \\times ${H}\\)`;
+    // 动态更新步骤 5 和 6
+    if (a >= b) {
+      items[4].innerHTML = `⑤ 验证：\\((a+b)a - \\dfrac{a^2}{2} - (${(a+b)*a - a*a}) = \\dfrac{a^2}{2}\\)`;
+    } else {
+      items[4].innerHTML = `⑤ 验证：\\((a+b)b - \\dfrac{a^2}{2} - (${(a+b)*b - a*a}) = \\dfrac{a^2}{2}\\)`;
+    }
+    items[5].innerHTML = `⑥ 结论：\\(S_{\\triangle BDF} = \\mathbf{\\dfrac{a^2}{2}}\\) ✓`;
+    // 重新渲染 MathJax
+    if (window.MathJax && MathJax.typesetPromise) {
+      MathJax.typesetPromise([document.getElementById('cutSteps')]);
+    }
+  }
+}
+
+function setCutHighlight() {
+  document.querySelectorAll('#cutSteps li').forEach(li => {
+    const s = parseInt(li.dataset.step);
+    li.className = s < cutStep ? 'done' : s === cutStep ? 'highlight' : '';
+  });
+}
+cutSlider.addEventListener('input', () => {
+  cutStep = parseInt(cutSlider.value); drawCutMethod(); setCutHighlight();
+});
+document.getElementById('cutPrev').addEventListener('click', () => {
+  if (cutStep > 1) { cutStep--; cutSlider.value = cutStep; drawCutMethod(); setCutHighlight(); }
+});
+document.getElementById('cutNext').addEventListener('click', () => {
+  if (cutStep < 6) { cutStep++; cutSlider.value = cutStep; drawCutMethod(); setCutHighlight(); }
+});
+drawCutMethod(); setCutHighlight();
+// 初始渲染割补法步骤里的 MathJax
+setTimeout(() => {
+  if (window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise([document.getElementById('cutSteps')]);
+}, 500);
+
+// --- 平行线法（增强平行线贯穿）---
+function drawParallelMethod() {
+  const w = cvPar._logW, h = cvPar._logH;
+  ctxP.clearRect(0, 0, w, h);
+  const a = aV, b = bV;
+  const { A, B, C, D, E, F, G, s } = coordsMethod(a, b);
+
+  const gs = Math.max(15, Math.round(Math.min(a,b) * s / 6));
+  drawGrid(ctxP, w, h, gs, '#f0f3f7');
+
+  fillPoly(ctxP, [A, B, C, D], '#4a90d9', 0.12);
+  strokePoly(ctxP, [A, B, C, D], '#4a90d9', 2);
+  fillPoly(ctxP, [C, E, F, G], '#27ae60', 0.12);
+  strokePoly(ctxP, [C, E, F, G], '#27ae60', 2);
+  fillPoly(ctxP, [B, D, F], '#e74c3c', 0.22);
+  strokePoly(ctxP, [B, D, F], '#e74c3c', 2.5);
+
+  const lbs2 = [[A, 'A'], [B, 'B'], [C, 'C'], [D, 'D'], [E, 'E'], [F, 'F']];
+  lbs2.forEach(([p, n]) => {
+    dot(ctxP, p[0], p[1], 4, '#555');
+    drawLabel(ctxP,
+      clampX(p[0] + (n === 'A' ? -14 : n === 'B' ? -14 : 12), w),
+      clampY(p[1] + (n === 'A' ? -12 : n === 'D' ? -12 : -12), h),
+      n, '#555', 13);
+  });
+
+  const arcR = Math.min(28, a * s * 0.3);
+  const dirX = D[0] - B[0], dirY = D[1] - B[1];
+  const len = Math.sqrt(dirX * dirX + dirY * dirY);
+  const ux = dirX / len, uy = dirY / len;
+  const ext = 80; // 延伸距离
+
+  if (parStep >= 1) {
+    ctxP.setLineDash([4, 3]); ctxP.strokeStyle = '#e74c3c'; ctxP.lineWidth = 2.5;
+    ctxP.beginPath(); ctxP.moveTo(B[0], B[1]); ctxP.lineTo(D[0], D[1]); ctxP.stroke();
+    ctxP.setLineDash([]);
+    drawLabel(ctxP, (B[0] + D[0]) / 2 - 28, (B[1] + D[1]) / 2, 'BD', '#e74c3c', 13);
+  }
+  if (parStep >= 2) {
+    ctxP.setLineDash([4, 3]); ctxP.strokeStyle = '#e74c3c'; ctxP.lineWidth = 2.5;
+    ctxP.beginPath(); ctxP.moveTo(C[0], C[1]); ctxP.lineTo(F[0], F[1]); ctxP.stroke();
+    ctxP.setLineDash([]);
+    drawLabel(ctxP, (C[0] + F[0]) / 2 + 18, (C[1] + F[1]) / 2, 'CF', '#e74c3c', 13);
+  }
+  if (parStep >= 3) {
+    // 贯穿整个 Canvas 的平行虚线
+    ctxP.setLineDash([3, 7]); ctxP.strokeStyle = '#9b59b6'; ctxP.lineWidth = 1.5;
+    // BD 延伸线
+    ctxP.beginPath();
+    ctxP.moveTo(B[0] - ux * ext, B[1] - uy * ext);
+    ctxP.lineTo(D[0] + ux * ext, D[1] + uy * ext);
+    ctxP.stroke();
+    // CF 延伸线
+    ctxP.beginPath();
+    ctxP.moveTo(C[0] - ux * ext, C[1] - uy * ext);
+    ctxP.lineTo(F[0] + ux * ext, F[1] + uy * ext);
+    ctxP.stroke();
+    ctxP.setLineDash([]);
+    // 平行标识 + 等高 h
+    const midCF = [(C[0] + F[0]) / 2, (C[1] + F[1]) / 2];
+    const midBD = [(B[0] + D[0]) / 2, (B[1] + D[1]) / 2];
+    // 双向箭头标注 h（等高）— 垂直于平行线的方向
+    const hx = midBD[0] + ux * 30, hy = midBD[1] + uy * 30;
+    const hx2 = midCF[0] - ux * 20, hy2 = midCF[1] - uy * 20;
+    // 垂直于 BD 方向（朝 CF 线：(-uy, ux)即右下）
+    const px = -uy, py = ux;
+    // 反向（朝 BD 线：(uy, -ux)即左上）
+    const rx = uy, ry = -ux;
+    ctxP.strokeStyle = '#e74c3c'; ctxP.lineWidth = 1.8;
+    ctxP.beginPath(); ctxP.moveTo(hx, hy); ctxP.lineTo(hx2, hy2); ctxP.stroke();
+    // 箭头尖（在两端，朝对方方向）
+    const aLen = 10;
+    ctxP.fillStyle = '#e74c3c';
+    // 左端箭头朝 CF
+    ctxP.beginPath(); ctxP.moveTo(hx, hy);
+    ctxP.lineTo(hx + px * aLen + rx * aLen * 0.4, hy + py * aLen + ry * aLen * 0.4);
+    ctxP.lineTo(hx + px * aLen - rx * aLen * 0.4, hy + py * aLen - ry * aLen * 0.4);
+    ctxP.closePath(); ctxP.fill();
+    // 右端箭头朝 BD
+    ctxP.beginPath(); ctxP.moveTo(hx2, hy2);
+    ctxP.lineTo(hx2 + rx * aLen + px * aLen * 0.4, hy2 + ry * aLen + py * aLen * 0.4);
+    ctxP.lineTo(hx2 + rx * aLen - px * aLen * 0.4, hy2 + ry * aLen - py * aLen * 0.4);
+    ctxP.closePath(); ctxP.fill();
+    drawLabel(ctxP, (hx + hx2) / 2 + 14, (hy + hy2) / 2, 'h', '#e74c3c', 14, 'left');
+
+    const tipX = Math.min(E[0] + 20, w - 180), tipY = Math.min(60, A[1] - 10);
+    ctxP.fillStyle = '#f39c12'; ctxP.font = 'bold 14px sans-serif';
+    ctxP.fillText('BD ∥ CF（斜率=1）', tipX, tipY);
+    ctxP.strokeStyle = '#f39c12'; ctxP.lineWidth = 2;
+    // 45° 角弧：BC（水平向右=0°）到 BD（右上=-π/4），Canvas y轴向下
+    ctxP.beginPath(); ctxP.arc(B[0], B[1], arcR, -Math.PI / 4, 0); ctxP.stroke();
+    drawLabel(ctxP, B[0] + arcR * 0.92, B[1] - arcR * 0.42, '45°', '#f39c12', 12);
+    ctxP.beginPath(); ctxP.arc(C[0], C[1], arcR, -Math.PI / 4, 0); ctxP.stroke();
+    drawLabel(ctxP, C[0] + arcR * 0.92, C[1] - arcR * 0.42, '45°', '#f39c12', 12);
+  }
+  if (parStep >= 4) {
+    fillPoly(ctxP, [B, D, C], '#f39c12', 0.35);
+    strokePoly(ctxP, [B, D, C], '#f39c12', 2.5);
+    ctxP.fillStyle = '#f39c12'; ctxP.font = '13px sans-serif';
+    ctxP.fillText('△BDC（同底）', Math.min(D[0] + 30, w - 130), Math.max(20, D[1] - 15));
+  }
+  if (parStep >= 5) {
+    // 延长平行线标注
+    ctxP.setLineDash([3, 5]); ctxP.strokeStyle = '#9b59b6'; ctxP.lineWidth = 2;
+    ctxP.beginPath();
+    ctxP.moveTo(C[0] - ux * ext, C[1] - uy * ext);
+    ctxP.lineTo(C[0] + ux * (b * s + ext), C[1] + uy * (b * s + ext));
+    ctxP.stroke(); ctxP.setLineDash([]);
+    drawLabel(ctxP, C[0] + b * s / 2 + 40, C[1] + b * s / 2 + 15, '平行于BD', '#9b59b6', 12);
+    drawLabel(ctxP, C[0] + b * s / 2 + 40, C[1] + b * s / 2 - 4, '(同底等高)', '#9b59b6', 11);
+  }
+  if (parStep >= 6) {
+    ctxP.fillStyle = '#27ae60'; ctxP.font = 'bold 16px sans-serif';
+    const s6x = Math.min(E[0] + 15, w - 260), s6y = Math.max(20, A[1] - 28);
+    ctxP.fillText('S△BDF = S△BDC = a²/2 ✓', s6x, s6y);
+  }
+}
+
+function setParHighlight() {
+  document.querySelectorAll('#parallelSteps li').forEach(li => {
+    const s = parseInt(li.dataset.step);
+    li.className = s < parStep ? 'done' : s === parStep ? 'highlight' : '';
+  });
+}
+parSlider.addEventListener('input', () => {
+  parStep = parseInt(parSlider.value); drawParallelMethod(); setParHighlight();
+});
+document.getElementById('parPrev').addEventListener('click', () => {
+  if (parStep > 1) { parStep--; parSlider.value = parStep; drawParallelMethod(); setParHighlight(); }
+});
+document.getElementById('parNext').addEventListener('click', () => {
+  if (parStep < 6) { parStep++; parSlider.value = parStep; drawParallelMethod(); setParHighlight(); }
+});
+drawParallelMethod(); setParHighlight();
+
+// Tab 切换 — 只重绘可见 Canvas
+let activeMethodTab = 'tab-cut'; // 初始
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeMethodTab = btn.dataset.tab;
+    document.querySelectorAll('.tab-content').forEach(tc => tc.style.display = 'none');
+    const tabEl = document.getElementById(activeMethodTab);
+    if (tabEl) tabEl.style.display = 'block';
+    if (activeMethodTab === 'tab-cut') drawCutMethod();
+    else drawParallelMethod();
+  });
+});
+
+// ============================================================
+// Part 3: 进阶 — n个正方形任选相邻对（平滑等积变形动画）
+// ============================================================
+const cvA = document.getElementById('canvasAdvanced');
+setupHiDPI(cvA, 900, 400);
+const ctxA = cvA.getContext('2d');
+
+const sliderN = document.getElementById('advSliderN');
+const sliderPair = document.getElementById('advSliderPair');
+const sliderL = document.getElementById('advSliderL');
+let nSq = 5, pairIdx = 3, Lside = 120;
+let sides = [];
+let animRafId = null;
+let animThirdPt = null; // null = idle（画原始 F 点）, [x,y] = 动画中的第三顶点
+
+function genSides() {
+  const arr = [];
+  for (let i = 0; i < nSq; i++) {
+    if (i === pairIdx - 1) { arr.push(Lside); }
+    else if (i === pairIdx) {
+      // 右邻正方形随机边长（≠ Lside）
+      const x = 30 + Math.floor(Math.random() * 131);
+      arr.push(x === Lside ? x + 10 : x);
+    } else {
+      arr.push(25 + Math.floor(Math.random() * 136));
+    }
+  }
+  return arr;
+}
+sides = genSides();
+
+function sqX(i, sc) {
+  let x = 40;
+  for (let j = 0; j < i; j++) x += sides[j] * sc;
+  return x;
+}
+
+function getAdvScale() {
+  const totalW = sides.reduce((a, b) => a + b, 0);
+  const maxS = Math.max(...sides);
+  return Math.min((cvA._logW - 100) / totalW, (cvA._logH - 130) / maxS);
+}
+
+function getAdvBaseY() { return cvA._logH - 85; }
+
+function drawAdvanced() {
+  const w = cvA._logW, h = cvA._logH;
+  ctxA.clearRect(0, 0, w, h);
+  const baseY = getAdvBaseY();
+  const sc = getAdvScale();
+
+  // 动态网格
+  const maxS = Math.max(...sides);
+  const gs = Math.max(12, Math.round(maxS * sc / 8));
+  drawGrid(ctxA, w, h, gs, '#f0f3f7');
+
+  // 绘制所有正方形
+  for (let i = 0; i < nSq; i++) {
+    const x0 = sqX(i, sc), s = sides[i] * sc;
+    const isLeft = (i === pairIdx - 1);   // 左侧（选中对）
+    const isRight = (i === pairIdx);       // 右侧（选中对）
+    const isPair = isLeft || isRight;
+    const color = isLeft ? '#4a90d9' : isRight ? '#27ae60' : '#b0bec5';
+    const alpha = isPair ? 0.25 : 0.08;
+    fillPoly(ctxA, [[x0, baseY], [x0 + s, baseY], [x0 + s, baseY - s], [x0, baseY - s]], color, alpha);
+    strokePoly(ctxA, [[x0, baseY], [x0 + s, baseY], [x0 + s, baseY - s], [x0, baseY - s]], color, isPair ? 2.6 : 1.2);
+    const lbl = isLeft ? `L=${sides[i]}` : isRight ? `R=${sides[i]}` : `${i + 1}`;
+    if (isPair) {
+      drawLabel(ctxA, x0 + s / 2, baseY - s / 2, lbl, color, 11);
+    }
+    // 标注关键点
+    if (isLeft) {
+      dot(ctxA, x0, baseY, 5, '#e74c3c');           // B：左下角
+      dot(ctxA, x0 + s, baseY - s, 5, '#e74c3c');   // D：右上角
+      dot(ctxA, x0 + s, baseY, 4.5, '#f39c12');     // C：右下角
+    }
+    if (isRight) {
+      const rX0 = x0, rS = s;
+      dot(ctxA, rX0 + rS, baseY - rS, 5, '#e74c3c'); // F：右上角
+    }
+  }
+
+  // 关键坐标
+  const leftX0 = sqX(pairIdx - 1, sc), leftS = sides[pairIdx - 1] * sc;
+  const BL = [leftX0, baseY];              // 左下角 B
+  const D  = [leftX0 + leftS, baseY - leftS]; // 右上角 D（TR）
+  const C  = [leftX0 + leftS, baseY];      // 右下角 C
+
+  const rightX0 = sqX(pairIdx, sc), rightS = sides[pairIdx] * sc;
+  const F = [rightX0 + rightS, baseY - rightS]; // 右上角 F
+  const Cr = [rightX0, baseY];              // 右侧正方形 C 点
+
+  // 三角形第三顶点：动画中或默认 F
+  const thirdPt = animThirdPt || F;
+
+  // --- 贯穿平行线（BD 和 CF 延伸线）---
+  const dirX = leftS, dirY = -leftS;
+  const dLen = Math.sqrt(dirX * dirX + dirY * dirY);
+  const ux = dirX / dLen, uy = dirY / dLen;
+  const ext = 120;
+
+  // BD 延伸线（淡紫）
+  ctxA.setLineDash([4, 6]);
+  ctxA.strokeStyle = '#9b59b6'; ctxA.lineWidth = 1.3;
+  ctxA.beginPath();
+  ctxA.moveTo(BL[0] - ux * ext, BL[1] - uy * ext);
+  ctxA.lineTo(D[0] + ux * ext, D[1] + uy * ext);
+  ctxA.stroke();
+  // CF 延伸线（穿过 C）
+  ctxA.beginPath();
+  ctxA.moveTo(C[0] - ux * ext, C[1] - uy * ext);
+  ctxA.lineTo(C[0] + ux * ext, C[1] + uy * ext);
+  ctxA.stroke();
+  ctxA.setLineDash([]);
+
+  // 对角线 BD 实线标注
+  ctxA.setLineDash([4, 3]); ctxA.strokeStyle = '#e74c3c'; ctxA.lineWidth = 2.2;
+  ctxA.beginPath(); ctxA.moveTo(BL[0], BL[1]); ctxA.lineTo(D[0], D[1]); ctxA.stroke();
+  ctxA.setLineDash([]);
+  drawLabel(ctxA, (BL[0] + D[0]) / 2 - 22, (BL[1] + D[1]) / 2, 'BD', '#e74c3c', 12);
+
+  // 对角线 CF 虚线标注
+  ctxA.setLineDash([4, 3]); ctxA.strokeStyle = '#f39c12'; ctxA.lineWidth = 2.2;
+  ctxA.beginPath(); ctxA.moveTo(Cr[0], Cr[1]); ctxA.lineTo(F[0], F[1]); ctxA.stroke();
+  ctxA.setLineDash([]);
+  drawLabel(ctxA, (Cr[0] + F[0]) / 2 + 16, (Cr[1] + F[1]) / 2, 'CF', '#f39c12', 12);
+
+  // 平行标注 45° 角弧（BC水平→BD右上=-π/4）
+  const arcR = Math.min(24, leftS * 0.3);
+  ctxA.strokeStyle = '#f39c12'; ctxA.lineWidth = 1.8;
+  ctxA.beginPath(); ctxA.arc(BL[0], BL[1], arcR, -Math.PI / 4, 0); ctxA.stroke();
+  drawLabel(ctxA, BL[0] + arcR * 0.92, BL[1] - arcR * 0.42, '45°', '#f39c12', 11);
+  ctxA.beginPath(); ctxA.arc(Cr[0], Cr[1], arcR, -Math.PI / 4, 0); ctxA.stroke();
+  drawLabel(ctxA, Cr[0] + arcR * 0.92, Cr[1] - arcR * 0.42, '45°', '#f39c12', 11);
+
+  // 平行关系文字
+  const labelY = Math.min(40, baseY - leftS - 12);
+  ctxA.fillStyle = '#f39c12'; ctxA.font = 'bold 13px sans-serif';
+  ctxA.fillText('BD ∥ CF（斜率=1）', Math.min(D[0] + 25, w - 170), labelY);
+
+  // 等高标注（两平行线间双向箭头 + h）— 垂直于斜线方向
+  // 在两线之间选取中点，沿垂直方向画
+  const perpX = -uy, perpY = ux; // 垂直于 BD 的方向（朝向右下）
+  const revX = uy, revY = -ux;    // 反向（朝向左上）
+  const hMidX = C[0] + perpX * 30, hMidY = C[1] + perpY * 30;
+  const hSpan = leftS / Math.SQRT2 * 0.75; // 垂直距离 ≈ L/√2
+  const hTopX = hMidX + revX * hSpan, hTopY = hMidY + revY * hSpan;
+  const hBotX = hMidX + perpX * hSpan, hBotY = hMidY + perpY * hSpan;
+  ctxA.strokeStyle = '#9b59b6'; ctxA.lineWidth = 1.5;
+  ctxA.setLineDash([3, 3]);
+  ctxA.beginPath(); ctxA.moveTo(hTopX, hTopY); ctxA.lineTo(hBotX, hBotY); ctxA.stroke();
+  ctxA.setLineDash([]);
+  // 箭头尖（填充三角形）
+  const hALen = 9;
+  ctxA.fillStyle = '#9b59b6';
+  ctxA.beginPath(); ctxA.moveTo(hBotX, hBotY);
+  ctxA.lineTo(hBotX - perpX * hALen + revX * hALen * 0.4, hBotY - perpY * hALen + revY * hALen * 0.4);
+  ctxA.lineTo(hBotX - perpX * hALen - revX * hALen * 0.4, hBotY - perpY * hALen - revY * hALen * 0.4);
+  ctxA.closePath(); ctxA.fill();
+  ctxA.beginPath(); ctxA.moveTo(hTopX, hTopY);
+  ctxA.lineTo(hTopX - revX * hALen + perpX * hALen * 0.4, hTopY - revY * hALen + perpY * hALen * 0.4);
+  ctxA.lineTo(hTopX - revX * hALen - perpX * hALen * 0.4, hTopY - revY * hALen - perpY * hALen * 0.4);
+  ctxA.closePath(); ctxA.fill();
+  drawLabel(ctxA, hMidX + 16, hMidY, 'h', '#9b59b6', 13, 'left');
+
+  // --- 绘制三角形 BDF ---
+  fillPoly(ctxA, [BL, D, thirdPt], '#e74c3c', 0.30);
+  strokePoly(ctxA, [BL, D, thirdPt], '#e74c3c', 2.6);
+  dot(ctxA, thirdPt[0], thirdPt[1], 5, '#e74c3c');
+
+  // --- 动画中画等积变形提示 ---
+  if (animThirdPt) {
+    // 高亮 △BDC 作为目标
+    fillPoly(ctxA, [BL, D, C], '#f39c12', 0.20);
+    strokePoly(ctxA, [BL, D, C], '#f39c12', 2.2, [3, 3]);
+    ctxA.fillStyle = '#7b68ee'; ctxA.font = 'bold 13px sans-serif';
+    ctxA.fillText('等积变形中...', Math.min(D[0] + 25, w - 160), labelY + 20);
+  }
+
+  // 顶点标签
+  drawLabel(ctxA, BL[0] - 16, BL[1] + 14, 'B', '#e74c3c', 13, 'right');
+  drawLabel(ctxA, D[0] + 14, D[1] - 6, 'D', '#e74c3c', 13, 'left');
+  drawLabel(ctxA, C[0] + 4, C[1] + 14, 'C', '#f39c12', 12);
+  const fLbl = (animThirdPt && animThirdPt !== F) ? 'F → C' : 'F';
+  drawLabel(ctxA, thirdPt[0] + 12, thirdPt[1] - 8, fLbl, '#e74c3c', 12, 'left');
+
+  // 面积显示
+  const rawArea = triArea(BL[0], BL[1], D[0], D[1], F[0], F[1]);
+  document.getElementById('advTriArea').textContent = Math.round(rawArea);
+  document.getElementById('halfLArea').textContent = Math.round(Lside * Lside * sc * sc / 2);
+
+  return { BL, D, C, F, Cr, sc };
+}
+
+function stopAnimation() {
+  if (animRafId) { cancelAnimationFrame(animRafId); animRafId = null; }
+  animThirdPt = null;
+}
+
+function resetAnimation() {
+  stopAnimation();
+  drawAdvanced();
+  setAdvHighlight(0);
+}
+
+function setAdvHighlight(step) {
+  document.querySelectorAll('#advSteps li').forEach(li => {
+    const s = parseInt(li.dataset.step);
+    if (step === 0) li.className = '';
+    else li.className = s < step ? 'done' : s === step ? 'highlight' : '';
+  });
+}
+
+drawAdvanced();
+
+// --- 事件 ---
+function onAdvChange() {
+  stopAnimation();
+  sides = genSides();
+  // 更新 UI
+  document.getElementById('advNVal').textContent = nSq;
+  document.getElementById('advPairVal').textContent = pairIdx;
+  document.getElementById('advPairLabel').textContent = pairIdx;
+  document.getElementById('advPairLabel2').textContent = pairIdx + 1;
+  document.getElementById('advLVal').textContent = Lside;
+  sliderPair.max = nSq - 1;
+  drawAdvanced();
+}
+
+sliderN.addEventListener('input', () => {
+  nSq = parseInt(sliderN.value);
+  sliderPair.max = nSq - 1;
+  if (pairIdx > nSq - 1) { pairIdx = nSq - 1; sliderPair.value = pairIdx; }
+  onAdvChange();
+});
+sliderPair.addEventListener('input', () => {
+  pairIdx = parseInt(sliderPair.value);
+  onAdvChange();
+});
+sliderL.addEventListener('input', () => {
+  Lside = parseInt(sliderL.value);
+  onAdvChange();
+});
+
+document.getElementById('btnRandomN').addEventListener('click', () => {
+  sides = genSides(); resetAnimation();
+  document.getElementById('advNVal').textContent = nSq;
+  document.getElementById('advPairVal').textContent = pairIdx;
+  document.getElementById('advPairLabel').textContent = pairIdx;
+  document.getElementById('advPairLabel2').textContent = pairIdx + 1;
+  document.getElementById('advLVal').textContent = Lside;
+});
+
+document.getElementById('btnResetTransform').addEventListener('click', resetAnimation);
+
+document.getElementById('btnAnimateTransform').addEventListener('click', () => {
+  stopAnimation();
+  const { BL, D, C, F, Cr, sc } = drawAdvanced();
+
+  // 等积变形：F → C（仅一次，沿平行于 BD 的直线滑动）
+  const fromPt = [...F];
+  const toPt = [...C];
+  animThirdPt = [...fromPt];
+
+  // 分阶段推进步骤高亮
+  const steps = [0, 1, 2, 2, 3, 4, 4];
+  let stepPhase = 0;
+  const totalPhases = steps.length - 1;
+  const duration = 2000; // 总动画时长 2s
+
+  function animFrame(ts, startTs) {
+    if (!startTs) startTs = ts;
+    const elapsed = ts - startTs;
+    const t = Math.min(1, elapsed / duration);
+    // easeInOutCubic
+    const ease = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+
+    // 线性插值
+    animThirdPt[0] = fromPt[0] + (toPt[0] - fromPt[0]) * ease;
+    animThirdPt[1] = fromPt[1] + (toPt[1] - fromPt[1]) * ease;
+    drawAdvanced();
+
+    // 步骤高亮按时间推进
+    const phase = Math.min(Math.floor(t * totalPhases), totalPhases);
+    if (phase !== stepPhase) {
+      stepPhase = phase;
+      setAdvHighlight(steps[phase]);
+    }
+
+    if (t < 1) {
+      animRafId = requestAnimationFrame((ts2) => animFrame(ts2, startTs));
+    } else {
+      // 动画完成：顶点停在 C 点
+      animThirdPt = null;
+      drawAdvanced();
+      setAdvHighlight(6);
+      // 2 秒后恢复
+      setTimeout(() => { resetAnimation(); }, 2500);
+    }
+  }
+
+  animRafId = requestAnimationFrame((ts) => animFrame(ts, null));
+});
+
+// 初始 MathJax 渲染进阶部分步骤
+setTimeout(() => {
+  if (window.MathJax && MathJax.typesetPromise) {
+    MathJax.typesetPromise([document.getElementById('advSteps')]);
+  }
+}, 600);
+</script>
+</body>
+</html>

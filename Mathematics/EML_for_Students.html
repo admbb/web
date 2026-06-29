@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EML: 两个按钮的科学计算器</title>
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['$','$'], ['\\(','\\)']],
+    displayMath: [['$$','$$'], ['\\[','\\]']],
+    tags: 'ams'
+  },
+  svg: { fontCache: 'global' },
+  options: {
+    skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+  },
+  startup: { pageReady: () => MathJax.startup.defaultPageReady().then(() => initApp()) }
+};
+</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+<style>
+:root {
+  --bg: #faf9f6; --card: #fff; --text: #2c2c2a; --muted: #777;
+  --accent: #4A37A8; --accent-light: #EDEAFB; --teal: #0A7B61; --teal-light: #E0F5EF;
+  --coral: #C94B1A; --coral-light: #FDF0EA; --blue: #1565C0; --blue-light: #E8F0FE;
+  --border: rgba(0,0,0,0.10); --radius: 14px;
+  --formula-bg: #1e1e2e; --formula-text: #cdd6f4; --formula-accent: #a6e3a1; --formula-comment: #6c7086; --formula-keyword: #89b4fa;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  background: var(--bg); color: var(--text);
+  line-height: 1.75; font-size: 15.5px;
+}
+.container { max-width: 860px; margin: 0 auto; padding: 20px 24px 70px; }
+
+/* ===== Typography ===== */
+h1 { font-size: 28px; font-weight: 800; letter-spacing: -0.5px; margin: 28px 0 8px; color: var(--accent); }
+h2 { font-size: 21px; font-weight: 700; margin: 26px 0 14px; color: var(--text); }
+h3 { font-size: 17px; font-weight: 600; margin: 18px 0 8px; }
+p, li { margin-bottom: 10px; }
+.subtitle { font-size: 16px; color: var(--muted); margin-bottom: 20px; }
+
+/* ===== Hero ===== */
+.hero-box {
+  background: linear-gradient(135deg, var(--accent) 0%, #6B52CC 100%);
+  color: #fff; border-radius: 16px;
+  padding: 36px 30px; margin: 22px 0 28px; text-align: center;
+  box-shadow: 0 4px 20px rgba(74,55,168,0.25);
+}
+.hero-box h1 { color: #fff; margin: 0 0 10px; font-size: 26px; letter-spacing: 0; }
+.hero-box p { color: rgba(255,255,255,0.92); font-size: 17px; line-height: 1.6; }
+.hero-formula {
+  display: inline-block;
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(8px);
+  padding: 14px 32px; border-radius: 12px; margin: 16px auto;
+  font-size: 23px; color: #fff;
+}
+.hero-formula .MathJax { color: #fff !important; }
+
+/* ===== Cards ===== */
+.card {
+  background: var(--card); border-radius: var(--radius);
+  border: 1px solid var(--border);
+  padding: 22px 26px; margin: 16px 0;
+  transition: box-shadow 0.2s;
+}
+.card:hover { box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+.card-accent { border-left: 4px solid var(--accent); background: linear-gradient(to right, var(--accent-light), var(--card) 40%); }
+.card-teal { border-left: 4px solid var(--teal); background: linear-gradient(to right, var(--teal-light), var(--card) 40%); }
+.card-coral { border-left: 4px solid var(--coral); background: linear-gradient(to right, var(--coral-light), var(--card) 40%); }
+.card-blue { border-left: 4px solid var(--blue); background: linear-gradient(to right, var(--blue-light), var(--card) 40%); }
+
+/* ===== Tags ===== */
+.tag {
+  display: inline-block; background: var(--accent-light); color: var(--accent);
+  padding: 3px 11px; border-radius: 7px; font-size: 13px; font-weight: 600;
+  margin-right: 6px;
+}
+.tag-teal { background: var(--teal-light); color: var(--teal); }
+.tag-coral { background: var(--coral-light); color: var(--coral); }
+.tag-blue { background: var(--blue-light); color: var(--blue); }
+
+/* ===== Steps ===== */
+.step-num {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 34px; height: 34px; border-radius: 50%; background: var(--accent);
+  color: #fff; font-weight: 700; font-size: 15px;
+  margin-right: 12px; flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(74,55,168,0.3);
+}
+.step-row { display: flex; align-items: flex-start; gap: 8px; margin: 14px 0; }
+.step-content { flex: 1; }
+
+/* ===== Formula Display Block (replaces eml-chain) ===== */
+.formula-block {
+  background: var(--formula-bg);
+  border-radius: 12px; padding: 18px 22px; margin: 14px 0;
+  font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', 'Consolas', monospace;
+  line-height: 2; overflow-x: auto;
+}
+.formula-line { margin: 4px 0; color: var(--formula-text); font-size: 14.5px; }
+.formula-line .hl { color: var(--formula-accent); font-weight: 700; }
+.formula-line .cmt { color: var(--formula-comment); font-style: italic; font-size: 13px; }
+.formula-line .kw { color: var(--formula-keyword); font-weight: 600; }
+.formula-line .eq { color: #f9e2af; }   /* yellow-ish for equations */
+.formula-line .res { color: var(--formula-accent); }
+.formula-line .arr { color: #fab387; }    /* orange for arrows */
+.formula-line mjx-container { margin: 0 2px !important; }
+.formula-block mjx-container { margin: 0 2px !important; }
+
+/* Centered display formula */
+.display-formula {
+  text-align: center; font-size: 19px; margin: 14px 0;
+  padding: 12px; background: rgba(74,55,168,0.04); border-radius: 10px;
+}
+
+/* ===== Calculator ===== */
+.calc-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 10px 20px; border-radius: 10px; font-size: 14.5px; font-weight: 600;
+  border: 2px solid var(--accent); color: var(--accent); background: var(--accent-light);
+  cursor: pointer; transition: all 0.2s ease; min-width: 80px;
+}
+.calc-btn:hover { background: var(--accent); color: #fff; transform: translateY(-1px); box-shadow: 0 3px 10px rgba(74,55,168,0.2); }
+.calc-btn.active { background: var(--accent); color: #fff; }
+.calc-display {
+  background: var(--formula-bg); color: var(--formula-accent);
+  border-radius: 12px; padding: 16px 22px;
+  font-family: 'JetBrains Mono', monospace; font-size: 17px;
+  margin: 12px 0; text-align: center; min-height: 54px;
+  letter-spacing: 0.3px;
+}
+.calc-display.error { color: #f38ba8; }
+.calc-panel { margin: 18px 0; }
+.calc-btns { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin: 12px 0; }
+.calc-input {
+  display: flex; gap: 10px; justify-content: center; align-items: center; margin: 12px 0;
+}
+.calc-input input {
+  width: 100px; padding: 9px 13px; border-radius: 9px; border: 2px solid var(--border);
+  font-size: 15.5px; text-align: center; font-family: inherit;
+  transition: border-color 0.2s;
+}
+.calc-input input:focus { outline: none; border-color: var(--accent); }
+.calc-input label { font-size: 14px; color: var(--muted); font-weight: 500; }
+
+/* ===== Tree SVG ===== */
+.tree-svg { margin: 14px 0; border-radius: 12px; background: #fefefe; }
+.compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 18px 0; }
+.compare-card {
+  background: var(--card); border-radius: var(--radius); border: 1px solid var(--border);
+  padding: 20px 18px; text-align: center; transition: transform 0.2s;
+}
+.compare-card:hover { transform: translateY(-2px); }
+.compare-card h3 { margin: 0 0 8px; font-size: 15px; }
+.compare-card .value { font-size: 26px; font-weight: 800; color: var(--accent); }
+.compare-card .label { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+/* ===== Quiz ===== */
+.quiz-box {
+  background: var(--teal-light); border-radius: var(--radius);
+  border: 1px solid var(--teal); padding: 22px 26px; margin: 16px 0;
+}
+.quiz-option {
+  display: block; background: var(--card); border: 2px solid var(--border);
+  border-radius: 10px; padding: 12px 16px; margin: 7px 0; cursor: pointer;
+  font-size: 14.5px; transition: all 0.2s;
+}
+.quiz-option:hover { border-color: var(--teal); background: var(--teal-light); }
+.quiz-option.selected { border-color: var(--teal); background: var(--teal); color: #fff; }
+.quiz-option.correct { border-color: #43A047; background: #E8F5E9; color: #2E7D32; }
+.quiz-option.wrong { border-color: var(--coral); background: var(--coral-light); color: var(--coral); }
+
+/* ===== Tabs & Nav ===== */
+.nav-tabs {
+  display: flex; gap: 2px; margin: 18px 0 0;
+  border-bottom: 2px solid var(--border); overflow-x: auto;
+}
+.nav-tab {
+  padding: 10px 18px; font-size: 14px; font-weight: 600; cursor: pointer;
+  border-bottom: 3px solid transparent; color: var(--muted);
+  border-radius: 8px 8px 0 0; transition: all 0.2s; white-space: nowrap;
+}
+.nav-tab:hover { color: var(--text); background: rgba(0,0,0,0.02); }
+.nav-tab.active { color: var(--accent); border-bottom-color: var(--accent); background: var(--accent-light); }
+.tab-content { display: none; animation: fadeIn 0.3s ease; }
+.tab-content.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+.progress-bar { display: flex; gap: 8px; justify-content: center; margin: 18px 0; }
+.progress-dot {
+  width: 11px; height: 11px; border-radius: 50%;
+  background: var(--border); transition: all 0.3s;
+  cursor: pointer;
+}
+.progress-dot:hover { transform: scale(1.3); }
+.progress-dot.active { background: var(--accent); transform: scale(1.35); box-shadow: 0 0 6px rgba(74,55,168,0.4); }
+.progress-dot.done { background: var(--teal); }
+
+.reveal-btn {
+  background: var(--teal); color: #fff; border: none; border-radius: 9px;
+  padding: 9px 18px; font-size: 14px; cursor: pointer; font-weight: 600;
+  margin: 8px 0; transition: all 0.2s;
+}
+.reveal-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+
+.hidden { display: none !important; }
+.fun-fact {
+  background: var(--blue-light); border-radius: var(--radius);
+  padding: 16px 20px; margin: 14px 0; font-size: 14.5px;
+  border: 1px solid rgba(21,101,192,0.15);
+}
+.fun-fact strong { color: var(--blue); }
+
+/* ===== Flashcards Table ===== */
+.flash-table {
+  width: 100%; border-collapse: separate; border-spacing: 0;
+  font-size: 14px; border-radius: var(--radius); overflow: hidden;
+  border: 1px solid var(--border);
+}
+.flash-table th {
+  padding: 13px 16px; text-align: left; color: #fff;
+  font-weight: 600; font-size: 13.5px;
+}
+.flash-table th:nth-child(1) { background: var(--accent); }
+.flash-table th:nth-child(2) { background: var(--teal); }
+.flash-table th:nth-child(3) { background: var(--blue); }
+.flash-table td {
+  padding: 13px 16px; border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+.flash-table tr:last-child td { border-bottom: none; }
+.flash-table td:nth-child(1) { font-weight: 700; color: var(--accent); background: rgba(74,55,168,0.03); }
+.flash-table td:nth-child(3) { color: var(--muted); font-size: 13px; }
+.flash-table tr:hover td { background: rgba(0,0,0,0.02); }
+
+/* ===== Calc explain area ===== */
+.calc-explain {
+  font-size: 14px; color: var(--muted); text-align: center;
+  padding: 8px; min-height: 40px;
+}
+.calc-explain mjx-container { margin: 0 1px !important; }
+
+@media (max-width: 650px) {
+  .compare-grid { grid-template-columns: 1fr; }
+  .hero-box { padding: 24px 18px; }
+  .container { padding: 14px 16px 50px; }
+  h1 { font-size: 24px; }
+  .nav-tab { padding: 8px 12px; font-size: 13px; }
+  .formula-line { font-size: 13px; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- ========== HERO ========== -->
+<div class="hero-box">
+  <h1>只需要两个按钮的科学计算器</h1>
+  <p>一个叫 <strong>EML</strong>，一个叫 <strong>1</strong> — 就能算出 $\sin$、$\cos$、$\ln$、$\sqrt{\phantom{x}}$、$\pi$…… 全部！</p>
+  <div class="hero-formula">$\displaystyle \operatorname{eml}(x,y) = e^{x} - \ln y$</div>
+  <p style="font-size:14px; margin-top:10px; opacity:0.88;">就像 NAND 门能造出所有逻辑电路一样，EML 是连续数学的"万能开关"</p>
+</div>
+
+<!-- ========== NAV TABS ========== -->
+<div class="nav-tabs" id="navTabs">
+  <div class="nav-tab active" data-tab="what">这是什么</div>
+  <div class="nav-tab" data-tab="how">怎么做到的</div>
+  <div class="nav-tab" data-tab="try">动手试试</div>
+  <div class="nav-tab" data-tab="why">为什么重要</div>
+  <div class="nav-tab" data-tab="quiz">挑战测验</div>
+</div>
+
+<!-- ==================== TAB 1: WHAT ==================== -->
+<div id="tab-what" class="tab-content active">
+
+<h2>EML 是什么？</h2>
+
+<p>你用过科学计算器吧？上面有一堆按钮：$\sin$、$\cos$、$\ln$、$\sqrt{\phantom{x}}$、$\pi$、$\exp$、$+$、$-$、$\times$、$\div$…… 大概 30 多个。</p>
+
+<p>这篇论文的作者发现了一件惊人的事：<strong>你只需要 2 个按钮就够了</strong>。</p>
+
+<div class="card card-accent">
+  <h3>两个按钮就能搞定全部</h3>
+  <p>按钮 1：<span class="tag">数字 $1$</span> — 输入常量</p>
+  <p>按钮 2：<span class="tag tag-teal">EML</span> — 执行运算 $\displaystyle e^{x} - \ln y$</p>
+  <p style="margin-top:14px; font-size:14px; color:var(--muted);">没错，你反复按这两个按钮（按不同的组合顺序），就能算出所有科学计算器能算的东西。</p>
+</div>
+
+<h2>类比：NAND 门</h2>
+
+<p>如果你学过信息技术，可能知道 <strong>NAND 门</strong>。它是一个逻辑门，输入两个 0/1，输出"不是 AND"的结果：</p>
+
+<div class="compare-grid">
+  <div class="compare-card">
+    <h3>数字世界 🖥️</h3>
+    <div class="value">NAND</div>
+    <div class="label">一个逻辑门 → 所有逻辑电路</div>
+  </div>
+  <div class="compare-card">
+    <h3>数学世界 🔢</h3>
+    <div class="value">EML</div>
+    <div class="label">一个运算 → 所有初等函数</div>
+  </div>
+</div>
+
+<p>NAND 门配上 $0$ 和 $1$，就能造出 AND、OR、NOT、加法器、CPU…… 全部数字电路。</p>
+
+<p>EML 配上数字 $1$，就能造出 $e^x$、$\ln x$、$\sin x$、$\cos x$、$\sqrt{x}$、$\pi$、$i$…… 全部初等函数。</p>
+
+<div class="fun-fact">
+  <strong>💡 趣知识：</strong>NAND 的发现者是 Henry Sheffer（1913年）。所以 EML 也被称为<strong>"连续数学的 Sheffer 算子"</strong>——它和 NAND 是跨世界的双胞胎！
+</div>
+
+</div>
+
+<!-- ==================== TAB 2: HOW ==================== -->
+<div id="tab-how" class="tab-content">
+
+<h2>EML 怎么变出所有函数？</h2>
+
+<p>核心思路：<strong>反复套用 EML</strong>，像搭积木一样一块叠一块。每一层都用已经拼出来的结果做下一步的原料。</p>
+
+<div class="progress-bar" id="chainProgress">
+  <div class="progress-dot active" data-step="0"></div>
+  <div class="progress-dot" data-step="1"></div>
+  <div class="progress-dot" data-step="2"></div>
+  <div class="progress-dot" data-step="3"></div>
+  <div class="progress-dot" data-step="4"></div>
+  <div class="progress-dot" data-step="5"></div>
+  <div class="progress-dot" data-step="6"></div>
+</div>
+
+<!-- Step 1: e -->
+<div id="chainStep0" class="card card-accent">
+  <div class="step-row">
+    <div class="step-num">1</div>
+    <div class="step-content">
+      <h3>第一步：得到常数 $e$</h3>
+      <p>把两个 $1$ 放进 EML：</p>
+      <div class="display-formula">$\displaystyle e \;=\; \operatorname{eml}(1,\, 1) \;=\; e^{1} \,-\, \ln 1 \;=\; e \,-\, 0 \;=\; e$</div>
+      <p><span class="tag tag-teal">关键</span> $\ln 1 = 0$，所以对数部分直接消失，只剩 $e$。就像魔法一样！</p>
+    </div>
+  </div>
+</div>
+
+<!-- Step 2: exp -->
+<div id="chainStep1" class="card card-teal hidden">
+  <div class="step-row">
+    <div class="step-num">2</div>
+    <div class="step-content">
+      <h3>第二步：得到指数函数 $e^x$</h3>
+      <p>把变量 $x$ 和 $1$ 放进 EML：</p>
+      <div class="display-formula">$\displaystyle e^{x} \;=\; \operatorname{eml}(x,\, 1) \;=\; e^{x} \,-\, \ln 1 \;=\; e^{x} \,-\, 0 \;=\; e^{x}$</div>
+      <p><span class="tag tag-teal">关键</span> 同样利用 $\ln 1 = 0$ 把对数消掉，只保留指数部分。</p>
+    </div>
+  </div>
+</div>
+
+<!-- Step 3: ln(x) -->
+<div id="chainStep2" class="card card-coral hidden">
+  <div class="step-row">
+    <div class="step-num">3</div>
+    <div class="step-content">
+      <h3>第三步：得到自然对数 $\ln x$ ⭐</h3>
+      <p>这是最精妙的一步——需要<strong>嵌套三层</strong> EML：</p>
+      <div class="formula-block">
+        <div class="formula-line"><span class="cmt">// 目标：用 EML 表示 ln(x)</span></div>
+        <div class="formula-line"><span class="hl">ln(x)</span> <span class="arr">=</span>  $\operatorname{eml}\!\bigl(1,\; \operatorname{eml}(\operatorname{eml}(1,x),\, 1)\bigr)$</div>
+        <div class="formula-line">&nbsp;</div>
+        <div class="formula-line"><span class="cmt">// 第一层展开：</span></div>
+        <div class="formula-line">$\operatorname{eml}(1,\; x)$  <span class="arr">=</span>  $e^{1} \,-\, \ln x$  <span class="arr">=</span>  <span class="eq">$e - \ln x$</span></div>
+        <div class="formula-line">&nbsp;</div>
+        <div class="formula-line"><span class="cmt">// 第二层：把上面的结果再和 1 放进 EML：</span></div>
+        <div class="formula-line">$\operatorname{eml}(e-\ln x,\; 1)$  <span class="arr">=</span>  <span class="eq">$e^{\,e - \ln x} \,-\, \ln 1$</span>  <span class="arr">=</span>  <span class="eq">$\dfrac{e^e}{x}$</span></div>
+        <div class="formula-line">&nbsp;</div>
+        <div class="formula-line"><span class="cmt">// 第三层：最后一步！</span></div>
+        <div class="formula-line">$\operatorname{eml}\!\bigl(1,\; \tfrac{e^e}{x}\bigr)$  <span class="arr">=</span>  $e \,-\, \ln\!\bigl(\tfrac{e^e}{x}\bigr)$</div>
+        <div class="formula-line" style="padding-left: 2em;"><span class="arr">=</span>  $e \,-\, \bigl(e \,-\, \ln x\bigr)$</div>
+        <div class="formula-line" style="padding-left: 2em;"><span class="arr">=</span>  <span class="hl res">ln(x)</span>  <span style="color:#a6e3a1;">✓</span></div>
+      </div>
+      <p><span class="tag tag-coral">关键</span> 减法把多余的 $e$ 消掉了！这就是 EML 内嵌减法的威力——它既能做加法也能做"反向操作"。</p>
+    </div>
+  </div>
+</div>
+
+<!-- Step 4: addition -->
+<div id="chainStep3" class="card card-blue hidden">
+  <div class="step-row">
+    <div class="step-num">4</div>
+    <div class="step-content">
+      <h3>第四步：得到加法 $x + y$</h3>
+      <p>利用经典恒等式：</p>
+      <div class="display-formula">$\displaystyle x + y \;=\; \ln\!\bigl(e^{x} \cdot e^{y}\bigr)$</div>
+      <p>你已经有了 $e^x = \operatorname{eml}(x,1)$ 和 $e^y = \operatorname{eml}(y,1)$ 的 EML 形式，把它们组合起来就行。</p>
+      <p>$\displaystyle e^{x} \cdot e^{y} = e^{x+y}$ —— 但乘法本身也需要先构造出来！</p>
+      <p>最终 EML 树深度大约需要 <strong>5-8 层</strong>（先把乘法等更多积木造好）。</p>
+      <p><span class="tag tag-blue">关键</span> 越复杂的运算需要的嵌套层数越多，但逻辑上一定能做到——只是表达式会变长。</p>
+    </div>
+  </div>
+</div>
+
+<!-- Step 5: pi -->
+<div id="chainStep4" class="card card-accent hidden">
+  <div class="step-row">
+    <div class="step-num">5</div>
+    <div class="step-content">
+      <h3>第五步：得到 $\pi$ 🎯</h3>
+      <p>这一步要用到<strong>复数</strong>和欧拉公式的威力：</p>
+      <div class="display-formula">$\displaystyle \pi \;=\; -i \cdot \ln(-1)$</div>
+      <p>为什么？因为 $\ln(-1) = i\pi$（主支对数），所以 $-i \times i\pi = \pi$。</p>
+      <p>$i$、$\ln$、乘法、负号…… 这些前面都已经能用 EML 构造了！</p>
+      <p><span class="tag">关键</span> 必须穿越<strong>复数域</strong>才能得到 $\pi$ —— 就像量子计算用复数振幅算出实数概率一样神奇。</p>
+    </div>
+  </div>
+</div>
+
+<!-- Step 6: trig -->
+<div id="chainStep5" class="card card-teal hidden">
+  <div class="step-row">
+    <div class="step-num">6</div>
+    <div class="step-content">
+      <h3>第六步：三角函数 $\sin x$, $\cos x$</h3>
+      <p>欧拉公式是终极桥梁：</p>
+      <div class="display-formula">$\displaystyle e^{\,i\varphi} \;=\; \cos\varphi \;+\; i\sin\varphi$</div>
+      <p>所以只要算出 $e^{i\varphi}$，取实部就是 $\cos\varphi$，取虚部就是 $\sin\varphi$：</p>
+      <div class="display-formula">$\displaystyle e^{\,i\varphi} \;=\; \operatorname{eml}(i\varphi,\, 1) \quad\text{因为 }\ln 1 = 0$</div>
+      <p>你已经有了 $e^x$、$i$、$\pi$，三角函数自然就出来了！</p>
+      <p><span class="tag tag-teal">关键</span> 欧拉公式是"万能翻译器"，把三角函数翻译成 $\exp + \ln$ 的语言。</p>
+    </div>
+  </div>
+</div>
+
+<!-- Step 7: summary -->
+<div id="chainStep6" class="card card-coral hidden">
+  <div class="step-row">
+    <div class="step-num">7</div>
+    <div class="step-content">
+      <h3>最终效果：从 36 个按钮 → 2 个</h3>
+      <div class="compare-grid">
+        <div class="compare-card" style="border: 2px solid var(--coral);">
+          <h3>🔢 普通科学计算器</h3>
+          <div class="value" style="color: var(--coral);">36 个按钮</div>
+          <div class="label">$+$、$-$、$\times$、$\div$、$\sin$、$\cos$、$\ln$、$\sqrt{\phantom{x}}$…</div>
+        </div>
+        <div class="compare-card" style="border: 2px solid var(--accent);">
+          <h3>✨ EML 计算器</h3>
+          <div class="value" style="color: var(--accent);">2 个按钮</div>
+          <div class="label">EML 和 $1$ — 一样能算！</div>
+        </div>
+      </div>
+      <p style="margin-top:14px;">消融路径：36 → 7 (Wolfram) → 6 → 4 → 4 → 3 → <strong>2 = EML + 1</strong></p>
+      <p>每一步都是在测试"去掉某个按钮后，还能不能重建全部函数"。答案是：可以！🎉</p>
+    </div>
+  </div>
+</div>
+
+<div style="display:flex; gap:10px; justify-content:center; margin:16px 0;">
+  <button class="calc-btn" id="prevStepBtn" onclick="prevChainStep()" style="opacity:0.4;">⬅ 上一步</button>
+  <button class="calc-btn" id="nextStepBtn" onclick="nextChainStep()">下一步 ➡</button>
+</div>
+
+</div>
+
+<!-- ==================== TAB 3: TRY ==================== -->
+<div id="tab-try" class="tab-content">
+
+<h2>动手试试 EML 计算 🔢</h2>
+
+<p>下面是一个模拟的 "EML 计算器"。输入 $x$ 和 $y$，看看 $\operatorname{eml}(x,y) = e^x - \ln y$ 算出什么。</p>
+
+<div class="calc-panel">
+  <div class="calc-input">
+    <label>$x =$ </label>
+    <input type="number" id="calcX" value="1" step="0.1">
+    <label>$y =$ </label>
+    <input type="number" id="calcY" value="1" step="0.1">
+  </div>
+  <div class="calc-btns">
+    <button class="calc-btn" onclick="calcEML()">算 $\operatorname{eml}(x,y)$</button>
+    <button class="calc-btn" onclick="calcExp()">算 $\exp(x)$</button>
+    <button class="calc-btn" onclick="calcLn()">算 $\ln(y)$</button>
+  </div>
+  <div class="calc-display" id="calcResult">等待输入...</div>
+  <div class="calc-explain" id="calcExplain"></div>
+</div>
+
+<h3>验证核心公式</h3>
+
+<div class="compare-grid">
+  <div class="compare-card">
+    <h3>$\displaystyle e = \operatorname{eml}(1,1)$</h3>
+    <div class="value" id="verifyE" style="font-size:20px;">—</div>
+    <div class="label">EML 计算值</div>
+    <button class="calc-btn" onclick="verifyE()" style="margin-top:10px; font-size:13px;">验证</button>
+  </div>
+  <div class="compare-card">
+    <h3>$\displaystyle e^x = \operatorname{eml}(x,1)$</h3>
+    <div class="value" id="verifyExp" style="font-size:20px;">—</div>
+    <div class="label">EML 计算值</div>
+    <button class="calc-btn" onclick="verifyExp()" style="margin-top:10px; font-size:13px;">验证</button>
+  </div>
+</div>
+
+<div class="compare-grid" style="margin-top:14px;">
+  <div class="compare-card">
+    <h3>$\ln x$ 的 EML 形式（三层）</h3>
+    <div class="value" id="verifyLn" style="font-size:20px;">—</div>
+    <div class="label">三层嵌套结果</div>
+    <button class="calc-btn" onclick="verifyLn()" style="margin-top:10px; font-size:13px;">验证</button>
+  </div>
+  <div class="compare-card">
+    <h3>真实值对比</h3>
+    <div class="value" id="verifyTrue" style="font-size:20px;">—</div>
+    <div class="label">标准计算器结果</div>
+    <button class="calc-btn" onclick="verifyAll()" style="margin-top:10px; font-size:13px;">全部验证</button>
+  </div>
+</div>
+
+<h3>EML 表达式的二叉树结构 🌳</h3>
+
+<p>每个 EML 表达式都是一棵<strong>二叉树</strong>——所有内部节点都是 $\texttt{eml}$，叶子节点是 $1$ 或变量。</p>
+
+<div style="text-align:center; margin:14px 0;">
+  <div class="calc-btns">
+    <button class="calc-btn active" onclick="showTree('exp')" id="btnTreeExp">$e^x$ 树</button>
+    <button class="calc-btn" onclick="showTree('ln')" id="btnTreeLn">$\ln x$ 树</button>
+    <button class="calc-btn" onclick="showTree('add')" id="btnTreeAdd">$x+y$ 树（概念）</button>
+  </div>
+  <svg id="treeSVG" class="tree-svg" width="100%" viewBox="0 0 700 300" style="max-width:700px; margin-top:10px;"></svg>
+</div>
+
+</div>
+
+<!-- ==================== TAB 4: WHY ==================== -->
+<div id="tab-why" class="tab-content">
+
+<h2>为什么 EML 这件事很重要？</h2>
+
+<div class="card card-accent">
+  <h3>1️⃣ 告诉我们"初等函数比想象中简单"</h3>
+  <p>你学了 30 多种运算，感觉数学很"杂"。但 EML 证明：<strong>它们本质上都属于同一个更简单的家族</strong>。</p>
+  <p>就像生物学家发现所有生命都用 DNA 编码一样——表面上千变万化，底层只有一套规则。</p>
+</div>
+
+<div class="card card-teal">
+  <h3>2️⃣ 所有公式变成"统一电路"</h3>
+  <p>EML 表达式的文法极其简洁：</p>
+  <div class="display-formula">$\displaystyle S \;\to\; 1 \;\mid\; \operatorname{eml}(S,\; S)$</div>
+  <p>任何初等函数公式都变成<strong>全二叉树</strong>，每个节点一模一样。这意味着：</p>
+  <ul style="padding-left: 20px; margin-top: 8px;">
+    <li>🔧 <strong>硬件设计</strong>：只需要一种"芯片单元"，像 NAND 门一样重复排列</li>
+    <li>🔍 <strong>符号回归</strong>：用梯度下降搜索公式，搜索空间是规则的正则结构</li>
+    <li>📚 <strong>教学</strong>：学生只要理解一个运算，就能推导出所有运算</li>
+  </ul>
+</div>
+
+<div class="card card-coral">
+  <h3>3️⃣ 符号回归的新方向 🤖</h3>
+  <p><strong>传统方法</strong>：搜索"异构算子集合"（$+$、$-$、$\sin$、$\cos$ 混合），搜索空间不规则，很难优化。</p>
+  <p><strong>EML 方法</strong>：所有树节点相同！参数化叶子（$1$、$x$ 或上一层结果），用 softmax 选择。然后用 Adam 优化器训练！</p>
+  <p>实验结果：浅树（深度 2–4）能<strong>精确恢复</strong>初等函数 —— 权重"啪"地落到 $0$ 或 $1$，恢复出精确公式。</p>
+  <p>这是传统神经网络做不到的：<strong>EML 网络成功时产出的是可读的数学公式 ✍️</strong>。</p>
+</div>
+
+<div class="card card-blue">
+  <h3>4️⃣ 必须穿越复数域 🌀</h3>
+  <p>一个有趣的限制：EML 计算 $\pi$、$\sin$、$\cos$ 时，<strong>中间步骤必须经过复数</strong>。</p>
+  <p>就像量子计算用复数振幅计算实数概率一样 —— EML 用复数中间量算出实数结果。</p>
+  <p>作者搜索了纯实数的替代方案，<strong>一无所获</strong>。这似乎是不可避免的。</p>
+</div>
+
+<div class="fun-fact">
+  <strong>还发现了"亲戚" 👨‍👩‍👦：</strong> 除了 EML，作者还找到了两个类似的算子：
+  <br><br>
+  $\displaystyle \operatorname{edl}(x,y) = \frac{e^x}{\ln y}$ （需要常量 $e$）
+  <br><br>
+  $\displaystyle -\operatorname{eml}(y,x) = \ln x - e^{y}$ （需要常量 $-\infty$）
+  <br><br>
+  它们也能生成全部初等函数！
+</div>
+
+</div>
+
+<!-- ==================== TAB 5: QUIZ ==================== -->
+<div id="tab-quiz" class="tab-content">
+
+<h2>挑战测验 🧪</h2>
+
+<div class="quiz-box" id="quizBox">
+  <h3 id="quizTitle">问题 1</h3>
+  <p id="quizQuestion" style="font-size:15.5px; font-weight:500;"></p>
+  <div id="quizOptions"></div>
+  <div id="quizFeedback" class="hidden" style="margin-top:14px; font-size:14.5px;"></div>
+  <div style="display:flex; gap:10px; margin-top:14px;">
+    <button class="reveal-btn" id="quizSubmitBtn" onclick="submitQuiz()">提交答案</button>
+    <button class="reveal-btn hidden" id="quizNextBtn" onclick="nextQuiz()">下一题 ➡</button>
+  </div>
+</div>
+
+<h3>概念闪卡 📇</h3>
+<div id="flashcards" style="margin:16px 0;"></div>
+
+</div>
+
+</div><!-- end container -->
+
+<!-- ==================== JAVASCRIPT ==================== -->
+<script>
+// ===== Core EML function =====
+function eml(x, y) {
+  return Math.exp(x) - Math.log(y);
+}
+
+// ===== Helper: re-render MathJax in an element =====
+function renderMath(el) {
+  if (typeof MathJax !== 'undefined' && MathJax.typesetPromise) {
+    MathJax.typesetPromise([el]).catch(function(err) {});
+  }
+}
+
+// ===== Init =====
+function initApp() {
+  setupTabs();
+  showTree('exp');
+  loadQuiz(0);
+  loadFlashcards();
+}
+
+// ===== Tab Navigation =====
+function setupTabs() {
+  var tabs = document.querySelectorAll('.nav-tab');
+  tabs.forEach(function(t) {
+    t.addEventListener('click', function() {
+      tabs.forEach(function(tt) { tt.classList.remove('active'); });
+      t.classList.add('active');
+      document.querySelectorAll('.tab-content').forEach(function(tc) { tc.classList.remove('active'); });
+      document.getElementById('tab-' + t.dataset.tab).classList.add('active');
+    });
+  });
+}
+
+// ===== Chain Steps (How tab) =====
+var chainStep = 0;
+var totalSteps = 7;
+
+function showChainStep(n) {
+  for (var i = 0; i < totalSteps; i++) {
+    var el = document.getElementById('chainStep' + i);
+    if (el) el.classList.toggle('hidden', i !== n);
+  }
+  var dots = document.querySelectorAll('#chainProgress .progress-dot');
+  dots.forEach(function(d, i) {
+    d.classList.toggle('active', i === n);
+    d.classList.toggle('done', i < n);
+  });
+  document.getElementById('prevStepBtn').style.opacity = n === 0 ? '0.4' : '1';
+  document.getElementById('nextStepBtn').style.opacity = n === totalSteps-1 ? '0.4' : '1';
+}
+function nextChainStep() { if (chainStep < totalSteps-1) { chainStep++; showChainStep(chainStep); } }
+function prevChainStep() { if (chainStep > 0) { chainStep--; showChainStep(chainStep); } }
+// Click dots to jump
+document.querySelectorAll('.progress-dot').forEach(function(d, i) {
+  d.addEventListener('click', function() { chainStep = i; showChainStep(i); });
+});
+showChainStep(0);
+
+// ===== Calculator =====
+function calcEML() {
+  var x = parseFloat(document.getElementById('calcX').value);
+  var y = parseFloat(document.getElementById('calcY').value);
+  var resEl = document.getElementById('calcResult');
+  var expEl = document.getElementById('calcExplain');
+  if (!isFinite(y) || y <= 0) {
+    resEl.textContent = '⚠ ln(y) 无定义（要求 y > 0）';
+    resEl.classList.add('error');
+    expEl.innerHTML = '';
+    return;
+  }
+  var result = eml(x, y);
+  var ex = Math.exp(x).toFixed(8), ly = Math.log(y).toFixed(8);
+  resEl.textContent = result.toFixed(10);
+  resEl.classList.remove('error');
+  expEl.innerHTML = '$\\operatorname{eml}(' + x + ',\\,' + y + ') \\;=\\; e^{' + x + '} \\,-\\, \\ln(' + y + ') \\;=\\; ' + ex + ' \\,-\\, ' + ly + ' \\;=\\; ' + result.toFixed(8) + '$';
+  renderMath(expEl);
+}
+
+function calcExp() {
+  var x = parseFloat(document.getElementById('calcX').value);
+  var result = eml(x, 1);
+  var resEl = document.getElementById('calcResult');
+  var expEl = document.getElementById('calcExplain');
+  resEl.textContent = result.toFixed(10);
+  resEl.classList.remove('error');
+  expEl.innerHTML = '因为 $\\ln 1 = 0$，所以 $\\operatorname{eml}(x, 1) = e^{x} - 0 = e^{' + x + '} \\approx ' + result.toFixed(8) + '$';
+  renderMath(expEl);
+}
+
+function calcLn() {
+  var y = parseFloat(document.getElementById('calcY').value);
+  var resEl = document.getElementById('calcResult');
+  var expEl = document.getElementById('calcExplain');
+  if (!isFinite(y) || y <= 0) {
+    resEl.textContent = '⚠ ln(y) 无定义';
+    resEl.classList.add('error');
+    expEl.innerHTML = '';
+    return;
+  }
+  var step1 = eml(1, y);
+  var step2 = eml(step1, 1);
+  var step3 = eml(1, step2);
+  resEl.textContent = step3.toFixed(10);
+  resEl.classList.remove('error');
+  expEl.innerHTML =
+    '<span style="font-size:13px;">三层嵌套过程：</span>' +
+    '第1层 $\\operatorname{eml}(1,'+y+') = e - \\ln('+y+') = ' + step1.toFixed(5) + '$<br>' +
+    '第2层 $\\operatorname{eml}('+step1.toFixed(4)+', 1) = e^{'+step1.toFixed(4)+'} = ' + step2.toFixed(5) + '$<br>' +
+    '第3层 $\\operatorname{eml}(1, '+step2.toFixed(4)+') = ' + step3.toFixed(8) + ' \\;\\checkmark$';
+  renderMath(expEl);
+}
+
+// ===== Verification =====
+function verifyE() {
+  document.getElementById('verifyE').textContent = eml(1,1).toFixed(10);
+}
+function verifyExp() {
+  var x = parseFloat(document.getElementById('calcX').value);
+  document.getElementById('verifyExp').textContent = eml(x,1).toFixed(10);
+}
+function verifyLn() {
+  var x = parseFloat(document.getElementById('calcX').value);
+  if (!isFinite(x) || x <= 0) { document.getElementById('verifyLn').textContent = '需要 x > 0'; return; }
+  var s1 = eml(1,x), s2 = eml(s1,1), s3 = eml(1,s2);
+  document.getElementById('verifyLn').textContent = s3.toFixed(10);
+}
+function verifyAll() {
+  verifyE(); verifyExp(); verifyLn();
+  var x = parseFloat(document.getElementById('calcX').value);
+  if (isFinite(x) && x > 0) {
+    document.getElementById('verifyTrue').innerHTML =
+      '$e = ' + Math.E.toFixed(10 + '$, &nbsp; $e^{x} = ' + Math.exp(x).toFixed(10) +
+      '$, &nbsp; $\\ln(x) = ' + Math.log(x).toFixed(10) + '$');
+    renderMath(document.getElementById('verifyTrue'));
+  }
+}
+
+// ===== Tree SVG =====
+function showTree(type) {
+  var svg = document.getElementById('treeSVG');
+
+  // Update buttons
+  document.querySelectorAll('#tab-try .calc-btns .calc-btn').forEach(function(b) { b.classList.remove('active'); });
+  // Find which button was clicked
+  var btnId = type === 'exp' ? 'btnTreeExp' : type === 'ln' ? 'btnTreeLn' : 'btnTreeAdd';
+  var activeBtn = document.getElementById(btnId);
+  if (activeBtn) activeBtn.classList.add('active');
+
+  function node(cx, cy, label, stroke, fill, desc) {
+    var w = label === 'eml' ? 82 : 54;
+    var h = 38;
+    var r = label === 'eml' ? 10 : 8;
+    return '<g>'
+      + '<rect x="' + (cx-w/2) + '" y="' + (cy-h/2) + '" width="' + w + '" height="' + h + '" rx="' + r + '" fill="' + fill + '" stroke="' + stroke + '" stroke-width="1.8"/>'
+      + '<text x="' + cx + '" y="' + cy + '" text-anchor="middle" dominant-baseline="central" font-size="' + (label==='eml'?15:14) + '" fill="' + stroke + '" font-weight="' + (label==='eml'?700:500) + '">' + label + '</text>'
+      + '<text x="' + cx + '" y="' + (cy+h/2+15) + '" text-anchor="middle" font-size="11.5" fill="#888780">' + desc + '</text>'
+      + '</g>';
+  }
+  function line(x1, y1, x2, y2) {
+    return '<line x1="' + x1 + '" y1="' + (y1+19) + '" x2="' + x2 + '" y2="' + (y2-19) + '" stroke="#bbb" stroke-width="1.8" marker-end="url(#arrow)"/>';
+  }
+  function arrowDefs() {
+    return '<defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#bbb" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>';
+  }
+
+  if (type === 'exp') {
+    svg.innerHTML = arrowDefs()
+      + node(350, 85, 'eml', '#4A37A8', '#EDEAFB', 'eˣ − ln(1)')
+      + node(210, 205, 'x', '#0A7B61', '#E0F5EF', '输入')
+      + node(490, 205, '1', '#C94B1A', '#FDF0EA', 'ln(1)=0')
+      + line(210, 205, 350, 85)
+      + line(490, 205, 350, 85)
+      + '<text x="350" y="270" text-anchor="middle" font-size="15" fill="#4A37A8" font-weight="700">eˣ = eml(x, 1) &nbsp;&nbsp; 树深度 = 1</text>';
+  } else if (type === 'ln') {
+    svg.innerHTML = arrowDefs()
+      + node(350, 55, 'eml', '#4A37A8', '#EDEAFB', '= ln(x)')
+      + node(165, 140, '1', '#C94B1A', '#FDF0EA', '常量')
+      + node(535, 140, 'eml', '#4A37A8', '#EDEAFB', '= eᵉ/x')
+      + node(350, 225, 'eml', '#4A37A8', '#EDEAFB', '= e−ln(x)')
+      + node(535, 225, '1', '#C94B1A', '#FDF0EA', 'ln(1)=0')
+      + node(200, 310, '1', '#C94B1A', '#FDF0EA', '常量')
+      + node(500, 310, 'x', '#0A7B61', '#E0F5EF', '输入')
+      + line(165, 140, 350, 55)
+      + line(535, 140, 350, 55)
+      + line(350, 225, 535, 140)
+      + line(535, 225, 535, 140)
+      + line(200, 310, 350, 225)
+      + line(500, 310, 350, 225)
+      + '<text x="350" y="365" text-anchor="middle" font-size="14" fill="#4A37A8" font-weight="700">ln(x) = eml(1, eml(eml(1, x), 1)) &nbsp;&nbsp; 树深度 = 3</text>';
+  } else if (type === 'add') {
+    svg.innerHTML = arrowDefs()
+      + '<rect x="50" y="15" width="600" height="245" rx="16" fill="#F5F3FF" stroke="#4A37A8" stroke-width="1.2" stroke-dasharray="6,3"/>'
+      + '<text x="350" y="42" text-anchor="middle" font-size="13" fill="#4A37A8" font-weight="600">x + y 的 EML 二叉树（概念示意，实际约需深度 5–8）</text>'
+      + node(350, 95, 'eml', '#4A37A8', '#EDEAFB', '= ln(eˣ·eʸ)')
+      + node(185, 160, '1', '#C94B1A', '#FDF0EA', '消掉e')
+      + node(515, 160, 'eml', '#4A37A8', '#EDEAFB', '= eˣ·eʸ')
+      + node(370, 230, 'eml', '#0A7B61', '#E0F5EF', '= eˣ')
+      + node(660, 230, 'eml', '#0A7B61', '#E0F5EF', '= eʸ')
+      + '<text x="370" y="264" text-anchor="middle" font-size="11.5" fill="#0A7B61" font-weight="500">eml(x, 1)</text>'
+      + '<text x="660" y="264" text-anchor="middle" font-size="11.5" fill="#0A7B61" font-weight="500">eml(y, 1)</text>'
+      + line(185, 160, 350, 95)
+      + line(515, 160, 350, 95)
+      + line(370, 230, 515, 160)
+      + line(660, 230, 515, 160)
+      + '<text x="350" y="290" text-anchor="middle" font-size="14.5" fill="#4A37A8" font-weight="600">x + y = ln(eˣ·eʸ) — 经典恒等式，EML 可完整展开</text>';
+  }
+}
+
+// ===== Quiz =====
+var quizzes = [
+  {
+    q: '$\\operatorname{eml}(1, 1)$ 等于什么？',
+    opts: ['$0$', '$e$ （约 2.718...）', '$1$', '$\\pi$'],
+    ans: 1,
+    explain: '$\\operatorname{eml}(1,1) = e^{1} - \\ln 1 = e - 0 = e$'
+  },
+  {
+    q: '为什么 $\\operatorname{eml}(x, 1)$ 能算出 $e^x$？',
+    opts: ['因为 $e^1 = e$', '因为 $\\ln(1) = 0$，对数项被消掉了', '因为 $1$ 是特殊数字', '纯属巧合'],
+    ans: 1,
+    explain: '$\\operatorname{eml}(x,1) = e^{x} - \\ln 1 = e^{x} - 0 = e^{x}$。核心秘密：$\\ln 1 = 0$！'
+  },
+  {
+    q: '计算 $\\ln x$ 需要几层 EML 嵌套？',
+    opts: ['$1$ 层', '$2$ 层', '$3$ 层', '$5$ 层'],
+    ans: 2,
+    explain: '$\\ln x = \\operatorname{eml}\\bigl(1,\\, \\operatorname{eml}(\\operatorname{eml}(1,x),\\, 1)\\bigr)$ —— 三层嵌套！'
+  },
+  {
+    q: 'EML 和 NAND 门有什么共同点？',
+    opts: ['都是二进制运算', '一个基元就能生成全部所需运算', '都用到了减法', '没有任何关系'],
+    ans: 1,
+    explain: 'NAND 一个门就能造所有逻辑电路，EML 一个算子就能生成所有初等函数 —— 它们都是"万能基元"！'
+  },
+  {
+    q: '为什么 EML 算 $\\pi$ 和 $\\sin$ 时必须经过复数？',
+    opts: ['因为 $\\pi$ 是无理数', '因为 $\\ln(-1) = i\\pi$ 需要复数对数', '因为 EML 本身就是复数运算', '不需要经过复数'],
+    ans: 1,
+    explain: '$\\pi = -i \\cdot \\ln(-1)$，要计算 $\\ln(-1)$ 必须穿越复数域。这就像量子力学用复数振幅算出实数概率！'
+  }
+];
+
+var quizIdx = 0;
+var quizSelected = -1;
+
+function loadQuiz(idx) {
+  quizIdx = idx;
+  quizSelected = -1;
+  var q = quizzes[idx];
+  document.getElementById('quizTitle').textContent = '问题 ' + (idx+1) + ' / ' + quizzes.length;
+  var qEl = document.getElementById('quizQuestion');
+  qEl.innerHTML = q.q;
+
+  var optsHtml = '';
+  q.opts.forEach(function(o, i) {
+    optsHtml += '<div class="quiz-option" data-idx="' + i + '" onclick="selectQuiz(' + i + ')">' + o + '</div>';
+  });
+  document.getElementById('quizOptions').innerHTML = optsHtml;
+  document.getElementById('quizFeedback').classList.add('hidden');
+  document.getElementById('quizSubmitBtn').classList.remove('hidden');
+  document.getElementById('quizNextBtn').classList.add('hidden');
+
+  renderMath(qEl);
+  renderMath(document.getElementById('quizOptions'));
+}
+
+function selectQuiz(i) {
+  quizSelected = i;
+  var opts = document.querySelectorAll('.quiz-option');
+  opts.forEach(function(o, j) {
+    o.classList.toggle('selected', j === i);
+    o.classList.remove('correct', 'wrong');
+  });
+}
+
+function submitQuiz() {
+  if (quizSelected < 0) return;
+  var q = quizzes[quizIdx];
+  var opts = document.querySelectorAll('.quiz-option');
+  opts.forEach(function(o, i) {
+    o.classList.remove('selected');
+    if (i === q.ans) o.classList.add('correct');
+    if (i === quizSelected && i !== q.ans) o.classList.add('wrong');
+  });
+  var fb = document.getElementById('quizFeedback');
+  fb.classList.remove('hidden');
+  if (quizSelected === q.ans) {
+    fb.innerHTML = '<span style="color:#2E7D32; font-weight:700;">✅ 正确！</span> &nbsp;' + q.explain;
+  } else {
+    fb.innerHTML = '<span style="color:var(--coral); font-weight:700;">❌ 不对</span> &mdash; 正确答案：' + q.opts[q.ans] + '<br><span style="margin-top:4px;display:inline-block;">' + q.explain + '</span>';
+  }
+  document.getElementById('quizSubmitBtn').classList.add('hidden');
+  if (quizIdx < quizzes.length - 1) {
+    document.getElementById('quizNextBtn').classList.remove('hidden');
+  }
+  renderMath(fb);
+}
+
+function nextQuiz() {
+  if (quizIdx < quizzes.length - 1) loadQuiz(quizIdx + 1);
+}
+
+// ===== Flashcards =====
+var flashcardData = [
+  { front: 'EML 算子', back: '$\\operatorname{eml}(x,y) = e^{x} - \\ln y$', anchor: '一个运算打包了 exp、减法、ln 三种操作' },
+  { front: 'Sheffer 算子', back: '一个基元就能生成全部所需运算', anchor: 'NAND 是逻辑电路的 Sheffer，EML 是初等函数的 Sheffer' },
+  { front: '$\\ln 1 = 0$', back: '自然对数在 1 处归零', anchor: '这是 EML 能工作的核心秘密 —— 让 ln 部分凭空消失' },
+  { front: '欧拉公式', back: '$e^{i\\varphi} = \\cos\\varphi + i\\sin\\varphi$', anchor: '三角函数的"万能翻译器"，把 sin/cos 翻译成 exp 的语言' },
+  { front: 'EML 文法', back: '$S \\to 1 \\mid \\operatorname{eml}(S, S)$', anchor: '所有初等函数都变成全二叉树，每个节点一模一样' },
+];
+
+function loadFlashcards() {
+  var html = '<table class="flash-table">';
+  html += '<tr><th>正面（概念）</th><th>背面（释义）</th><th>记忆锚点</th></tr>';
+  flashcardData.forEach(function(f) {
+    html += '<tr><td style="font-weight:700;">' + f.front + '</td><td>' + f.back + '</td><td style="color:var(--muted); font-size:13px;">' + f.anchor + '</td></tr>';
+  });
+  html += '</table>';
+  document.getElementById('flashcards').innerHTML = html;
+  renderMath(document.getElementById('flashcards'));
+}
+</script>
+
+</body>
+</html>
