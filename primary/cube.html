@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>正方体 11 种展开图动态演示</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --accent: #3498db;
+            --bg: #f4f7f9;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg);
+            color: var(--primary);
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        h1, h2, p {
+            margin: 0;
+            text-align: center;
+        }
+
+        /* ---------------- 总览页 ---------------- */
+        #overview {
+            padding: 40px 20px;
+        }
+        
+        .header {
+            margin-bottom: 40px;
+        }
+        .header h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+        .header p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 25px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border: 2px solid transparent;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            border-color: var(--accent);
+        }
+
+        .card h3 {
+            margin: 15px 0 5px 0;
+            font-size: 1.1rem;
+        }
+        .card .type-badge {
+            background: #e1f0fa;
+            color: var(--accent);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+
+        /* 迷你网格预览 */
+        .mini-grid {
+            display: grid;
+            gap: 3px;
+            margin: 10px auto;
+            justify-content: center;
+        }
+        .mini-cell {
+            width: 22px;
+            height: 22px;
+            background: #edf2f7;
+            border-radius: 3px;
+        }
+        .mini-cell.filled {
+            background: var(--accent);
+            box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1);
+        }
+
+        /* ---------------- 详情页 ---------------- */
+        #detail {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            max-width: 900px;
+            margin-bottom: 30px;
+            background: white;
+            padding: 15px 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            box-sizing: border-box;
+        }
+
+        button {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        button:hover { background: #2980b9; }
+        button:active { transform: scale(0.95); }
+        button.btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid #ddd;
+        }
+        button.btn-outline:hover { background: #f0f0f0; border-color: #ccc; }
+        
+        #fold-btn.active {
+            background: #e74c3c;
+        }
+        #fold-btn.active:hover {
+            background: #c0392b;
+        }
+
+        /* --- 3D 核心区 --- */
+        .scene-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .cube-scene {
+            perspective: 1200px;
+            width: 400px;
+            height: 400px;
+            position: relative;
+            transform-style: preserve-3d;
+            /* 平铺视角 */
+            transform: rotateX(0deg) rotateY(0deg);
+            transition: transform 2.4s ease-in-out;
+        }
+
+        /* 折叠时的上帝视角，展现立体结构 */
+        .cube-scene.is-folded {
+            transform: rotateX(-30deg) rotateY(-40deg);
+        }
+
+        .root-wrapper {
+            position: absolute;
+            left: 160px;
+            top: 160px;
+            width: 80px;
+            height: 80px;
+            transform-style: preserve-3d;
+        }
+
+        .face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+        }
+
+        .wrapper {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            transition: transform 0.8s ease-in-out;
+        }
+
+        /* 定义四向连接铰链 */
+        .wrapper-RIGHT  { left: 100%; top: 0;    transform-origin: 0% 50%; }
+        .wrapper-LEFT   { left: -100%; top: 0;   transform-origin: 100% 50%; }
+        .wrapper-TOP    { left: 0;    top: -100%; transform-origin: 50% 100%; }
+        .wrapper-BOTTOM { left: 0;    top: 100%; transform-origin: 50% 0%; }
+
+        /* 折叠角度 */
+        .is-folded .wrapper-RIGHT  { transform: rotateY(90deg); }
+        .is-folded .wrapper-LEFT   { transform: rotateY(-90deg); }
+        .is-folded .wrapper-TOP    { transform: rotateX(90deg); }
+        .is-folded .wrapper-BOTTOM { transform: rotateX(-90deg); }
+
+        /* 单个面的内外材质 */
+        .face-content, .face-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            box-sizing: border-box;
+            backface-visibility: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid rgba(255,255,255,0.4);
+        }
+
+        .face-content {
+            font-size: 36px;
+            font-weight: bold;
+            color: rgba(255, 255, 255, 0.95);
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.1);
+        }
+
+        .face-back {
+            transform: rotateY(180deg);
+            background-color: #fdfdfd;
+            border-color: #ddd;
+            background-image: 
+                linear-gradient(45deg, #eee 25%, transparent 25%, transparent 75%, #eee 75%, #eee),
+                linear-gradient(45deg, #eee 25%, transparent 25%, transparent 75%, #eee 75%, #eee);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 总览页 -->
+    <div id="overview">
+        <div class="header">
+            <h1>正方体 11 种展开图</h1>
+            <p>点击任意卡片查看详细的 3D 折叠/展开动画演示</p>
+        </div>
+        <div class="grid-container" id="grid-container"></div>
+    </div>
+
+    <!-- 详情页 -->
+    <div id="detail">
+        <div class="toolbar">
+            <button class="btn-outline" onclick="goBack()">← 返回总览</button>
+            <div>
+                <h2 id="detail-title" style="margin-bottom: 5px;">-</h2>
+                <div id="detail-type" style="text-align:center; color:#666; font-size: 0.9rem;"></div>
+            </div>
+            <button id="fold-btn" onclick="toggleFold()">折叠</button>
+        </div>
+        <div class="scene-container">
+            <div class="cube-scene" id="cube-scene">
+                <!-- 动态生成的 3D 节点插入此处 -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /**
+         * 11种展开图坐标定义 (x, y) 
+         * 基于数学规则避开相交叠和"田"字。
+         */
+        const netData = [
+            // 141 型 · 6种
+            { id: 1, type: "141 型", name: "第 1 种 (1-1)", coords: [{x:0,y:1},{x:1,y:1},{x:2,y:1},{x:3,y:1}, {x:0,y:0},{x:0,y:2}] },
+            { id: 2, type: "141 型", name: "第 2 种 (1-2)", coords: [{x:0,y:1},{x:1,y:1},{x:2,y:1},{x:3,y:1}, {x:0,y:0},{x:1,y:2}] },
+            { id: 3, type: "141 型", name: "第 3 种 (1-3)", coords: [{x:0,y:1},{x:1,y:1},{x:2,y:1},{x:3,y:1}, {x:0,y:0},{x:2,y:2}] },
+            { id: 4, type: "141 型", name: "第 4 种 (1-4)", coords: [{x:0,y:1},{x:1,y:1},{x:2,y:1},{x:3,y:1}, {x:0,y:0},{x:3,y:2}] },
+            { id: 5, type: "141 型", name: "第 5 种 (2-2)", coords: [{x:0,y:1},{x:1,y:1},{x:2,y:1},{x:3,y:1}, {x:1,y:0},{x:1,y:2}] },
+            { id: 6, type: "141 型", name: "第 6 种 (2-3)", coords: [{x:0,y:1},{x:1,y:1},{x:2,y:1},{x:3,y:1}, {x:1,y:0},{x:2,y:2}] },
+            // 231 型 · 3种 (避开田字格)
+            { id: 7, type: "231 型", name: "第 7 种 (靠左)", coords: [{x:0,y:0},{x:1,y:0}, {x:1,y:1},{x:2,y:1},{x:3,y:1}, {x:1,y:2}] },
+            { id: 8, type: "231 型", name: "第 8 种 (居中)", coords: [{x:0,y:0},{x:1,y:0}, {x:1,y:1},{x:2,y:1},{x:3,y:1}, {x:2,y:2}] },
+            { id: 9, type: "231 型", name: "第 9 种 (靠右)", coords: [{x:0,y:0},{x:1,y:0}, {x:1,y:1},{x:2,y:1},{x:3,y:1}, {x:3,y:2}] },
+            // 222 型 · 1种 (阶梯)
+            { id: 10, type: "222 型", name: "第 10 种 (阶梯)", coords: [{x:0,y:0},{x:1,y:0}, {x:1,y:1},{x:2,y:1}, {x:2,y:2},{x:3,y:2}] },
+            // 33 型 · 1种
+            { id: 11, type: "33 型", name: "第 11 种 (错开)", coords: [{x:0,y:0},{x:1,y:0},{x:2,y:0}, {x:2,y:1},{x:3,y:1},{x:4,y:1}] }
+        ];
+
+        // 面的颜色配置
+        const faceColors = {
+            'F': '#e74c3c', // 前 (红)
+            'B': '#3498db', // 后 (蓝)
+            'U': '#2ecc71', // 上 (绿)
+            'D': '#f1c40f', // 下 (黄)
+            'L': '#9b59b6', // 左 (紫)
+            'R': '#e67e22'  // 右 (橙)
+        };
+
+        let isFolded = false;
+        let currentMaxDepth = 0;
+        const FOLD_DURATION = 0.8; // 每层的动画持续时间
+
+        // --- 初始化网格页 ---
+        function initGrid() {
+            const container = document.getElementById('grid-container');
+            netData.forEach(net => {
+                let card = document.createElement('div');
+                card.className = 'card';
+                card.onclick = () => openDetail(net.id);
+
+                let grid = createMiniGrid(net.coords);
+                card.appendChild(grid);
+
+                let title = document.createElement('h3');
+                title.innerText = net.name;
+                
+                let badge = document.createElement('span');
+                badge.className = 'type-badge';
+                badge.innerText = net.type;
+
+                card.appendChild(title);
+                card.appendChild(badge);
+                container.appendChild(card);
+            });
+        }
+
+        // 生成缩略图网格
+        function createMiniGrid(coords) {
+            let minX = Math.min(...coords.map(c=>c.x));
+            let maxX = Math.max(...coords.map(c=>c.x));
+            let minY = Math.min(...coords.map(c=>c.y));
+            let maxY = Math.max(...coords.map(c=>c.y));
+
+            let w = maxX - minX + 1;
+            let h = maxY - minY + 1;
+
+            let grid = document.createElement('div');
+            grid.className = 'mini-grid';
+            grid.style.gridTemplateColumns = `repeat(${w}, 18px)`;
+            grid.style.gridTemplateRows = `repeat(${h}, 18px)`;
+
+            for(let y = minY; y <= maxY; y++) {
+                for(let x = minX; x <= maxX; x++) {
+                    let cell = document.createElement('div');
+                    cell.className = 'mini-cell';
+                    if(coords.some(c => c.x === x && c.y === y)) {
+                        cell.classList.add('filled');
+                    }
+                    grid.appendChild(cell);
+                }
+            }
+            return grid;
+        }
+
+        // --- 核心拓扑算法：基于平面坐标生成折叠依赖树 ---
+        function buildTree(coords) {
+            let nodes = coords.map((c, i) => ({ id: i, x: c.x, y: c.y, children: [], visited: false }));
+            
+            // 计算质心，挑选最靠近中间的面作为根节点(基底)
+            let cx = nodes.reduce((sum, n) => sum + n.x, 0) / 6;
+            let cy = nodes.reduce((sum, n) => sum + n.y, 0) / 6;
+            let root = nodes.reduce((best, n) => {
+                let d = Math.pow(n.x - cx, 2) + Math.pow(n.y - cy, 2);
+                let bestD = Math.pow(best.x - cx, 2) + Math.pow(best.y - cy, 2);
+                return d < bestD ? n : best;
+            }, nodes[0]);
+
+            root.visited = true;
+            let queue = [root];
+
+            // 广度优先遍历构建连接关系
+            while (queue.length > 0) {
+                let curr = queue.shift();
+                nodes.forEach(n => {
+                    if (!n.visited) {
+                        let dx = n.x - curr.x;
+                        let dy = n.y - curr.y;
+                        if (Math.abs(dx) + Math.abs(dy) === 1) { // 相邻面
+                            n.visited = true;
+                            if (dx === 1) n.dirFromParent = 'RIGHT';
+                            else if (dx === -1) n.dirFromParent = 'LEFT';
+                            else if (dy === 1) n.dirFromParent = 'BOTTOM';
+                            else if (dy === -1) n.dirFromParent = 'TOP';
+                            
+                            curr.children.push(n);
+                            queue.push(n);
+                        }
+                    }
+                });
+            }
+            return root;
+        }
+
+        // --- 空间向量计算：自动判断折叠后各面对应的位置(F/B/U/D/L/R) ---
+        // 通过向量叉乘与旋转矩阵推导，保证所有11种均能精准判断
+        function getNextOrientation(normal, up, right, direction) {
+            if (direction === 'RIGHT')  return { normal: right, up: up, right: [-normal[0], -normal[1], -normal[2]] };
+            if (direction === 'LEFT')   return { normal: [-right[0], -right[1], -right[2]], up: up, right: normal };
+            if (direction === 'TOP')    return { normal: up, up: [-normal[0], -normal[1], -normal[2]], right: right };
+            if (direction === 'BOTTOM') return { normal: [-up[0], -up[1], -up[2]], up: normal, right: right };
+        }
+
+        function assignFaces(node, normal, up, right) {
+            let label = '';
+            if (normal[2] === 1) label = 'F';       // 面向屏幕外部为Front
+            else if (normal[2] === -1) label = 'B'; // 背向屏幕为Back
+            else if (normal[0] === 1) label = 'R';  // 右侧为Right
+            else if (normal[0] === -1) label = 'L'; // 左侧为Left
+            else if (normal[1] === -1) label = 'U'; // Y轴负方向为Up
+            else if (normal[1] === 1) label = 'D';  // Y轴正方向为Down
+
+            node.label = label;
+            node.children.forEach(child => {
+                let nextOri = getNextOrientation(normal, up, right, child.dirFromParent);
+                assignFaces(child, nextOri.normal, nextOri.up, nextOri.right);
+            });
+        }
+
+        function computeMaxDepth(node, depth = 0) {
+            if (node.children.length === 0) return depth;
+            return Math.max(...node.children.map(c => computeMaxDepth(c, depth + 1)));
+        }
+
+        // 递归生成嵌套的DOM节点
+        function generateFaceHTML(node, depth = 0) {
+            let color = faceColors[node.label] || '#333';
+            let inner = `
+                <div class="face-content" style="background-color: ${color};">
+                    <span>${node.label}</span>
+                </div>
+                <div class="face-back"></div>
+            `;
+
+            let childrenHtml = '';
+            node.children.forEach(child => {
+                childrenHtml += `
+                    <div class="wrapper wrapper-${child.dirFromParent}" data-depth="${depth + 1}">
+                        ${generateFaceHTML(child, depth + 1)}
+                    </div>
+                `;
+            });
+
+            return `<div class="face">${inner}${childrenHtml}</div>`;
+        }
+
+        // --- 页面控制逻辑 ---
+        function openDetail(id) {
+            let net = netData.find(n => n.id === id);
+            document.getElementById('overview').style.display = 'none';
+            document.getElementById('detail').style.display = 'flex';
+            document.getElementById('detail-title').innerText = net.name;
+            document.getElementById('detail-type').innerText = net.type;
+
+            let root = buildTree(net.coords);
+            // 初始向量状态: 法向+Z(指向用户)，向上为-Y(屏幕上方)，向右为+X(屏幕右方)
+            assignFaces(root, [0,0,1], [0,-1,0], [1,0,0]); 
+            currentMaxDepth = computeMaxDepth(root);
+
+            const scene = document.getElementById('cube-scene');
+            scene.innerHTML = '';
+            
+            // 重置状态
+            scene.classList.remove('is-folded');
+            isFolded = false;
+            let btn = document.getElementById('fold-btn');
+            btn.innerText = '折叠';
+            btn.classList.remove('active');
+
+            // 动态注入DOM
+            let html = generateFaceHTML(root);
+            
+            // 计算画面平移，使得根节点展开时尽量居中
+            let minX = Math.min(...net.coords.map(c=>c.x));
+            let maxX = Math.max(...net.coords.map(c=>c.x));
+            let minY = Math.min(...net.coords.map(c=>c.y));
+            let maxY = Math.max(...net.coords.map(c=>c.y));
+            let cx = (minX + maxX) / 2;
+            let cy = (minY + maxY) / 2;
+            let offsetX = (root.x - cx) * 80;
+            let offsetY = (root.y - cy) * 80;
+
+            // 这里使用内联样式修正展开视图的视区偏差
+            scene.innerHTML = `<div class="root-wrapper" style="transform: translate(${-offsetX}px, ${-offsetY}px)">${html}</div>`;
+            
+            // 场景镜头拉远的整体耗时
+            scene.style.transitionDuration = `${Math.max(1.5, currentMaxDepth * FOLD_DURATION)}s`;
+
+            // 预设正确的展开delay，以便用户点击折叠时能顺滑启动
+            updateDelays();
+        }
+
+        function goBack() {
+            document.getElementById('detail').style.display = 'none';
+            document.getElementById('overview').style.display = 'block';
+        }
+
+        function toggleFold() {
+            isFolded = !isFolded;
+            const scene = document.getElementById('cube-scene');
+            const btn = document.getElementById('fold-btn');
+
+            if (isFolded) {
+                scene.classList.add('is-folded');
+                btn.innerText = '展开';
+                btn.classList.add('active');
+            } else {
+                scene.classList.remove('is-folded');
+                btn.innerText = '折叠';
+                btn.classList.remove('active');
+            }
+            updateDelays();
+        }
+
+        function updateDelays() {
+            const wrappers = document.querySelectorAll('.wrapper');
+            // 实现依次折叠/展开动画
+            wrappers.forEach(w => {
+                let d = parseInt(w.dataset.depth);
+                if (isFolded) {
+                    // 折叠时，靠近根部的先动 (由内而外)
+                    w.style.transitionDelay = `${(d - 1) * FOLD_DURATION}s`;
+                } else {
+                    // 展开时，远离根部的先动 (由外而内)
+                    w.style.transitionDelay = `${(currentMaxDepth - d) * FOLD_DURATION}s`;
+                }
+            });
+        }
+
+        window.onload = initGrid;
+    </script>
+</body>
+</html>

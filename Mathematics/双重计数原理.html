@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>双重计数原理</title>
+  <script>
+  MathJax = {
+    tex: { inlineMath: [['\$','\$']], displayMath: [['\$$','\$$']], processEscapes: true },
+    options: { skipHtmlTags: ['script','noscript','style','textarea','pre'] },
+    chtml: { displayAlign: 'center', displayIndent: '0' }
+  };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+  <style>
+    :root {
+      --primary: #1a3a5c;
+      --primary-light: #2563a8;
+      --accent: #dc2626;
+      --accent-orange: #d97706;
+      --bg-page: #f8f9fe;
+      --bg-card: #ffffff;
+      --bg-formula: #f0f4ff;
+      --border-light: #e0e7f0;
+      --border-blue: #dbeafe;
+      --text-primary: #1a3a5c;
+      --text-secondary: #6b7280;
+      --text-accent: #dc2626;
+      --success: #059669;
+      --warning: #d97706;
+      --error: #dc2626;
+      --white: #ffffff;
+      --formula-red-bg: #fef2f2;
+      --formula-green-bg: #ecfdf5;
+      --callout-blue-bg: #eff6ff;
+      --callout-green-bg: #ecfdf5;
+      --callout-orange-bg: #fffbea;
+      --callout-red-bg: #fef2f2;
+      --callout-blue-text: #1e40af;
+      --callout-green-text: #064e3b;
+      --callout-orange-text: #92400e;
+      --callout-red-text: #991b1b;
+      --memory-bg-a: #fef3c7;
+      --memory-bg-b: #fffbeb;
+      --memory-border: #fcd34d;
+      --example-bg: #f8f9fe;
+      --shadow-card: rgba(26,58,92,0.06);
+      --canvas-grid: #eef0f6;
+      --canvas-bg: #fafbff;
+      --label: #64748b;
+      --purple: #7c3aed;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; overflow-x: hidden; }
+    body {
+      background: var(--bg-page);
+      color: var(--text-primary);
+      font-family: "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+      line-height: 1.75;
+    }
+    .page {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 28px 18px 56px;
+      overflow: visible;
+    }
+    .hero {
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: var(--white);
+      border-radius: 18px;
+      padding: 42px 34px;
+      margin-bottom: 28px;
+      box-shadow: 0 10px 28px var(--shadow-card);
+      overflow: visible;
+    }
+    .hero h1 {
+      margin: 0;
+      font-size: clamp(30px, 6vw, 48px);
+      line-height: 1.18;
+      letter-spacing: 0;
+    }
+    .hero-meta {
+      margin-top: 16px;
+      font-size: 15px;
+      opacity: 0.92;
+    }
+    .section { margin-bottom: 48px; overflow: visible; }
+    .section-head { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; overflow: visible; }
+    .section-num {
+      width: 42px; height: 42px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: var(--white); border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; font-weight: 800; flex-shrink: 0;
+    }
+    h2 { font-size: 22px; color: var(--primary); margin: 0; }
+    h3 { font-size: 18px; color: var(--primary); margin: 18px 0 8px; }
+    p { margin: 8px 0; }
+    .card {
+      background: var(--bg-card);
+      border-radius: 14px;
+      padding: 28px 32px;
+      margin-bottom: 20px;
+      border: 1px solid var(--border-light);
+      box-shadow: 0 2px 8px var(--shadow-card);
+      overflow: visible;
+    }
+    .formula-box {
+      background: var(--bg-formula);
+      border-radius: 10px; padding: 18px 24px;
+      margin: 16px 0; text-align: center; font-size: 17px;
+      border: 1px solid var(--border-blue); overflow: visible;
+    }
+    .formula-box.hl-red { border-color: var(--accent); border-width: 2px; background: var(--formula-red-bg); }
+    .formula-box.hl-green { border-color: var(--success); border-width: 2px; background: var(--formula-green-bg); }
+    .brief {
+      margin-top: 10px;
+      font-size: 13px;
+      color: var(--primary-light);
+      overflow: visible;
+    }
+    .callout { border-radius: 10px; padding: 16px 22px; margin: 20px 0; font-size: 14px; line-height: 1.7; overflow: visible; }
+    .callout.blue { background: var(--callout-blue-bg); border-left: 5px solid var(--primary-light); color: var(--callout-blue-text); }
+    .callout.green { background: var(--callout-green-bg); border-left: 5px solid var(--success); color: var(--callout-green-text); }
+    .callout.orange { background: var(--callout-orange-bg); border-left: 5px solid var(--warning); color: var(--callout-orange-text); }
+    .callout.red { background: var(--callout-red-bg); border-left: 5px solid var(--error); color: var(--callout-red-text); }
+    .callout-label { font-weight: 700; margin-bottom: 6px; font-size: 15px; }
+    .knowledge-tree { display: flex; flex-direction: column; align-items: center; gap: 14px; margin: 24px 0; overflow: visible; }
+    .tree-root { background: var(--bg-formula); border: 2px solid var(--success); border-radius: 12px; padding: 11px 22px; font-weight: 800; font-size: 16px; color: var(--success); }
+    .tree-branch-title { font-weight: 700; color: var(--primary); margin: 8px 0 4px; }
+    .tree-row { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; overflow: visible; }
+    .tree-leaf { background: var(--white); border: 1px solid var(--border-blue); border-radius: 8px; padding: 7px 14px; font-size: 13px; color: var(--text-primary); }
+    .expand-block { margin: 20px 0; overflow: visible; }
+    .expand-title { font-weight: 800; font-size: 16px; color: var(--primary); margin-bottom: 10px; }
+    .expand-general { text-align: center; margin-bottom: 12px; overflow: visible; }
+    .expand-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; overflow: visible; }
+    .expand-item { background: var(--bg-formula); border: 1px solid var(--border-blue); border-radius: 10px; padding: 14px; overflow: visible; }
+    .expand-label { font-size: 13px; color: var(--primary-light); margin-bottom: 6px; }
+    .expand-formula { text-align: center; overflow: visible; }
+    .memory-card {
+      background: linear-gradient(135deg, var(--memory-bg-a), var(--memory-bg-b));
+      border: 2px solid var(--memory-border); border-radius: 14px; padding: 24px; margin: 16px 0; overflow: visible;
+    }
+    .mem-icon { font-size: 28px; margin-bottom: 8px; }
+    .mem-title { font-size: 18px; font-weight: 800; color: var(--warning); margin-bottom: 10px; }
+    .mem-body { font-size: 14px; line-height: 1.9; }
+    .demo-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(230px, 0.8fr);
+      gap: 18px;
+      align-items: start;
+      overflow: visible;
+    }
+    canvas {
+      width: 100%;
+      height: auto;
+      border: 1px solid var(--border-blue);
+      border-radius: 12px;
+      background: var(--canvas-bg);
+      display: block;
+    }
+    .control-panel {
+      background: var(--bg-formula);
+      border: 1px solid var(--border-blue);
+      border-radius: 12px;
+      padding: 16px;
+      overflow: visible;
+    }
+    .control-row { margin-bottom: 16px; overflow: visible; }
+    .control-row label {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+    input[type="range"] { width: 100%; margin-top: 8px; accent-color: var(--primary-light); }
+    .stat {
+      background: var(--white);
+      border-radius: 10px;
+      padding: 10px 12px;
+      margin-top: 10px;
+      border: 1px solid var(--border-light);
+      font-size: 14px;
+      overflow: visible;
+    }
+    .stat strong { color: var(--accent); }
+    .example-box {
+      background: var(--example-bg); border-left: 5px solid var(--primary);
+      border-radius: 0 12px 12px 0; padding: 20px 24px;
+      margin: 20px 0; overflow: visible;
+    }
+    .example-num { font-size: 17px; font-weight: 800; color: var(--primary); margin-bottom: 10px; }
+    .example-problem { font-size: 15px; margin-bottom: 14px; color: var(--primary); }
+    .example-solution { font-size: 14px; line-height: 1.9; color: var(--text-secondary); margin-bottom: 12px; overflow: visible; }
+    .example-note {
+      background: var(--callout-orange-bg); border-radius: 8px; padding: 10px 16px;
+      font-size: 13px; color: var(--callout-orange-text); border: 1px solid var(--memory-border);
+      overflow: visible;
+    }
+    .formula-table { width: 100%; border-collapse: collapse; font-size: 14px; margin: 12px 0; overflow: visible; }
+    .formula-table th { background: var(--primary); color: var(--white); padding: 10px 8px; text-align: center; font-weight: 700; }
+    .formula-table td { padding: 10px 8px; text-align: center; border-bottom: 1px solid var(--border-light); background: var(--white); }
+    .formula-table tr:nth-child(even) td { background: var(--bg-page); }
+    .formula-table td:nth-child(2) { min-width: 260px; }
+    .pill-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 12px 0 0;
+      overflow: visible;
+    }
+    .pill {
+      border: 1px solid var(--border-blue);
+      background: var(--bg-formula);
+      color: var(--primary);
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 13px;
+    }
+    .step-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 12px;
+      margin: 16px 0;
+      overflow: visible;
+    }
+    .step-card {
+      background: var(--bg-formula);
+      border: 1px solid var(--border-blue);
+      border-radius: 12px;
+      padding: 16px;
+      overflow: visible;
+    }
+    .step-tag {
+      width: 30px;
+      height: 30px;
+      border-radius: 9px;
+      background: var(--primary);
+      color: var(--white);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+    .step-title { font-weight: 800; color: var(--primary); margin-bottom: 6px; }
+    .step-body { font-size: 13px; color: var(--text-secondary); line-height: 1.7; }
+    @media (max-width: 760px) {
+      .page { padding: 18px 12px 42px; }
+      .hero { padding: 34px 22px; border-radius: 14px; }
+      .card { padding: 22px 18px; }
+      .demo-grid { grid-template-columns: 1fr; }
+      .section-head { align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="hero">
+      <h1>双重计数原理</h1>
+      <div class="hero-meta">适用年级：高中；组合数学与证明方法入门</div>
+    </header>
+
+    <section class="section">
+      <div class="section-head">
+        <div class="section-num">1</div>
+        <h2>知识树总览</h2>
+      </div>
+      <div class="card">
+        <div class="knowledge-tree">
+          <div class="tree-root">同一个总数，换两个角度数</div>
+          <div class="tree-branch-title">核心思想</div>
+          <div class="tree-row">
+            <div class="tree-leaf">按左边分类数</div>
+            <div class="tree-leaf">按右边分类数</div>
+            <div class="tree-leaf">两边结果相等</div>
+          </div>
+          <div class="tree-branch-title">常见模型</div>
+          <div class="tree-row">
+            <div class="tree-leaf">握手问题</div>
+            <div class="tree-leaf">座位与名单</div>
+            <div class="tree-leaf">图形中的交点</div>
+            <div class="tree-leaf">表格行和列</div>
+          </div>
+        </div>
+        <div class="callout blue">
+          <div class="callout-label">一句话</div>
+          双重计数原理，又叫“算两次”方法。它不是一种新运算，而是一种证明技巧：先确定“我要数的到底是哪一批对象”，再从两个不同角度分别统计。因为数的是同一批对象，所以两个结果必然相等。
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div class="section-num">2</div>
+        <h2>直觉引入</h2>
+      </div>
+      <div class="card">
+        <p>想象一次班级聚会。每两位同学握一次手。我们想知道一共握了多少次。</p>
+        <p>第一种数法：站在“每个人”的角度数。若有 $n$ 个人，每个人和另外 $n-1$ 个人握手，于是看起来有 $n(n-1)$ 次。</p>
+        <p>但这里每一次握手都被数了两遍：甲数了一遍，乙也数了一遍。所以真实握手次数是：</p>
+        <div class="formula-box hl-green">
+          $$\frac{n(n-1)}{2}$$
+          <div class="brief"><strong>简记：</strong>$ 总数=\frac{每人看到的总次数}{每件事被重复数的次数} $（“先多算，再平均还原”）</div>
+        </div>
+        <div class="callout orange">
+          <div class="callout-label">关键提醒</div>
+          双重计数的关键不是公式，而是先问清楚三件事：数的对象是什么？用哪两个角度数？每个对象有没有被重复计算？
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div class="section-num">3</div>
+        <h2>标准形式与证明</h2>
+      </div>
+      <div class="card">
+        <h3>定理：按行数等于按列数</h3>
+        <p>如果一个表格中每个小格只可能填 $0$ 或 $1$，那么所有 $1$ 的个数既可以按行相加，也可以按列相加。</p>
+        <div class="formula-box hl-red">
+          $$r_1+r_2+\cdots+r_m=c_1+c_2+\cdots+c_n$$
+          <div class="brief"><strong>简记：</strong>$ 行总和=列总和 $（“同一堆 1，横看竖看一样多”）</div>
+        </div>
+        <p>其中 $r_i$ 表示第 $i$ 行中 $1$ 的个数，$c_j$ 表示第 $j$ 列中 $1$ 的个数。这里的 $r_1+r_2+\cdots+r_m$ 表示“从第 $1$ 行一直加到第 $m$ 行”，不用求和符号也能看懂。</p>
+        <div class="callout blue">
+          <div class="callout-label">关于求和符号</div>
+          高中阶段可以先把 $\sum$ 理解成“连续相加的简写”。例如 $\sum_{i=1}^{m} r_i$ 就是 $r_1+r_2+\cdots+r_m$，意思是把第 $1$ 行到第 $m$ 行的数量全部加起来。
+        </div>
+        <h3>证明</h3>
+        <p>把表格中所有填了 $1$ 的小格看成一个集合 $S$。按行数，就是先看第 $1$ 行有几个，再看第 $2$ 行有几个，一直到第 $m$ 行，所以得到 $r_1+r_2+\cdots+r_m$。</p>
+        <p>按列数，就是先看第 $1$ 列有几个，再看第 $2$ 列有几个，一直到第 $n$ 列，所以得到 $c_1+c_2+\cdots+c_n$。</p>
+        <p>两种数法数的都是同一个集合 $S$ 中元素的个数，因此它们相等。</p>
+
+        <div class="expand-block">
+          <div class="expand-title">展开对照：先看一般式，再看求和简写</div>
+          <div class="expand-general">高中常用写法：$$r_1+r_2+\cdots+r_m=c_1+c_2+\cdots+c_n$$</div>
+          <div class="expand-general">求和符号简写：$$\sum_{i=1}^{m} r_i=\sum_{j=1}^{n} c_j$$</div>
+          <div class="expand-grid">
+            <div class="expand-item">
+              <div class="expand-label">二元展开：$m=2,n=2$</div>
+              <div class="expand-formula">$$r_1+r_2=c_1+c_2$$</div>
+            </div>
+            <div class="expand-item">
+              <div class="expand-label">三元展开：$m=3,n=3$</div>
+              <div class="expand-formula">$$r_1+r_2+r_3=c_1+c_2+c_3$$</div>
+            </div>
+          </div>
+        </div>
+
+        <h3>握手定理</h3>
+        <p>如果把人看成点，把握手看成两点之间的连线，那么每条线连接两个点，所以所有点的“连线条数之和”正好是边数的两倍。</p>
+        <div class="formula-box">
+          $$d_1+d_2+\cdots+d_n=2E$$
+          <div class="brief"><strong>简记：</strong>$ 度数和=边数\times 2 $（“每条边有两个端点”）</div>
+        </div>
+        <div class="expand-block">
+          <div class="expand-title">展开对照：握手定理</div>
+          <div class="expand-general">高中常用写法：$$d_1+d_2+\cdots+d_n=2E$$</div>
+          <div class="expand-general">求和符号简写：$$\sum_{i=1}^{n} d_i=2E$$</div>
+          <div class="expand-grid">
+            <div class="expand-item">
+              <div class="expand-label">二元展开：$n=2$</div>
+              <div class="expand-formula">$$d_1+d_2=2E$$</div>
+            </div>
+            <div class="expand-item">
+              <div class="expand-label">三元展开：$n=3$</div>
+              <div class="expand-formula">$$d_1+d_2+d_3=2E$$</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div class="section-num">4</div>
+        <h2>解题流程与常见模型</h2>
+      </div>
+      <div class="card">
+        <p>双重计数题最怕“看见公式就套”。更稳的方法是先把题目翻译成一个可计数的故事。</p>
+        <div class="step-grid">
+          <div class="step-card">
+            <div class="step-tag">1</div>
+            <div class="step-title">确定对象</div>
+            <div class="step-body">先说清楚到底在数什么，例如“带组长的小组”“一条边的两个端点”“从两组人中选出的队伍”。</div>
+          </div>
+          <div class="step-card">
+            <div class="step-tag">2</div>
+            <div class="step-title">直接数</div>
+            <div class="step-body">从整体出发一步到位，常得到等式右边，例如 $C_{2n}^n$ 或 $2^n$。</div>
+          </div>
+          <div class="step-card">
+            <div class="step-tag">3</div>
+            <div class="step-title">分类数</div>
+            <div class="step-body">按某个关键量分类，例如“第一组选了几人”“小组有几人”“最大编号是谁”。</div>
+          </div>
+          <div class="step-card">
+            <div class="step-tag">4</div>
+            <div class="step-title">写出等式</div>
+            <div class="step-body">两边数的是同一批对象，所以相等；若每个对象被重复数了固定次数，要除以重复次数。</div>
+          </div>
+        </div>
+        <div class="callout green">
+          <div class="callout-label">高中常见触发词</div>
+          “从若干人中选”“每个人有选或不选”“分成两组”“指定组长”“最大编号”“每条边有两个端点”“按人数分类”，这些都很适合尝试双重计数。
+        </div>
+        <h3>五类常见计数对象</h3>
+        <div class="pill-list">
+          <div class="pill">选小组</div>
+          <div class="pill">选小组并指定负责人</div>
+          <div class="pill">从两组中混合选人</div>
+          <div class="pill">按最大或最小编号分类</div>
+          <div class="pill">点边关系或表格关系</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div class="section-num">5</div>
+        <h2>互动演示</h2>
+      </div>
+      <div class="card">
+        <div class="demo-grid">
+          <canvas id="handshakeCanvas" width="560" height="380" aria-label="握手问题互动图"></canvas>
+          <div class="control-panel">
+            <div class="control-row">
+              <label for="peopleRange"><span>人数</span><span id="peopleText">6</span></label>
+              <input id="peopleRange" type="range" min="3" max="10" value="6">
+            </div>
+            <div class="control-row">
+              <label for="densityRange"><span>握手密度</span><span id="densityText">60%</span></label>
+              <input id="densityRange" type="range" min="20" max="100" step="10" value="60">
+            </div>
+            <div class="stat">按边数：共有 <strong id="edgeCount">0</strong> 次握手。</div>
+            <div class="stat">按人看：度数和为 <strong id="degreeSum">0</strong>，每次握手被两个端点看到。</div>
+            <div class="stat">检验：<strong id="checkText">0 = 2 × 0</strong></div>
+          </div>
+        </div>
+        <div class="callout green">
+          <div class="callout-label">观察方法</div>
+          调整人数和握手密度。无论连线怎样变化，只要一条连线连接两个端点，就一定满足 $d_1+d_2+\cdots+d_n=2E$。这就是“按人看”和“按握手次数看”得到同一个总量。
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div class="section-num">6</div>
+        <h2>记忆方法</h2>
+      </div>
+      <div class="card">
+        <div class="memory-card">
+          <div class="mem-icon">◎</div>
+          <div class="mem-title">先圈对象，再换视角</div>
+          <div class="mem-body">
+            第一步：圈出真正要数的对象。第二步：从视角 A 数一遍。第三步：从视角 B 数一遍。第四步：因为数的是同一批对象，所以两个结果相等。做题时可以默念：“我数的是谁？我换了哪两个角度？”
+          </div>
+        </div>
+        <div class="pill-list">
+          <div class="pill">同一对象</div>
+          <div class="pill">两种数法</div>
+          <div class="pill">结果相等</div>
+          <div class="pill">重复计数要除掉</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div class="section-num">7</div>
+        <h2>经典恒等式</h2>
+      </div>
+      <div class="card">
+        <div class="callout blue">
+          <div class="callout-label">看这类式子的第一反应</div>
+          不要急着代数变形。先给等式两边编一个共同故事：左边是一种“分情况数”，右边是一种“一步到位数”。
+        </div>
+
+        <h3>恒等式 1：平方和公式</h3>
+        <div class="formula-box hl-green">
+          $$\left(C_n^0\right)^2+\left(C_n^1\right)^2+\cdots+\left(C_n^n\right)^2=C_{2n}^n$$
+          <div class="brief"><strong>简记：</strong>$ 从2n人中选n人=按前n人选了几个来分类 $（“整体选一次，分类选多次”）</div>
+        </div>
+        <p>我们来数同一件事：从 $2n$ 个人中选出 $n$ 个人。</p>
+        <p>把这 $2n$ 个人分成两组：前一组有 $n$ 人，后一组也有 $n$ 人。右边 $C_{2n}^n$ 的意思是：不管分组，直接从 $2n$ 人中选 $n$ 人。</p>
+        <p>左边换一个角度：看最终选出的 $n$ 人中，前一组到底选了几个。若前一组选了 $k$ 个，那么后一组就必须选 $n-k$ 个。</p>
+        <div class="formula-box">
+          $$C_n^k\cdot C_n^{\,n-k}=C_n^k\cdot C_n^k=\left(C_n^k\right)^2$$
+        </div>
+        <p>让 $k$ 从 $0$ 到 $n$ 逐一取值，就得到左边的所有项。因此两种数法相等。</p>
+        <div class="expand-block">
+          <div class="expand-title">一般情况与求和简写</div>
+          <div class="expand-general">高中常用写法：$$\left(C_n^0\right)^2+\left(C_n^1\right)^2+\cdots+\left(C_n^n\right)^2=C_{2n}^n$$</div>
+          <div class="expand-general">求和符号简写：$$\sum_{k=0}^{n}\left(C_n^k\right)^2=C_{2n}^n$$</div>
+          <div class="expand-grid">
+            <div class="expand-item">
+              <div class="expand-label">二元展开：$n=2$</div>
+              <div class="expand-formula">$$\left(C_2^0\right)^2+\left(C_2^1\right)^2+\left(C_2^2\right)^2=C_4^2$$</div>
+            </div>
+            <div class="expand-item">
+              <div class="expand-label">三元展开：$n=3$</div>
+              <div class="expand-formula">$$\left(C_3^0\right)^2+\left(C_3^1\right)^2+\left(C_3^2\right)^2+\left(C_3^3\right)^2=C_6^3$$</div>
+            </div>
+          </div>
+        </div>
+
+        <h3>恒等式 2：带权求和公式</h3>
+        <div class="formula-box hl-green">
+          $$0C_n^0+1C_n^1+2C_n^2+\cdots+nC_n^n=n\cdot2^{n-1}$$
+          <div class="brief"><strong>简记：</strong>$ 先选小组再选组长=先定组长再选组员 $（“组长被标记出来”）</div>
+        </div>
+        <p>我们来数同一件事：从 $n$ 个人中选一个小组，并在小组里指定一名组长。</p>
+        <p>左边按“小组人数”分类。若小组有 $k$ 人，先从 $n$ 人中选出这个 $k$ 人小组，有 $C_n^k$ 种；再从这 $k$ 人中指定组长，有 $k$ 种。所以这一类有 $kC_n^k$ 种。</p>
+        <p>小组人数可以是 $0,1,2,\ldots,n$。当 $k=0$ 时没有人可当组长，对应项是 $0C_n^0$，不影响总数。</p>
+        <p>右边换一个角度：先选组长，有 $n$ 种选法。组长确定后，其余 $n-1$ 个人每个人都有两个选择：加入小组，或者不加入小组。所以共有 $2^{n-1}$ 种选择。</p>
+        <p>两种数法数的都是“带组长的小组”，因此：</p>
+        <div class="formula-box">
+          $$0C_n^0+1C_n^1+2C_n^2+\cdots+nC_n^n=n\cdot2^{n-1}$$
+        </div>
+        <div class="expand-block">
+          <div class="expand-title">一般情况与求和简写</div>
+          <div class="expand-general">高中常用写法：$$0C_n^0+1C_n^1+2C_n^2+\cdots+nC_n^n=n\cdot2^{n-1}$$</div>
+          <div class="expand-general">求和符号简写：$$\sum_{k=0}^{n}kC_n^k=n\cdot2^{n-1}$$</div>
+          <div class="expand-grid">
+            <div class="expand-item">
+              <div class="expand-label">二元展开：$n=2$</div>
+              <div class="expand-formula">$$0C_2^0+1C_2^1+2C_2^2=2\cdot2^1$$</div>
+            </div>
+            <div class="expand-item">
+              <div class="expand-label">三元展开：$n=3$</div>
+              <div class="expand-formula">$$0C_3^0+1C_3^1+2C_3^2+3C_3^3=3\cdot2^2$$</div>
+            </div>
+          </div>
+        </div>
+
+        <h3>恒等式 3：所有子集个数</h3>
+        <div class="formula-box">
+          $$C_n^0+C_n^1+C_n^2+\cdots+C_n^n=2^n$$
+          <div class="brief"><strong>简记：</strong>$ 按人数分类选小组=每个人选或不选 $（“分类数小组，开关选成员”）</div>
+        </div>
+        <p>我们来数同一件事：从 $n$ 个人中选一个小组，小组人数不限。</p>
+        <p>左边按小组人数分类：选 $0$ 人有 $C_n^0$ 种，选 $1$ 人有 $C_n^1$ 种，直到选 $n$ 人有 $C_n^n$ 种。</p>
+        <p>右边换一个角度：每个人都有两个选择，加入或不加入，所以共有 $2^n$ 种小组。</p>
+        <div class="expand-block">
+          <div class="expand-title">一般情况与求和简写</div>
+          <div class="expand-general">高中常用写法：$$C_n^0+C_n^1+C_n^2+\cdots+C_n^n=2^n$$</div>
+          <div class="expand-general">求和符号简写：$$\sum_{k=0}^{n}C_n^k=2^n$$</div>
+        </div>
+
+        <h3>恒等式 4：奇数项与偶数项一样多</h3>
+        <div class="formula-box">
+          $$C_n^0+C_n^2+C_n^4+\cdots=C_n^1+C_n^3+C_n^5+\cdots$$
+          <div class="brief"><strong>简记：</strong>$ 偶数人小组数=奇数人小组数 $（“指定一人，加入状态翻转”）</div>
+        </div>
+        <p>我们仍然数 $n$ 个人组成的小组，但把小组分成两类：人数为偶数的小组、人数为奇数的小组。</p>
+        <p>选定一个特别的人，比如甲。把任意一个不含甲的小组与“把甲加入后的小组”配对；把任意一个含甲的小组与“把甲去掉后的小组”配对。</p>
+        <p>这个操作会让小组人数的奇偶性反过来，而且每个小组都能找到唯一的搭档。因此偶数人小组和奇数人小组一样多。</p>
+        <div class="expand-block">
+          <div class="expand-title">一般情况与求和简写</div>
+          <div class="expand-general">高中常用写法：$$C_n^0+C_n^2+C_n^4+\cdots=C_n^1+C_n^3+C_n^5+\cdots$$</div>
+          <div class="expand-general">求和符号简写：$$\sum_{\text{k为偶数}}C_n^k=\sum_{\text{k为奇数}}C_n^k$$</div>
+        </div>
+
+        <h3>恒等式 5：曲棍球杆公式</h3>
+        <div class="formula-box">
+          $$C_r^r+C_{r+1}^r+C_{r+2}^r+\cdots+C_n^r=C_{n+1}^{r+1}$$
+          <div class="brief"><strong>简记：</strong>$ 按最大编号分类 $（“最大的人是谁，就落在哪一项”）</div>
+        </div>
+        <p>我们来数同一件事：从编号 $1,2,\ldots,n+1$ 的人中选出 $r+1$ 人。</p>
+        <p>右边 $C_{n+1}^{r+1}$ 是直接选。</p>
+        <p>左边按“选出的最大编号是谁”分类。如果最大编号是 $r+1$，前面只能从 $1$ 到 $r$ 中选 $r$ 人，对应 $C_r^r$；如果最大编号是 $r+2$，前面从 $1$ 到 $r+1$ 中选 $r$ 人，对应 $C_{r+1}^r$；一直到最大编号是 $n+1$，对应 $C_n^r$。</p>
+        <div class="expand-block">
+          <div class="expand-title">一般情况与求和简写</div>
+          <div class="expand-general">高中常用写法：$$C_r^r+C_{r+1}^r+C_{r+2}^r+\cdots+C_n^r=C_{n+1}^{r+1}$$</div>
+          <div class="expand-general">求和符号简写：$$\sum_{k=r}^{n}C_k^r=C_{n+1}^{r+1}$$</div>
+        </div>
+
+        <h3>恒等式 6：范德蒙德恒等式</h3>
+        <div class="formula-box">
+          $$C_m^0C_n^r+C_m^1C_n^{r-1}+C_m^2C_n^{r-2}+\cdots+C_m^rC_n^0=C_{m+n}^r$$
+          <div class="brief"><strong>简记：</strong>$ 从两组共选r人=按第一组选了几人分类 $</div>
+        </div>
+        <p>我们来数同一件事：从甲组 $m$ 人、乙组 $n$ 人，一共 $m+n$ 人中选出 $r$ 人。</p>
+        <p>右边是不分组，直接从 $m+n$ 人中选 $r$ 人。</p>
+        <p>左边按甲组选了几人分类。甲组选 $0$ 人时，乙组要选 $r$ 人，得到 $C_m^0C_n^r$；甲组选 $1$ 人时，乙组要选 $r-1$ 人，得到 $C_m^1C_n^{r-1}$；一直到甲组选 $r$ 人、乙组选 $0$ 人。</p>
+        <div class="expand-block">
+          <div class="expand-title">一般情况与求和简写</div>
+          <div class="expand-general">高中常用写法：$$C_m^0C_n^r+C_m^1C_n^{r-1}+C_m^2C_n^{r-2}+\cdots+C_m^rC_n^0=C_{m+n}^r$$</div>
+          <div class="expand-general">求和符号简写：$$\sum_{k=0}^{r}C_m^kC_n^{r-k}=C_{m+n}^r$$</div>
+        </div>
+
+        <h3>恒等式 7：带两个标记的公式</h3>
+        <div class="formula-box">
+          $$0\cdot(-1)C_n^0+1\cdot0C_n^1+2\cdot1C_n^2+\cdots+n(n-1)C_n^n=n(n-1)2^{n-2}$$
+          <div class="brief"><strong>简记：</strong>$ 先选小组再选正副组长=先定正副组长再选组员 $</div>
+        </div>
+        <p>这个式子通常写成 $0+0+2C_n^2+6C_n^3+\cdots+n(n-1)C_n^n=n(n-1)2^{n-2}$，前两项为 $0$。</p>
+        <p>我们来数同一件事：从 $n$ 个人中选一个小组，并在小组里指定一名组长和一名副组长，且两人不同。</p>
+        <p>左边按小组人数分类。若小组有 $k$ 人，先选小组有 $C_n^k$ 种，再从 $k$ 人中选组长和副组长，有 $k(k-1)$ 种，所以这一类有 $k(k-1)C_n^k$ 种。</p>
+        <p>右边换一个角度：先从 $n$ 人中选组长，再从剩下的人中选副组长，有 $n(n-1)$ 种；其余 $n-2$ 人每人决定加入或不加入小组，共有 $2^{n-2}$ 种。</p>
+        <div class="expand-block">
+          <div class="expand-title">一般情况与求和简写</div>
+          <div class="expand-general">高中常用写法：$$0\cdot(-1)C_n^0+1\cdot0C_n^1+2\cdot1C_n^2+\cdots+n(n-1)C_n^n=n(n-1)2^{n-2}$$</div>
+          <div class="expand-general">求和符号简写：$$\sum_{k=0}^{n}k(k-1)C_n^k=n(n-1)2^{n-2}$$</div>
+        </div>
+
+        <h3>恒等式 8：帕斯卡公式</h3>
+        <div class="formula-box">
+          $$C_n^r=C_{n-1}^{r}+C_{n-1}^{r-1}$$
+          <div class="brief"><strong>简记：</strong>$ 选出的r人中，要么没有甲，要么有甲 $</div>
+        </div>
+        <p>我们来数同一件事：从 $n$ 个人中选出 $r$ 个人。</p>
+        <p>固定其中一个人叫甲。若选出的队伍不含甲，就要从剩下 $n-1$ 人中选 $r$ 人，有 $C_{n-1}^{r}$ 种；若选出的队伍含甲，就只需从剩下 $n-1$ 人中再选 $r-1$ 人，有 $C_{n-1}^{r-1}$ 种。</p>
+        <p>两类互不重叠，又合起来覆盖全部选法，所以得到帕斯卡公式。</p>
+
+        <h3>恒等式 9：吸收恒等式</h3>
+        <div class="formula-box">
+          $$kC_n^k=nC_{n-1}^{k-1}$$
+          <div class="brief"><strong>简记：</strong>$ 先选k人再标一人=先定被标记者再补k-1人 $</div>
+        </div>
+        <p>我们来数同一件事：从 $n$ 个人中选出 $k$ 人，并在这 $k$ 人中标记一名代表。</p>
+        <p>左边：先选 $k$ 人小组，有 $C_n^k$ 种；再从 $k$ 人中选代表，有 $k$ 种，所以是 $kC_n^k$。</p>
+        <p>右边：先从 $n$ 人中确定代表，有 $n$ 种；再从剩下 $n-1$ 人中补选 $k-1$ 人，有 $C_{n-1}^{k-1}$ 种，所以是 $nC_{n-1}^{k-1}$。</p>
+
+        <h3>恒等式 10：先选大组再选小组</h3>
+        <div class="formula-box">
+          $$C_n^rC_r^k=C_n^kC_{n-k}^{r-k}$$
+          <div class="brief"><strong>简记：</strong>$ 先选r人大组再选k人核心=先选k人核心再补大组 $</div>
+        </div>
+        <p>我们来数同一件事：从 $n$ 个人中选出一个 $r$ 人大组，并在大组中再选出 $k$ 人作为核心成员。</p>
+        <p>左边：先选 $r$ 人大组，有 $C_n^r$ 种；再从这 $r$ 人中选 $k$ 个核心，有 $C_r^k$ 种。</p>
+        <p>右边：先从 $n$ 人中选出 $k$ 个核心，有 $C_n^k$ 种；再从剩下 $n-k$ 人中补足大组所需的 $r-k$ 人，有 $C_{n-k}^{r-k}$ 种。</p>
+        <div class="callout orange">
+          <div class="callout-label">小提示</div>
+          第 9、10 条不一定写成一长串相加，但仍然是双重计数：它们都是把“带附加标记的选择”用两种顺序完成。
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div class="section-num">8</div>
+        <h2>例题精讲</h2>
+      </div>
+      <div class="card">
+        <div class="example-box">
+          <div class="example-num">例 1 ⭐⭐（易）</div>
+          <div class="example-problem">8 位同学每两人握一次手，一共握了多少次？</div>
+          <div class="example-solution">
+            <p>第一步：从每个人的角度看，每人和另外 $7$ 人握手，所以看到了 $8\times 7=56$ 次。</p>
+            <p>第二步：每次握手被两个人各看一次，所以每次被数了 $2$ 遍。</p>
+            <p>第三步：真实次数为 $56\div 2=28$。</p>
+          </div>
+          <div class="example-note">💡 小结：遇到“每两人一次”，常用公式 $\frac{n(n-1)}{2}$。</div>
+        </div>
+
+        <div class="example-box">
+          <div class="example-num">例 2 ⭐⭐⭐（中）</div>
+          <div class="example-problem">某班有 12 名同学参加社团。每名同学恰好参加 2 个社团。已知每个社团有 6 名同学，一共有多少个社团？</div>
+          <div class="example-solution">
+            <p>第一步：我们数“同学参加社团”这件事，也就是一个同学和一个社团的配对。</p>
+            <p>第二步：按同学数，12 名同学每人参加 2 个社团，共有 $12\times 2=24$ 个配对。</p>
+            <p>第三步：按社团数，设有 $x$ 个社团，每个社团有 6 名同学，共有 $6x$ 个配对。</p>
+            <p>第四步：两种数法数的是同一批配对，所以 $6x=24$，得到 $x=4$。</p>
+          </div>
+          <div class="example-note">💡 小结：把“参加”看成一条连接线，一端连同学，一端连社团。</div>
+        </div>
+
+        <div class="example-box">
+          <div class="example-num">例 3 ⭐⭐⭐（中）</div>
+          <div class="example-problem">一个图形有 7 个点，已知各点连出的边数分别是 $2,3,3,4,4,5,5$。这个图形一共有多少条边？</div>
+          <div class="example-solution">
+            <p>第一步：把所有点的连边条数相加：$2+3+3+4+4+5+5=26$。</p>
+            <p>第二步：每条边有两个端点，所以在度数和中每条边被数了两次。</p>
+            <p>第三步：边数 $E=26\div 2=13$。</p>
+          </div>
+          <div class="example-note">💡 小结：看到“各点连出几条边”，优先想到握手定理 $d_1+d_2+\cdots+d_n=2E$。</div>
+        </div>
+
+        <div class="example-box">
+          <div class="example-num">例 4 ⭐⭐⭐⭐（难）</div>
+          <div class="example-problem">有 10 个学生和若干本书。每个学生借了 3 本书，每本书恰好被 2 个学生借过。一共有多少本书被借过？</div>
+          <div class="example-solution">
+            <p>第一步：数“学生借书”的配对。一个配对就是“某学生借了某本书”。</p>
+            <p>第二步：按学生数，10 个学生每人借 3 本书，共有 $10\times 3=30$ 个配对。</p>
+            <p>第三步：按书数，设共有 $b$ 本书。每本书被 2 个学生借过，共有 $2b$ 个配对。</p>
+            <p>第四步：两种数法相等，$2b=30$，所以 $b=15$。</p>
+          </div>
+          <div class="example-note">💡 小结：双重计数常把“人和物的关系”转化成配对数。</div>
+        </div>
+
+        <div class="example-box">
+          <div class="example-num">例 5 ⭐⭐⭐⭐（难）</div>
+          <div class="example-problem">不用代数展开，证明：$C_n^0+C_n^1+C_n^2+\cdots+C_n^n=2^n$。</div>
+          <div class="example-solution">
+            <p>第一步：确定共同对象。我们数“从 $n$ 个人中选一个小组”的方法数，小组人数不限。</p>
+            <p>第二步：按人数分类。选 $0$ 人、$1$ 人、$2$ 人，直到选 $n$ 人，方法数分别为 $C_n^0,C_n^1,C_n^2,\ldots,C_n^n$，所以总数是左边。</p>
+            <p>第三步：按每个人的选择状态数。每个人都有“加入”和“不加入”两种选择，$n$ 个人共有 $2^n$ 种选择，所以总数是右边。</p>
+            <p>第四步：两边数的是同一批小组，因此相等。</p>
+          </div>
+          <div class="example-note">💡 小结：出现 $2^n$ 时，常想“每个对象有两个选择”。</div>
+        </div>
+
+        <div class="example-box">
+          <div class="example-num">例 6 ⭐⭐⭐⭐（难）</div>
+          <div class="example-problem">用双重计数证明：$kC_n^k=nC_{n-1}^{k-1}$。</div>
+          <div class="example-solution">
+            <p>第一步：确定共同对象。数“从 $n$ 个人中选出 $k$ 人，并在其中指定一名代表”的方法数。</p>
+            <p>第二步：先选小组再选代表。选 $k$ 人有 $C_n^k$ 种，代表有 $k$ 种，所以共有 $kC_n^k$ 种。</p>
+            <p>第三步：先选代表再选小组。代表有 $n$ 种选法，再从剩下 $n-1$ 人中选 $k-1$ 人加入小组，有 $C_{n-1}^{k-1}$ 种，所以共有 $nC_{n-1}^{k-1}$ 种。</p>
+            <p>第四步：两种顺序完成的是同一件事，所以两式相等。</p>
+          </div>
+          <div class="example-note">💡 小结：系数 $k$ 往往表示“在选出的 $k$ 个对象中再挑一个”。</div>
+        </div>
+
+        <div class="example-box">
+          <div class="example-num">例 7 ⭐⭐⭐⭐⭐（挑战）</div>
+          <div class="example-problem">有 6 名男生、5 名女生，要选 4 人参加活动。证明直接选与按男生人数分类选得到的结果一致。</div>
+          <div class="example-solution">
+            <p>第一步：直接选。从 11 人中选 4 人，有 $C_{11}^4$ 种。</p>
+            <p>第二步：按男生人数分类。若选 $0$ 名男生，则选 $4$ 名女生，有 $C_6^0C_5^4$ 种；若选 $1$ 名男生，则选 $3$ 名女生，有 $C_6^1C_5^3$ 种。</p>
+            <p>第三步：继续列完所有可能：$C_6^2C_5^2,C_6^3C_5^1,C_6^4C_5^0$。</p>
+            <p>第四步：因此
+              $$C_6^0C_5^4+C_6^1C_5^3+C_6^2C_5^2+C_6^3C_5^1+C_6^4C_5^0=C_{11}^4$$
+            </p>
+          </div>
+          <div class="example-note">💡 小结：这就是范德蒙德恒等式的具体版本。</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div class="section-num">9</div>
+        <h2>课堂练习</h2>
+      </div>
+      <div class="card">
+        <div class="callout blue">
+          <div class="callout-label">练习方法</div>
+          每题先写一句“我数的是……”，再写两种数法。不要第一步就写公式。
+        </div>
+        <div class="example-box">
+          <div class="example-num">练习 1 ⭐⭐</div>
+          <div class="example-problem">10 个人每两人握一次手，一共握手多少次？</div>
+          <div class="example-note">提示：每次握手被两个人各数一次。</div>
+        </div>
+        <div class="example-box">
+          <div class="example-num">练习 2 ⭐⭐⭐</div>
+          <div class="example-problem">证明：$C_n^0+C_n^1+\cdots+C_n^n=2^n$。</div>
+          <div class="example-note">提示：数“从 $n$ 个人中选一个小组”。</div>
+        </div>
+        <div class="example-box">
+          <div class="example-num">练习 3 ⭐⭐⭐</div>
+          <div class="example-problem">证明：$C_n^1+2C_n^2+3C_n^3+\cdots+nC_n^n=n\cdot2^{n-1}$。</div>
+          <div class="example-note">提示：数“带组长的小组”。</div>
+        </div>
+        <div class="example-box">
+          <div class="example-num">练习 4 ⭐⭐⭐⭐</div>
+          <div class="example-problem">证明：$C_5^0C_7^3+C_5^1C_7^2+C_5^2C_7^1+C_5^3C_7^0=C_{12}^3$。</div>
+          <div class="example-note">提示：从 5 人甲组、7 人乙组中共选 3 人，按甲组选了几人分类。</div>
+        </div>
+        <div class="example-box">
+          <div class="example-num">练习 5 ⭐⭐⭐⭐</div>
+          <div class="example-problem">用双重计数解释：$C_n^r=C_{n-1}^{r}+C_{n-1}^{r-1}$。</div>
+          <div class="example-note">提示：固定一个人，讨论选出的 $r$ 人中是否包含他。</div>
+        </div>
+        <div class="callout green">
+          <div class="callout-label">参考答案</div>
+          练习 1：$45$。练习 2 至 5 的证明思路分别对应恒等式 3、恒等式 2、恒等式 6、恒等式 8。
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div class="section-num">10</div>
+        <h2>易错点</h2>
+      </div>
+      <div class="card">
+        <div class="callout red">
+          <div class="callout-label">错误 1：数的对象前后不一致</div>
+          前面数的是“学生”，后面数的是“书”，就不能直接相等。必须数同一种对象，例如“学生和书的配对”。
+        </div>
+        <div class="callout red">
+          <div class="callout-label">错误 2：忘记除以重复次数</div>
+          握手问题中 $n(n-1)$ 是“每个人看到的次数总和”，不是实际握手次数，因为每次握手被两个人同时看到。
+        </div>
+        <div class="callout red">
+          <div class="callout-label">错误 3：把平均数当成每个数</div>
+          “平均每人参加 2 个社团”只能得到总配对数，不能说明每个人都参加 2 个。读题时要分清“平均”和“恰好”。
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div class="section-num">11</div>
+        <h2>公式速查与总结</h2>
+      </div>
+      <div class="card">
+        <table class="formula-table">
+          <thead>
+            <tr>
+              <th>场景</th>
+              <th>公式</th>
+              <th>简记</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>表格行列</td>
+              <td>$r_1+r_2+\cdots+r_m=c_1+c_2+\cdots+c_n$</td>
+              <td>横看竖看一样多</td>
+            </tr>
+            <tr>
+              <td>握手定理</td>
+              <td>$d_1+d_2+\cdots+d_n=2E$</td>
+              <td>每条边两个端点</td>
+            </tr>
+            <tr>
+              <td>完全握手</td>
+              <td>$\frac{n(n-1)}{2}$</td>
+              <td>先数两遍，再除以二</td>
+            </tr>
+            <tr>
+              <td>平方和</td>
+              <td>$\left(C_n^0\right)^2+\left(C_n^1\right)^2+\cdots+\left(C_n^n\right)^2=C_{2n}^n$</td>
+              <td>按前一组选了几个分类</td>
+            </tr>
+            <tr>
+              <td>带权求和</td>
+              <td>$0C_n^0+1C_n^1+\cdots+nC_n^n=n\cdot2^{n-1}$</td>
+              <td>先选组长，再选组员</td>
+            </tr>
+            <tr>
+              <td>所有子集</td>
+              <td>$C_n^0+C_n^1+\cdots+C_n^n=2^n$</td>
+              <td>每个人选或不选</td>
+            </tr>
+            <tr>
+              <td>奇偶子集</td>
+              <td>$C_n^0+C_n^2+\cdots=C_n^1+C_n^3+\cdots$</td>
+              <td>加入或去掉指定的人</td>
+            </tr>
+            <tr>
+              <td>曲棍球杆</td>
+              <td>$C_r^r+C_{r+1}^r+\cdots+C_n^r=C_{n+1}^{r+1}$</td>
+              <td>按最大编号分类</td>
+            </tr>
+            <tr>
+              <td>范德蒙德</td>
+              <td>$C_m^0C_n^r+C_m^1C_n^{r-1}+\cdots+C_m^rC_n^0=C_{m+n}^r$</td>
+              <td>按第一组选几人分类</td>
+            </tr>
+            <tr>
+              <td>两个标记</td>
+              <td>$0+0+2C_n^2+6C_n^3+\cdots+n(n-1)C_n^n=n(n-1)2^{n-2}$</td>
+              <td>先定正副组长</td>
+            </tr>
+            <tr>
+              <td>帕斯卡公式</td>
+              <td>$C_n^r=C_{n-1}^{r}+C_{n-1}^{r-1}$</td>
+              <td>分含不含指定的人</td>
+            </tr>
+            <tr>
+              <td>吸收恒等式</td>
+              <td>$kC_n^k=nC_{n-1}^{k-1}$</td>
+              <td>先选代表或后选代表</td>
+            </tr>
+            <tr>
+              <td>嵌套选择</td>
+              <td>$C_n^rC_r^k=C_n^kC_{n-k}^{r-k}$</td>
+              <td>先选大组或先选核心</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="callout green">
+          <div class="callout-label">核心要点</div>
+          1. 双重计数的本质是“同一批对象，两种数法”。<br>
+          2. 写等式前，先说清楚数的对象是什么。<br>
+          3. 如果每个对象被重复数了固定次数，要把重复次数除掉。<br>
+          4. 握手定理是双重计数最经典的模型：$d_1+d_2+\cdots+d_n=2E$。如果看到 $\sum$，把它先读成“从头加到尾”即可。
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+  function BG(ctx,W,H){
+    ctx.fillStyle="#fafbff"; ctx.fillRect(0,0,W,H);
+    ctx.strokeStyle="#eef0f6"; ctx.lineWidth=0.35;
+    for(var i=0;i<W;i+=25){ctx.beginPath();ctx.moveTo(i,0);ctx.lineTo(i,H);ctx.stroke();}
+    for(var j=0;j<H;j+=25){ctx.beginPath();ctx.moveTo(0,j);ctx.lineTo(W,j);ctx.stroke();}
+  }
+  function P(ctx,x,y,r,c){
+    ctx.fillStyle="#fff"; ctx.beginPath(); ctx.arc(x,y,r+2.5,0,7); ctx.fill();
+    ctx.fillStyle=c; ctx.beginPath(); ctx.arc(x,y,r,0,7); ctx.fill();
+  }
+  function L(ctx,x1,y1,x2,y2,c,w,d){
+    ctx.strokeStyle=c; ctx.lineWidth=w; ctx.lineCap="round"; ctx.lineJoin="round";
+    if(d){ctx.setLineDash(d)}else{ctx.setLineDash([])}
+    ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+    ctx.setLineDash([]);
+  }
+  function A(ctx,vx,vy,p1x,p1y,p2x,p2y,r,fc,sc,sw){
+    var a1=Math.atan2(p1y-vy,p1x-vx), a2=Math.atan2(p2y-vy,p2x-vx);
+    var d=a2-a1; while(d>Math.PI)d-=2*Math.PI; while(d<-Math.PI)d+=2*Math.PI;
+    var ccw=d<0;
+    ctx.fillStyle=fc; ctx.beginPath(); ctx.moveTo(vx,vy);
+    ctx.arc(vx,vy,r,a1,a1+d,ccw); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle=sc; ctx.lineWidth=sw; ctx.lineCap="round";
+    ctx.beginPath(); ctx.arc(vx,vy,r,a1,a1+d,ccw); ctx.stroke();
+  }
+  function R(ctx,x,y,s,c){
+    ctx.strokeStyle=c; ctx.lineWidth=1.4; ctx.lineCap="round"; ctx.lineJoin="round";
+    ctx.strokeRect(x-s,y-s,s,s);
+  }
+  function T(ctx,W,txt){
+    ctx.font='bold 14px "PingFang SC","Microsoft YaHei",sans-serif';
+    var tw=ctx.measureText(txt).width;
+    ctx.fillStyle="rgba(26,58,92,0.06)"; ctx.beginPath();
+    var rx=12,ry=6,rw=W-24,rh=28,r=10;
+    ctx.moveTo(rx+r,ry); ctx.lineTo(rx+rw-r,ry);
+    ctx.arcTo(rx+rw,ry,rx+rw,ry+r,r); ctx.lineTo(rx+rw,ry+rh-r);
+    ctx.arcTo(rx+rw,ry+rh,rx+rw-r,ry+rh,r); ctx.lineTo(rx+r,ry+rh);
+    ctx.arcTo(rx,ry+rh,rx,ry+rh-r,r); ctx.lineTo(rx,ry+r);
+    ctx.arcTo(rx,ry,rx+r,ry,r); ctx.closePath(); ctx.fill();
+    ctx.fillStyle="#1a3a5c"; ctx.fillText(txt,(W-tw)/2,26);
+  }
+
+  (function(){
+    var canvas=document.getElementById("handshakeCanvas");
+    var peopleRange=document.getElementById("peopleRange");
+    var densityRange=document.getElementById("densityRange");
+    var peopleText=document.getElementById("peopleText");
+    var densityText=document.getElementById("densityText");
+    var edgeCount=document.getElementById("edgeCount");
+    var degreeSum=document.getElementById("degreeSum");
+    var checkText=document.getElementById("checkText");
+    var ctx=canvas.getContext("2d");
+    var W=canvas.width,H=canvas.height;
+
+    function shouldConnect(a,b,density){
+      var score=((a+1)*37+(b+1)*19+a*b*11)%100;
+      return score<density;
+    }
+
+    function draw(){
+      var n=parseInt(peopleRange.value,10);
+      var density=parseInt(densityRange.value,10);
+      var cx=W/2, cy=H/2+16, radius=128;
+      var pts=[];
+      var degrees=[];
+      var edges=0;
+      ctx.lineCap="round"; ctx.lineJoin="round";
+      BG(ctx,W,H);
+      T(ctx,W,"握手图：点表示人，线表示一次握手");
+      for(var i=0;i<n;i++){
+        var ang=-Math.PI/2+2*Math.PI*i/n;
+        pts.push({x:cx+radius*Math.cos(ang),y:cy+radius*Math.sin(ang)});
+        degrees.push(0);
+      }
+      for(var a=0;a<n;a++){
+        for(var b=a+1;b<n;b++){
+          if(shouldConnect(a,b,density)){
+            L(ctx,pts[a].x,pts[a].y,pts[b].x,pts[b].y,"#2563a8",2,[]);
+            degrees[a]++;
+            degrees[b]++;
+            edges++;
+          }
+        }
+      }
+      for(var p=0;p<n;p++){
+        P(ctx,pts[p].x,pts[p].y,12,"#dc2626");
+        ctx.font='bold 13px "PingFang SC","Microsoft YaHei",sans-serif';
+        ctx.fillStyle="#64748b";
+        ctx.textAlign="center";
+        ctx.fillText("d="+degrees[p],pts[p].x,pts[p].y+34);
+      }
+      var sum=degrees.reduce(function(acc,val){return acc+val;},0);
+      peopleText.textContent=n;
+      densityText.textContent=density+"%";
+      edgeCount.textContent=edges;
+      degreeSum.textContent=sum;
+      checkText.textContent=sum+" = 2 × "+edges;
+    }
+
+    peopleRange.addEventListener("input",draw);
+    densityRange.addEventListener("input",draw);
+    draw();
+  })();
+  </script>
+</body>
+</html>

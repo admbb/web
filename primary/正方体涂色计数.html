@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>正方体涂色计数</title>
+  <script>
+  MathJax = {
+    tex: { inlineMath: [['\$','\$']], displayMath: [['\$$','\$$']], processEscapes: true },
+    options: { skipHtmlTags: ['script','noscript','style','textarea','pre'] },
+    chtml: { displayAlign: 'center', displayIndent: '0' }
+  };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"
+    }
+  }
+  </script>
+  <style>
+    :root {
+      --primary: #1a3a5c;
+      --primary-light: #2563a8;
+      --accent: #dc2626;
+      --accent-orange: #d97706;
+      --bg-page: #f8f9fe;
+      --bg-card: #ffffff;
+      --bg-formula: #f0f4ff;
+      --border-light: #e0e7f0;
+      --border-blue: #dbeafe;
+      --text-primary: #1a3a5c;
+      --text-secondary: #6b7280;
+      --text-accent: #dc2626;
+      --success: #059669;
+      --warning: #d97706;
+      --error: #dc2626;
+      --white: #ffffff;
+      --blue-bg: #eff6ff;
+      --green-bg: #ecfdf5;
+      --orange-bg: #fffbea;
+      --red-bg: #fef2f2;
+      --orange-soft: #fef3c7;
+      --yellow-border: #fcd34d;
+      --shadow-card: rgba(26,58,92,0.06);
+      --type-three: #ef4444;
+      --type-two: #f59e0b;
+      --type-one: #facc15;
+      --type-zero: #8b5cf6;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; overflow-x: hidden; }
+    body {
+      background: var(--bg-page);
+      color: var(--text-primary);
+      font-family: "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+      line-height: 1.75;
+    }
+    .page {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 28px 18px 56px;
+      overflow: visible;
+    }
+    .hero {
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: var(--white);
+      border-radius: 18px;
+      padding: 42px 34px;
+      margin-bottom: 28px;
+      box-shadow: 0 10px 28px var(--shadow-card);
+      overflow: visible;
+    }
+    .hero h1 {
+      margin: 0;
+      font-size: clamp(30px, 6vw, 48px);
+      line-height: 1.18;
+      letter-spacing: 0;
+    }
+    .hero-meta { margin-top: 16px; font-size: 15px; opacity: 0.92; }
+    .section { margin-bottom: 48px; overflow: visible; }
+    .section-head { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; overflow: visible; }
+    .section-num {
+      width: 42px; height: 42px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: var(--white); border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; font-weight: 800; flex-shrink: 0;
+    }
+    h2 { font-size: 22px; color: var(--primary); margin: 0; }
+    h3 { font-size: 18px; color: var(--primary); margin: 18px 0 8px; }
+    p { margin: 8px 0; }
+    .card {
+      background: var(--bg-card);
+      border-radius: 14px;
+      padding: 28px 32px;
+      margin-bottom: 20px;
+      border: 1px solid var(--border-light);
+      box-shadow: 0 2px 8px var(--shadow-card);
+      overflow: visible;
+    }
+    .formula-box {
+      background: var(--bg-formula);
+      border-radius: 10px; padding: 18px 24px;
+      margin: 16px 0; text-align: center; font-size: 17px;
+      border: 1px solid var(--border-blue); overflow: visible;
+    }
+    .brief { margin-top: 10px; font-size: 13px; color: var(--primary-light); overflow: visible; }
+    .callout { border-radius: 10px; padding: 16px 22px; margin: 20px 0; font-size: 14px; line-height: 1.7; overflow: visible; }
+    .callout.blue { background: var(--blue-bg); border-left: 5px solid var(--primary-light); color: #1e40af; }
+    .callout.green { background: var(--green-bg); border-left: 5px solid var(--success); color: #064e3b; }
+    .callout.orange { background: var(--orange-bg); border-left: 5px solid var(--warning); color: #92400e; }
+    .callout.red { background: var(--red-bg); border-left: 5px solid var(--error); color: #991b1b; }
+    .callout-label { font-weight: 700; margin-bottom: 6px; font-size: 15px; }
+    .demo-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(250px, 0.9fr);
+      gap: 18px;
+      align-items: start;
+      overflow: visible;
+    }
+    canvas {
+      width: 100%;
+      height: 420px;
+      border: 1px solid var(--border-blue);
+      border-radius: 12px;
+      background: linear-gradient(180deg, #f8fbff, #eef5ff);
+      display: block;
+      cursor: grab;
+      touch-action: none;
+    }
+    canvas:active {
+      cursor: grabbing;
+    }
+    .control-panel {
+      background: var(--bg-formula);
+      border: 1px solid var(--border-blue);
+      border-radius: 12px;
+      padding: 16px;
+      overflow: visible;
+    }
+    .control-row { margin-bottom: 16px; overflow: visible; }
+    .control-row label {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+    input[type="range"] { width: 100%; margin-top: 8px; accent-color: var(--primary-light); }
+    .button-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin: 12px 0;
+      overflow: visible;
+    }
+    .demo-btn {
+      border: 1px solid var(--border-blue);
+      background: var(--primary);
+      color: var(--white);
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .demo-btn.secondary {
+      background: var(--white);
+      color: var(--primary);
+    }
+    .hover-box {
+      background: var(--white);
+      border: 1px solid var(--border-light);
+      border-radius: 10px;
+      padding: 10px 12px;
+      margin-top: 10px;
+      font-size: 14px;
+      color: var(--text-primary);
+      min-height: 58px;
+      overflow: visible;
+    }
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+      overflow: visible;
+    }
+    .stat {
+      background: var(--white);
+      border-radius: 10px;
+      padding: 10px 12px;
+      border: 1px solid var(--border-light);
+      font-size: 14px;
+      overflow: visible;
+    }
+    .stat strong { display: block; color: var(--accent); font-size: 22px; line-height: 1.2; }
+    .stat:nth-child(1) strong { color: var(--type-three); }
+    .stat:nth-child(2) strong { color: var(--type-two); }
+    .stat:nth-child(3) strong { color: #ca8a04; }
+    .stat:nth-child(4) strong { color: var(--type-zero); }
+    .rule-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 12px;
+      margin: 16px 0;
+      overflow: visible;
+    }
+    .rule-card {
+      background: var(--bg-formula);
+      border: 1px solid var(--border-blue);
+      border-radius: 12px;
+      padding: 16px;
+      overflow: visible;
+    }
+    .rule-card:nth-child(1) { border-color: #fecaca; }
+    .rule-card:nth-child(2) { border-color: #fed7aa; }
+    .rule-card:nth-child(3) { border-color: #fde68a; }
+    .rule-card:nth-child(4) { border-color: #ddd6fe; }
+    .rule-card:nth-child(1) .rule-icon { color: var(--type-three); }
+    .rule-card:nth-child(2) .rule-icon { color: var(--type-two); }
+    .rule-card:nth-child(3) .rule-icon { color: #ca8a04; }
+    .rule-card:nth-child(4) .rule-icon { color: var(--type-zero); }
+    .rule-icon { font-size: 28px; line-height: 1; margin-bottom: 8px; }
+    .rule-title { font-weight: 800; color: var(--primary); margin-bottom: 6px; }
+    .rule-body { font-size: 13px; color: var(--text-secondary); line-height: 1.7; }
+    .example-box {
+      background: var(--bg-page); border-left: 5px solid var(--primary);
+      border-radius: 0 12px 12px 0; padding: 20px 24px;
+      margin: 20px 0; overflow: visible;
+    }
+    .example-num { font-size: 17px; font-weight: 800; color: var(--primary); margin-bottom: 10px; }
+    .example-problem { font-size: 15px; margin-bottom: 14px; color: var(--primary); }
+    .example-solution { font-size: 14px; line-height: 1.9; color: var(--text-secondary); margin-bottom: 12px; overflow: visible; }
+    .example-note {
+      background: var(--orange-bg); border-radius: 8px; padding: 10px 16px;
+      font-size: 13px; color: #92400e; border: 1px solid var(--yellow-border);
+      overflow: visible;
+    }
+    .formula-table { width: 100%; border-collapse: collapse; font-size: 14px; margin: 12px 0; overflow: visible; }
+    .formula-table th { background: var(--primary); color: var(--white); padding: 10px 8px; text-align: center; font-weight: 700; }
+    .formula-table td { padding: 10px 8px; text-align: center; border-bottom: 1px solid var(--border-light); background: var(--white); }
+    .formula-table tr:nth-child(even) td { background: var(--bg-page); }
+    .memory-card {
+      background: linear-gradient(135deg, var(--orange-soft), var(--orange-bg));
+      border: 2px solid var(--yellow-border); border-radius: 14px; padding: 24px; margin: 16px 0; overflow: visible;
+    }
+    .mem-title { font-size: 18px; font-weight: 800; color: var(--warning); margin-bottom: 10px; }
+    .mem-body { font-size: 14px; line-height: 1.9; }
+    @media (max-width: 760px) {
+      .page { padding: 18px 12px 42px; }
+      .hero { padding: 34px 22px; border-radius: 14px; }
+      .card { padding: 22px 18px; }
+      .demo-grid { grid-template-columns: 1fr; }
+      .stat-grid { grid-template-columns: 1fr; }
+      .section-head { align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="hero">
+      <h1>正方体涂色计数</h1>
+      <div class="hero-meta">适合小学高年级：从观察位置出发，找数量规律</div>
+    </header>
+
+    <section class="section">
+      <div class="section-head">
+        <div class="section-num">1</div>
+        <h2>问题是什么</h2>
+      </div>
+      <div class="card">
+        <p>把一个大正方体的外表面全部涂上颜色。然后沿长、宽、高三个方向，平均切成 $n\times n\times n$ 个一样大的小正方体。</p>
+        <p>切开以后，每个小正方体可能有不同数量的面被涂色。我们要数清楚：</p>
+        <div class="rule-grid">
+          <div class="rule-card">
+            <div class="rule-icon">3</div>
+            <div class="rule-title">三面涂色</div>
+            <div class="rule-body">坐标：顶点。口诀：铁打的 8 尊大佛。数量恒定 $8$。</div>
+          </div>
+          <div class="rule-card">
+            <div class="rule-icon">2</div>
+            <div class="rule-title">两面涂色</div>
+            <div class="rule-body">坐标：棱线。口诀：棱长减 2。数量 $12(n-2)$。</div>
+          </div>
+          <div class="rule-card">
+            <div class="rule-icon">1</div>
+            <div class="rule-title">一面涂色</div>
+            <div class="rule-body">坐标：面心。口诀：地盘平方。数量 $6(n-2)^2$。</div>
+          </div>
+          <div class="rule-card">
+            <div class="rule-icon">0</div>
+            <div class="rule-title">没有涂色</div>
+            <div class="rule-body">坐标：核心。口诀：内心秘密。数量 $(n-2)^3$。</div>
+          </div>
+        </div>
+        <div class="callout blue">
+          <div class="callout-label">解码核心法则</div>
+          空间位置决定表面色彩：越靠外，涂色面越多；越往里，涂色面越少。看位置，不硬数。
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div class="section-num">2</div>
+        <h2>互动观察</h2>
+      </div>
+      <div class="card">
+        <div class="demo-grid">
+          <canvas id="cubeCanvas" width="560" height="420" aria-label="正方体涂色计数示意图"></canvas>
+          <div class="control-panel">
+            <div class="control-row">
+              <label for="nRange"><span>每条棱切成几份</span><span id="nText">4</span></label>
+              <input id="nRange" type="range" min="2" max="10" value="4">
+            </div>
+            <div class="button-row">
+              <button class="demo-btn" id="rotateBtn" type="button">旋转</button>
+              <button class="demo-btn secondary" id="stopBtn" type="button">停止旋转</button>
+            </div>
+            <div class="stat-grid">
+              <div class="stat">三面涂色<strong id="threeCount">8</strong></div>
+              <div class="stat">两面涂色<strong id="twoCount">24</strong></div>
+              <div class="stat">一面涂色<strong id="oneCount">24</strong></div>
+              <div class="stat">没有涂色<strong id="zeroCount">8</strong></div>
+            </div>
+            <div class="hover-box" id="hoverInfo">
+              拖拽正方体可以换角度；把鼠标放到小方块上，会显示它属于哪一类。
+            </div>
+            <div class="callout green">
+              <div class="callout-label">总数检查</div>
+              <span id="totalText">$8+24+24+8=64$，正好是 $4^3=64$。</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div class="section-num">3</div>
+        <h2>四类数量规律</h2>
+      </div>
+      <div class="card">
+        <h3>第一类：三面涂色</h3>
+        <p>只有角上的小正方体会露出三个面。一个正方体永远有 $8$ 个角。</p>
+        <div class="formula-box">
+          $$三面涂色：8个$$
+          <div class="brief"><strong>简记：</strong>$ 角=8 $（“八个角，三面色”）</div>
+        </div>
+
+        <h3>第二类：两面涂色</h3>
+        <p>两面涂色的小正方体在棱上，但不能算角。一个正方体有 $12$ 条棱。每条棱切成 $n$ 份，去掉两端的角，还剩 $n-2$ 个。</p>
+        <div class="formula-box">
+          $$两面涂色：12(n-2)个$$
+          <div class="brief"><strong>简记：</strong>$ 棱=12，每棱去两头 $（“十二条棱，每条中间 n-2 个”）</div>
+        </div>
+
+        <h3>第三类：一面涂色</h3>
+        <p>一面涂色的小正方体在某一个面上，但不能在边框上。一个正方体有 $6$ 个面。每个面是 $n\times n$ 的小方格，去掉外面一圈，里面剩下 $(n-2)\times(n-2)$ 个。</p>
+        <div class="formula-box">
+          $$一面涂色：6(n-2)^2个$$
+          <div class="brief"><strong>简记：</strong>$ 面=6，每面去一圈 $（“六个面，每面中间一个小正方形阵列”）</div>
+        </div>
+
+        <h3>第四类：没有涂色</h3>
+        <p>没有涂色的小正方体完全藏在里面。把最外面一层拿掉以后，里面还剩一个边长为 $n-2$ 的小正方体阵列。</p>
+        <div class="formula-box">
+          $$没有涂色：(n-2)^3个$$
+          <div class="brief"><strong>简记：</strong>$ 内心=(n-2)^3 $（“外面剥一层，里面剩立方”）</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div class="section-num">4</div>
+        <h2>总表速查</h2>
+      </div>
+      <div class="card">
+        <table class="formula-table">
+          <thead>
+            <tr>
+              <th>位置</th>
+              <th>涂色面数</th>
+              <th>数量</th>
+              <th>怎么想</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>角上</td>
+              <td>3 面</td>
+              <td>$8$</td>
+              <td>正方体有 8 个角</td>
+            </tr>
+            <tr>
+              <td>棱中间</td>
+              <td>2 面</td>
+              <td>$12(n-2)$</td>
+              <td>12 条棱，每条去掉两头</td>
+            </tr>
+            <tr>
+              <td>面中间</td>
+              <td>1 面</td>
+              <td>$6(n-2)^2$</td>
+              <td>6 个面，每面去掉边框</td>
+            </tr>
+            <tr>
+              <td>里面</td>
+              <td>0 面</td>
+              <td>$(n-2)^3$</td>
+              <td>外面剥掉一层</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="callout orange">
+          <div class="callout-label">特殊情况</div>
+          如果 $n=1$，只有一个小正方体，它其实就是原来的大正方体，外面 6 个面都涂色。上面的四类规律通常从 $n\ge 2$ 开始讨论。
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div class="section-num">5</div>
+        <h2>为什么加起来等于总数</h2>
+      </div>
+      <div class="card">
+        <p>所有小正方体一共有 $n\times n\times n=n^3$ 个。四类小正方体不重不漏：</p>
+        <div class="formula-box">
+          $$8+12(n-2)+6(n-2)^2+(n-2)^3=n^3$$
+          <div class="brief"><strong>简记：</strong>$ 角+棱+面+心=全部 $</div>
+        </div>
+        <p>“不重”是说一个小正方体不会同时属于两类；“不漏”是说每个小正方体一定在角、棱、面、里面这四种位置之一。</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div class="section-num">6</div>
+        <h2>例题精讲</h2>
+      </div>
+      <div class="card">
+        <div class="example-box">
+          <div class="example-num">例 1 ⭐⭐（易）</div>
+          <div class="example-problem">一个大正方体切成 $3\times3\times3$ 个小正方体并涂色。三面、两面、一面、没有涂色的各有几个？</div>
+          <div class="example-solution">
+            <p>三面涂色在角上：$8$ 个。</p>
+            <p>两面涂色在棱中间：$12(3-2)=12$ 个。</p>
+            <p>一面涂色在面中间：$6(3-2)^2=6$ 个。</p>
+            <p>没有涂色在里面：$(3-2)^3=1$ 个。</p>
+          </div>
+          <div class="example-note">💡 小结：$3\times3\times3$ 的中心只有 1 个没有涂色。</div>
+        </div>
+
+        <div class="example-box">
+          <div class="example-num">例 2 ⭐⭐⭐（中）</div>
+          <div class="example-problem">如果切成 $5\times5\times5$ 个小正方体，两面涂色的小正方体有多少个？</div>
+          <div class="example-solution">
+            <p>两面涂色的小正方体在棱上，但不在角上。</p>
+            <p>正方体有 $12$ 条棱。每条棱上有 $5$ 个小正方体，去掉两端的角，剩 $5-2=3$ 个。</p>
+            <p>所以两面涂色共有 $12\times3=36$ 个。</p>
+          </div>
+          <div class="example-note">💡 小结：两面涂色只看棱，别把角算进去。</div>
+        </div>
+
+        <div class="example-box">
+          <div class="example-num">例 3 ⭐⭐⭐（中）</div>
+          <div class="example-problem">切成 $6\times6\times6$ 个小正方体，没有涂色的小正方体有几个？</div>
+          <div class="example-solution">
+            <p>没有涂色的小正方体藏在里面。</p>
+            <p>把外面一层剥掉后，每条边从 $6$ 个变成 $6-2=4$ 个。</p>
+            <p>里面共有 $4\times4\times4=64$ 个，所以没有涂色的小正方体有 $64$ 个。</p>
+          </div>
+          <div class="example-note">💡 小结：没有涂色就是里面的小正方体阵列，公式是 $(n-2)^3$。</div>
+        </div>
+
+        <div class="example-box">
+          <div class="example-num">例 4 ⭐⭐⭐⭐（难）</div>
+          <div class="example-problem">某个涂色正方体切开后，一面涂色的小正方体有 $54$ 个。原来每条棱被切成几份？</div>
+          <div class="example-solution">
+            <p>一面涂色的数量公式是 $6(n-2)^2$。</p>
+            <p>题目说 $6(n-2)^2=54$，所以 $(n-2)^2=9$。</p>
+            <p>因为 $n-2$ 是正数，所以 $n-2=3$，得到 $n=5$。</p>
+          </div>
+          <div class="example-note">💡 小结：反推题先判断是哪一类，再用对应公式。</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div class="section-num">7</div>
+        <h2>记忆方法与易错点</h2>
+      </div>
+      <div class="card">
+        <div class="memory-card">
+          <div class="mem-title">口诀：角八、棱十二、面六、心剥皮</div>
+          <div class="mem-body">
+            三面看角：$8$。两面看棱：$12(n-2)$。一面看面：$6(n-2)^2$。无色看里面：$(n-2)^3$。
+          </div>
+        </div>
+        <div class="callout red">
+          <div class="callout-label">易错 1：两面涂色把角也算进去</div>
+          棱上的角是三面涂色，不能算入两面涂色，所以每条棱要减去两端。
+        </div>
+        <div class="callout red">
+          <div class="callout-label">易错 2：一面涂色忘记去掉边框</div>
+          一个面上最外圈的小方块在棱或角上，不是一面涂色。真正一面涂色的是每个面的中间部分。
+        </div>
+        <div class="callout red">
+          <div class="callout-label">易错 3：把 $n^2$ 当成总数</div>
+          这是立体问题，小正方体总数是 $n^3$，不是 $n^2$。
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div class="section-num">8</div>
+        <h2>课堂练习</h2>
+      </div>
+      <div class="card">
+        <div class="example-box">
+          <div class="example-num">练习 1 ⭐⭐</div>
+          <div class="example-problem">切成 $4\times4\times4$ 个小正方体，四类数量分别是多少？</div>
+          <div class="example-note">答案：三面 $8$，两面 $24$，一面 $24$，无色 $8$。</div>
+        </div>
+        <div class="example-box">
+          <div class="example-num">练习 2 ⭐⭐⭐</div>
+          <div class="example-problem">切成 $7\times7\times7$ 个小正方体，一面涂色的有多少个？</div>
+          <div class="example-note">提示：用 $6(n-2)^2$。</div>
+        </div>
+        <div class="example-box">
+          <div class="example-num">练习 3 ⭐⭐⭐</div>
+          <div class="example-problem">某正方体切开后，两面涂色的小正方体有 $48$ 个，求 $n$。</div>
+          <div class="example-note">提示：$12(n-2)=48$。</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script type="module">
+  import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js";
+  import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/controls/OrbitControls.js";
+
+  const range = document.getElementById("nRange");
+  const nText = document.getElementById("nText");
+  const three = document.getElementById("threeCount");
+  const two = document.getElementById("twoCount");
+  const one = document.getElementById("oneCount");
+  const zero = document.getElementById("zeroCount");
+  const total = document.getElementById("totalText");
+  const hoverInfo = document.getElementById("hoverInfo");
+  const rotateBtn = document.getElementById("rotateBtn");
+  const stopBtn = document.getElementById("stopBtn");
+  const canvas = document.getElementById("cubeCanvas");
+
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0xf8fbff);
+
+  const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 100);
+  camera.position.set(6, 5, 7);
+
+  const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: false });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+
+  const controls = new OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true;
+  controls.autoRotate = true;
+  controls.autoRotateSpeed = 1.2;
+  controls.minDistance = 4;
+  controls.maxDistance = 18;
+
+  scene.add(new THREE.AmbientLight(0xffffff, 0.85));
+  const keyLight = new THREE.DirectionalLight(0xffffff, 1.1);
+  keyLight.position.set(5, 8, 7);
+  scene.add(keyLight);
+  const fillLight = new THREE.DirectionalLight(0xdbeafe, 0.55);
+  fillLight.position.set(-4, 2, -5);
+  scene.add(fillLight);
+
+  const cubeGroup = new THREE.Group();
+  scene.add(cubeGroup);
+
+  const raycaster = new THREE.Raycaster();
+  const pointer = new THREE.Vector2();
+  const cubeMeshes = [];
+  let hovered = null;
+
+  const typeInfo = {
+    3: { name: "三面涂色", place: "顶点", color: 0xef4444, formula: "8个" },
+    2: { name: "两面涂色", place: "棱中间", color: 0xf59e0b, formula: "12(n-2)个" },
+    1: { name: "一面涂色", place: "面中间", color: 0xfacc15, formula: "6(n-2)^2个" },
+    0: { name: "没有涂色", place: "里面核心", color: 0x8b5cf6, formula: "(n-2)^3个" }
+  };
+
+  function paintedFaces(i, j, k, n) {
+    let faces = 0;
+    if (i === 0 || i === n - 1) faces++;
+    if (j === 0 || j === n - 1) faces++;
+    if (k === 0 || k === n - 1) faces++;
+    return faces;
+  }
+
+  function makeMaterial(type) {
+    const info = typeInfo[type];
+    return new THREE.MeshStandardMaterial({
+      color: info.color,
+      roughness: 0.42,
+      metalness: 0.04,
+      transparent: true,
+      opacity: type === 0 ? 0.78 : 0.86
+    });
+  }
+
+  function clearGroup() {
+    while (cubeGroup.children.length) {
+      const child = cubeGroup.children.pop();
+      if (child.geometry) child.geometry.dispose();
+      if (child.material) child.material.dispose();
+    }
+    cubeMeshes.length = 0;
+    hovered = null;
+  }
+
+  function buildCubes(n) {
+    clearGroup();
+    const size = 0.72;
+    const gap = 0.12;
+    const step = size + gap;
+    const offset = (n - 1) * step / 2;
+    const geometry = new THREE.BoxGeometry(size, size, size);
+    const edgesGeometry = new THREE.EdgesGeometry(geometry);
+
+    for (let i = 0; i < n; i++) {
+      for (let j = 0; j < n; j++) {
+        for (let k = 0; k < n; k++) {
+          const type = paintedFaces(i, j, k, n);
+          const mesh = new THREE.Mesh(geometry.clone(), makeMaterial(type));
+          mesh.position.set(i * step - offset, j * step - offset, k * step - offset);
+          mesh.userData = { type, i: i + 1, j: j + 1, k: k + 1 };
+          cubeGroup.add(mesh);
+          cubeMeshes.push(mesh);
+
+          const edge = new THREE.LineSegments(
+            edgesGeometry.clone(),
+            new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.42 })
+          );
+          edge.position.copy(mesh.position);
+          cubeGroup.add(edge);
+        }
+      }
+    }
+
+    const side = n * step;
+    const box = new THREE.Box3().setFromObject(cubeGroup);
+    const center = box.getCenter(new THREE.Vector3());
+    cubeGroup.position.sub(center);
+    camera.position.set(side * 1.25, side * 1.05, side * 1.45);
+    controls.target.set(0, 0, 0);
+    controls.update();
+  }
+
+  function updateCounts() {
+    const n = parseInt(range.value, 10);
+    const a = 8;
+    const b = 12 * (n - 2);
+    const c = 6 * (n - 2) * (n - 2);
+    const d = (n - 2) * (n - 2) * (n - 2);
+    nText.textContent = n;
+    three.textContent = a;
+    two.textContent = b;
+    one.textContent = c;
+    zero.textContent = d;
+    total.textContent = `${a}+${b}+${c}+${d}=${a+b+c+d}，正好是 ${n}^3=${n*n*n}。`;
+    if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise([total]);
+    buildCubes(n);
+    hoverInfo.textContent = "拖拽正方体可以换角度；把鼠标放到小方块上，会显示它属于哪一类。";
+  }
+
+  function resizeRenderer() {
+    const rect = canvas.getBoundingClientRect();
+    const width = Math.max(320, Math.floor(rect.width));
+    const height = Math.max(320, Math.floor(rect.height));
+    renderer.setSize(width, height, false);
+    camera.aspect = width / height;
+    camera.updateProjectionMatrix();
+  }
+
+  function setHover(mesh) {
+    if (hovered === mesh) return;
+    if (hovered) {
+      hovered.scale.set(1, 1, 1);
+      hovered.material.emissive.setHex(0x000000);
+    }
+    hovered = mesh;
+    if (hovered) {
+      hovered.scale.set(1.18, 1.18, 1.18);
+      hovered.material.emissive.setHex(0x333333);
+      const info = typeInfo[hovered.userData.type];
+      hoverInfo.innerHTML = `<strong>${info.name}</strong>：位置在${info.place}，坐标约为第 ${hovered.userData.i} 层、第 ${hovered.userData.j} 行、第 ${hovered.userData.k} 列；规律是 ${info.formula}。`;
+    } else {
+      hoverInfo.textContent = "拖拽正方体可以换角度；把鼠标放到小方块上，会显示它属于哪一类。";
+    }
+  }
+
+  function onPointerMove(event) {
+    const rect = canvas.getBoundingClientRect();
+    pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+    pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+    raycaster.setFromCamera(pointer, camera);
+    const hits = raycaster.intersectObjects(cubeMeshes, false);
+    setHover(hits.length ? hits[0].object : null);
+  }
+
+  function animate() {
+    controls.update();
+    renderer.render(scene, camera);
+    requestAnimationFrame(animate);
+  }
+
+  rotateBtn.addEventListener("click", () => { controls.autoRotate = true; });
+  stopBtn.addEventListener("click", () => { controls.autoRotate = false; });
+  range.addEventListener("input", updateCounts);
+  canvas.addEventListener("pointermove", onPointerMove);
+  canvas.addEventListener("pointerleave", () => setHover(null));
+  window.addEventListener("resize", resizeRenderer);
+
+  resizeRenderer();
+  updateCounts();
+  animate();
+  </script>
+</body>
+</html>

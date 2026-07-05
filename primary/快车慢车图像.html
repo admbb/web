@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>快车和慢车图像题讲解</title>
+  <style>
+    :root {
+      --primary: #1a3a5c;
+      --primary-light: #2563a8;
+      --accent: #dc2626;
+      --accent-orange: #d97706;
+      --bg-page: #f8f9fe;
+      --bg-card: #ffffff;
+      --bg-formula: #f0f4ff;
+      --border-light: #e0e7f0;
+      --border-blue: #dbeafe;
+      --text-primary: #1a3a5c;
+      --text-secondary: #6b7280;
+      --text-accent: #dc2626;
+      --success: #059669;
+      --warning: #d97706;
+      --error: #dc2626;
+      --shadow: 0 8px 24px rgba(26,58,92,0.08);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; overflow-x: hidden; }
+    body {
+      font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: var(--bg-page);
+      color: var(--text-primary);
+      line-height: 1.8;
+    }
+    .page {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 22px 16px 48px;
+      overflow: visible;
+    }
+    .hero {
+      background: linear-gradient(135deg, rgba(37,99,168,0.96), rgba(26,58,92,0.96));
+      color: #fff;
+      border-radius: 24px;
+      padding: 32px 24px;
+      box-shadow: var(--shadow);
+      margin-bottom: 24px;
+      overflow: visible;
+      position: relative;
+    }
+    .hero::after {
+      content: "🚄";
+      position: absolute;
+      right: 22px;
+      top: 18px;
+      font-size: 42px;
+      opacity: 0.18;
+    }
+    .hero h1 {
+      margin: 0 0 10px;
+      font-size: 30px;
+      line-height: 1.3;
+    }
+    .hero .tag {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.14);
+      font-size: 13px;
+      margin-bottom: 10px;
+    }
+    .hero p {
+      margin: 8px 0 0;
+      color: rgba(255,255,255,0.92);
+      font-size: 15px;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border-radius: 14px;
+      padding: 28px 32px;
+      margin-bottom: 20px;
+      border: 1px solid var(--border-light);
+      box-shadow: 0 2px 8px rgba(26,58,92,0.06);
+      overflow: visible;
+    }
+    .section { margin-bottom: 42px; overflow: visible; }
+    .section-head {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 18px;
+      overflow: visible;
+    }
+    .section-num {
+      width: 42px; height: 42px;
+      background: linear-gradient(135deg, #1a3a5c, #2563a8);
+      color: #fff; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; font-weight: 800; flex-shrink: 0;
+    }
+    h2 { font-size: 22px; color: var(--primary); margin: 0; }
+    h3 { margin: 18px 0 10px; color: var(--primary); font-size: 18px; }
+    p { margin: 10px 0; }
+
+    .formula-box {
+      background: var(--bg-formula);
+      border-radius: 10px; padding: 18px 24px;
+      margin: 16px 0; text-align: center; font-size: 17px;
+      border: 1px solid var(--border-blue); overflow: visible;
+    }
+    .formula-box.hl-red {
+      border-color: var(--accent);
+      border-width: 2px;
+      background: #fef2f2;
+    }
+    .formula-box.hl-green {
+      border-color: var(--success);
+      border-width: 2px;
+      background: #ecfdf5;
+    }
+
+    .callout {
+      border-radius: 10px; padding: 16px 22px; margin: 20px 0;
+      font-size: 14px; line-height: 1.7; overflow: visible;
+    }
+    .callout.blue { background: #eff6ff; border-left: 5px solid #2563a8; color: #1e40af; }
+    .callout.green { background: #ecfdf5; border-left: 5px solid #059669; color: #064e3b; }
+    .callout.orange { background: #fffbea; border-left: 5px solid #d97706; color: #92400e; }
+    .callout.red { background: #fef2f2; border-left: 5px solid #dc2626; color: #991b1b; }
+    .callout-label { font-weight: 700; margin-bottom: 6px; font-size: 15px; }
+
+    .knowledge-tree {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      margin: 24px 0;
+      overflow: visible;
+    }
+    .tree-root {
+      background: var(--bg-formula);
+      border: 2px solid var(--success);
+      border-radius: 12px;
+      padding: 11px 22px;
+      font-weight: 800;
+      font-size: 16px;
+      color: var(--success);
+    }
+    .tree-branch-title {
+      font-weight: 700;
+      color: var(--primary);
+      margin: 8px 0 4px;
+    }
+    .tree-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .tree-leaf {
+      background: #fff;
+      border: 1px solid var(--border-blue);
+      border-radius: 8px;
+      padding: 7px 14px;
+      font-size: 13px;
+      color: var(--text-primary);
+    }
+
+    .memory-card {
+      background: linear-gradient(135deg, #fef3c7, #fffbeb);
+      border: 2px solid #fcd34d;
+      border-radius: 14px;
+      padding: 24px;
+      margin: 16px 0;
+      overflow: visible;
+    }
+    .mem-icon { font-size: 28px; margin-bottom: 8px; }
+    .mem-title { font-size: 18px; font-weight: 800; color: #d97706; margin-bottom: 10px; }
+    .mem-body { font-size: 14px; line-height: 1.9; }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+      margin-top: 16px;
+      overflow: visible;
+    }
+    .step-item {
+      background: #fff;
+      border: 1px solid var(--border-light);
+      border-radius: 14px;
+      padding: 16px;
+      box-shadow: 0 2px 8px rgba(26,58,92,0.04);
+      overflow: visible;
+    }
+    .step-badge {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--primary-light);
+      color: #fff;
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+    .step-item strong { color: var(--primary); }
+
+    .highlight {
+      color: var(--accent);
+      font-weight: 800;
+    }
+
+    .flex-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      overflow: visible;
+    }
+    .mini-card {
+      background: #fff;
+      border: 1px solid var(--border-light);
+      border-radius: 12px;
+      padding: 16px;
+      overflow: visible;
+    }
+
+    .canvas-wrap {
+      background: linear-gradient(180deg, #fbfdff, #f6f9ff);
+      border: 1px solid var(--border-blue);
+      border-radius: 16px;
+      padding: 14px;
+      margin: 16px 0 8px;
+      overflow: visible;
+    }
+    canvas {
+      display: block;
+      width: 100%;
+      max-width: 100%;
+      background: #fff;
+      border-radius: 12px;
+      border: 1px solid var(--border-light);
+      overflow: visible;
+    }
+    .canvas-note {
+      margin-top: 10px;
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+
+    .example-box {
+      background: #f8f9fe;
+      border-left: 5px solid #1a3a5c;
+      border-radius: 0 12px 12px 0;
+      padding: 20px 24px;
+      margin: 20px 0;
+      overflow: visible;
+    }
+    .example-num {
+      font-size: 17px;
+      font-weight: 800;
+      color: #1a3a5c;
+      margin-bottom: 10px;
+    }
+    .example-problem {
+      font-size: 15px;
+      margin-bottom: 14px;
+      color: #1a3a5c;
+    }
+    .example-solution {
+      font-size: 14px;
+      line-height: 1.9;
+      color: #6b7280;
+      margin-bottom: 12px;
+    }
+    .example-note {
+      background: #fffbea;
+      border-radius: 8px;
+      padding: 10px 16px;
+      font-size: 13px;
+      color: #92400e;
+      border: 1px solid #fde68a;
+    }
+
+    .check-list {
+      padding-left: 20px;
+      margin: 0;
+    }
+    .check-list li { margin: 10px 0; }
+
+    .footer-box {
+      text-align: center;
+      color: var(--text-secondary);
+      font-size: 13px;
+      padding: 10px 0 24px;
+      overflow: visible;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+    .btn {
+      border: none;
+      background: var(--primary-light);
+      color: #fff;
+      border-radius: 999px;
+      padding: 10px 16px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+    .btn:hover { transform: translateY(-1px); }
+    .btn.secondary { background: var(--accent-orange); }
+
+    @media (max-width: 768px) {
+      .hero { padding: 24px 18px; }
+      .hero h1 { font-size: 24px; }
+      .card { padding: 22px 18px; }
+      h2 { font-size: 20px; }
+      .section-head { align-items: flex-start; }
+    }
+  </style>
+
+  <script>
+    MathJax = {
+      tex: { inlineMath: [['$','$']], displayMath: [['$$','$$']], processEscapes: true },
+      options: { skipHtmlTags: ['script','noscript','style','textarea','pre'] },
+      chtml: { displayAlign: 'center', displayIndent: '0' }
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+</head>
+<body>
+  <div class="page">
+    <section class="hero">
+      <div class="tag">小学也能看懂的数学讲解</div>
+      <h1>快车和慢车图像题：<br>一步一步找出 840 和 280</h1>
+      <p>这是一道“看图讲故事”的应用题。我们不用一下子冲进公式，而是像侦探一样，先看图、找线索、再计算。</p>
+    </section>
+
+    <section class="section card">
+      <div class="section-head">
+        <div class="section-num">1</div>
+        <h2>先把题目翻译成好懂的话</h2>
+      </div>
+      <p>有一辆<span class="highlight">快车</span>和一辆<span class="highlight">慢车</span>，它们从甲、乙两地<strong>同时出发</strong>，朝对方开去。</p>
+      <p>快车到了乙地以后，<strong>休息了 1 小时</strong>，再按原路返回。图里已经把它们的运动过程画出来了。</p>
+      <div class="callout blue">
+        <div class="callout-label">这道题要我们求什么？</div>
+        <div>求两个答案：<strong>甲乙两地的路程</strong>，还有<strong>快车的速度</strong>。</div>
+      </div>
+      <div class="knowledge-tree">
+        <div class="tree-root">解题思路总路线</div>
+        <div class="tree-branch-title">先看图，再算数</div>
+        <div class="tree-row">
+          <div class="tree-leaf">看最高点：总路程</div>
+          <div class="tree-leaf">看停留线段：1 小时</div>
+          <div class="tree-leaf">找快车去程时间</div>
+          <div class="tree-leaf">速度 = 路程 ÷ 时间</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section card">
+      <div class="section-head">
+        <div class="section-num">2</div>
+        <h2>看懂这张图，题目就成功一半了</h2>
+      </div>
+      <p>横轴 $x$ 表示<strong>时间（小时）</strong>，纵轴 $y$ 表示<strong>离自己出发地的路程（千米）</strong>。</p>
+      <p>所以两辆车虽然从不同地方出发，但它们一开始离自己的出发点都是 $0$，所以图上都从原点 $O$ 开始。</p>
+
+      <div class="canvas-wrap">
+        <canvas id="graphCanvas" width="860" height="420"></canvas>
+        <div class="canvas-note" id="graphCaption">动画会自动播放：先看到快车到达乙地，再看到它停 1 小时，最后再返回。</div>
+      </div>
+
+      <div class="steps">
+        <div class="step-item">
+          <div class="step-badge">①</div>
+          <strong>最高处写着 840</strong>
+          <p>这表示从一地到另一地最远就是 $840$ 千米，所以甲乙两地的距离就是 $840$ 千米。</p>
+        </div>
+        <div class="step-item">
+          <div class="step-badge">②</div>
+          <strong>上面平着的一段 AB</strong>
+          <p>车没有前进也没有后退，说明它在<span class="highlight">停留</span>。题目说快车停了 $1$ 小时，所以 $AB$ 就表示 $1$ 小时。</p>
+        </div>
+        <div class="step-item">
+          <div class="step-badge">③</div>
+          <strong>B 点在 x=4 的位置</strong>
+          <p>图上告诉我们 $B$ 点对应时间是 $4$ 小时。因为 $AB=1$ 小时，所以 $A$ 点就是 $4-1=3$ 小时。</p>
+        </div>
+      </div>
+
+      <div style="margin-top:10px;font-size:13px;color:#2563a8;">
+        <strong>简记：</strong>$ 先看高，再看平，再回减 $（“最高点看总路程，平线段看停留时间”）
+      </div>
+    </section>
+
+    <section class="section card">
+      <div class="section-head">
+        <div class="section-num">3</div>
+        <h2>分三步算出答案</h2>
+      </div>
+
+      <h3>第 1 步：求甲乙两地的路程</h3>
+      <p>图中最上面标着 $840$，说明到达对方出发地时，一共走了 $840$ 千米。</p>
+      <div class="formula-box hl-green">
+        甲乙两地的路程 = $840$ 千米
+      </div>
+
+      <h3>第 2 步：求快车从甲到乙用了几小时</h3>
+      <p>点 $B$ 的时间是 $4$ 小时，线段 $AB$ 表示停留了 $1$ 小时，所以快车真正从甲开到乙所用的时间就是：</p>
+      <div class="formula-box">
+        快车去程时间 = $4 - 1 = 3$（小时）
+      </div>
+
+      <h3>第 3 步：用“速度 = 路程 ÷ 时间”</h3>
+      <p>快车从甲到乙走了 $840$ 千米，用了 $3$ 小时，所以快车速度是：</p>
+      <div class="formula-box hl-red">
+        快车速度 = $840 \div 3 = 280$（千米/时）
+      </div>
+
+      <div style="margin-top:10px;font-size:13px;color:#2563a8;">
+        <strong>简记：</strong>$ 速度 = 路程 \div 时间 $（“路除以时得速度”）
+      </div>
+
+      <div class="callout green">
+        <div class="callout-label">所以答案是</div>
+        <div>$\boxed{甲乙两地的路程是\ 840\ \text{千米}}$</div>
+        <div style="margin-top:8px;">$\boxed{快车的速度是\ 280\ \text{千米/时}}$</div>
+      </div>
+    </section>
+
+    <section class="section card">
+      <div class="section-head">
+        <div class="section-num">4</div>
+        <h2>动画演示：两辆车到底怎么跑？</h2>
+      </div>
+      <p>下面的动画把题目重新演一遍：红色是快车，蓝色是慢车。</p>
+      <div class="canvas-wrap">
+        <canvas id="routeCanvas" width="860" height="260"></canvas>
+        <div class="canvas-note" id="routeCaption">快车 3 小时到乙地，停 1 小时，再返回；慢车从乙地开往甲地，一共 6 小时到达。</div>
+      </div>
+      <div class="btn-row">
+        <button class="btn" id="toggleRoute">暂停路线动画</button>
+        <button class="btn secondary" id="restartRoute">重新播放</button>
+      </div>
+
+      <div class="flex-grid" style="margin-top:16px;">
+        <div class="mini-card">
+          <strong>快车怎么走？</strong>
+          <p>第 1 段：$0$ 到 $3$ 小时，向前开到乙地；<br>第 2 段：$3$ 到 $4$ 小时，在乙地停留；<br>第 3 段：$4$ 到 $7$ 小时，从乙地返回甲地。</p>
+        </div>
+        <div class="mini-card">
+          <strong>慢车怎么走？</strong>
+          <p>从 $0$ 到 $6$ 小时，一直匀速前进，从乙地开到甲地。它没有停留，所以它的图像是一条斜直线。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section card">
+      <div class="section-head">
+        <div class="section-num">5</div>
+        <h2>顺手检查一下：答案对不对？</h2>
+      </div>
+      <p>好题目做完后，最好再检查一次。这里可以顺手算出慢车速度：</p>
+      <div class="formula-box">
+        慢车速度 = $840 \div 6 = 140$（千米/时）
+      </div>
+      <p>快车往返总时间是：</p>
+      <div class="formula-box">
+        $3 + 1 + 3 = 7$（小时）
+      </div>
+      <p>慢车到达甲地用了 $6$ 小时，所以快车确实比慢车晚：</p>
+      <div class="formula-box hl-green">
+        $7 - 6 = 1$（小时）
+      </div>
+      <div class="callout orange">
+        <div class="callout-label">检查成功！</div>
+        <div>题目里说“快车比慢车晚 1 小时到甲地”，我们的答案刚好符合，说明前面的计算是对的。</div>
+      </div>
+    </section>
+
+    <section class="section card">
+      <div class="section-head">
+        <div class="section-num">6</div>
+        <h2>例题精讲：把本题完整写出来</h2>
+      </div>
+      <div class="example-box">
+        <div class="example-num">例题 1　⭐⭐（易）</div>
+        <div class="example-problem">根据图像，求甲乙两地路程和快车速度。</div>
+        <div class="example-solution">
+          第一步，看图中最高点对应的路程，得出甲乙两地相距 $840$ 千米。<br>
+          第二步，看点 $B$ 在 $x=4$ 的位置，又因为快车在乙地停留了 $1$ 小时，所以快车到达乙地的时刻 $A$ 是 $4-1=3$ 小时。<br>
+          第三步，用速度公式计算：$840 \div 3 = 280$，所以快车速度是 $280$ 千米/时。
+        </div>
+        <div class="example-note">💡 小结：这类图像题最关键的是先分清“哪一段是运动，哪一段是停留”。平线段常常就是重要线索。</div>
+      </div>
+    </section>
+
+    <section class="section card">
+      <div class="section-head">
+        <div class="section-num">7</div>
+        <h2>最容易出错的地方</h2>
+      </div>
+      <div class="callout red">
+        <div class="callout-label">易错点 1：把 4 小时当成快车去程时间</div>
+        <div>不对！因为这 $4$ 小时里，包含了在乙地停留的 $1$ 小时。所以真正开车时间是 $4-1=3$ 小时。</div>
+      </div>
+      <div class="callout red">
+        <div class="callout-label">易错点 2：没看懂纵轴的 840</div>
+        <div>$840$ 不是随便一个数，它表示从一地到另一地的总路程，所以直接就是甲乙两地的距离。</div>
+      </div>
+      <div class="callout red">
+        <div class="callout-label">易错点 3：忘记用速度公式</div>
+        <div>算速度时一定要记住：$速度 = 路程 \div 时间$，不能把乘除写反了。</div>
+      </div>
+    </section>
+
+    <section class="section card">
+      <div class="section-head">
+        <div class="section-num">8</div>
+        <h2>最后总结</h2>
+      </div>
+      <ul class="check-list">
+        <li>图中最高点的 $840$，就是甲乙两地的总路程。</li>
+        <li>平平的一段 $AB$ 表示快车停留了 $1$ 小时。</li>
+        <li>$B$ 点在第 $4$ 小时，所以 $A$ 点在第 $3$ 小时。</li>
+        <li>快车去程时间是 $3$ 小时，所以快车速度是 $840 \div 3 = 280$ 千米/时。</li>
+        <li>最后别忘了回头检查，看看是否符合题目的“晚 1 小时到达”。</li>
+      </ul>
+
+      <div class="memory-card">
+        <div class="mem-icon">🧠</div>
+        <div class="mem-title">记忆口诀</div>
+        <div class="mem-body">
+          <strong>“先看高，后看平；找时间，再求速。”</strong><br>
+          意思是：先看最高点找总路程，再看平线段找停留时间，接着找到实际行驶时间，最后用速度公式算答案。
+        </div>
+      </div>
+
+      <div class="formula-box hl-red">
+        最终答案：$\boxed{840\ \text{千米}}$，$\boxed{280\ \text{千米/时}}$
+      </div>
+    </section>
+
+    <div class="footer-box">单文件 HTML 数学讲解页 · 适合给小学生或刚接触图像题的同学阅读</div>
+  </div>
+
+  <script>
+    function setupHiDPICanvas(canvas) {
+      var ratio = window.devicePixelRatio || 1;
+      var cssW = canvas.width;
+      var cssH = canvas.height;
+      canvas.style.width = cssW + 'px';
+      canvas.style.height = cssH + 'px';
+      canvas.width = cssW * ratio;
+      canvas.height = cssH * ratio;
+      var ctx = canvas.getContext('2d');
+      ctx.scale(ratio, ratio);
+      return { ctx: ctx, w: cssW, h: cssH };
+    }
+
+    // 图像动画
+    (function () {
+      var graphPack = setupHiDPICanvas(document.getElementById('graphCanvas'));
+      var ctx = graphPack.ctx, W = graphPack.w, H = graphPack.h;
+      var caption = document.getElementById('graphCaption');
+      var start = null;
+      var duration = 8000;
+
+      function mapX(t) { return 80 + t * 95; }
+      function mapY(d) { return H - 55 - d * 0.35; }
+
+      function linePart(x1, y1, x2, y2, progress, color, width, dash) {
+        progress = Math.max(0, Math.min(1, progress));
+        if (progress <= 0) return;
+        var x = x1 + (x2 - x1) * progress;
+        var y = y1 + (y2 - y1) * progress;
+        ctx.save();
+        ctx.strokeStyle = color;
+        ctx.lineWidth = width;
+        ctx.lineCap = 'round';
+        if (dash) ctx.setLineDash(dash);
+        ctx.beginPath();
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x, y);
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      function point(x, y, label, color) {
+        ctx.save();
+        ctx.fillStyle = '#fff';
+        ctx.beginPath();
+        ctx.arc(x, y, 7, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.arc(x, y, 4.5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#1a3a5c';
+        ctx.font = 'bold 15px PingFang SC, Microsoft YaHei, sans-serif';
+        ctx.fillText(label, x + 8, y - 8);
+        ctx.restore();
+      }
+
+      function axes() {
+        ctx.clearRect(0, 0, W, H);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, W, H);
+
+        ctx.strokeStyle = '#e8edf6';
+        ctx.lineWidth = 1;
+        for (var gx = 80; gx <= W - 40; gx += 95) {
+          ctx.beginPath(); ctx.moveTo(gx, 40); ctx.lineTo(gx, H - 55); ctx.stroke();
+        }
+        for (var gy = 60; gy <= H - 55; gy += 55) {
+          ctx.beginPath(); ctx.moveTo(80, gy); ctx.lineTo(W - 35, gy); ctx.stroke();
+        }
+
+        ctx.strokeStyle = '#1a3a5c';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(80, H - 55);
+        ctx.lineTo(W - 40, H - 55);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(80, H - 55);
+        ctx.lineTo(80, 40);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(W - 40, H - 55);
+        ctx.lineTo(W - 50, H - 60);
+        ctx.lineTo(W - 50, H - 50);
+        ctx.closePath();
+        ctx.fillStyle = '#1a3a5c';
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.moveTo(80, 40);
+        ctx.lineTo(75, 50);
+        ctx.lineTo(85, 50);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.fillStyle = '#1a3a5c';
+        ctx.font = '14px PingFang SC, Microsoft YaHei, sans-serif';
+        ctx.fillText('x（小时）', W - 70, H - 20);
+        ctx.fillText('y（千米）', 20, 30);
+        ctx.fillText('O', 60, H - 40);
+        ctx.fillText('4', mapX(4) - 3, H - 30);
+        ctx.fillText('840', 40, mapY(840) + 5);
+      }
+
+      function drawFrame(ts) {
+        if (!start) start = ts;
+        var t = (ts - start) % duration;
+        var p = t / duration;
+        axes();
+
+        var O = { x: mapX(0), y: mapY(0) };
+        var A = { x: mapX(3), y: mapY(840) };
+        var B = { x: mapX(4), y: mapY(840) };
+        var D = { x: mapX(7), y: mapY(0) };
+        var E = { x: mapX(6), y: mapY(840) };
+        var C = { x: mapX(4.7), y: mapY(560) };
+
+        ctx.save();
+        ctx.setLineDash([6, 6]);
+        ctx.strokeStyle = '#7c3aed';
+        ctx.beginPath();
+        ctx.moveTo(mapX(4), H - 55);
+        ctx.lineTo(mapX(4), mapY(840));
+        ctx.stroke();
+        ctx.restore();
+
+        ctx.save();
+        ctx.setLineDash([6, 6]);
+        ctx.strokeStyle = '#d97706';
+        ctx.beginPath();
+        ctx.moveTo(80, mapY(840));
+        ctx.lineTo(E.x, mapY(840));
+        ctx.stroke();
+        ctx.restore();
+
+        var fast1 = Math.min(1, p / 0.28);
+        var fast2 = p < 0.28 ? 0 : Math.min(1, (p - 0.28) / 0.12);
+        var fast3 = p < 0.40 ? 0 : Math.min(1, (p - 0.40) / 0.30);
+        var slow1 = Math.min(1, p / 0.60);
+
+        linePart(O.x, O.y, A.x, A.y, fast1, '#dc2626', 4);
+        linePart(A.x, A.y, B.x, B.y, fast2, '#dc2626', 4);
+        linePart(B.x, B.y, D.x, D.y, fast3, '#dc2626', 4);
+        linePart(O.x, O.y, E.x, E.y, slow1, '#2563a8', 4);
+
+        point(O.x, O.y, 'O', '#1a3a5c');
+        point(A.x, A.y, 'A', '#dc2626');
+        point(B.x, B.y, 'B', '#dc2626');
+        point(C.x, C.y, 'C', '#2563a8');
+        point(D.x, D.y, 'D', '#dc2626');
+        point(E.x, E.y, 'E', '#2563a8');
+
+        if (p < 0.28) {
+          caption.textContent = '现在看到的是快车从 O 出发，3 小时后到达 A 点，也就是到达乙地。';
+        } else if (p < 0.40) {
+          caption.textContent = 'A 到 B 是一条平线，表示快车停在乙地 1 小时，没有继续行驶。';
+        } else if (p < 0.60) {
+          caption.textContent = 'B 以后，快车开始返回；蓝色斜线表示慢车一直匀速向前。';
+        } else {
+          caption.textContent = '看懂图后就能得出：总路程 840 千米，快车去程时间 3 小时，所以速度是 280 千米/时。';
+        }
+        requestAnimationFrame(drawFrame);
+      }
+      requestAnimationFrame(drawFrame);
+    })();
+
+    // 路线动画
+    (function () {
+      var routePack = setupHiDPICanvas(document.getElementById('routeCanvas'));
+      var ctx = routePack.ctx, W = routePack.w, H = routePack.h;
+      var caption = document.getElementById('routeCaption');
+      var btn = document.getElementById('toggleRoute');
+      var restartBtn = document.getElementById('restartRoute');
+      var running = true;
+      var start = null;
+      var pausedAt = 0;
+      var duration = 7000;
+
+      function xMap(rate) { return 100 + rate * (W - 200); }
+      function drawCity(x, label) {
+        ctx.save();
+        ctx.fillStyle = '#1a3a5c';
+        ctx.font = 'bold 16px PingFang SC, Microsoft YaHei, sans-serif';
+        ctx.fillText(label, x - 10, 48);
+        ctx.fillStyle = '#dbeafe';
+        ctx.fillRect(x - 20, 55, 40, 32);
+        ctx.fillStyle = '#2563a8';
+        ctx.fillRect(x - 22, 85, 44, 5);
+        ctx.beginPath();
+        ctx.moveTo(x - 24, 55);
+        ctx.lineTo(x, 35);
+        ctx.lineTo(x + 24, 55);
+        ctx.closePath();
+        ctx.fillStyle = '#dc2626';
+        ctx.fill();
+        ctx.restore();
+      }
+
+      function roundRectPath(ctx, x, y, w, h, r) {
+        ctx.beginPath();
+        ctx.moveTo(x + r, y);
+        ctx.lineTo(x + w - r, y);
+        ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+        ctx.lineTo(x + w, y + h - r);
+        ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+        ctx.lineTo(x + r, y + h);
+        ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+        ctx.lineTo(x, y + r);
+        ctx.quadraticCurveTo(x, y, x + r, y);
+        ctx.closePath();
+      }
+
+      function drawTrain(x, y, color, label) {
+        ctx.save();
+        ctx.fillStyle = color;
+        roundRectPath(ctx, x - 22, y - 12, 44, 24, 8);
+        ctx.fill();
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(x - 12, y - 6, 10, 8);
+        ctx.fillRect(x + 2, y - 6, 10, 8);
+        ctx.fillStyle = '#1a3a5c';
+        ctx.beginPath(); ctx.arc(x - 10, y + 13, 4, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(x + 10, y + 13, 4, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#1a3a5c';
+        ctx.font = 'bold 13px PingFang SC, Microsoft YaHei, sans-serif';
+        ctx.fillText(label, x - 18, y - 18);
+        ctx.restore();
+      }
+
+      function drawScene(elapsed) {
+        ctx.clearRect(0, 0, W, H);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, W, H);
+
+        ctx.strokeStyle = '#c7d2e7';
+        ctx.lineWidth = 6;
+        ctx.beginPath();
+        ctx.moveTo(100, 160);
+        ctx.lineTo(W - 100, 160);
+        ctx.stroke();
+
+        for (var i = 0; i < 16; i++) {
+          var tickX = 110 + i * ((W - 220) / 15);
+          ctx.strokeStyle = '#e6ebf5';
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.moveTo(tickX, 146);
+          ctx.lineTo(tickX, 174);
+          ctx.stroke();
+        }
+
+        drawCity(100, '甲');
+        drawCity(W - 100, '乙');
+
+        ctx.fillStyle = '#6b7280';
+        ctx.font = '14px PingFang SC, Microsoft YaHei, sans-serif';
+        ctx.fillText('路线长：840 千米', W / 2 - 55, 120);
+
+        var fastRate, slowRate;
+        var hour = elapsed / 1000;
+
+        if (hour <= 3) {
+          fastRate = hour / 3;
+          caption.textContent = '快车正在从甲地开向乙地。';
+        } else if (hour <= 4) {
+          fastRate = 1;
+          caption.textContent = '快车已经到乙地，现在停留 1 小时。';
+        } else if (hour <= 7) {
+          fastRate = 1 - (hour - 4) / 3;
+          caption.textContent = '快车开始返回甲地。';
+        } else {
+          fastRate = 0;
+          caption.textContent = '一轮演示结束：快车一共用了 7 小时。';
+        }
+
+        if (hour <= 6) {
+          slowRate = 1 - hour / 6;
+        } else {
+          slowRate = 0;
+        }
+
+        drawTrain(xMap(fastRate), 146, '#dc2626', '快车');
+        drawTrain(xMap(slowRate), 196, '#2563a8', '慢车');
+
+        ctx.fillStyle = '#1a3a5c';
+        ctx.font = 'bold 14px PingFang SC, Microsoft YaHei, sans-serif';
+        ctx.fillText('时间：' + Math.min(hour, 7).toFixed(1) + ' 小时', 18, 26);
+      }
+
+      function frame(ts) {
+        if (!start) start = ts - pausedAt;
+        var elapsed = ts - start;
+        if (running) {
+          if (elapsed > duration) {
+            start = ts;
+            elapsed = 0;
+          }
+          drawScene(elapsed);
+          requestAnimationFrame(frame);
+        } else {
+          pausedAt = elapsed;
+          drawScene(elapsed);
+        }
+      }
+      requestAnimationFrame(frame);
+
+      btn.addEventListener('click', function () {
+        running = !running;
+        btn.textContent = running ? '暂停路线动画' : '继续路线动画';
+        if (running) requestAnimationFrame(frame);
+      });
+
+      restartBtn.addEventListener('click', function () {
+        start = null;
+        pausedAt = 0;
+        running = true;
+        btn.textContent = '暂停路线动画';
+        requestAnimationFrame(frame);
+      });
+    })();
+  </script>
+</body>
+</html>
