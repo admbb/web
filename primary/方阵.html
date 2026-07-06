@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>正方形方阵与长方形方阵</title>
+<style>
+:root {
+  --primary: #1a3a5c;
+  --primary-light: #2563a8;
+  --accent: #dc2626;
+  --accent-orange: #d97706;
+  --bg-page: #f8f9fe;
+  --bg-card: #ffffff;
+  --bg-formula: #f0f4ff;
+  --border-light: #e0e7f0;
+  --border-blue: #dbeafe;
+  --text-primary: #1a3a5c;
+  --text-secondary: #6b7280;
+  --text-accent: #dc2626;
+  --success: #059669;
+  --warning: #d97706;
+  --error: #dc2626;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: "PingFang SC", "Microsoft YaHei", "Hiragino Sans GB", sans-serif;
+  background: var(--bg-page);
+  color: var(--text-primary);
+  line-height: 1.8;
+  overflow-x: hidden;
+}
+.container { max-width: 960px; margin: 0 auto; padding: 32px 24px; }
+
+/* 标题 */
+.hero { text-align: center; margin-bottom: 48px; }
+.hero h1 {
+  font-size: 32px; font-weight: 800; color: var(--primary);
+  letter-spacing: 4px; margin-bottom: 8px;
+}
+.hero .subtitle { font-size: 15px; color: var(--text-secondary); }
+
+/* 章节 */
+.section { margin-bottom: 48px; }
+.section-head { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
+.section-num {
+  width: 42px; height: 42px;
+  background: linear-gradient(135deg, #1a3a5c, #2563a8);
+  color: #fff; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; font-weight: 800; flex-shrink: 0;
+}
+.section-head h2 { font-size: 22px; color: var(--primary); margin: 0; }
+
+/* 卡片 */
+.card {
+  background: var(--bg-card);
+  border-radius: 14px; padding: 28px 32px; margin-bottom: 20px;
+  border: 1px solid var(--border-light);
+  box-shadow: 0 2px 8px rgba(26,58,92,0.06);
+  overflow: visible;
+}
+
+/* 公式框 */
+.formula-box {
+  background: var(--bg-formula);
+  border-radius: 10px; padding: 18px 24px;
+  margin: 16px 0; text-align: center; font-size: 17px;
+  border: 1px solid var(--border-blue); overflow: visible;
+}
+.formula-box.hl-red { border-color: #dc2626; border-width: 2px; background: #fef2f2; }
+.formula-box.hl-blue { border-color: #2563a8; border-width: 2px; background: #eff6ff; }
+
+/* 例题框 */
+.example-box {
+  background: #f8f9fe; border-left: 5px solid #1a3a5c;
+  border-radius: 0 12px 12px 0; padding: 20px 24px;
+  margin: 20px 0; overflow: visible;
+}
+.example-num { font-size: 17px; font-weight: 800; color: #1a3a5c; margin-bottom: 10px; }
+.example-problem { font-size: 15px; margin-bottom: 14px; color: #1a3a5c; }
+.example-solution { font-size: 14px; line-height: 1.9; color: #6b7280; margin-bottom: 12px; }
+.example-note {
+  background: #fffbea; border-radius: 8px; padding: 10px 16px;
+  font-size: 13px; color: #92400e; border: 1px solid #fde68a;
+}
+
+/* Callout */
+.callout { border-radius: 10px; padding: 16px 22px; margin: 20px 0; font-size: 14px; line-height: 1.7; overflow: visible; }
+.callout.blue { background: #eff6ff; border-left: 5px solid #2563a8; color: #1e40af; }
+.callout.green { background: #ecfdf5; border-left: 5px solid #059669; color: #064e3b; }
+.callout.orange { background: #fffbea; border-left: 5px solid #d97706; color: #92400e; }
+
+/* 记忆卡片 */
+.memory-card {
+  background: linear-gradient(135deg, #fef3c7, #fffbeb);
+  border: 2px solid #fcd34d; border-radius: 14px; padding: 24px; margin: 16px 0; overflow: visible;
+}
+.mem-title { font-size: 18px; font-weight: 800; color: #d97706; margin-bottom: 10px; }
+
+/* 演示网格 */
+.demo-grid-wrap { display: flex; justify-content: center; margin: 20px 0; }
+.demo-grid {
+  display: inline-grid; gap: 4px;
+  padding: 16px; background: #f8f9fe;
+  border-radius: 10px; border: 1px solid var(--border-light);
+}
+.demo-cell {
+  width: 44px; height: 44px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 600; color: var(--text-primary);
+  border-radius: 6px; background: #fff;
+  border: 1.5px solid var(--border-light);
+  transition: all 0.3s ease;
+}
+.demo-cell.outer {
+  background: #fef3c7; border-color: #f59e0b; font-weight: 700;
+}
+.demo-cell.corner {
+  background: #fee2e2; border-color: #ef4444;
+}
+
+/* 互动区 */
+.playground { background: var(--bg-card); border-radius: 14px; padding: 28px 32px; margin: 20px 0;
+  border: 1px solid var(--border-light); box-shadow: 0 2px 8px rgba(26,58,92,0.06); }
+.pg-inputs { display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-end; margin-bottom: 20px; }
+.pg-input-group { display: flex; flex-direction: column; gap: 6px; }
+.pg-input-group label { font-size: 14px; font-weight: 700; color: var(--text-primary); }
+.pg-input-group input {
+  width: 80px; height: 42px; font-size: 18px; text-align: center;
+  border: 2px solid var(--border-light); border-radius: 8px;
+  font-family: inherit; outline: none;
+}
+.pg-input-group input:focus { border-color: var(--primary-light); }
+.btn-go {
+  padding: 10px 28px; font-size: 16px; font-weight: 700; color: #fff;
+  background: var(--primary); border: none; border-radius: 8px;
+  cursor: pointer; font-family: inherit; transition: background 0.2s;
+}
+.btn-go:hover { background: var(--primary-light); }
+
+/* 互动网格 */
+.play-grid-wrap { display: flex; justify-content: center; margin: 20px 0; min-height: 60px; }
+.play-grid {
+  display: inline-grid; gap: 3px; padding: 12px;
+  background: #f8f9fe; border-radius: 10px; border: 1px solid var(--border-light);
+}
+.play-cell {
+  width: 38px; height: 38px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 600; color: var(--text-secondary);
+  border-radius: 5px; background: #fff;
+  border: 1.5px solid var(--border-light);
+}
+.play-cell.outer { background: #fef3c7; border-color: #f59e0b; color: var(--accent-orange); font-weight: 700; }
+
+/* 结果 */
+.result-lines { margin-top: 16px; display: flex; flex-direction: column; gap: 10px; }
+.result-line {
+  padding: 14px 20px; border-radius: 10px; font-size: 15px; line-height: 1.8;
+  border-left: 4px solid var(--primary-light);
+  background: #f0f4ff;
+}
+.result-line.ring-line { border-left-color: var(--accent-orange); background: #fffbea; }
+
+/* 展开对照表 */
+.expand-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; margin: 16px 0; }
+.expand-item { background: var(--bg-formula); border: 1px solid var(--border-blue); border-radius: 10px; padding: 14px; }
+.expand-label { font-size: 13px; color: var(--primary-light); margin-bottom: 6px; }
+.expand-formula { text-align: center; }
+
+/* 简记 */
+.jianji {
+  margin-top: 10px; font-size: 13px; color: #2563a8;
+}
+.jianji strong { color: #1a3a5c; }
+
+@media (max-width: 700px) {
+  .container { padding: 16px 12px; }
+  .hero h1 { font-size: 24px; }
+  .card { padding: 18px 16px; }
+  .section-head h2 { font-size: 18px; }
+  .pg-inputs { flex-direction: column; align-items: stretch; }
+  .demo-cell { width: 34px; height: 34px; font-size: 11px; }
+  .play-cell { width: 30px; height: 30px; font-size: 10px; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- 标题 -->
+  <div class="hero">
+    <h1>正方形方阵与长方形方阵</h1>
+    <p class="subtitle">小学中高年级 · 方阵问题专项讲解</p>
+  </div>
+
+  <!-- 第一关：概念 -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-num">1</div>
+      <h2>方阵的概念</h2>
+    </div>
+
+    <div class="card">
+      <p>若干个人（或物体）排成若干行、若干列，使行数与列数均为正整数，这样的排列称为<strong>方阵</strong>。</p>
+      <ul style="margin: 12px 0 0 20px; font-size: 15px; line-height: 2;">
+        <li><strong>正方形方阵</strong>：行数 = 列数，排成的形状是正方形</li>
+        <li><strong>长方形方阵</strong>：行数 ≠ 列数，排成的形状是长方形</li>
+      </ul>
+    </div>
+
+    <!-- 示意图 -->
+    <p style="font-weight:700; margin-bottom:8px;">正方形方阵（4×4）示意：</p>
+    <div class="demo-grid-wrap">
+      <div class="demo-grid" id="demoSquare"></div>
+    </div>
+
+    <p style="font-weight:700; margin: 20px 0 8px;">长方形方阵（5×3）示意：</p>
+    <div class="demo-grid-wrap">
+      <div class="demo-grid" id="demoRect"></div>
+    </div>
+  </div>
+
+  <!-- 第二关：核心公式 -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-num">2</div>
+      <h2>核心公式</h2>
+    </div>
+
+    <div class="card">
+      <h3 style="font-size:17px; color:var(--primary); margin-bottom:12px;">一、总人数的计算</h3>
+      <div class="formula-box">
+        正方形方阵总人数 = 每边人数 × 每边人数
+      </div>
+      <div class="formula-box">
+        长方形方阵总人数 = 长边人数 × 宽边人数
+      </div>
+      <div class="jianji">
+        <strong>简记：</strong>方阵总人数 = 行数 × 列数（横的排数 × 竖的排数）
+      </div>
+    </div>
+
+    <div class="card">
+      <h3 style="font-size:17px; color:var(--primary); margin-bottom:12px;">二、最外圈人数的计算</h3>
+
+      <p style="margin-bottom: 12px;">以 4×4 正方形方阵为例，观察最外圈的人数：</p>
+      <div class="demo-grid-wrap">
+        <div class="demo-grid" id="demoOuter"></div>
+      </div>
+      <p style="font-size:13px; color:var(--text-secondary); text-align:center; margin-bottom:16px;">
+        （金色 = 外圈，红色 = 四个角）
+      </p>
+
+      <div class="formula-box hl-blue">
+        正方形最外圈人数 = (每边人数 − 1) × 4
+      </div>
+      <div class="formula-box hl-red">
+        长方形最外圈人数 = (长边人数 + 宽边人数) × 2 − 4
+      </div>
+
+      <div class="jianji">
+        <strong>简记（正方形）：</strong>四个角各算一次，所以每边先"去掉一个角"再乘4 → (n−1)×4
+      </div>
+      <div class="jianji">
+        <strong>简记（长方形）：</strong>上下两行长、左右两列宽，四个角重复了一次 → (a+b)×2−4
+      </div>
+    </div>
+  </div>
+
+  <!-- 第三关：为什么减4 -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-num">3</div>
+      <h2>为什么长方形公式要"减 4"？</h2>
+    </div>
+
+    <div class="card">
+      <p>以 5×3 长方形方阵（5列、3行）为例：</p>
+      <div class="demo-grid-wrap">
+        <div class="demo-grid" id="demoWhy"></div>
+      </div>
+
+      <p style="margin: 16px 0 8px;">逐边计数（不含角）：</p>
+      <ul style="margin: 0 0 0 20px; font-size:15px; line-height:2;">
+        <li>上边（不含左右角）：5 − 2 = 3 人</li>
+        <li>下边（不含左右角）：5 − 2 = 3 人</li>
+        <li>左边（不含上下角）：3 − 2 = 1 人</li>
+        <li>右边（不含上下角）：3 − 2 = 1 人</li>
+        <li>四个角：4 人</li>
+        <li><strong>合计</strong>：3 + 3 + 1 + 1 + 4 = <strong>12 人</strong></li>
+      </ul>
+
+      <div class="callout orange" style="margin-top: 16px;">
+        <div class="callout-label">💡 关键理解</div>
+        每边"正常数"时会把角上的人算两次（横数一次、竖数一次），
+        所以公式 (长+宽)×2−4 中，"−4"就是减去四个角多算的那一次。
+      </div>
+
+      <!-- 展开对照表 -->
+      <div class="expand-grid" style="margin-top:20px;">
+        <div class="expand-item">
+          <div class="expand-label">正方形方阵（每边 n 人）</div>
+          <div class="expand-formula">
+            n=2：最外圈 = 4 人<br>
+            n=3：(3−1)×4 = <strong>8 人</strong><br>
+            n=4：(4−1)×4 = <strong>12 人</strong><br>
+            n=5：(5−1)×4 = <strong>16 人</strong>
+          </div>
+        </div>
+        <div class="expand-item">
+          <div class="expand-label">长方形方阵（长 a、宽 b）</div>
+          <div class="expand-formula">
+            a=5, b=3：(5+3)×2−4 = <strong>12 人</strong><br>
+            a=6, b=4：(6+4)×2−4 = <strong>16 人</strong><br>
+            a=7, b=3：(7+3)×2−4 = <strong>16 人</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 第四关：互动演示 -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-num">4</div>
+      <h2>互动演示</h2>
+    </div>
+
+    <div class="playground">
+      <p style="margin-bottom: 16px; font-size: 15px;">输入行数和列数（2~10），点击"生成"查看方阵及最外圈高亮效果。</p>
+
+      <div class="pg-inputs">
+        <div class="pg-input-group">
+          <label>列数（每排几人）</label>
+          <input type="number" id="pgCols" min="2" max="10" value="5">
+        </div>
+        <div class="pg-input-group">
+          <label>行数（共几排）</label>
+          <input type="number" id="pgRows" min="2" max="10" value="4">
+        </div>
+        <button class="btn-go" id="btnGo">生 成</button>
+      </div>
+
+      <div class="play-grid-wrap" id="playDisplay">
+        <p style="color:var(--text-secondary); padding:20px;">输入参数后点击"生成"</p>
+      </div>
+
+      <div class="result-lines" id="playResults"></div>
+    </div>
+  </div>
+
+  <!-- 第五关：典型例题 -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-num">5</div>
+      <h2>典型例题</h2>
+    </div>
+
+    <div class="example-box">
+      <div class="example-num">例题 1　⭐⭐（易）</div>
+      <div class="example-problem">一个正方形方阵，每边站 8 人，请问这个方阵一共有多少人？最外圈有多少人？</div>
+      <div class="example-solution">
+        <strong>解：</strong><br>
+        总人数 = 每边人数 × 每边人数 = 8 × 8 = <strong>64 人</strong><br>
+        最外圈人数 = (每边人数 − 1) × 4 = (8 − 1) × 4 = 7 × 4 = <strong>28 人</strong><br>
+        答：这个方阵一共 64 人，最外圈有 28 人。
+      </div>
+      <div class="example-note">
+        💡 <strong>小结：</strong>正方形方阵直接用"每边×每边"和"(每边−1)×4"两个公式即可。
+      </div>
+    </div>
+
+    <div class="example-box">
+      <div class="example-num">例题 2　⭐⭐⭐（中）</div>
+      <div class="example-problem">一个长方形方阵，每排站 12 人，一共站了 5 排。请问最外圈有多少人？</div>
+      <div class="example-solution">
+        <strong>解：</strong><br>
+        方法一：用公式<br>
+        最外圈人数 = (长边 + 宽边) × 2 − 4 = (12 + 5) × 2 − 4 = 17 × 2 − 4 = 34 − 4 = <strong>30 人</strong><br><br>
+        方法二：逐边计算（验证）<br>
+        上边不含角：12 − 2 = 10 人<br>
+        下边不含角：12 − 2 = 10 人<br>
+        左边不含角：5 − 2 = 3 人<br>
+        右边不含角：5 − 2 = 3 人<br>
+        四个角：4 人<br>
+        合计：10 + 10 + 3 + 3 + 4 = <strong>30 人</strong><br>
+        答：最外圈有 30 人。
+      </div>
+      <div class="example-note">
+        💡 <strong>小结：</strong>长方形最外圈公式 (a+b)×2−4 与逐边数结果一致，用公式更快。
+      </div>
+    </div>
+
+    <div class="example-box">
+      <div class="example-num">例题 3　⭐⭐⭐⭐（难）</div>
+      <div class="example-problem">一个正方形方阵最外圈有 44 人，请问这个方阵一共有多少人？</div>
+      <div class="example-solution">
+        <strong>解：</strong><br>
+        设每边人数为 n，则最外圈人数公式为 (n − 1) × 4 = 44<br>
+        解方程：n − 1 = 44 ÷ 4 = 11，所以 n = 12<br>
+        总人数 = n × n = 12 × 12 = <strong>144 人</strong><br>
+        答：这个方阵一共有 144 人。
+      </div>
+      <div class="example-note">
+        💡 <strong>小结：</strong>已知最外圈反求总人数，是"逆用公式"——先求每边人数，再求总数。
+      </div>
+    </div>
+  </div>
+
+  <!-- 总结 -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-num">6</div>
+      <h2>要点总结</h2>
+    </div>
+    <div class="card">
+      <ol style="margin:0 0 0 20px; font-size:15px; line-height:2.2;">
+        <li>方阵分<strong>正方形</strong>（行=列）和<strong>长方形</strong>（行≠列）两种</li>
+        <li>总人数 = <strong>行数 × 列数</strong></li>
+        <li>正方形最外圈 = <strong>(每边 − 1) × 4</strong>（每边去掉一个角再乘4）</li>
+        <li>长方形最外圈 = <strong>(长 + 宽) × 2 − 4</strong>（角上的人被重复计算了一次）</li>
+        <li>已知最外圈反求总人数，先求每边人数（逆用公式），再求总数</li>
+      </ol>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* ============================================================
+   工具函数
+   ============================================================ */
+
+/** 判断是否在最外圈 */
+function isOuter(r, c, rows, cols) {
+  return r === 0 || r === rows - 1 || c === 0 || c === cols - 1;
+}
+/** 判断是否是四个角 */
+function isCorner(r, c, rows, cols) {
+  return (r === 0 && c === 0) || (r === 0 && c === cols - 1)
+      || (r === rows - 1 && c === 0) || (r === rows - 1 && c === cols - 1);
+}
+
+/** 生成一个静态演示网格（用于页面加载时的示意图） */
+function makeDemoGrid(containerId, rows, cols, mode) {
+  var box = document.getElementById(containerId);
+  if (!box) return;
+  box.style.gridTemplateColumns = 'repeat(' + cols + ', 1fr)';
+  box.innerHTML = '';
+  var idx = 0;
+  for (var r = 0; r < rows; r++) {
+    for (var c = 0; c < cols; c++) {
+      var cell = document.createElement('div');
+      cell.className = 'demo-cell';
+      cell.textContent = '●';
+      if (mode === 'outer' || mode === 'why') {
+        if (isCorner(r, c, rows, cols)) {
+          cell.classList.add('corner');
+        } else if (isOuter(r, c, rows, cols)) {
+          cell.classList.add('outer');
+        }
+      } else if (mode === 'plain') {
+        // 无高亮
+      }
+      box.appendChild(cell);
+    }
+  }
+}
+
+/* ============================================================
+   页面加载时初始化静态示意图
+   ============================================================ */
+window.addEventListener('DOMContentLoaded', function() {
+  // 4×4 正方形示意（无高亮）
+  makeDemoGrid('demoSquare', 4, 4, 'plain');
+  // 5×3 长方形示意（无高亮）
+  makeDemoGrid('demoRect', 3, 5, 'plain');
+  // 4×4 最外圈示意（金色外圈 + 红色角）
+  makeDemoGrid('demoOuter', 4, 4, 'outer');
+  // 5×3 为什么减4 示意
+  makeDemoGrid('demoWhy', 3, 5, 'why');
+
+  // 绑定"生成"按钮
+  document.getElementById('btnGo').addEventListener('click', doPlay);
+  // 回车也能触发
+  document.getElementById('pgCols').addEventListener('keypress', function(e) { if (e.key === 'Enter') doPlay(); });
+  document.getElementById('pgRows').addEventListener('keypress', function(e) { if (e.key === 'Enter') doPlay(); });
+});
+
+/* ============================================================
+   互动演示：生成按钮逻辑
+   ============================================================ */
+function doPlay() {
+  var cols = parseInt(document.getElementById('pgCols').value);
+  var rows = parseInt(document.getElementById('pgRows').value);
+
+  if (isNaN(cols) || isNaN(rows) || cols < 2 || cols > 10 || rows < 2 || rows > 10) {
+    alert('行数和列数请填入 2 到 10 之间的整数。');
+    return;
+  }
+
+  var display = document.getElementById('playDisplay');
+  display.innerHTML = '';
+
+  var grid = document.createElement('div');
+  grid.className = 'play-grid';
+  grid.style.gridTemplateColumns = 'repeat(' + cols + ', 1fr)';
+
+  // 生成格子，外圈高亮
+  for (var r = 0; r < rows; r++) {
+    for (var c = 0; c < cols; c++) {
+      var cell = document.createElement('div');
+      cell.className = 'play-cell';
+      cell.textContent = r * cols + c + 1;
+      if (isOuter(r, c, rows, cols)) {
+        cell.classList.add('outer');
+      }
+      grid.appendChild(cell);
+    }
+  }
+  display.appendChild(grid);
+
+  // 计算结果
+  var total = rows * cols;
+  var ring = (rows + cols) * 2 - 4;
+  var isSq = (rows === cols);
+
+  var resultsBox = document.getElementById('playResults');
+  resultsBox.innerHTML = '';
+
+  // 正方形提示
+  if (isSq) {
+    var tip = document.createElement('div');
+    tip.className = 'result-line';
+    tip.style.borderLeftColor = '#d97706';
+    tip.style.background = '#fffbea';
+    tip.innerHTML = '⚠ 行数 = 列数 = ' + rows + '，这是一个<strong>正方形方阵</strong>。';
+    resultsBox.appendChild(tip);
+  }
+
+  // 总人数
+  var line1 = document.createElement('div');
+  line1.className = 'result-line';
+  line1.innerHTML = '<strong>总人数 = </strong>行数 × 列数 = ' + rows + ' × ' + cols + ' = <strong>' + total + ' 人</strong>';
+  resultsBox.appendChild(line1);
+
+  // 最外圈
+  var line2 = document.createElement('div');
+  line2.className = 'result-line ring-line';
+  if (isSq) {
+    line2.innerHTML = '<strong>最外圈人数 = </strong>(每边 − 1) × 4 = (' + rows + ' − 1) × 4 = ' + (rows - 1) + ' × 4 = <strong>' + ring + ' 人</strong>';
+  } else {
+    line2.innerHTML = '<strong>最外圈人数 = </strong>(长 + 宽) × 2 − 4 = (' + cols + ' + ' + rows + ') × 2 − 4 = ' + (cols + rows) + ' × 2 − 4 = <strong>' + ring + ' 人</strong>';
+  }
+  resultsBox.appendChild(line2);
+}
+</script>
+</body>
+</html>
