@@ -1,0 +1,1380 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>初等函数：由基本函数搭出来的函数世界</title>
+  <script>
+MathJax = {
+  tex: {
+    inlineMath: [['\$','\$']],
+    displayMath: [['\$$','\$$']],
+    processEscapes: true
+  },
+  options: {
+    skipHtmlTags: ['script','noscript','style','textarea','pre']
+  },
+  chtml: {
+    displayAlign: 'center',
+    displayIndent: '0'
+  }
+};
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary: #1a3a5c;
+      --primary-light: #2563a8;
+      --accent: #dc2626;
+      --accent-orange: #d97706;
+      --bg-page: #f8f9fe;
+      --bg-card: #ffffff;
+      --bg-formula: #f0f4ff;
+      --border-light: #e0e7f0;
+      --border-blue: #dbeafe;
+      --text-primary: #1a3a5c;
+      --text-secondary: #6b7280;
+      --text-accent: #dc2626;
+      --success: #059669;
+      --warning: #d97706;
+      --error: #dc2626;
+    }
+
+    html,
+    body {
+      margin: 0;
+      overflow-x: hidden;
+    }
+
+    body {
+      background: var(--bg-page);
+      color: var(--text-primary);
+      font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
+      line-height: 1.85;
+    }
+
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 24px 16px 56px;
+      overflow: visible;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, var(--bg-card), var(--bg-formula));
+      border: 1px solid var(--border-blue);
+      border-radius: 20px;
+      padding: 42px 36px;
+      margin-bottom: 42px;
+      box-shadow: 0 10px 30px rgba(26,58,92,0.08);
+      overflow: visible;
+    }
+
+    .hero h1 {
+      margin: 0 0 18px;
+      font-size: clamp(30px, 5vw, 52px);
+      line-height: 1.18;
+      color: var(--primary);
+      letter-spacing: 0;
+    }
+
+    .grade-line {
+      display: inline-flex;
+      align-items: center;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: var(--bg-formula);
+      border: 1px solid var(--border-blue);
+      color: var(--primary-light);
+      font-weight: 800;
+      margin-bottom: 18px;
+      overflow: visible;
+    }
+
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 20px 0;
+      overflow: visible;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 34px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-blue);
+      color: var(--primary);
+      font-size: 14px;
+      font-weight: 800;
+      overflow: visible;
+    }
+
+    .formula-cloud {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(138px, 1fr));
+      gap: 10px;
+      margin-top: 18px;
+      overflow: visible;
+    }
+
+    .formula-chip {
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: 12px;
+      padding: 10px 12px;
+      text-align: center;
+      font-size: 15px;
+      overflow: visible;
+    }
+
+    .hero-note {
+      max-width: 760px;
+      margin: 18px 0 0;
+      color: var(--text-secondary);
+      font-size: 15px;
+      overflow: visible;
+    }
+
+    .guide-card {
+      border-left: 6px solid var(--primary-light);
+      overflow: visible;
+    }
+
+    .objective-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 14px;
+      overflow: visible;
+    }
+
+    .objective-item {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      padding: 12px 14px;
+      border: 1px solid var(--border-blue);
+      border-radius: 12px;
+      background: var(--bg-formula);
+      color: var(--text-primary);
+      font-size: 14px;
+      overflow: visible;
+    }
+
+    .objective-num {
+      width: 24px;
+      height: 24px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      border-radius: 8px;
+      background: var(--primary);
+      color: var(--bg-card);
+      font-weight: 800;
+      font-size: 13px;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border-radius: 14px;
+      padding: 28px 32px;
+      margin-bottom: 20px;
+      border: 1px solid var(--border-light);
+      box-shadow: 0 2px 8px rgba(26,58,92,0.06);
+      overflow: visible;
+    }
+
+    .section {
+      margin-bottom: 48px;
+      overflow: visible;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 18px;
+      overflow: visible;
+    }
+
+    .section-num {
+      width: 42px;
+      height: 42px;
+      background: linear-gradient(135deg, #1a3a5c, #2563a8);
+      color: #fff;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+
+    h2 {
+      font-size: 22px;
+      color: var(--primary);
+      margin: 0;
+    }
+
+    h3 {
+      margin: 0 0 12px;
+      color: var(--primary);
+      font-size: 18px;
+    }
+
+    p {
+      margin: 10px 0;
+    }
+
+    .text-secondary {
+      color: var(--text-secondary);
+    }
+
+    .formula-box {
+      background: var(--bg-formula);
+      border-radius: 10px;
+      padding: 18px 24px;
+      margin: 16px 0;
+      text-align: center;
+      font-size: 17px;
+      border: 1px solid var(--border-blue);
+      overflow: visible;
+    }
+
+    .formula-box.hl-red {
+      border-color: #dc2626;
+      border-width: 2px;
+      background: #fef2f2;
+    }
+
+    .formula-box.hl-green {
+      border-color: #059669;
+      border-width: 2px;
+      background: #ecfdf5;
+    }
+
+    .example-box {
+      background: #f8f9fe;
+      border-left: 5px solid #1a3a5c;
+      border-radius: 0 12px 12px 0;
+      padding: 20px 24px;
+      margin: 20px 0;
+      overflow: visible;
+    }
+
+    .example-num {
+      font-size: 17px;
+      font-weight: 800;
+      color: #1a3a5c;
+      margin-bottom: 10px;
+    }
+
+    .example-problem {
+      font-size: 15px;
+      margin-bottom: 14px;
+      color: #1a3a5c;
+    }
+
+    .example-solution {
+      font-size: 14px;
+      line-height: 1.9;
+      color: #6b7280;
+      margin-bottom: 12px;
+    }
+
+    .example-note {
+      background: #fffbea;
+      border-radius: 8px;
+      padding: 10px 16px;
+      font-size: 13px;
+      color: #92400e;
+      border: 1px solid #fde68a;
+    }
+
+    .callout {
+      border-radius: 10px;
+      padding: 16px 22px;
+      margin: 20px 0;
+      font-size: 14px;
+      line-height: 1.7;
+      overflow: visible;
+    }
+
+    .callout.blue { background: #eff6ff; border-left: 5px solid #2563a8; color: #1e40af; }
+    .callout.green { background: #ecfdf5; border-left: 5px solid #059669; color: #064e3b; }
+    .callout.orange { background: #fffbea; border-left: 5px solid #d97706; color: #92400e; }
+    .callout.red { background: #fef2f2; border-left: 5px solid #dc2626; color: #991b1b; }
+    .callout-label { font-weight: 700; margin-bottom: 6px; font-size: 15px; }
+
+    .expand-block {
+      margin: 20px 0;
+      overflow: visible;
+    }
+
+    .expand-title {
+      font-weight: 800;
+      font-size: 16px;
+      color: var(--primary);
+      margin-bottom: 10px;
+    }
+
+    .expand-general {
+      text-align: center;
+      margin-bottom: 12px;
+    }
+
+    .expand-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 12px;
+      overflow: visible;
+    }
+
+    .expand-item {
+      background: var(--bg-formula);
+      border: 1px solid var(--border-blue);
+      border-radius: 10px;
+      padding: 14px;
+      overflow: visible;
+    }
+
+    .expand-label {
+      font-size: 13px;
+      color: var(--primary-light);
+      margin-bottom: 6px;
+    }
+
+    .expand-formula {
+      text-align: center;
+      overflow: visible;
+    }
+
+    .memory-card {
+      background: linear-gradient(135deg, #fef3c7, #fffbeb);
+      border: 2px solid #fcd34d;
+      border-radius: 14px;
+      padding: 24px;
+      margin: 16px 0;
+      overflow: visible;
+    }
+
+    .mem-icon {
+      font-size: 28px;
+      margin-bottom: 8px;
+    }
+
+    .mem-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: #d97706;
+      margin-bottom: 10px;
+    }
+
+    .mem-body {
+      font-size: 14px;
+      line-height: 1.9;
+    }
+
+    .knowledge-tree {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      margin: 24px 0;
+      overflow: visible;
+    }
+
+    .tree-root {
+      background: var(--bg-formula);
+      border: 2px solid var(--success);
+      border-radius: 12px;
+      padding: 11px 22px;
+      font-weight: 800;
+      font-size: 16px;
+      color: var(--success);
+    }
+
+    .tree-branch-title {
+      font-weight: 700;
+      color: var(--primary);
+      margin: 8px 0 4px;
+    }
+
+    .tree-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: center;
+      overflow: visible;
+    }
+
+    .tree-leaf {
+      background: #fff;
+      border: 1px solid var(--border-blue);
+      border-radius: 8px;
+      padding: 7px 14px;
+      font-size: 13px;
+      color: var(--text-primary);
+    }
+
+    .formula-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+      margin: 12px 0;
+    }
+
+    .formula-table th {
+      background: var(--primary);
+      color: #fff;
+      padding: 10px 8px;
+      text-align: center;
+      font-weight: 700;
+    }
+
+    .formula-table td {
+      padding: 10px 8px;
+      text-align: center;
+      border-bottom: 1px solid var(--border-light);
+      background: #fff;
+    }
+
+    .formula-table tr:nth-child(even) td {
+      background: var(--bg-page);
+    }
+
+    .table-scroll {
+      width: 100%;
+      overflow: visible;
+      margin: 12px 0;
+      border-radius: 12px;
+      border: 1px solid var(--border-light);
+      background: var(--bg-card);
+    }
+
+    .table-scroll .formula-table {
+      margin: 0;
+    }
+
+    .brief {
+      margin-top: 10px;
+      font-size: 13px;
+      color: var(--primary-light);
+      overflow: visible;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      overflow: visible;
+    }
+
+    .three-col {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+      overflow: visible;
+    }
+
+    .family-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      overflow: visible;
+    }
+
+    .family-card {
+      margin-bottom: 0;
+    }
+
+    .mini-label {
+      display: inline-block;
+      margin-bottom: 10px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: var(--bg-formula);
+      border: 1px solid var(--border-blue);
+      color: var(--primary-light);
+      font-size: 13px;
+      font-weight: 800;
+      overflow: visible;
+    }
+
+    .machine-flow {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      align-items: stretch;
+      margin: 18px 0;
+      overflow: visible;
+    }
+
+    .machine-card {
+      position: relative;
+      background: var(--bg-card);
+      border: 1px solid var(--border-blue);
+      border-radius: 14px;
+      padding: 18px 14px;
+      text-align: center;
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
+      overflow: visible;
+    }
+
+    .machine-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 18px rgba(26,58,92,0.1);
+    }
+
+    .machine-title {
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 8px;
+    }
+
+    .machine-desc {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    .arrow-line {
+      text-align: center;
+      color: var(--primary-light);
+      font-weight: 800;
+      margin: 12px 0;
+      overflow: visible;
+    }
+
+    .step-list {
+      padding-left: 22px;
+      margin: 10px 0;
+    }
+
+    .step-list li {
+      margin: 7px 0;
+    }
+
+    .danger-list {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      overflow: visible;
+    }
+
+    .danger-item {
+      background: var(--bg-formula);
+      border: 1px solid var(--border-blue);
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+      font-weight: 800;
+      overflow: visible;
+    }
+
+    .criterion-ladder {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin: 18px 0;
+      overflow: visible;
+    }
+
+    .criterion-step {
+      position: relative;
+      padding: 18px 14px;
+      border: 1px solid var(--border-blue);
+      border-radius: 14px;
+      background: var(--bg-card);
+      overflow: visible;
+    }
+
+    .criterion-step strong {
+      display: block;
+      color: var(--primary);
+      margin-bottom: 8px;
+    }
+
+    .criterion-step span {
+      color: var(--text-secondary);
+      font-size: 14px;
+    }
+
+    .criterion-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      margin-bottom: 10px;
+      border-radius: 9px;
+      background: var(--bg-formula);
+      border: 1px solid var(--border-blue);
+      color: var(--primary-light);
+      font-weight: 800;
+    }
+
+    .proof-thread {
+      display: grid;
+      gap: 10px;
+      margin: 14px 0;
+      overflow: visible;
+    }
+
+    .proof-step {
+      padding: 12px 14px;
+      border-left: 4px solid var(--primary-light);
+      border-radius: 0 10px 10px 0;
+      background: var(--bg-card);
+      color: var(--text-secondary);
+      font-size: 14px;
+      overflow: visible;
+    }
+
+    .mistake-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      overflow: visible;
+    }
+
+    .mistake-card {
+      margin-bottom: 0;
+      border-top: 4px solid var(--accent-orange);
+    }
+
+    .summary-card {
+      border: 2px solid var(--success);
+      background: var(--bg-card);
+    }
+
+    .mathjax-note {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-top: 14px;
+    }
+
+    button {
+      font: inherit;
+    }
+
+    .button {
+      border: 1px solid var(--primary-light);
+      border-radius: 999px;
+      padding: 9px 15px;
+      background: var(--primary);
+      color: var(--bg-card);
+      cursor: pointer;
+      transition: transform 0.18s ease, opacity 0.18s ease;
+    }
+
+    .button:hover {
+      transform: translateY(-2px);
+      opacity: 0.92;
+    }
+
+    .button:active {
+      transform: translateY(0);
+    }
+
+    mjx-container {
+      overflow: visible;
+    }
+
+    @media (max-width: 760px) {
+      .hero {
+        padding: 30px 20px;
+      }
+
+      .card {
+        padding: 22px 18px;
+      }
+
+      .two-col,
+      .three-col,
+      .family-grid,
+      .machine-flow,
+      .danger-list,
+      .objective-grid,
+      .criterion-ladder,
+      .mistake-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .formula-table {
+        font-size: 13px;
+      }
+
+      .formula-table th,
+      .formula-table td {
+        padding: 8px 6px;
+      }
+
+      .table-scroll {
+        border: 0;
+        background: transparent;
+      }
+
+      .formula-table,
+      .formula-table thead,
+      .formula-table tbody,
+      .formula-table tr,
+      .formula-table th,
+      .formula-table td {
+        display: block;
+        width: 100%;
+      }
+
+      .formula-table thead {
+        display: none;
+      }
+
+      .formula-table tr {
+        margin-bottom: 12px;
+        border: 1px solid var(--border-light);
+        border-radius: 12px;
+        background: var(--bg-card);
+        overflow: visible;
+      }
+
+      .formula-table td {
+        text-align: left;
+        border-bottom: 1px solid var(--border-light);
+      }
+
+      .formula-table td:last-child {
+        border-bottom: 0;
+      }
+
+      .formula-table td::before {
+        content: attr(data-label);
+        display: block;
+        margin-bottom: 4px;
+        color: var(--primary-light);
+        font-weight: 800;
+        font-size: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <section class="hero">
+      <div class="grade-line">适用年级：初三升高一 / 高一预习</div>
+      <h1>《初等函数：由基本函数搭出来的函数世界》</h1>
+      <div class="tag-row">
+        <span class="tag">基本函数</span>
+        <span class="tag">有限次运算</span>
+        <span class="tag">函数复合</span>
+        <span class="tag">定义域</span>
+      </div>
+      <div class="formula-cloud">
+        <div class="formula-chip">$y=x^2$</div>
+        <div class="formula-chip">$y=2^x$</div>
+        <div class="formula-chip">$y=\log_2 x$</div>
+        <div class="formula-chip">$y=\sin x$</div>
+        <div class="formula-chip">$y=\sqrt{x}$</div>
+        <div class="formula-chip">$y=\ln(x^2+1)$</div>
+      </div>
+      <p class="hero-note">这份讲义的主线不是“背函数名称”，而是学会用数学眼光看一个式子：它由什么构成、经过哪些步骤、在哪里有意义。</p>
+    </section>
+
+    <section class="card guide-card">
+      <h2>学习路线与目标</h2>
+      <p class="text-secondary">建议按“认识积木 → 看搭法 → 查定义域 → 做拆解”的顺序阅读。学完后，你应该能完成下面这些动作。</p>
+      <div class="objective-grid">
+        <div class="objective-item"><span class="objective-num">1</span><span>说清初等函数的核心含义。</span></div>
+        <div class="objective-item"><span class="objective-num">2</span><span>区分“初等函数”和“简单函数”。</span></div>
+        <div class="objective-item"><span class="objective-num">3</span><span>识别六类常见基本函数。</span></div>
+        <div class="objective-item"><span class="objective-num">4</span><span>理解有限次运算与有限次复合。</span></div>
+        <div class="objective-item"><span class="objective-num">5</span><span>把复杂函数从里到外拆成步骤。</span></div>
+        <div class="objective-item"><span class="objective-num">6</span><span>检查分母、根号、对数、正切的定义域限制。</span></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div class="section-num">1</div>
+        <h2>知识树总览</h2>
+      </div>
+      <div class="card">
+        <p>学习初等函数，先不要急着背很多名字。把它看成一棵知识树：树根是“初等函数”，树枝是“基本函数、有限次运算、有限次复合、定义域”。</p>
+        <div class="knowledge-tree">
+          <div class="tree-root">初等函数</div>
+          <div class="tree-row">
+            <span class="tree-leaf">基本函数</span>
+            <span class="tree-leaf">有限次运算</span>
+            <span class="tree-leaf">有限次复合</span>
+            <span class="tree-leaf">定义域</span>
+          </div>
+          <div class="tree-branch-title">基本函数包括</div>
+          <div class="tree-row">
+            <span class="tree-leaf">常函数</span>
+            <span class="tree-leaf">幂函数</span>
+            <span class="tree-leaf">指数函数</span>
+            <span class="tree-leaf">对数函数</span>
+            <span class="tree-leaf">三角函数</span>
+            <span class="tree-leaf">反三角函数</span>
+          </div>
+          <div class="tree-branch-title">有限次运算包括</div>
+          <div class="tree-row">
+            <span class="tree-leaf">加</span>
+            <span class="tree-leaf">减</span>
+            <span class="tree-leaf">乘</span>
+            <span class="tree-leaf">除</span>
+            <span class="tree-leaf">乘方</span>
+            <span class="tree-leaf">开方</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div class="section-num">2</div>
+        <h2>直觉引入：函数积木工厂</h2>
+      </div>
+      <div class="card">
+        <p>初等函数不是“初级函数”，也不是“一定很简单的函数”。它更像一个函数积木工厂：先准备几类基础积木，再用固定的方法把它们拼起来。</p>
+        <div class="expand-grid">
+          <div class="expand-item">
+            <div class="expand-label">原材料</div>
+            <div>基本函数 $=$ 积木块。</div>
+          </div>
+          <div class="expand-item">
+            <div class="expand-label">拼接</div>
+            <div>加、减、乘、除 $=$ 拼接方法。</div>
+          </div>
+          <div class="expand-item">
+            <div class="expand-label">改造</div>
+            <div>乘方、开方 $=$ 改造积木。</div>
+          </div>
+          <div class="expand-item">
+            <div class="expand-label">加工线</div>
+            <div>函数复合 $=$ 把一个机器的输出送进另一个机器。</div>
+          </div>
+        </div>
+        <div class="callout blue">
+          <div class="callout-label">核心比喻</div>
+          初等函数就是最后搭出来的函数作品。判断一个函数是不是常见初等函数，关键是看它能不能由这些“积木”和“搭法”经过有限步骤得到。
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div class="section-num">3</div>
+        <h2>初等函数的标准定义</h2>
+      </div>
+      <div class="card">
+        <p><strong>通俗版：</strong>初等函数，就是用基本函数当积木，通过数得清的几步运算和复合，搭出来的函数。</p>
+        <p><strong>标准版：</strong>由常函数、幂函数、指数函数、对数函数、三角函数、反三角函数等基本函数，经过有限次有理运算、乘方、开方和有限次函数复合得到，并且在定义域内能用一个明确式子表示的函数，通常叫初等函数。</p>
+        <div class="formula-box hl-green">
+          $$
+          \text{基本函数}+\text{有限次运算}+\text{有限次复合}+\text{定义域}
+          \Longrightarrow
+          \text{初等函数}
+          $$
+          <div class="brief">
+            <strong>简记：</strong>$\text{基本函数}+\text{有限步骤}+\text{定义域}=\text{初等函数}$（“积木 + 搭法 + 使用范围”）
+          </div>
+        </div>
+        <div class="callout orange">
+          <div class="callout-label">数学化提醒</div>
+          “能写出式子”还不够，式子还要在对应的定义域内有意义。例如 $\ln(x-1)$ 只有在 $x&gt;1$ 时才有意义。
+        </div>
+        <div class="criterion-ladder">
+          <div class="criterion-step">
+            <div class="criterion-badge">1</div>
+            <strong>看原材料</strong>
+            <span>是否来自常函数、幂函数、指数函数、对数函数、三角函数、反三角函数等基本函数。</span>
+          </div>
+          <div class="criterion-step">
+            <div class="criterion-badge">2</div>
+            <strong>看搭建次数</strong>
+            <span>是否只用了数得清的加、减、乘、除、乘方、开方和复合。</span>
+          </div>
+          <div class="criterion-step">
+            <div class="criterion-badge">3</div>
+            <strong>看表达式</strong>
+            <span>是否能在定义域内用一个明确式子表示。</span>
+          </div>
+          <div class="criterion-step">
+            <div class="criterion-badge">4</div>
+            <strong>看定义域</strong>
+            <span>是否排除了分母为零、根号为负、对数非正等不能工作的输入。</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div class="section-num">4</div>
+        <h2>基本函数家族</h2>
+      </div>
+      <div class="family-grid">
+        <article class="card family-card">
+          <span class="mini-label">常函数</span>
+          <div class="formula-box">
+            $$y=c$$
+            <div class="brief"><strong>简记：</strong>$y=c$（“常函数，永远不变”）</div>
+          </div>
+          <p>不管 $x$ 怎么变，$y$ 都一直等于同一个数。</p>
+          <p><strong>例子：</strong>$y=3$。</p>
+          <p><strong>图像印象：</strong>一条水平线。</p>
+          <p><strong>定义域提醒：</strong>通常可以取全体实数。</p>
+        </article>
+
+        <article class="card family-card">
+          <span class="mini-label">幂函数</span>
+          <div class="formula-box">
+            $$y=x^a$$
+            <div class="brief"><strong>简记：</strong>$y=x^a$（“幂函数，$x$ 当底”）</div>
+          </div>
+          <p>让 $x$ 做乘方、开方、取倒数等操作。</p>
+          <p><strong>例子：</strong>$y=x^2,\quad y=\sqrt{x},\quad y=\frac{1}{x}$。</p>
+          <p><strong>图像印象：</strong>有的像抛物线，有的像根号曲线，有的像双曲线。</p>
+          <p><strong>定义域提醒：</strong>要看指数 $a$ 的情况。比如 $\sqrt{x}$ 要求 $x\ge0$，$\frac{1}{x}$ 要求 $x\ne0$。</p>
+        </article>
+
+        <article class="card family-card">
+          <span class="mini-label">指数函数</span>
+          <div class="formula-box">
+            $$y=a^x,\quad a&gt;0,\ a\ne1$$
+            <div class="brief"><strong>简记：</strong>$y=a^x$（“指数函数，$x$ 在天上”）</div>
+          </div>
+          <p>底数固定，$x$ 站在指数位置。</p>
+          <p><strong>例子：</strong>$y=2^x$。</p>
+          <p><strong>图像印象：</strong>当 $a&gt;1$ 时，越往右增长越快。</p>
+          <p><strong>定义域提醒：</strong>指数函数 $a^x$ 的定义域通常是全体实数。</p>
+        </article>
+
+        <article class="card family-card">
+          <span class="mini-label">对数函数</span>
+          <div class="formula-box">
+            $$y=\log_a x,\quad a&gt;0,\ a\ne1$$
+            <div class="brief"><strong>简记：</strong>$y=\log_a x$（“对数函数，真数大于零”）</div>
+          </div>
+          <p>对数在问：$a$ 要乘自己多少次，才能变成 $x$？</p>
+          <p><strong>例子：</strong>$\log_2 8=3$，因为 $2^3=8$。</p>
+          <p><strong>图像印象：</strong>对数函数像指数函数的倒放录像。</p>
+          <p><strong>定义域提醒：</strong>对数里面必须大于 $0$，所以 $\log_a x$ 要求 $x&gt;0$。</p>
+        </article>
+
+        <article class="card family-card">
+          <span class="mini-label">三角函数</span>
+          <div class="formula-box">
+            $$y=\sin x,\quad y=\cos x,\quad y=\tan x$$
+            <div class="brief"><strong>简记：</strong>$\sin x,\ \cos x,\ \tan x$（“三角函数，周期波浪”）</div>
+          </div>
+          <p>和角度、周期、波动有关。</p>
+          <p><strong>例子：</strong>波浪、钟摆、声音、昼夜变化，都有周期变化的影子。</p>
+          <p><strong>图像印象：</strong>$\sin x$ 和 $\cos x$ 像有节奏的波浪线。</p>
+          <p><strong>定义域提醒：</strong>$\sin x$ 和 $\cos x$ 的定义域通常是全体实数；$\tan x$ 要求 $\cos x\ne0$。</p>
+        </article>
+
+        <article class="card family-card">
+          <span class="mini-label">反三角函数</span>
+          <div class="formula-box">
+            $$y=\arcsin x,\quad y=\arccos x,\quad y=\arctan x$$
+            <div class="brief"><strong>简记：</strong>$\arcsin x,\ \arccos x,\ \arctan x$（“反三角，数值找角”）</div>
+          </div>
+          <p>三角函数是由角度找数值，反三角函数是由数值反过来找角度。</p>
+          <p><strong>例子：</strong>如果 $\sin\theta=\frac{1}{2}$，那么可以用 $\theta=\arcsin\frac{1}{2}$ 表示一个对应角。</p>
+          <p><strong>定义域提醒：</strong>$\arcsin x$ 和 $\arccos x$ 要求 $-1\le x\le1$；$\arctan x$ 通常可以取全体实数。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div class="section-num">5</div>
+        <h2>初等函数的搭建方法</h2>
+      </div>
+      <div class="three-col">
+        <div class="card">
+          <h3>方法一：有理运算</h3>
+          <p>包括加、减、乘、除。</p>
+          <div class="formula-box">$$f(x)=x^2+3x-5$$</div>
+          <p>它由 $x^2$、$3x$ 和 $-5$ 通过加减法拼出来。</p>
+          <div class="callout red">除法时，分母不能等于 $0$。</div>
+        </div>
+        <div class="card">
+          <h3>方法二：乘方与开方</h3>
+          <div class="formula-box">$$f(x)=\sqrt{x+1}$$</div>
+          <p>先算 $x+1$，再对结果开方。</p>
+          <div class="callout red">在实数范围内，偶次根号里面不能小于 $0$。</div>
+        </div>
+        <div class="card">
+          <h3>方法三：函数复合</h3>
+          <div class="formula-box">
+            $$f(x)=\ln(x^2+1)$$
+            <div class="brief"><strong>简记：</strong>$g(f(x))$（“先里后外，层层加工”）</div>
+          </div>
+          <p>先算 $x^2+1$，再把结果送进 $\ln$ 里面。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div class="section-num">6</div>
+        <h2>函数复合：函数机器演示</h2>
+      </div>
+      <div class="card">
+        <p>函数复合可以理解为：一个函数的输出，变成另一个函数的输入。</p>
+        <div class="machine-flow">
+          <div class="machine-card">
+            <div class="machine-title">输入 $x$</div>
+            <div class="machine-desc">先给机器一个数。</div>
+          </div>
+          <div class="machine-card">
+            <div class="machine-title">平方机器</div>
+            <div class="machine-desc">把 $x$ 变成 $x^2$。</div>
+          </div>
+          <div class="machine-card">
+            <div class="machine-title">加 $1$ 机器</div>
+            <div class="machine-desc">把 $x^2$ 变成 $x^2+1$。</div>
+          </div>
+          <div class="machine-card">
+            <div class="machine-title">$\ln$ 机器</div>
+            <div class="machine-desc">输出 $\ln(x^2+1)$。</div>
+          </div>
+        </div>
+        <div class="arrow-line">$x\rightarrow x^2\rightarrow x^2+1\rightarrow \ln(x^2+1)$</div>
+        <div class="callout green">
+          <div class="callout-label">拆解原则</div>
+          复合函数不要一口吞下去，要从最里面开始，一层一层往外看。
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div class="section-num">7</div>
+        <h2>“有限次”到底是什么意思</h2>
+      </div>
+      <div class="card">
+        <p><strong>有限次，就是步骤可以数出来。</strong></p>
+        <div class="formula-box">$$f(x)=\sin\sqrt{x^2+1}$$</div>
+        <ol class="step-list">
+          <li>先算 $x^2$。</li>
+          <li>再算 $x^2+1$。</li>
+          <li>再开方。</li>
+          <li>最后取 $\sin$。</li>
+        </ol>
+        <div class="two-col">
+          <div class="callout green">
+            <div class="callout-label">有限次</div>
+            第一步、第二步、第三步……数得清。
+          </div>
+          <div class="callout orange">
+            <div class="callout-label">不是这里讨论的有限次</div>
+            无限项相加、用极限定义、无限次迭代。
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div class="section-num">8</div>
+        <h2>定义域：函数能在哪里工作</h2>
+      </div>
+      <div class="card">
+        <p>函数式子不是想代什么 $x$ 都可以。每个函数都有自己能工作的范围，这个范围叫定义域。</p>
+        <div class="formula-box">
+          $$\frac{1}{x-2}\quad \Rightarrow \quad x\ne2$$
+          $$\sqrt{x-1}\quad \Rightarrow \quad x\ge1$$
+          $$\ln(x+3)\quad \Rightarrow \quad x&gt;-3$$
+          $$\tan x\quad \Rightarrow \quad \cos x\ne0$$
+          <div class="brief">
+            <strong>简记：</strong>$\text{分母不为 }0,\ \text{根号非负},\ \text{对数为正},\ \text{正切看 }\cos x$（“定义域四警报”）
+          </div>
+        </div>
+        <div class="danger-list">
+          <div class="danger-item">分母怕零</div>
+          <div class="danger-item">根号怕负</div>
+          <div class="danger-item">对数怕非正</div>
+        </div>
+        <div class="callout blue">
+          <div class="callout-label">多个限制怎么办？</div>
+          如果一个函数里同时出现分母、根号、对数等限制，要把所有条件同时满足，最后取它们的交集。例如 $\frac{\sqrt{x-1}}{\ln x}$ 既要 $x-1\ge0$，又要 $x&gt;0$，还要 $\ln x\ne0$。
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div class="section-num">9</div>
+        <h2>函数拆解示范</h2>
+      </div>
+      <div class="two-col">
+        <div class="card">
+          <h3>示例一</h3>
+          <div class="formula-box">$$f(x)=\sqrt{\ln(x+2)}$$</div>
+          <ol class="step-list">
+            <li>最里面是 $x+2$。</li>
+            <li>然后取 $\ln$，所以要求 $x+2&gt;0$。</li>
+            <li>最后开平方，所以要求 $\ln(x+2)\ge0$。</li>
+            <li>因为 $\ln1=0$，且 $\ln x$ 递增，所以 $x+2\ge1$。</li>
+            <li>得到 $x\ge -1$。</li>
+          </ol>
+          <div class="formula-box hl-green">$$D=[-1,+\infty)$$</div>
+        </div>
+        <div class="card">
+          <h3>示例二</h3>
+          <div class="formula-box">$$f(x)=\cos\sqrt{x+1}$$</div>
+          <ol class="step-list">
+            <li>先算 $x+1$。</li>
+            <li>再开方，要求 $x+1\ge0$。</li>
+            <li>最后取 $\cos$。</li>
+            <li>$\cos x$ 对所有实数输入都有意义。</li>
+          </ol>
+          <div class="formula-box hl-green">$$D=[-1,+\infty)$$</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div class="section-num">10</div>
+        <h2>哪些是初等函数，哪些要小心</h2>
+      </div>
+      <div class="card">
+        <div class="callout green">
+          <div class="callout-label">判断一句话</div>
+          先问“由哪些基本函数来”，再问“经过几步搭出来”，最后问“哪些 $x$ 可以代入”。
+        </div>
+        <div class="table-scroll">
+          <table class="formula-table">
+            <thead>
+              <tr>
+                <th>通常是初等函数</th>
+                <th>理由</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td data-label="通常是初等函数">$f(x)=x^2+2x+1$</td>
+                <td data-label="理由">由幂函数和常函数经过加法得到。</td>
+              </tr>
+              <tr>
+                <td data-label="通常是初等函数">$f(x)=\sqrt{x+3}$</td>
+                <td data-label="理由">由一次式和开方复合得到。</td>
+              </tr>
+              <tr>
+                <td data-label="通常是初等函数">$f(x)=2^x+\log_2 x$</td>
+                <td data-label="理由">由指数函数、对数函数和加法得到，注意 $x&gt;0$。</td>
+              </tr>
+              <tr>
+                <td data-label="通常是初等函数">$f(x)=\sin x+\cos x$</td>
+                <td data-label="理由">两个三角函数相加。</td>
+              </tr>
+              <tr>
+                <td data-label="通常是初等函数">$f(x)=\ln(x^2+1)$</td>
+                <td data-label="理由">由幂函数、常函数、对数函数复合得到。</td>
+              </tr>
+              <tr>
+                <td data-label="通常是初等函数">$f(x)=\frac{e^x}{x+1}$</td>
+                <td data-label="理由">由指数函数、一次式和除法得到，注意 $x\ne -1$。</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout orange">
+          <div class="callout-label">需要小心，不一定属于本文讨论的普通初等函数</div>
+          分段函数、无限级数定义的函数、用极限过程定义的函数、只能递推定义的函数、没有普通解析式的函数，都需要看具体语境。分段函数不能简单一刀切；有些分段函数在每一段上可以由初等函数表示，但整体是否属于某种意义下的初等函数，要看教材或语境。
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div class="section-num">11</div>
+        <h2>记忆方法</h2>
+      </div>
+      <div class="memory-card">
+        <div class="mem-icon">1</div>
+        <div class="mem-title">积木口诀</div>
+        <div class="mem-body">基本函数是积木，有限运算来拼接；复合函数像机器，定义域要先检查。</div>
+      </div>
+      <div class="memory-card">
+        <div class="mem-icon">2</div>
+        <div class="mem-title">看复杂函数四步法</div>
+        <div class="mem-body">找最里面；看外层函数；找加减乘除和开方；查定义域限制。</div>
+      </div>
+      <div class="memory-card">
+        <div class="mem-icon">3</div>
+        <div class="mem-title">三种常见危险位置</div>
+        <div class="mem-body">分母、根号、对数。口诀是：分母怕零，根号怕负，对数怕非正。</div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div class="section-num">12</div>
+        <h2>例题精讲</h2>
+      </div>
+      <div class="example-box">
+        <div class="example-num">例题 1：⭐⭐ 易</div>
+        <div class="example-problem">判断 $f(x)=x^2+2x+1$ 是否是初等函数。</div>
+        <div class="example-solution">
+          <div class="proof-thread">
+            <div class="proof-step">原材料：$x^2$ 来自幂函数，$2x$ 来自一次式，$1$ 是常函数。</div>
+            <div class="proof-step">搭建方法：只用了有限次乘法和加法。</div>
+            <div class="proof-step">结论：它是常见初等函数，定义域为全体实数。</div>
+          </div>
+        </div>
+        <div class="example-note">💡 小结：多项式通常可以看成由幂函数和常函数经过有限次加减乘得到。</div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-num">例题 2：⭐⭐ 易</div>
+        <div class="example-problem">判断并求定义域：$f(x)=\sqrt{x-3}$。</div>
+        <div class="example-solution">
+          <div class="proof-thread">
+            <div class="proof-step">构造：先算一次式 $x-3$，再开平方，所以它是常见初等函数。</div>
+            <div class="proof-step">限制：偶次根号内必须大于等于 $0$，所以 $x-3\ge0$。</div>
+            <div class="proof-step">结论：$x\ge3$，定义域为 $[3,+\infty)$。</div>
+          </div>
+        </div>
+        <div class="example-note">💡 小结：遇到偶次根号，先让根号里面大于等于 $0$。</div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-num">例题 3：⭐⭐⭐ 中</div>
+        <div class="example-problem">判断并求定义域：$f(x)=\ln(x-1)$。</div>
+        <div class="example-solution">
+          <div class="proof-thread">
+            <div class="proof-step">构造：一次式 $x-1$ 送入对数函数 $\ln x$，这是有限次复合。</div>
+            <div class="proof-step">限制：对数真数必须大于 $0$，所以 $x-1&gt;0$。</div>
+            <div class="proof-step">结论：$x&gt;1$，定义域为 $(1,+\infty)$。</div>
+          </div>
+        </div>
+        <div class="example-note">💡 小结：遇到对数，马上检查“真数大于 $0$”。</div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-num">例题 4：⭐⭐⭐ 中</div>
+        <div class="example-problem">拆解函数：$f(x)=\sin\sqrt{x+2}$。</div>
+        <div class="example-solution">
+          <div class="proof-thread">
+            <div class="proof-step">从里到外：先算 $x+2$。</div>
+            <div class="proof-step">再开方：得到 $\sqrt{x+2}$，要求 $x+2\ge0$。</div>
+            <div class="proof-step">最后取 $\sin$：三角函数 $\sin x$ 对所有实数输入有意义。</div>
+            <div class="proof-step">结论：定义域为 $[-2,+\infty)$。</div>
+          </div>
+        </div>
+        <div class="example-note">💡 小结：三角函数在外层时，定义域限制常常来自里面的根号、分母或对数。</div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-num">例题 5：⭐⭐⭐⭐ 难</div>
+        <div class="example-problem">求定义域：$f(x)=\sqrt{\ln(x+2)}$。</div>
+        <div class="example-solution">
+          <div class="proof-thread">
+            <div class="proof-step">先看外层根号：必须有 $\ln(x+2)\ge0$。</div>
+            <div class="proof-step">再把对数不等式转化：因为 $\ln1=0$，且 $\ln x$ 在正数范围内递增，所以 $x+2\ge1$。</div>
+            <div class="proof-step">解得 $x\ge -1$。这个条件已经保证 $x+2&gt;0$，因此对数本身也有意义。</div>
+            <div class="proof-step">结论：定义域为 $[-1,+\infty)$。</div>
+          </div>
+        </div>
+        <div class="example-note">💡 小结：多重限制要同时满足；有时较强的条件会自动包含较弱的条件。</div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div class="section-num">13</div>
+        <h2>易错点</h2>
+      </div>
+      <div class="mistake-grid">
+        <div class="card mistake-card">
+          <h3>易错点 1：初等函数就是简单函数</h3>
+          <p><strong>错因：</strong>把“初等”误解成“容易”。</p>
+          <p><strong>正解：</strong>初等函数强调构造方式，不强调式子短不短。</p>
+          <div class="formula-box">$$f(x)=\sin\left(\ln\sqrt{x^2+1}\right)$$</div>
+          <p><strong>检查动作：</strong>从里到外数步骤。</p>
+        </div>
+
+        <div class="card mistake-card">
+          <h3>易错点 2：式子很长就不是初等函数</h3>
+          <p><strong>错因：</strong>把外观复杂度当成分类标准。</p>
+          <p><strong>正解：</strong>只要由基本函数有限次运算和复合得到，仍然可能是初等函数。</p>
+          <p><strong>检查动作：</strong>找基本函数和搭建方法。</p>
+        </div>
+
+        <div class="card mistake-card">
+          <h3>易错点 3：有公式就一定是初等函数</h3>
+          <p><strong>错因：</strong>只看“能不能写出来”，不看“怎么构造出来”。</p>
+          <p><strong>正解：</strong>还要看是否能由基本函数有限次搭出来。</p>
+          <p><strong>检查动作：</strong>问清楚这个式子是否来自有限次运算和复合。</p>
+        </div>
+
+        <div class="card mistake-card">
+          <h3>易错点 4：定义域不用管</h3>
+          <p><strong>错因：</strong>只看表达式，不看输入是否能工作。</p>
+          <p><strong>正解：</strong>定义域决定函数在哪里有意义。</p>
+          <div class="formula-box">$$f(x)=\frac{1}{x-2},\quad x\ne2$$</div>
+          <p><strong>检查动作：</strong>先找分母、根号、对数、正切。</p>
+        </div>
+
+        <div class="card mistake-card">
+          <h3>易错点 5：复合函数从外往里算</h3>
+          <p><strong>错因：</strong>看到最外层函数就急着处理。</p>
+          <p><strong>正解：</strong>拆解复合函数时，通常从最里面开始看。</p>
+          <div class="formula-box">$$f(x)=\ln(x^2+1)$$</div>
+          <p><strong>检查动作：</strong>先看 $x^2+1$，再看 $\ln$。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div class="section-num">14</div>
+        <h2>总结</h2>
+      </div>
+      <div class="card summary-card">
+        <ol class="step-list">
+          <li>初等函数不是“简单函数”，而是由基本函数搭出来的函数。</li>
+          <li>基本函数包括常函数、幂函数、指数函数、对数函数、三角函数、反三角函数。</li>
+          <li>搭建方法包括有限次有理运算、乘方、开方和有限次复合。</li>
+          <li>看复杂函数时，要从最里面开始拆。</li>
+          <li>定义域是函数能正常工作的范围，必须检查。</li>
+        </ol>
+        <div class="formula-box hl-green">
+          复杂函数并不可怕，把它一层一层拆开，它就会变得清楚。
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // 页面初始化入口。当前版本保留讲义阅读与公式排版功能。
+    document.addEventListener("DOMContentLoaded", initPage);
+
+    function initPage() {
+      typesetMath();
+    }
+
+    // 如果页面中有 MathJax，则在加载后执行一次公式排版。
+    function typesetMath() {
+      if (window.MathJax && MathJax.typesetPromise) {
+        MathJax.typesetPromise();
+      }
+    }
+  </script>
+</body>
+</html>

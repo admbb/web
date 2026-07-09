@@ -1,0 +1,1325 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>泰勒展开式</title>
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$','$']],
+    displayMath: [['$$','$$']],
+    processEscapes: true
+  },
+  options: {
+    skipHtmlTags: ['script','noscript','style','textarea','pre']
+  },
+  chtml: {
+    displayAlign: 'center',
+    displayIndent: '0'
+  }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<style>
+:root {
+  --primary: #1a3a5c;
+  --primary-light: #2563a8;
+  --accent: #dc2626;
+  --accent-orange: #d97706;
+  --bg-page: #f8f9fe;
+  --bg-card: #ffffff;
+  --bg-formula: #f0f4ff;
+  --border-light: #e0e7f0;
+  --border-blue: #dbeafe;
+  --text-primary: #1a3a5c;
+  --text-secondary: #6b7280;
+  --text-accent: #dc2626;
+  --success: #059669;
+  --warning: #d97706;
+  --error: #dc2626;
+  --shadow-sm: 0 2px 8px rgba(26,58,92,0.06);
+  --shadow-md: 0 6px 20px rgba(26,58,92,0.10);
+  --shadow-lg: 0 12px 36px rgba(26,58,92,0.14);
+  --radius-card: 14px;
+  --radius-formula: 10px;
+  --transition-base: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+html, body { overflow-x: hidden; }
+body {
+  font-family: "PingFang SC","Microsoft YaHei","Helvetica Neue",sans-serif;
+  background: var(--bg-page);
+  color: var(--text-primary);
+  line-height: 1.8;
+  font-size: 15px;
+}
+.container { max-width: 960px; margin: 0 auto; padding: 20px 16px 60px; }
+
+/* ---- 滚动淡入动画 ---- */
+.fade-section {
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.fade-section.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ---- 封面 ---- */
+.cover-wrap { position: relative; margin-bottom: 48px; border-radius: 20px; overflow: hidden; }
+.cover-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
+.cover {
+  position: relative; z-index: 1;
+  text-align: center;
+  padding: 72px 20px 56px;
+  background: linear-gradient(135deg, rgba(26,58,92,0.92) 0%, rgba(37,99,168,0.88) 60%, rgba(59,130,246,0.85) 100%);
+  color: #fff;
+  overflow: visible;
+}
+.cover h1 {
+  font-size: 40px; font-weight: 900; letter-spacing: 3px; margin-bottom: 14px;
+  animation: coverTitleIn 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.cover .subtitle {
+  font-size: 16px; opacity: 0.85; margin-bottom: 10px;
+  animation: coverSubIn 0.9s 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.cover .badge {
+  display: inline-block;
+  background: rgba(255,255,255,0.18);
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 20px;
+  padding: 5px 20px;
+  font-size: 13px;
+  margin-top: 10px;
+  animation: coverSubIn 0.9s 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes coverTitleIn {
+  from { opacity: 0; transform: translateY(24px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes coverSubIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ---- 浮动目录 ---- */
+.float-toc {
+  position: fixed; top: 50%; right: 14px; transform: translateY(-50%);
+  z-index: 100; display: flex; flex-direction: column; gap: 6px;
+  background: rgba(255,255,255,0.92); backdrop-filter: blur(8px);
+  border-radius: 12px; padding: 10px 8px; border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-sm);
+  transition: opacity var(--transition-base);
+}
+.float-toc a {
+  display: block; width: 10px; height: 10px; border-radius: 50%;
+  background: var(--border-light); transition: all var(--transition-base);
+  position: relative;
+}
+.float-toc a.active { background: var(--primary-light); transform: scale(1.3); }
+.float-toc a:hover { background: var(--primary); }
+.float-toc a .toc-tip {
+  display: none; position: absolute; right: 22px; top: 50%; transform: translateY(-50%);
+  background: var(--primary); color: #fff; font-size: 12px; white-space: nowrap;
+  padding: 3px 10px; border-radius: 6px; pointer-events: none;
+}
+.float-toc a:hover .toc-tip { display: block; }
+
+/* ---- 回到顶部 ---- */
+.back-top {
+  position: fixed; bottom: 28px; right: 28px; z-index: 100;
+  width: 44px; height: 44px; border-radius: 50%;
+  background: var(--primary); color: #fff; border: none; cursor: pointer;
+  font-size: 20px; display: flex; align-items: center; justify-content: center;
+  box-shadow: var(--shadow-md);
+  opacity: 0; transform: translateY(12px);
+  transition: all var(--transition-base);
+}
+.back-top.show { opacity: 1; transform: translateY(0); }
+.back-top:hover { background: var(--primary-light); transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+
+/* ---- 通用组件 ---- */
+.card {
+  background: var(--bg-card); border-radius: var(--radius-card);
+  padding: 28px 32px; margin-bottom: 20px;
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-sm); overflow: visible;
+  transition: box-shadow var(--transition-base), transform var(--transition-base);
+}
+.card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+.section { margin-bottom: 48px; }
+.section-head { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
+.section-num {
+  width: 42px; height: 42px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  color: #fff; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; font-weight: 800; flex-shrink: 0;
+  transition: transform var(--transition-base);
+}
+.section:hover .section-num { transform: rotate(-6deg) scale(1.08); }
+h2 { font-size: 22px; color: var(--primary); margin: 0; }
+.formula-box {
+  background: var(--bg-formula); border-radius: var(--radius-formula);
+  padding: 18px 24px; margin: 16px 0; text-align: center; font-size: 17px;
+  border: 1px solid var(--border-blue); overflow: visible;
+  transition: border-color var(--transition-base);
+}
+.formula-box:hover { border-color: var(--primary-light); }
+.formula-box.hl-red { border-color: var(--accent); border-width: 2px; background: #fef2f2; }
+.formula-box.hl-green { border-color: var(--success); border-width: 2px; background: #ecfdf5; }
+.example-box {
+  background: var(--bg-page); border-left: 5px solid var(--primary);
+  border-radius: 0 12px 12px 0; padding: 20px 24px; margin: 20px 0; overflow: visible;
+}
+.example-num { font-size: 17px; font-weight: 800; color: var(--primary); margin-bottom: 10px; }
+.example-problem { font-size: 15px; margin-bottom: 14px; color: var(--primary); }
+.example-solution { font-size: 14px; line-height: 1.9; color: var(--text-secondary); margin-bottom: 12px; }
+.example-note { background: #fffbea; border-radius: 8px; padding: 10px 16px; font-size: 13px; color: #92400e; border: 1px solid #fde68a; }
+.callout { border-radius: var(--radius-formula); padding: 16px 22px; margin: 20px 0; font-size: 14px; line-height: 1.7; overflow: visible; }
+.callout.blue { background: #eff6ff; border-left: 5px solid var(--primary-light); color: #1e40af; }
+.callout.green { background: #ecfdf5; border-left: 5px solid var(--success); color: #064e3b; }
+.callout.orange { background: #fffbea; border-left: 5px solid var(--warning); color: #92400e; }
+.callout.red { background: #fef2f2; border-left: 5px solid var(--accent); color: #991b1b; }
+.callout-label { font-weight: 700; margin-bottom: 6px; font-size: 15px; }
+.expand-block { margin: 20px 0; }
+.expand-title { font-weight: 800; font-size: 16px; color: var(--primary); margin-bottom: 10px; }
+.expand-general { text-align: center; margin-bottom: 12px; }
+.expand-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+.expand-item {
+  background: var(--bg-formula); border: 1px solid var(--border-blue);
+  border-radius: var(--radius-formula); padding: 14px;
+  transition: transform var(--transition-base), box-shadow var(--transition-base);
+}
+.expand-item:hover { transform: translateY(-3px); box-shadow: var(--shadow-sm); }
+.expand-label { font-size: 13px; color: var(--primary-light); margin-bottom: 6px; }
+.expand-formula { text-align: center; }
+.memory-card {
+  background: linear-gradient(135deg, #fef3c7, #fffbeb);
+  border: 2px solid #fcd34d; border-radius: var(--radius-card);
+  padding: 24px; margin: 16px 0; overflow: visible;
+  transition: transform var(--transition-base), box-shadow var(--transition-base);
+}
+.memory-card:hover { transform: translateY(-3px) rotate(-0.5deg); box-shadow: var(--shadow-md); }
+.mem-icon { font-size: 28px; margin-bottom: 8px; }
+.mem-title { font-size: 18px; font-weight: 800; color: var(--warning); margin-bottom: 10px; }
+.mem-body { font-size: 14px; line-height: 1.9; }
+
+/* ---- 分隔线 ---- */
+.section-divider {
+  height: 1px; margin: 0 0 48px;
+  background: linear-gradient(90deg, transparent, var(--border-light) 20%, var(--border-blue) 50%, var(--border-light) 80%, transparent);
+}
+
+/* ---- 知识树 ---- */
+.tree-wrap { text-align: center; padding: 10px 0; }
+.tree-wrap canvas { max-width: 100%; }
+
+/* ---- 互动区 ---- */
+.interactive-panel {
+  background: var(--bg-card); border-radius: var(--radius-card);
+  padding: 28px; border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-sm); overflow: visible;
+}
+.ctrl-row { margin-bottom: 14px; display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.ctrl-row label {
+  display: inline-block; width: 130px; font-weight: 600;
+  font-size: 14px; color: var(--primary); flex-shrink: 0;
+}
+.ctrl-row select {
+  padding: 6px 12px; border-radius: 8px;
+  border: 1px solid var(--border-light); font-size: 14px;
+  background: var(--bg-card); color: var(--text-primary);
+  cursor: pointer; transition: border-color var(--transition-base);
+}
+.ctrl-row select:focus { border-color: var(--primary-light); outline: none; }
+.ctrl-row input[type=range] {
+  width: 200px; accent-color: var(--primary-light); cursor: pointer;
+}
+.ctrl-row .val {
+  display: inline-block; min-width: 32px; text-align: center;
+  font-weight: 700; color: var(--primary-light); font-size: 16px;
+  background: var(--bg-formula); border-radius: 6px; padding: 2px 8px;
+}
+.ctrl-row .btn {
+  padding: 6px 16px; border-radius: 8px; border: none;
+  font-size: 13px; font-weight: 600; cursor: pointer;
+  transition: all var(--transition-base);
+}
+.btn-play { background: var(--primary); color: #fff; }
+.btn-play:hover { background: var(--primary-light); transform: scale(1.04); }
+.btn-play.playing { background: var(--accent); }
+.btn-err { background: #f0f4ff; color: var(--primary-light); border: 1px solid var(--border-blue) !important; }
+.btn-err:hover { background: var(--border-blue); }
+.btn-err.active { background: var(--primary-light); color: #fff; }
+canvas.demo-canvas {
+  display: block; margin: 16px auto 0; border-radius: 12px;
+  border: 1px solid var(--border-light); max-width: 100%;
+  cursor: crosshair;
+}
+.formula-live {
+  text-align: center; margin-top: 12px; font-size: 14px;
+  color: var(--text-secondary); min-height: 24px;
+  padding: 8px 12px; background: var(--bg-formula);
+  border-radius: 8px; border: 1px solid var(--border-blue);
+}
+
+/* ---- 小测验 ---- */
+.quiz-card {
+  background: var(--bg-card); border-radius: var(--radius-card);
+  padding: 24px 28px; border: 2px solid var(--border-blue);
+  margin-bottom: 16px; overflow: visible;
+  transition: border-color var(--transition-base);
+}
+.quiz-card.correct { border-color: var(--success); }
+.quiz-card.wrong { border-color: var(--accent); }
+.quiz-q { font-weight: 700; font-size: 15px; color: var(--primary); margin-bottom: 12px; }
+.quiz-opts { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+.quiz-opt {
+  display: block; padding: 10px 16px; border-radius: 10px;
+  border: 1.5px solid var(--border-light); cursor: pointer;
+  font-size: 14px; color: var(--text-primary);
+  transition: all var(--transition-base); background: var(--bg-card);
+}
+.quiz-opt:hover { border-color: var(--primary-light); background: var(--bg-formula); }
+.quiz-opt.selected { border-color: var(--primary-light); background: var(--bg-formula); font-weight: 600; }
+.quiz-opt.right { border-color: var(--success); background: #ecfdf5; color: #064e3b; }
+.quiz-opt.wrong-pick { border-color: var(--accent); background: #fef2f2; color: #991b1b; }
+.quiz-fb { font-size: 13px; line-height: 1.7; padding: 10px 14px; border-radius: 8px; display: none; }
+.quiz-fb.show { display: block; }
+.quiz-fb.ok { background: #ecfdf5; color: #064e3b; border: 1px solid var(--success); }
+.quiz-fb.no { background: #fef2f2; color: #991b1b; border: 1px solid var(--accent); }
+
+/* ---- 简记 ---- */
+.jianji { margin-top: 10px; font-size: 13px; color: var(--primary-light); }
+.jianji strong { color: var(--primary-light); }
+
+/* ---- 响应式 ---- */
+@media (max-width: 640px) {
+  .container { padding: 10px 8px 40px; }
+  .cover { padding: 48px 12px 36px; }
+  .cover h1 { font-size: 28px; letter-spacing: 1px; }
+  .card { padding: 18px 14px; }
+  .section-head { gap: 10px; }
+  .section-num { width: 34px; height: 34px; font-size: 16px; border-radius: 10px; }
+  h2 { font-size: 18px; }
+  .formula-box { padding: 12px 10px; font-size: 15px; }
+  .example-box { padding: 14px 12px; }
+  .expand-grid { grid-template-columns: 1fr; }
+  .float-toc { display: none; }
+  .back-top { right: 14px; bottom: 14px; width: 38px; height: 38px; font-size: 17px; }
+  .interactive-panel { padding: 16px 12px; }
+  .ctrl-row { gap: 6px; }
+  .ctrl-row label { width: 100%; }
+  .ctrl-row input[type=range] { width: 100%; }
+}
+</style>
+</head>
+<body>
+
+<!-- 浮动目录 -->
+<nav class="float-toc" id="floatToc"></nav>
+
+<!-- 回到顶部 -->
+<button class="back-top" id="backTop" title="回到顶部">&#8593;</button>
+
+<div class="container">
+
+<!-- ============ 封面 ============ -->
+<div class="cover-wrap">
+  <canvas class="cover-bg" id="coverBg"></canvas>
+  <div class="cover">
+    <h1>泰勒展开式</h1>
+    <div class="subtitle">Taylor Series Expansion</div>
+    <div class="badge">适用：高中生 / 数学竞赛基础</div>
+  </div>
+</div>
+
+<!-- ============ 1. 知识树总览 ============ -->
+<div class="section fade-section" id="sec1" data-toc="知识树">
+  <div class="section-head">
+    <div class="section-num">1</div>
+    <h2>知识树总览</h2>
+  </div>
+  <div class="card">
+    <div class="tree-wrap">
+      <canvas id="treeCanvas" width="900" height="620"></canvas>
+    </div>
+  </div>
+</div>
+<div class="section-divider"></div>
+
+<!-- ============ 2. 直觉引入 ============ -->
+<div class="section fade-section" id="sec2" data-toc="直觉引入">
+  <div class="section-head">
+    <div class="section-num">2</div>
+    <h2>直觉引入——用多项式"模仿"任意函数</h2>
+  </div>
+  <div class="card">
+    <p>想象你站在一条弯曲的山路上，手里只有一把直尺。你能做的第一件事是什么？在脚下画一段<strong>切线</strong>——这条直线至少在"当前这一步"和山路方向一致。</p>
+    <p style="margin-top:12px;">如果你不满足于此，还想让这条线在远处也贴近山路，你会怎么做？你会让这条线"弯一点"来匹配山路的<strong>弯曲程度</strong>（即曲率），再让它"再弯一点"来匹配曲率的变化……</p>
+
+    <!-- Canvas: 直觉插图——切线→二次→三次逼近 -->
+    <canvas id="introCanvas" width="700" height="320" style="display:block;margin:20px auto 0;border-radius:12px;border:1px solid var(--border-light);max-width:100%;"></canvas>
+    <p style="text-align:center;margin-top:8px;font-size:12px;color:var(--text-secondary);">在 $x_0$ 处：切线（1阶） → 抛物线（2阶） → 三次曲线（3阶），逼近精度逐步提高</p>
+
+    <div class="callout blue" style="margin-top:18px;">
+      <div class="callout-label">核心思想</div>
+      泰勒展开的本质就是：在某一点 $x_0$ 处，用一个<strong>多项式</strong>去"模仿"一个复杂函数 $f(x)$。模仿的精度取决于多项式的<strong>阶数</strong>——阶数越高，吻合越好。
+    </div>
+    <p style="margin-top:14px;">为什么要用多项式？因为多项式是最"友好"的函数：只有加、减、乘，求导和积分都极其简单。把一个复杂的 $\sin x$、$e^x$、$\ln(1+x)$ 变成多项式之后，许多难题就迎刃而解了。</p>
+  </div>
+</div>
+<div class="section-divider"></div>
+
+<!-- ============ 3. 标准形式与证明 ============ -->
+<div class="section fade-section" id="sec3" data-toc="标准形式">
+  <div class="section-head">
+    <div class="section-num">3</div>
+    <h2>标准形式与证明</h2>
+  </div>
+
+  <div class="card">
+    <h3 style="font-size:17px;color:var(--primary);margin-bottom:14px;">3.1 泰勒公式（在 $x_0$ 处展开）</h3>
+    <p>设 $f(x)$ 在 $x_0$ 处具有 $n$ 阶导数，则存在一个 $n$ 次多项式 $P_n(x)$ 使得：</p>
+    <div class="formula-box hl-red">
+      $$f(x) = \sum_{k=0}^{n} \frac{f^{(k)}(x_0)}{k!}(x - x_0)^k + R_n(x)$$
+    </div>
+    <div class="jianji">
+      <strong>简记：</strong>$ f(x) = P_n(x) + R_n(x) $（"多项式 + 余项"）
+    </div>
+
+    <p style="margin-top:18px;">展开写出来就是：</p>
+    <div class="formula-box">
+      $$P_n(x) = f(x_0) + f'(x_0)(x-x_0) + \frac{f''(x_0)}{2!}(x-x_0)^2 + \frac{f'''(x_0)}{3!}(x-x_0)^3 + \cdots + \frac{f^{(n)}(x_0)}{n!}(x-x_0)^n$$
+    </div>
+
+    <div class="callout green" style="margin-top:16px;">
+      <div class="callout-label">系数的直觉理解</div>
+      第 $k$ 项的系数 $\dfrac{f^{(k)}(x_0)}{k!}$ 意思是：要让多项式在 $x_0$ 处的第 $k$ 阶导数与原函数完全一致。除以 $k!$ 是因为对 $(x-x_0)^k$ 连续求导 $k$ 次会产生 $k!$ 的因子，除以它恰好抵消。
+    </div>
+
+    <div class="callout blue" style="margin-top:14px;">
+      <div class="callout-label">证明思路</div>
+      设 $P_n(x) = a_0 + a_1(x-x_0) + a_2(x-x_0)^2 + \cdots + a_n(x-x_0)^n$。要求 $P_n^{(k)}(x_0) = f^{(k)}(x_0)$。<br>
+      <strong>$k=0$：</strong>$P_n(x_0) = a_0 = f(x_0)$ &nbsp; ✓<br>
+      <strong>$k=1$：</strong>$P_n'(x_0) = a_1 = f'(x_0)$ &nbsp; ✓<br>
+      <strong>$k=2$：</strong>$P_n''(x_0) = 2!\,a_2 = f''(x_0) \Rightarrow a_2 = \dfrac{f''(x_0)}{2!}$ &nbsp; ✓<br>
+      <strong>一般地：</strong>$P_n^{(k)}(x_0) = k!\,a_k = f^{(k)}(x_0) \Rightarrow a_k = \dfrac{f^{(k)}(x_0)}{k!}$ &nbsp; $\blacksquare$
+    </div>
+  </div>
+
+  <div class="card">
+    <h3 style="font-size:17px;color:var(--primary);margin-bottom:14px;">3.2 麦克劳林公式（$x_0 = 0$ 的特殊情形）</h3>
+    <p>当展开中心取 $x_0 = 0$ 时，泰勒公式退化为<strong>麦克劳林公式</strong>：</p>
+    <div class="formula-box hl-green">
+      $$f(x) = \sum_{k=0}^{n} \frac{f^{(k)}(0)}{k!} x^k + R_n(x)$$
+    </div>
+    <div class="jianji">
+      <strong>简记：</strong>$ f(x) = \sum \dfrac{f^{(k)}(0)}{k!} x^k $（"在原点展开，$x_0$ 全部消失"）
+    </div>
+    <p style="margin-top:12px;">这是考试中最常用的形式，因为绝大多数常见函数在 $x=0$ 处的各阶导数值都容易算出。</p>
+  </div>
+
+  <div class="card">
+    <h3 style="font-size:17px;color:var(--primary);margin-bottom:14px;">3.3 余项 $R_n(x)$</h3>
+    <p>余项衡量的是"多项式与真实函数之间的误差"。最常用的形式是<strong>拉格朗日余项</strong>：</p>
+    <div class="formula-box">
+      $$R_n(x) = \frac{f^{(n+1)}(\xi)}{(n+1)!}(x - x_0)^{n+1}$$
+    </div>
+    <p style="margin-top:8px;">其中 $\xi$ 是介于 $x_0$ 与 $x$ 之间的某个值。</p>
+    <div class="jianji">
+      <strong>简记：</strong>$ R_n = \dfrac{f^{(n+1)}(\xi)}{(n+1)!}(\Delta x)^{n+1} $（"多求一阶导，多乘一次 $\Delta x$"）
+    </div>
+    <div class="callout orange" style="margin-top:14px;">
+      <div class="callout-label">皮亚诺余项（极限题中常用）</div>
+      $R_n(x) = o\!\left((x - x_0)^n\right)$，即余项是 $(x-x_0)^n$ 的高阶无穷小。在做 $\lim$ 题时，只需关心"展开到第几阶就够用"。
+    </div>
+  </div>
+</div>
+<div class="section-divider"></div>
+
+<!-- ============ 4. 互动演示 ============ -->
+<div class="section fade-section" id="sec4" data-toc="互动演示">
+  <div class="section-head">
+    <div class="section-num">4</div>
+    <h2>互动演示——看多项式如何逼近函数</h2>
+  </div>
+  <div class="interactive-panel">
+    <p style="margin-bottom:14px;font-size:14px;color:var(--text-secondary);">选择函数，拖动滑块改变阶数 $n$，观察逼近效果。点击"自动播放"可观看阶数递增的动画：</p>
+    <div class="ctrl-row">
+      <label>目标函数：</label>
+      <select id="funcSel">
+        <option value="sin">sin(x)</option>
+        <option value="exp">e^x</option>
+        <option value="cos">cos(x)</option>
+        <option value="ln1x">ln(1+x)</option>
+      </select>
+    </div>
+    <div class="ctrl-row">
+      <label>多项式阶数 n：</label>
+      <input type="range" id="orderSlider" min="1" max="15" value="1" step="1">
+      <span class="val" id="orderVal">1</span>
+      <button class="btn btn-play" id="playBtn">&#9654; 自动播放</button>
+      <button class="btn btn-err" id="errBtn">显示误差</button>
+    </div>
+    <canvas id="demoCanvas" class="demo-canvas" width="700" height="420"></canvas>
+    <div class="formula-live" id="formulaLive"></div>
+    <p id="demoInfo" style="text-align:center;margin-top:8px;font-size:13px;color:var(--text-secondary);"></p>
+  </div>
+</div>
+<div class="section-divider"></div>
+
+<!-- ============ 5. 常用麦克劳林展开式 ============ -->
+<div class="section fade-section" id="sec5" data-toc="常用展开式">
+  <div class="section-head">
+    <div class="section-num">5</div>
+    <h2>常用麦克劳林展开式</h2>
+  </div>
+  <div class="card">
+    <p>以下六个展开式是高中竞赛和大学衔接阶段必须烂熟的"基本功"：</p>
+
+    <div class="formula-box" style="margin-top:18px;">
+      $$e^x = 1 + x + \frac{x^2}{2!} + \frac{x^3}{3!} + \cdots + \frac{x^n}{n!} + \cdots \quad (-\infty < x < +\infty)$$
+    </div>
+    <div class="jianji"><strong>简记：</strong>$ e^x = \sum_{k=0}^{\infty} \dfrac{x^k}{k!} $（"幂除以阶乘"）</div>
+
+    <div class="formula-box" style="margin-top:18px;">
+      $$\sin x = x - \frac{x^3}{3!} + \frac{x^5}{5!} - \frac{x^7}{7!} + \cdots \quad (-\infty < x < +\infty)$$
+    </div>
+    <div class="jianji"><strong>简记：</strong>$ \sin x = \sum_{k=0}^{\infty} \dfrac{(-1)^k}{(2k+1)!} x^{2k+1} $（"奇数次幂、交替正负"）</div>
+
+    <div class="formula-box" style="margin-top:18px;">
+      $$\cos x = 1 - \frac{x^2}{2!} + \frac{x^4}{4!} - \frac{x^6}{6!} + \cdots \quad (-\infty < x < +\infty)$$
+    </div>
+    <div class="jianji"><strong>简记：</strong>$ \cos x = \sum_{k=0}^{\infty} \dfrac{(-1)^k}{(2k)!} x^{2k} $（"偶数次幂、交替正负"）</div>
+
+    <div class="formula-box" style="margin-top:18px;">
+      $$\ln(1+x) = x - \frac{x^2}{2} + \frac{x^3}{3} - \frac{x^4}{4} + \cdots \quad (-1 < x \le 1)$$
+    </div>
+    <div class="jianji"><strong>简记：</strong>$ \ln(1+x) = \sum_{k=1}^{\infty} \dfrac{(-1)^{k-1}}{k} x^k $（"次幂除以序号、交替正负"）</div>
+
+    <div class="formula-box" style="margin-top:18px;">
+      $$(1+x)^\alpha = 1 + \alpha x + \frac{\alpha(\alpha-1)}{2!}x^2 + \frac{\alpha(\alpha-1)(\alpha-2)}{3!}x^3 + \cdots$$
+    </div>
+    <div class="jianji"><strong>简记：</strong>$ (1+x)^\alpha = \sum_{k=0}^{\infty} \binom{\alpha}{k} x^k $（"广义二项式系数"）</div>
+
+    <div class="formula-box" style="margin-top:18px;">
+      $$\frac{1}{1-x} = 1 + x + x^2 + x^3 + \cdots \quad (-1 < x < 1)$$
+    </div>
+    <div class="jianji"><strong>简记：</strong>$ \dfrac{1}{1-x} = \sum_{k=0}^{\infty} x^k $（"等比数列求和的逆过程"）</div>
+  </div>
+</div>
+<div class="section-divider"></div>
+
+<!-- ============ 6. 展开对照表 ============ -->
+<div class="section fade-section" id="sec6" data-toc="展开对照表">
+  <div class="section-head">
+    <div class="section-num">6</div>
+    <h2>展开对照表——Σ 的二元 / 三元展开</h2>
+  </div>
+  <div class="card">
+    <p>考试时需要快速写出前几项，下面给出四个常用公式的 $\Sigma$ 一般形式与具体展开：</p>
+
+    <div class="expand-block">
+      <div class="expand-title">$ e^x $ 的展开对照</div>
+      <div class="expand-general">$$e^x = \sum_{k=0}^{n} \frac{x^k}{k!} + R_n(x)$$</div>
+      <div class="expand-grid">
+        <div class="expand-item"><div class="expand-label">二元展开（$n=2$）</div><div class="expand-formula">$ e^x \approx 1 + x + \dfrac{x^2}{2} $</div></div>
+        <div class="expand-item"><div class="expand-label">三元展开（$n=3$）</div><div class="expand-formula">$ e^x \approx 1 + x + \dfrac{x^2}{2} + \dfrac{x^3}{6} $</div></div>
+      </div>
+    </div>
+
+    <div class="expand-block">
+      <div class="expand-title">$ \sin x $ 的展开对照</div>
+      <div class="expand-general">$$\sin x = \sum_{k=0}^{n} \frac{(-1)^k}{(2k+1)!} x^{2k+1} + R_{2n+1}(x)$$</div>
+      <div class="expand-grid">
+        <div class="expand-item"><div class="expand-label">二元展开（取前2项）</div><div class="expand-formula">$ \sin x \approx x - \dfrac{x^3}{6} $</div></div>
+        <div class="expand-item"><div class="expand-label">三元展开（取前3项）</div><div class="expand-formula">$ \sin x \approx x - \dfrac{x^3}{6} + \dfrac{x^5}{120} $</div></div>
+      </div>
+    </div>
+
+    <div class="expand-block">
+      <div class="expand-title">$ \ln(1+x) $ 的展开对照</div>
+      <div class="expand-general">$$\ln(1+x) = \sum_{k=1}^{n} \frac{(-1)^{k-1}}{k} x^k + R_n(x)$$</div>
+      <div class="expand-grid">
+        <div class="expand-item"><div class="expand-label">二元展开（$n=2$）</div><div class="expand-formula">$ \ln(1+x) \approx x - \dfrac{x^2}{2} $</div></div>
+        <div class="expand-item"><div class="expand-label">三元展开（$n=3$）</div><div class="expand-formula">$ \ln(1+x) \approx x - \dfrac{x^2}{2} + \dfrac{x^3}{3} $</div></div>
+      </div>
+    </div>
+
+    <div class="expand-block">
+      <div class="expand-title">$ (1+x)^\alpha $ 的展开对照</div>
+      <div class="expand-general">$$(1+x)^\alpha = \sum_{k=0}^{n} \frac{\alpha(\alpha-1)\cdots(\alpha-k+1)}{k!} x^k + R_n(x)$$</div>
+      <div class="expand-grid">
+        <div class="expand-item"><div class="expand-label">二元展开（$n=2$）</div><div class="expand-formula">$ (1+x)^\alpha \approx 1 + \alpha x + \dfrac{\alpha(\alpha-1)}{2}x^2 $</div></div>
+        <div class="expand-item"><div class="expand-label">三元展开（$n=3$）</div><div class="expand-formula">$ (1+x)^\alpha \approx 1 + \alpha x + \dfrac{\alpha(\alpha-1)}{2}x^2 + \dfrac{\alpha(\alpha-1)(\alpha-2)}{6}x^3 $</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="section-divider"></div>
+
+<!-- ============ 7. 核心推论 ============ -->
+<div class="section fade-section" id="sec7" data-toc="核心推论">
+  <div class="section-head">
+    <div class="section-num">7</div>
+    <h2>核心推论与性质</h2>
+  </div>
+  <div class="card">
+    <div class="callout blue">
+      <div class="callout-label">推论 1：泰勒展开的唯一性</div>
+      如果 $f(x)$ 在 $x_0$ 处能展开成幂级数，那么展开式<strong>唯一</strong>——系数只能是 $\dfrac{f^{(k)}(x_0)}{k!}$。这意味着无论你用什么方法（逐项求导、已知展开式代换、逐项积分……），只要做对了，结果一定相同。
+    </div>
+    <div class="callout green">
+      <div class="callout-label">推论 2：收敛半径内的逐项操作</div>
+      在收敛半径 $|x - x_0| < R$ 内，幂级数可以<strong>逐项求导</strong>和<strong>逐项积分</strong>，收敛半径不变。这给我们提供了一条捷径：对已知展开式做微积分运算，直接得到新函数的展开。
+    </div>
+    <div class="callout orange">
+      <div class="callout-label">推论 3：展开阶数的选取原则（极限题）</div>
+      求 $\lim_{x \to 0}$ 型的题目时，展开到"分子分母同阶"即可。经验法则：<strong>把分子、分母都展开到第一个不消去的项</strong>。
+    </div>
+  </div>
+</div>
+<div class="section-divider"></div>
+
+<!-- ============ 8. 记忆方法 ============ -->
+<div class="section fade-section" id="sec8" data-toc="记忆方法">
+  <div class="section-head">
+    <div class="section-num">8</div>
+    <h2>记忆方法</h2>
+  </div>
+  <div class="card">
+    <div class="memory-card">
+      <div class="mem-icon">🎵</div>
+      <div class="mem-title">口诀一：系数公式</div>
+      <div class="mem-body">"导数除以阶乘，就是泰勒系数"<br>即第 $k$ 项系数 $= \dfrac{f^{(k)}(x_0)}{k!}$。求几次导就除以几的阶乘。</div>
+    </div>
+    <div class="memory-card">
+      <div class="mem-icon">🔗</div>
+      <div class="mem-title">口诀二：sin 与 cos 的关系</div>
+      <div class="mem-body">"$\sin x$ 求导变 $\cos x$，展开式也如此"——对 $\sin x$ 的展开式逐项求导，逐项就得到 $\cos x$ 的展开式。反过来对 $\cos x$ 逐项积分就得到 $\sin x$。记住一个，另一个自然出来。</div>
+    </div>
+    <div class="memory-card">
+      <div class="mem-icon">📐</div>
+      <div class="mem-title">图形记忆：奇偶对称</div>
+      <div class="mem-body">
+        $\sin x$ 是<strong>奇函数</strong> → 展开只有奇数次幂（$x, x^3, x^5, \ldots$）<br>
+        $\cos x$ 是<strong>偶函数</strong> → 展开只有偶数次幂（$1, x^2, x^4, \ldots$）<br>
+        $e^x$ 非奇非偶 → 奇偶次幂全有。
+      </div>
+    </div>
+    <div class="memory-card">
+      <div class="mem-icon">🎯</div>
+      <div class="mem-title">极限题速判："展到不消为止"</div>
+      <div class="mem-body">做 $\dfrac{0}{0}$ 型极限时，分子分母同步展开。展开到"第一个不能完全消去的幂次"就停下来，这一项的系数之比就是极限值。</div>
+    </div>
+  </div>
+</div>
+<div class="section-divider"></div>
+
+<!-- ============ 9. 例题精讲 ============ -->
+<div class="section fade-section" id="sec9" data-toc="例题精讲">
+  <div class="section-head">
+    <div class="section-num">9</div>
+    <h2>例题精讲</h2>
+  </div>
+  <div class="card">
+
+    <div class="example-box">
+      <div class="example-num">例 1 ⭐⭐（易）近似计算</div>
+      <div class="example-problem">利用泰勒展开，估算 $e^{0.1}$ 的值（精确到小数点后第 4 位）。</div>
+      <div class="example-solution">
+        <p><strong>第一步：</strong>取 $e^x$ 的麦克劳林展开，$x = 0.1$。先确定展到几阶。由于 $R_n = \dfrac{e^\xi}{(n+1)!}(0.1)^{n+1}$，而 $e^{0.1} < 1.2$，当 $n=3$ 时：</p>
+        $$R_3 < \frac{1.2}{4!}(0.1)^4 = \frac{1.2 \times 10^{-4}}{24} = 5 \times 10^{-6}$$
+        <p>误差已小于 $10^{-5}$，足够精确。</p>
+        <p><strong>第二步：</strong>计算前三阶展开值：</p>
+        $$e^{0.1} \approx 1 + 0.1 + \frac{0.01}{2} + \frac{0.001}{6} = 1 + 0.1 + 0.005 + 0.000167 = 1.1052$$
+        <p><strong>第三步：</strong>验证：$e^{0.1} = 1.10517\ldots$，近似值 $1.1052$ 误差仅约 $3 \times 10^{-5}$。</p>
+      </div>
+      <div class="example-note">💡 <strong>小结：</strong>近似计算题的关键是先用余项估计确定"展到几阶够用"，再做算术。$x$ 越小，需要的阶数越少。</div>
+    </div>
+
+    <div class="example-box">
+      <div class="example-num">例 2 ⭐⭐⭐（中）求极限</div>
+      <div class="example-problem">求 $\displaystyle\lim_{x \to 0} \frac{x - \sin x}{x^3}$。</div>
+      <div class="example-solution">
+        <p><strong>第一步：</strong>这是 $\dfrac{0}{0}$ 型极限，分母是 $x^3$，所以把 $\sin x$ 展开到 $x^3$ 项：</p>
+        $$\sin x = x - \frac{x^3}{6} + o(x^3)$$
+        <p><strong>第二步：</strong>代入分子：</p>
+        $$x - \sin x = x - \left(x - \frac{x^3}{6} + o(x^3)\right) = \frac{x^3}{6} + o(x^3)$$
+        <p><strong>第三步：</strong>除以 $x^3$：</p>
+        $$\frac{x - \sin x}{x^3} = \frac{\frac{x^3}{6} + o(x^3)}{x^3} = \frac{1}{6} + \frac{o(x^3)}{x^3}$$
+        <p><strong>第四步：</strong>令 $x \to 0$，$\dfrac{o(x^3)}{x^3} \to 0$，所以极限为 $\dfrac{1}{6}$。</p>
+      </div>
+      <div class="example-note">💡 <strong>小结：</strong>求极限时，展开阶数与分母同阶即可。如果分子第一项就消去了（如本题 $x - x = 0$），那么决定极限值的就是"第一个不消去的项"。这里 $x^3$ 项不消去，系数 $\frac{1}{6}$ 即为答案。</div>
+    </div>
+
+    <div class="example-box">
+      <div class="example-num">例 3 ⭐⭐⭐⭐（难）求极限（需高阶展开）</div>
+      <div class="example-problem">求 $\displaystyle\lim_{x \to 0} \frac{e^x - 1 - x - \frac{x^2}{2}}{x - \sin x}$。</div>
+      <div class="example-solution">
+        <p><strong>第一步：</strong>先分析分子分母各需展到几阶。分母由例 2 已知 $x - \sin x = \dfrac{x^3}{6} + o(x^3)$，主项是 $x^3$。因此分子也要展到 $x^3$。</p>
+        <p><strong>第二步：</strong>分子展开（将 $e^x$ 展到 $x^3$）：</p>
+        $$e^x = 1 + x + \frac{x^2}{2} + \frac{x^3}{6} + o(x^3)$$
+        $$e^x - 1 - x - \frac{x^2}{2} = \frac{x^3}{6} + o(x^3)$$
+        <p><strong>第三步：</strong>代入极限：</p>
+        $$\lim_{x \to 0} \frac{\frac{x^3}{6} + o(x^3)}{\frac{x^3}{6} + o(x^3)} = \lim_{x \to 0} \frac{\frac{1}{6} + \frac{o(x^3)}{x^3}}{\frac{1}{6} + \frac{o(x^3)}{x^3}} = \frac{\frac{1}{6}}{\frac{1}{6}} = 1$$
+      </div>
+      <div class="example-note">💡 <strong>小结：</strong>当分子分母的"第一个不消去的项"同阶且系数相同时，极限为 $1$。这类题的关键是<strong>同步确定分子分母的展开阶数</strong>，不要一个展多一个展少。</div>
+    </div>
+
+  </div>
+</div>
+<div class="section-divider"></div>
+
+<!-- ============ 10. 易错点 ============ -->
+<div class="section fade-section" id="sec10" data-toc="易错点">
+  <div class="section-head">
+    <div class="section-num">10</div>
+    <h2>易错点</h2>
+  </div>
+  <div class="card">
+    <div class="callout red">
+      <div class="callout-label">错误 1：忘记阶乘</div>
+      <p>把 $e^x$ 写成 $1 + x + x^2 + x^3 + \cdots$，漏掉了分母的 $k!$。<br><strong>纠正：</strong>每一项都要除以对应阶乘，$x^k$ 的系数是 $\dfrac{1}{k!}$ 而不是 $1$。</p>
+    </div>
+    <div class="callout red">
+      <div class="callout-label">错误 2：$\sin x$ 符号搞反</div>
+      <p>把 $\sin x$ 写成 $x + \dfrac{x^3}{3!} + \dfrac{x^5}{5!} + \cdots$（全正号），与 $e^x$ 的展开混淆。<br><strong>纠正：</strong>$\sin x$ 是<strong>交替正负</strong>的：$x - \dfrac{x^3}{3!} + \dfrac{x^5}{5!} - \cdots$。记忆口诀："正弦正起交替变"。</p>
+    </div>
+    <div class="callout red">
+      <div class="callout-label">错误 3：极限题展开阶数不够</div>
+      <p>求 $\lim_{x \to 0} \dfrac{x - \sin x}{x^3}$ 时，只把 $\sin x$ 展到 $x$（即 $\sin x \approx x$），得到分子 $= 0$，无法判断。<br><strong>纠正：</strong>分母是 $x^3$，分子至少要展到 $x^3$ 项才有意义。记住原则："展到不消为止"。</p>
+    </div>
+    <div class="callout red">
+      <div class="callout-label">错误 4：在收敛半径外使用展开式</div>
+      <p>对 $\dfrac{1}{1-x} = 1 + x + x^2 + \cdots$ 取 $x = 2$，得出 $\dfrac{1}{-1} = 1 + 2 + 4 + \cdots$（显然荒谬）。<br><strong>纠正：</strong>此展开仅在 $|x| < 1$ 时成立。使用前必须确认 $x$ 在收敛半径内。</p>
+    </div>
+  </div>
+</div>
+<div class="section-divider"></div>
+
+<!-- ============ 11. 互动测验 ============ -->
+<div class="section fade-section" id="sec11" data-toc="小测验">
+  <div class="section-head">
+    <div class="section-num">11</div>
+    <h2>自我检测</h2>
+  </div>
+
+  <div class="quiz-card" id="q1">
+    <div class="quiz-q">1. $\sin x$ 的麦克劳林展开中，$x^3$ 项的系数是？</div>
+    <div class="quiz-opts" data-answer="B">
+      <div class="quiz-opt" data-val="A">A. $\dfrac{1}{3}$</div>
+      <div class="quiz-opt" data-val="B">B. $-\dfrac{1}{6}$</div>
+      <div class="quiz-opt" data-val="C">C. $\dfrac{1}{6}$</div>
+      <div class="quiz-opt" data-val="D">D. $-\dfrac{1}{3}$</div>
+    </div>
+    <div class="quiz-fb ok" id="q1ok">正确！$-\dfrac{1}{3!} = -\dfrac{1}{6}$，注意负号（"正起交替变"）。</div>
+    <div class="quiz-fb no" id="q1no">再想想：$\sin x$ 展开是交替正负的，$x^3$ 项应为负，且分母是 $3! = 6$。</div>
+  </div>
+
+  <div class="quiz-card" id="q2">
+    <div class="quiz-q">2. 求 $\displaystyle\lim_{x\to 0}\frac{e^x - 1 - x}{x^2}$ 时，$e^x$ 至少要展开到第几项？</div>
+    <div class="quiz-opts" data-answer="C">
+      <div class="quiz-opt" data-val="A">A. $x$ 项</div>
+      <div class="quiz-opt" data-val="B">B. $x$ 项（即 $e^x\approx 1+x$）</div>
+      <div class="quiz-opt" data-val="C">C. $x^2$ 项</div>
+      <div class="quiz-opt" data-val="D">D. $x^3$ 项</div>
+    </div>
+    <div class="quiz-fb ok" id="q2ok">正确！分母是 $x^2$，分子要展到 $x^2$ 项。$e^x - 1 - x = \dfrac{x^2}{2} + o(x^2)$，极限为 $\dfrac{1}{2}$。</div>
+    <div class="quiz-fb no" id="q2no">提示：分母是 $x^2$，展开到 $x$ 项的话分子为 $0$，无法判断。需要展到 $x^2$ 项。</div>
+  </div>
+
+  <div class="quiz-card" id="q3">
+    <div class="quiz-q">3. 以下哪个是 $e^x$ 展开式中 $x^4$ 项的系数？</div>
+    <div class="quiz-opts" data-answer="B">
+      <div class="quiz-opt" data-val="A">A. $\dfrac{1}{4}$</div>
+      <div class="quiz-opt" data-val="B">B. $\dfrac{1}{24}$</div>
+      <div class="quiz-opt" data-val="C">C. $\dfrac{1}{12}$</div>
+      <div class="quiz-opt" data-val="D">D. $1$</div>
+    </div>
+    <div class="quiz-fb ok" id="q3ok">正确！$\dfrac{1}{4!} = \dfrac{1}{24}$，别忘了阶乘。</div>
+    <div class="quiz-fb no" id="q3no">注意：$e^x$ 展开的系数是 $\dfrac{1}{k!}$，$x^4$ 的系数是 $\dfrac{1}{4!} = \dfrac{1}{24}$。</div>
+  </div>
+</div>
+<div class="section-divider"></div>
+
+<!-- ============ 12. 总结 ============ -->
+<div class="section fade-section" id="sec12" data-toc="总结">
+  <div class="section-head">
+    <div class="section-num">12</div>
+    <h2>总结</h2>
+  </div>
+  <div class="card">
+    <div class="callout green">
+      <div class="callout-label">核心要点回顾</div>
+      <p style="margin-bottom:8px;"><strong>1.</strong> 泰勒展开的本质：用多项式在 $x_0$ 处"模仿"函数，模仿精度由各阶导数决定。</p>
+      <p style="margin-bottom:8px;"><strong>2.</strong> 系数公式 $\dfrac{f^{(k)}(x_0)}{k!}$ 是唯一的"配方"，所有展开方法殊途同归。</p>
+      <p style="margin-bottom:8px;"><strong>3.</strong> 六大常用展开式（$e^x, \sin x, \cos x, \ln(1+x), (1+x)^\alpha, \frac{1}{1-x}$）必须烂熟于心。</p>
+      <p style="margin-bottom:8px;"><strong>4.</strong> 极限题核心策略：分子分母<strong>同步展开到第一个不消去的幂次</strong>。</p>
+      <p><strong>5.</strong> 近似计算时，先用拉格朗日余项估计误差，确定展开阶数后再计算。</p>
+    </div>
+  </div>
+</div>
+
+</div><!-- .container -->
+
+<!-- ============ Canvas 全局工具函数 ============ -->
+<script>
+function BG(ctx,W,H){
+  ctx.fillStyle="#fafbff";ctx.fillRect(0,0,W,H);
+  ctx.strokeStyle="#eef0f6";ctx.lineWidth=0.35;
+  for(var i=0;i<W;i+=25){ctx.beginPath();ctx.moveTo(i,0);ctx.lineTo(i,H);ctx.stroke();}
+  for(var i=0;i<H;i+=25){ctx.beginPath();ctx.moveTo(0,i);ctx.lineTo(W,i);ctx.stroke();}
+}
+function P(ctx,x,y,r,c){
+  ctx.fillStyle="#fff";ctx.beginPath();ctx.arc(x,y,r+2.5,0,7);ctx.fill();
+  ctx.fillStyle=c;ctx.beginPath();ctx.arc(x,y,r,0,7);ctx.fill();
+}
+function L(ctx,x1,y1,x2,y2,c,w,d){
+  ctx.strokeStyle=c;ctx.lineWidth=w;ctx.lineCap="round";ctx.lineJoin="round";
+  if(d){ctx.setLineDash(d)}else{ctx.setLineDash([])}
+  ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();ctx.setLineDash([]);
+}
+function A(ctx,vx,vy,p1x,p1y,p2x,p2y,r,fc,sc,sw){
+  var a1=Math.atan2(p1y-vy,p1x-vx),a2=Math.atan2(p2y-vy,p2x-vx);
+  var d=a2-a1;while(d>Math.PI)d-=2*Math.PI;while(d<-Math.PI)d+=2*Math.PI;
+  var ccw=d<0;
+  ctx.fillStyle=fc;ctx.beginPath();ctx.moveTo(vx,vy);ctx.arc(vx,vy,r,a1,a1+d,ccw);ctx.closePath();ctx.fill();
+  ctx.strokeStyle=sc;ctx.lineWidth=sw;ctx.lineCap="round";ctx.beginPath();ctx.arc(vx,vy,r,a1,a1+d,ccw);ctx.stroke();
+}
+function R(ctx,x,y,s,c){
+  ctx.strokeStyle=c;ctx.lineWidth=1.4;ctx.lineCap="round";ctx.lineJoin="round";ctx.strokeRect(x-s,y-s,s,s);
+}
+function T(ctx,W,txt){
+  ctx.font='bold 14px "PingFang SC","Microsoft YaHei",sans-serif';
+  var tw=ctx.measureText(txt).width;
+  ctx.fillStyle="rgba(26,58,92,0.06)";ctx.beginPath();
+  var rx=12,ry=6,rw=W-24,rh=28,r=10;
+  ctx.moveTo(rx+r,ry);ctx.lineTo(rx+rw-r,ry);ctx.arcTo(rx+rw,ry,rx+rw,ry+r,r);
+  ctx.lineTo(rx+rw,ry+rh-r);ctx.arcTo(rx+rw,ry+rh,rx+rw-r,ry+rh,r);
+  ctx.lineTo(rx+r,ry+rh);ctx.arcTo(rx,ry+rh,rx,ry+rh-r,r);
+  ctx.lineTo(rx,ry+r);ctx.arcTo(rx,ry,rx+r,ry,r);ctx.closePath();ctx.fill();
+  ctx.fillStyle="#1a3a5c";ctx.fillText(txt,(W-tw)/2,26);
+}
+</script>
+
+<!-- ============ 封面背景粒子 ============ -->
+<script>
+(function(){
+  var c=document.getElementById("coverBg");if(!c)return;
+  var wrap=c.parentElement;c.width=wrap.offsetWidth;c.height=wrap.offsetHeight;
+  var ctx=c.getContext("2d"),W=c.width,H=c.height;
+  ctx.fillStyle="linear-gradient(135deg,#1a3a5c,#2563a8)";
+  var grad=ctx.createLinearGradient(0,0,W,H);
+  grad.addColorStop(0,"#0f2940");grad.addColorStop(0.5,"#1a3a5c");grad.addColorStop(1,"#2563a8");
+  ctx.fillStyle=grad;ctx.fillRect(0,0,W,H);
+  // 浮动数学符号
+  var syms=["∑","∫","∂","π","∞","Δ","ε","θ","λ","≈","dx","f′","∇","ℝ"];
+  var pts=[];
+  for(var i=0;i<28;i++){
+    pts.push({
+      x:Math.random()*W,y:Math.random()*H,
+      vx:(Math.random()-0.5)*0.3,vy:(Math.random()-0.5)*0.3,
+      s:syms[i%syms.length],
+      a:0.04+Math.random()*0.08,
+      sz:12+Math.random()*16,
+      rot:Math.random()*6.28
+    });
+  }
+  var frame=0;
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle=grad;ctx.fillRect(0,0,W,H);
+    for(var i=0;i<pts.length;i++){
+      var p=pts[i];
+      p.x+=p.vx;p.y+=p.vy;
+      if(p.x<-20)p.x=W+20;if(p.x>W+20)p.x=-20;
+      if(p.y<-20)p.y=H+20;if(p.y>H+20)p.y=-20;
+      ctx.save();
+      ctx.translate(p.x,p.y);
+      ctx.rotate(p.rot+frame*0.003);
+      ctx.globalAlpha=p.a;
+      ctx.fillStyle="#fff";
+      ctx.font=p.sz+'px "PingFang SC","Microsoft YaHei",serif';
+      ctx.textAlign="center";ctx.textBaseline="middle";
+      ctx.fillText(p.s,0,0);
+      ctx.restore();
+    }
+    frame++;
+    requestAnimationFrame(draw);
+  }
+  draw();
+  window.addEventListener("resize",function(){
+    c.width=wrap.offsetWidth;c.height=wrap.offsetHeight;
+    W=c.width;H=c.height;
+    grad=ctx.createLinearGradient(0,0,W,H);
+    grad.addColorStop(0,"#0f2940");grad.addColorStop(0.5,"#1a3a5c");grad.addColorStop(1,"#2563a8");
+  });
+})();
+</script>
+
+<!-- ============ 滚动淡入 + 目录 + 回到顶部 ============ -->
+<script>
+(function(){
+  // 滚动淡入
+  var secs=document.querySelectorAll(".fade-section");
+  var obs=new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){e.target.classList.add("visible");}
+    });
+  },{threshold:0.12});
+  secs.forEach(function(s){obs.observe(s);});
+
+  // 浮动目录
+  var toc=document.getElementById("floatToc");
+  if(toc && secs.length){
+    secs.forEach(function(s,i){
+      var a=document.createElement("a");
+      a.href="#"+s.id;
+      a.setAttribute("data-sec",s.id);
+      var tip=document.createElement("span");
+      tip.className="toc-tip";
+      tip.textContent=s.getAttribute("data-toc")||("§"+(i+1));
+      a.appendChild(tip);
+      toc.appendChild(a);
+    });
+    // 高亮当前
+    var tocObs=new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        var link=toc.querySelector('[data-sec="'+e.target.id+'"]');
+        if(link){
+          if(e.isIntersecting){link.classList.add("active");}
+          else{link.classList.remove("active");}
+        }
+      });
+    },{threshold:0.3,rootMargin:"-10% 0px -60% 0px"});
+    secs.forEach(function(s){tocObs.observe(s);});
+  }
+
+  // 回到顶部
+  var btn=document.getElementById("backTop");
+  if(btn){
+    window.addEventListener("scroll",function(){
+      if(window.scrollY>400){btn.classList.add("show");}
+      else{btn.classList.remove("show");}
+    });
+    btn.addEventListener("click",function(){window.scrollTo({top:0,behavior:"smooth"});});
+  }
+})();
+</script>
+
+<!-- ============ 直觉引入 Canvas ============ -->
+<script>
+(function(){
+  var c=document.getElementById("introCanvas");if(!c)return;
+  var ctx=c.getContext("2d"),W=c.width,H=c.height;
+  ctx.lineCap="round";ctx.lineJoin="round";
+  BG(ctx,W,H);
+
+  // 坐标映射
+  var xMin=-1,xMax=5,yMin=-1,yMax=5;
+  var pL=44,pR=16,pT=36,pB=30;
+  var pw=W-pL-pR,ph=H-pT-pB;
+  function toX(v){return pL+(v-xMin)/(xMax-xMin)*pw;}
+  function toY(v){return pT+(yMax-v)/(yMax-yMin)*ph;}
+
+  T(ctx,W,"在 x₀ 处用不同阶数多项式逼近 f(x)");
+
+  // 坐标轴
+  L(ctx,pL,toY(0),W-pR,toY(0),"#c0c8d4",1);
+  L(ctx,toX(0),pT,toX(0),H-pB,"#c0c8d4",1);
+
+  // f(x) = e^x / 3 (缩放一下好看)
+  function f(x){return Math.exp(x)/3;}
+  function f1(x){return Math.exp(x)/3;} // f'
+  var x0=0.8, y0=f(x0), dy0=f1(x0);
+
+  // 画原函数
+  ctx.strokeStyle="#1a3a5c";ctx.lineWidth=2.5;ctx.setLineDash([]);
+  ctx.beginPath();var st=false;
+  for(var i=0;i<=300;i++){
+    var x=xMin+(xMax-xMin)*i/300;var y=f(x);
+    if(y>yMax+1){st=false;continue;}
+    if(!st){ctx.moveTo(toX(x),toY(y));st=true;}else{ctx.lineTo(toX(x),toY(y));}
+  }
+  ctx.stroke();
+
+  // 切线(1阶): y = y0 + dy0*(x-x0)
+  function t1(x){return y0+dy0*(x-x0);}
+  ctx.strokeStyle="#dc2626";ctx.lineWidth=1.8;ctx.setLineDash([8,5]);
+  ctx.beginPath();ctx.moveTo(toX(xMin),toY(t1(xMin)));ctx.lineTo(toX(xMax),toY(t1(xMax)));ctx.stroke();
+  ctx.setLineDash([]);
+
+  // 二阶: P2(x) = f(x0)+f'(x0)(x-x0)+f''(x0)/2*(x-x0)^2, f''=f=e^x/3
+  function t2(x){var dx=x-x0;return y0+dy0*dx+y0/2*dx*dx;}
+  ctx.strokeStyle="#059669";ctx.lineWidth=2;ctx.setLineDash([]);
+  ctx.beginPath();st=false;
+  for(var i=0;i<=300;i++){
+    var x=xMin+(xMax-xMin)*i/300;var y=t2(x);
+    if(y>yMax+1||y<yMin-1){st=false;continue;}
+    if(!st){ctx.moveTo(toX(x),toY(y));st=true;}else{ctx.lineTo(toX(x),toY(y));}
+  }
+  ctx.stroke();
+
+  // 三阶
+  function t3(x){var dx=x-x0;return y0+dy0*dx+y0/2*dx*dx+y0/6*dx*dx*dx;}
+  ctx.strokeStyle="#d97706";ctx.lineWidth=2;
+  ctx.beginPath();st=false;
+  for(var i=0;i<=300;i++){
+    var x=xMin+(xMax-xMin)*i/300;var y=t3(x);
+    if(y>yMax+1||y<yMin-1){st=false;continue;}
+    if(!st){ctx.moveTo(toX(x),toY(y));st=true;}else{ctx.lineTo(toX(x),toY(y));}
+  }
+  ctx.stroke();
+
+  // 展开点
+  P(ctx,toX(x0),toY(y0),5,"#1a3a5c");
+
+  // 标注
+  ctx.font='bold 12px "PingFang SC","Microsoft YaHei",sans-serif';
+  ctx.textAlign="left";
+  ctx.fillStyle="#1a3a5c";ctx.fillText("f(x) = eˣ/3",toX(3.2),toY(f(3.2))-10);
+  ctx.fillStyle="#dc2626";ctx.fillText("1阶（切线）",toX(3.5),toY(t1(3.5))+16);
+  ctx.fillStyle="#059669";ctx.fillText("2阶",toX(3.8),toY(t2(3.8))+4);
+  ctx.fillStyle="#d97706";ctx.fillText("3阶",toX(4),toY(t3(4))-8);
+  ctx.fillStyle="#1a3a5c";ctx.fillText("x₀",toX(x0)+8,toY(y0)+18);
+})();
+</script>
+
+<!-- ============ 知识树 Canvas ============ -->
+<script>
+(function(){
+  var c=document.getElementById("treeCanvas");if(!c)return;
+  var ctx=c.getContext("2d"),W=c.width,H=c.height;
+  ctx.lineCap="round";ctx.lineJoin="round";
+  BG(ctx,W,H);
+  function node(x,y,text,color,bold){
+    bold=bold||false;
+    ctx.font=(bold?"bold ":"")+'15px "PingFang SC","Microsoft YaHei",sans-serif';
+    var tw=ctx.measureText(text).width,pw=tw+34,ph=38,r=10;
+    var lx=x-pw/2,ly=y-ph/2;
+    // 阴影
+    ctx.fillStyle="rgba(0,0,0,0.07)";
+    ctx.beginPath();
+    ctx.moveTo(lx+r,ly+3);ctx.lineTo(lx+pw-r,ly+3);ctx.arcTo(lx+pw,ly+3,lx+pw,ly+r+3,r);
+    ctx.lineTo(lx+pw,ly+ph-r+3);ctx.arcTo(lx+pw,ly+ph+3,lx+pw-r,ly+ph+3,r);
+    ctx.lineTo(lx+r,ly+ph+3);ctx.arcTo(lx,ly+ph+3,lx,ly+ph-r+3,r);
+    ctx.lineTo(lx,ly+r+3);ctx.arcTo(lx,ly+3,lx+r,ly+3,r);ctx.closePath();ctx.fill();
+    // 主体
+    ctx.fillStyle=color;ctx.beginPath();
+    ctx.moveTo(lx+r,ly);ctx.lineTo(lx+pw-r,ly);ctx.arcTo(lx+pw,ly,lx+pw,ly+r,r);
+    ctx.lineTo(lx+pw,ly+ph-r);ctx.arcTo(lx+pw,ly+ph,lx+pw-r,ly+ph,r);
+    ctx.lineTo(lx+r,ly+ph);ctx.arcTo(lx,ly+ph,lx,ly+ph-r,r);
+    ctx.lineTo(lx,ly+r);ctx.arcTo(lx,ly,lx+r,ly,r);ctx.closePath();ctx.fill();
+    ctx.fillStyle="#fff";ctx.fillText(text,x-tw/2,y+5);
+  }
+  function edge(x1,y1,x2,y2){
+    // 曲线连接
+    ctx.strokeStyle="#b0bec5";ctx.lineWidth=1.8;ctx.lineCap="round";
+    ctx.beginPath();
+    var my=(y1+y2)/2;
+    ctx.moveTo(x1,y1);
+    ctx.bezierCurveTo(x1,my,x2,my,x2,y2);
+    ctx.stroke();
+  }
+
+  // ---- 布局 ----
+  // 第1层：根节点
+  var rx=W/2,ry=55;
+  node(rx,ry,"泰勒展开式","#1a3a5c",true);
+
+  // 第2层
+  var ly2=185;
+  var l2=[{t:"泰勒公式",x:150,c:"#2563a8"},{t:"麦克劳林公式",x:450,c:"#2563a8"},{t:"余项理论",x:750,c:"#2563a8"}];
+  l2.forEach(function(n){edge(rx,ry+19,n.x,ly2-19);node(n.x,ly2,n.t,n.c);});
+
+  // 第3层
+  var ly3=355;
+  var l3=[
+    {t:"展开中心 x₀",x:70,px:150,c:"#059669"},
+    {t:"系数 f⁽ᵏ⁾/k!",x:230,px:150,c:"#059669"},
+    {t:"eˣ, sin, cos…",x:380,px:450,c:"#059669"},
+    {t:"1/(1-x), ln(1+x)",x:540,px:450,c:"#059669"},
+    {t:"拉格朗日余项",x:680,px:750,c:"#d97706"},
+    {t:"皮亚诺余项",x:830,px:750,c:"#d97706"}
+  ];
+  l3.forEach(function(n){edge(n.px,ly2+19,n.x,ly3-19);node(n.x,ly3,n.t,n.c);});
+
+  // 第4层：应用
+  var ly4=530;
+  var l4=[
+    {t:"近似计算",x:200,px:230,c:"#dc2626"},
+    {t:"求极限",x:450,px:450,c:"#dc2626"},
+    {t:"证明不等式",x:700,px:680,c:"#dc2626"}
+  ];
+  l4.forEach(function(n){edge(n.px,ly3+19,n.x,ly4-19);node(n.x,ly4,n.t,n.c);});
+
+  // 层级标签
+  ctx.font='bold 13px "PingFang SC","Microsoft YaHei",sans-serif';
+  ctx.fillStyle="rgba(26,58,92,0.35)";ctx.textAlign="left";
+  ctx.fillText("一般理论",14,ly2+5);
+  ctx.fillText("常用展开",14,ly3+5);
+  ctx.fillText("应用场景",14,ly4+5);
+
+  // 浅色层级带
+  ctx.fillStyle="rgba(37,99,168,0.03)";
+  ctx.fillRect(0,ly2-35,W,70);
+  ctx.fillStyle="rgba(5,150,105,0.03)";
+  ctx.fillRect(0,ly3-35,W,70);
+  ctx.fillStyle="rgba(220,38,38,0.03)";
+  ctx.fillRect(0,ly4-35,W,70);
+})();
+</script>
+
+<!-- ============ 互动演示 Canvas ============ -->
+<script>
+(function(){
+  var canvas=document.getElementById("demoCanvas");if(!canvas)return;
+  var ctx=canvas.getContext("2d"),W=canvas.width,H=canvas.height;
+  var funcSel=document.getElementById("funcSel");
+  var slider=document.getElementById("orderSlider");
+  var orderLabel=document.getElementById("orderVal");
+  var infoEl=document.getElementById("demoInfo");
+  var formulaLive=document.getElementById("formulaLive");
+  var playBtn=document.getElementById("playBtn");
+  var errBtn=document.getElementById("errBtn");
+
+  var showErr=false, playing=false, playTimer=null;
+  var mouseX=-1,mouseY=-1;
+
+  errBtn.addEventListener("click",function(){
+    showErr=!showErr;
+    errBtn.classList.toggle("active",showErr);
+    errBtn.textContent=showErr?"隐藏误差":"显示误差";
+    draw();
+  });
+
+  playBtn.addEventListener("click",function(){
+    if(playing){
+      clearInterval(playTimer);playing=false;
+      playBtn.textContent="▶ 自动播放";playBtn.classList.remove("playing");
+    } else {
+      playing=true;slider.value=1;
+      playBtn.textContent="⏸ 暂停";playBtn.classList.add("playing");
+      playTimer=setInterval(function(){
+        var v=parseInt(slider.value)+1;
+        if(v>15){clearInterval(playTimer);playing=false;playBtn.textContent="▶ 自动播放";playBtn.classList.remove("playing");return;}
+        slider.value=v;draw();
+      },500);
+    }
+  });
+
+  canvas.addEventListener("mousemove",function(e){
+    var rect=canvas.getBoundingClientRect();
+    mouseX=(e.clientX-rect.left)*(W/rect.width);
+    mouseY=(e.clientY-rect.top)*(H/rect.height);
+    draw();
+  });
+  canvas.addEventListener("mouseleave",function(){mouseX=-1;mouseY=-1;draw();});
+
+  var funcs={
+    sin:{
+      name:"sin(x)",
+      f:function(x){return Math.sin(x);},
+      taylor:function(x,n){var s=0;for(var k=0;k<=n;k++){var p=2*k+1;if(p>n)break;s+=((k%2===0)?1:-1)*Math.pow(x,p)/fact(p);}return s;},
+      terms:function(n){var m=0;for(var k=0;;k++){var p=2*k+1;if(p>n)break;m=p;}return m;},
+      formulaText:function(n){var t=[];for(var k=0;k<=n;k++){var p=2*k+1;if(p>n)break;var s=(k%2===0)?"":"-";var d=fact(p);t.push(s+"x^"+p+"/"+d+"!");}return "P"+n+"(x) = "+t.join(" ");},
+      xRange:[-7,7],yRange:[-2,2],color:"#2563a8"
+    },
+    cos:{
+      name:"cos(x)",
+      f:function(x){return Math.cos(x);},
+      taylor:function(x,n){var s=0;for(var k=0;;k++){var p=2*k;if(p>n)break;s+=((k%2===0)?1:-1)*Math.pow(x,p)/fact(p);}return s;},
+      terms:function(n){var m=0;for(var k=0;;k++){var p=2*k;if(p>n)break;m=p;}return m;},
+      formulaText:function(n){var t=[];for(var k=0;;k++){var p=2*k;if(p>n)break;var s=(k%2===0)?"":"-";t.push(s+"x^"+p+"/"+p+"!");}return "P"+n+"(x) = "+t.join(" ");},
+      xRange:[-7,7],yRange:[-2,2],color:"#7c3aed"
+    },
+    exp:{
+      name:"e^x",
+      f:function(x){return Math.exp(x);},
+      taylor:function(x,n){var s=0;for(var k=0;k<=n;k++){s+=Math.pow(x,k)/fact(k);}return s;},
+      terms:function(n){return n;},
+      formulaText:function(n){var t=[];for(var k=0;k<=n;k++){t.push("x^"+k+"/"+k+"!");}return "P"+n+"(x) = "+t.join(" + ");},
+      xRange:[-4,4],yRange:[-1,8],color:"#059669"
+    },
+    ln1x:{
+      name:"ln(1+x)",
+      f:function(x){return Math.log(1+x);},
+      taylor:function(x,n){var s=0;for(var k=1;k<=n;k++){s+=((k%2===1)?1:-1)*Math.pow(x,k)/k;}return s;},
+      terms:function(n){return n;},
+      formulaText:function(n){var t=[];for(var k=1;k<=n;k++){var s=(k%2===1)?"":"-";t.push(s+"x^"+k+"/"+k);}return "P"+n+"(x) = "+t.join(" ");},
+      xRange:[-0.95,3],yRange:[-3,2],color:"#d97706"
+    }
+  };
+
+  function fact(n){var r=1;for(var i=2;i<=n;i++)r*=i;return r;}
+
+  function draw(){
+    var key=funcSel.value,n=parseInt(slider.value),fn=funcs[key];
+    orderLabel.textContent=n;
+    var xMin=fn.xRange[0],xMax=fn.xRange[1],yMin=fn.yRange[0],yMax=fn.yRange[1];
+    var padL=50,padR=20,padT=40,padB=36;
+    var pw=W-padL-padR,ph=H-padT-padB;
+    function toX(v){return padL+(v-xMin)/(xMax-xMin)*pw;}
+    function toY(v){return padT+(yMax-v)/(yMax-yMin)*ph;}
+    function fromX(px){return xMin+(px-padL)/pw*(xMax-xMin);}
+
+    ctx.lineCap="round";ctx.lineJoin="round";
+    BG(ctx,W,H);
+
+    var label="f(x) = "+fn.name+"    n = "+n+" 阶泰勒多项式";
+    T(ctx,W,label);
+
+    // 坐标轴
+    L(ctx,padL,toY(0),W-padR,toY(0),"#c0c8d4",1.2);
+    L(ctx,toX(0),padT,toX(0),H-padB,"#c0c8d4",1.2);
+
+    // 刻度
+    ctx.font='11px "PingFang SC","Microsoft YaHei",sans-serif';
+    ctx.fillStyle="#6b7280";ctx.textAlign="center";
+    for(var v=Math.ceil(xMin);v<=Math.floor(xMax);v++){
+      if(v===0)continue;var px=toX(v);
+      L(ctx,px,toY(0)-3,px,toY(0)+3,"#c0c8d4",1);
+      ctx.fillText(v,px,toY(0)+16);
+    }
+    ctx.textAlign="right";
+    for(var v=Math.ceil(yMin);v<=Math.floor(yMax);v++){
+      if(v===0)continue;var py=toY(v);
+      L(ctx,toX(0)-3,py,toX(0)+3,py,"#c0c8d4",1);
+      ctx.fillText(v,toX(0)-8,py+4);
+    }
+
+    // 误差填充
+    if(showErr){
+      ctx.fillStyle="rgba(220,38,38,0.10)";
+      ctx.beginPath();
+      var started=false;
+      for(var i=0;i<=400;i++){
+        var x=xMin+(xMax-xMin)*i/400;
+        var y1=fn.f(x),y2=fn.taylor(x,n);
+        if(!isFinite(y1)||!isFinite(y2))continue;
+        var py1=toY(y1),py2=toY(y2);
+        py1=Math.max(padT,Math.min(H-padB,py1));
+        py2=Math.max(padT,Math.min(H-padB,py2));
+        if(!started){ctx.moveTo(toX(x),py1);started=true;}
+        else{ctx.lineTo(toX(x),py1);}
+      }
+      for(var i=400;i>=0;i--){
+        var x=xMin+(xMax-xMin)*i/400;
+        var y2=fn.taylor(x,n);
+        if(!isFinite(y2))continue;
+        var py2=toY(y2);
+        py2=Math.max(padT,Math.min(H-padB,py2));
+        ctx.lineTo(toX(x),py2);
+      }
+      ctx.closePath();ctx.fill();
+    }
+
+    // 原函数（虚线）
+    ctx.strokeStyle="#9ca3af";ctx.lineWidth=2;ctx.setLineDash([6,4]);
+    ctx.beginPath();var started=false;
+    for(var i=0;i<=400;i++){
+      var x=xMin+(xMax-xMin)*i/400,y=fn.f(x);
+      if(!isFinite(y)||y<yMin-5||y>yMax+5){started=false;continue;}
+      if(!started){ctx.moveTo(toX(x),toY(y));started=true;}else{ctx.lineTo(toX(x),toY(y));}
+    }
+    ctx.stroke();ctx.setLineDash([]);
+
+    // 泰勒多项式（实线）
+    ctx.strokeStyle=fn.color;ctx.lineWidth=2.5;
+    ctx.beginPath();started=false;
+    for(var i=0;i<=400;i++){
+      var x=xMin+(xMax-xMin)*i/400,y=fn.taylor(x,n);
+      if(!isFinite(y)||y<yMin-5||y>yMax+5){started=false;continue;}
+      if(!started){ctx.moveTo(toX(x),toY(y));started=true;}else{ctx.lineTo(toX(x),toY(y));}
+    }
+    ctx.stroke();
+
+    // 展开点
+    P(ctx,toX(0),toY(fn.f(0)),5,fn.color);
+
+    // 十字准线
+    if(mouseX>=padL&&mouseX<=W-padR&&mouseY>=padT&&mouseY<=H-padB){
+      var mx=fromX(mouseX);
+      var fy=fn.f(mx),ty=fn.taylor(mx,n);
+      ctx.strokeStyle="rgba(26,58,92,0.2)";ctx.lineWidth=1;ctx.setLineDash([4,3]);
+      ctx.beginPath();ctx.moveTo(mouseX,padT);ctx.lineTo(mouseX,H-padB);ctx.stroke();
+      ctx.setLineDash([]);
+      // 两个点
+      P(ctx,mouseX,toY(fy),4,"#9ca3af");
+      P(ctx,mouseX,toY(ty),4,fn.color);
+      // 数值
+      ctx.font='12px "PingFang SC","Microsoft YaHei",monospace';
+      ctx.textAlign="left";
+      ctx.fillStyle="#6b7280";ctx.fillText("f("+mx.toFixed(2)+") = "+fy.toFixed(4),mouseX+10,toY(fy)-6);
+      ctx.fillStyle=fn.color;ctx.fillText("P("+mx.toFixed(2)+") = "+ty.toFixed(4),mouseX+10,toY(ty)+14);
+      ctx.fillStyle="#dc2626";ctx.fillText("误差 = "+Math.abs(fy-ty).toFixed(4),mouseX+10,Math.min(toY(fy),toY(ty))-18);
+    }
+
+    // 图例
+    ctx.textAlign="left";ctx.font='13px "PingFang SC","Microsoft YaHei",sans-serif';
+    var lgX=padL+10,lgY=padT+16;
+    ctx.strokeStyle="#9ca3af";ctx.lineWidth=2;ctx.setLineDash([6,4]);
+    ctx.beginPath();ctx.moveTo(lgX,lgY);ctx.lineTo(lgX+30,lgY);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle="#6b7280";ctx.fillText("f(x) = "+fn.name,lgX+36,lgY+4);
+    lgY+=22;
+    ctx.strokeStyle=fn.color;ctx.lineWidth=2.5;
+    ctx.beginPath();ctx.moveTo(lgX,lgY);ctx.lineTo(lgX+30,lgY);ctx.stroke();
+    ctx.fillStyle=fn.color;ctx.fillText("P"+n+"(x)",lgX+36,lgY+4);
+    if(showErr){
+      lgY+=22;ctx.fillStyle="rgba(220,38,38,0.3)";ctx.fillRect(lgX,lgY-6,30,12);
+      ctx.fillStyle="#991b1b";ctx.fillText("误差区域",lgX+36,lgY+4);
+    }
+
+    var eff=fn.terms(n);
+    infoEl.textContent="当前展开至第 "+eff+" 次幂项 · 在 x = 0 处展开（麦克劳林展开）";
+    formulaLive.innerHTML="<em>P<sub>"+n+"</sub>(x)</em> 的展开："+fn.formulaText(n).replace(/\^(\d+)/g,"<sup>$1</sup>").replace(/x(\d)/g,"x<sup>$1</sup>");
+  }
+
+  slider.addEventListener("input",draw);
+  funcSel.addEventListener("change",function(){
+    if(playing){clearInterval(playTimer);playing=false;playBtn.textContent="▶ 自动播放";playBtn.classList.remove("playing");}
+    draw();
+  });
+  draw();
+})();
+</script>
+
+<!-- ============ 小测验逻辑 ============ -->
+<script>
+(function(){
+  var cards=document.querySelectorAll(".quiz-card");
+  cards.forEach(function(card){
+    var opts=card.querySelectorAll(".quiz-opt");
+    var answer=card.querySelector(".quiz-opts").getAttribute("data-answer");
+    var fbOk=card.querySelector(".quiz-fb.ok");
+    var fbNo=card.querySelector(".quiz-fb.no");
+    var answered=false;
+    opts.forEach(function(opt){
+      opt.addEventListener("click",function(){
+        if(answered)return;
+        answered=true;
+        var val=opt.getAttribute("data-val");
+        if(val===answer){
+          opt.classList.add("right");card.classList.add("correct");
+          fbOk.classList.add("show");
+        } else {
+          opt.classList.add("wrong-pick");card.classList.add("wrong");
+          // 高亮正确答案
+          opts.forEach(function(o){if(o.getAttribute("data-val")===answer)o.classList.add("right");});
+          fbNo.classList.add("show");
+        }
+      });
+    });
+  });
+})();
+</script>
+
+</body>
+</html>

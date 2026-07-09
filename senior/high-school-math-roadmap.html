@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>高中数学三年学习路线与知识点规划</title>
+  <style>
+    * { box-sizing: border-box; }
+    :root {
+      --primary: #193a5a;
+      --primary-2: #2563a8;
+      --accent: #d97706;
+      --green: #059669;
+      --red: #dc2626;
+      --purple: #6d5bd0;
+      --bg: #f7f9fe;
+      --card: #ffffff;
+      --soft: #eef5ff;
+      --soft-green: #ecfdf5;
+      --soft-orange: #fff7ed;
+      --line: #dbe7f3;
+      --text: #17324d;
+      --muted: #64748b;
+      --shadow: 0 14px 34px rgba(25, 58, 90, 0.10);
+      --shadow-soft: 0 7px 18px rgba(25, 58, 90, 0.08);
+      --radius: 20px;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      overflow-x: hidden;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 8% 0%, rgba(37, 99, 168, 0.10), transparent 28%),
+        radial-gradient(circle at 96% 12%, rgba(217, 119, 6, 0.10), transparent 24%),
+        linear-gradient(180deg, var(--bg), #eef6f8);
+      font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
+      line-height: 1.75;
+    }
+    a { color: inherit; text-decoration: none; }
+    .container { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 28px 0 64px; }
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 58px 44px;
+      border-radius: 30px;
+      border: 1px solid var(--line);
+      background: linear-gradient(135deg, var(--card), #eaf5ff 58%, #fff8ed);
+      box-shadow: var(--shadow);
+    }
+    .hero h1 { max-width: 880px; margin: 0 0 16px; color: var(--primary); font-size: clamp(2rem, 5vw, 4.3rem); line-height: 1.12; letter-spacing: 0; }
+    .subtitle { max-width: 820px; margin: 0 0 22px; color: var(--primary-2); font-size: clamp(1.05rem, 2vw, 1.35rem); font-weight: 800; }
+    .hero-note { max-width: 820px; padding: 18px 20px; border-left: 6px solid var(--accent); border-radius: 14px; background: rgba(255,255,255,0.82); font-weight: 800; }
+    .tag-row { display: flex; flex-wrap: wrap; gap: 10px; margin: 20px 0; }
+    .tag { display: inline-flex; align-items: center; padding: 6px 12px; min-height: 34px; border-radius: 999px; border: 1px solid var(--line); background: var(--soft); color: var(--primary); font-size: 0.92rem; font-weight: 900; }
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      margin: 18px 0 32px;
+      padding: 12px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.94);
+      box-shadow: var(--shadow-soft);
+      backdrop-filter: blur(10px);
+    }
+    .nav a { flex: 0 0 auto; padding: 7px 12px; border-radius: 999px; color: var(--muted); font-size: 0.9rem; font-weight: 800; }
+    .nav a:hover { background: var(--soft); color: var(--primary); }
+    .section { margin: 34px 0; scroll-margin-top: 94px; }
+    .section-head { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
+    .num { width: 42px; height: 42px; display: grid; place-items: center; flex: 0 0 auto; border-radius: 14px; background: linear-gradient(135deg, var(--primary), var(--primary-2)); color: var(--card); font-weight: 900; }
+    h2 { margin: 0; color: var(--primary); font-size: clamp(1.55rem, 3vw, 2.2rem); line-height: 1.25; }
+    h3 { margin: 0 0 10px; color: var(--primary); font-size: 1.18rem; }
+    p { margin: 8px 0; }
+    .lead { color: var(--muted); font-size: 1.04rem; }
+    .card { padding: 24px; border-radius: var(--radius); border: 1px solid var(--line); background: var(--card); box-shadow: var(--shadow-soft); }
+    .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+    .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid.four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .compare-card { border-top: 6px solid var(--primary-2); }
+    .compare-card:nth-child(2) { border-top-color: var(--accent); }
+    .timeline { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+    .timeline-card { position: relative; padding-top: 54px; }
+    .badge { display: inline-flex; align-items: center; padding: 5px 10px; border-radius: 999px; background: var(--primary); color: var(--card); font-size: 0.86rem; font-weight: 900; }
+    .timeline-badge { position: absolute; top: 18px; left: 22px; }
+    .goal { margin-top: 14px; padding: 12px 14px; border-radius: 14px; background: var(--soft-orange); border: 1px solid #f7d99b; color: #884900; font-weight: 900; }
+    .list { margin: 10px 0 0; padding-left: 20px; }
+    .list li { margin: 7px 0; }
+    .semester { border-left: 6px solid var(--primary-2); }
+    .map-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+    .map-item { min-height: 112px; padding: 16px; border-radius: 16px; border: 1px solid var(--line); background: var(--card); box-shadow: var(--shadow-soft); }
+    .map-name { font-weight: 900; color: var(--primary); margin-bottom: 10px; }
+    .map-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+    .map-tag { padding: 4px 8px; border-radius: 999px; background: var(--soft); color: var(--primary-2); font-size: 0.78rem; font-weight: 800; }
+    .map-tag.hot { background: #fee2e2; color: var(--red); }
+    .map-tag.hard { background: #f3e8ff; color: var(--purple); }
+    .graph-card { border-top: 6px solid var(--primary-2); }
+    .graph-card.beyond { border-top-color: var(--purple); }
+    .graph-card.hot { border-top-color: var(--red); }
+    .node-group { margin-top: 14px; }
+    .node-title { margin: 0 0 8px; color: var(--primary); font-weight: 900; }
+    .node-list { display: flex; flex-wrap: wrap; gap: 8px; }
+    .node { padding: 6px 10px; border-radius: 999px; background: var(--soft); border: 1px solid var(--line); color: var(--primary); font-size: 0.88rem; font-weight: 800; }
+    .node.core { background: #fee2e2; color: var(--red); }
+    .node.extend { background: #f3e8ff; color: var(--purple); }
+    .tool-detail { display: grid; gap: 10px; margin-top: 14px; }
+    .tool-row { padding: 12px 14px; border: 1px solid var(--line); border-radius: 14px; background: #f8fbff; }
+    .tool-row strong { color: var(--primary); }
+    .tool-sequence { counter-reset: step; display: grid; gap: 8px; margin-top: 10px; }
+    .tool-sequence span { position: relative; padding: 9px 12px 9px 42px; border-radius: 12px; background: var(--soft); border: 1px solid var(--line); color: var(--text); font-weight: 800; }
+    .tool-sequence span::before { counter-increment: step; content: counter(step); position: absolute; left: 12px; top: 8px; width: 22px; height: 22px; display: grid; place-items: center; border-radius: 8px; background: var(--primary); color: #fff; font-size: 0.78rem; font-weight: 900; }
+    .tool-warning { margin-top: 14px; padding: 14px 16px; border-radius: 16px; background: #fff7ed; border: 1px solid #fed7aa; color: #9a3412; font-weight: 800; }
+    .module-card { border-top: 6px solid var(--primary-2); }
+    .module-card.warning { border-top-color: var(--accent); background: #fffaf2; }
+    .formula-line { margin: 14px 0; padding: 16px; border-radius: 16px; background: linear-gradient(135deg, var(--soft), #fff); border: 1px solid var(--line); text-align: center; color: var(--primary); font-weight: 900; }
+    .ability-card { display: grid; gap: 8px; }
+    .ability-card strong { color: var(--primary-2); }
+    .schedule-row { display: grid; grid-template-columns: 160px 1fr; gap: 16px; align-items: start; padding: 16px; border: 1px solid var(--line); border-radius: 16px; background: #f8fbff; }
+    .schedule-row + .schedule-row { margin-top: 12px; }
+    .checklist { display: grid; gap: 10px; }
+    .check-item { display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 14px; background: var(--card); cursor: pointer; transition: transform 0.18s ease, background 0.18s ease; }
+    .check-item:hover { transform: translateY(-2px); background: var(--soft); }
+    .box { width: 22px; height: 22px; flex: 0 0 auto; margin-top: 3px; border: 2px solid var(--primary-2); border-radius: 7px; }
+    .check-item.checked .box { position: relative; background: var(--green); border-color: var(--green); }
+    .check-item.checked .box::after { content: ""; position: absolute; left: 6px; top: 2px; width: 6px; height: 12px; border: solid #fff; border-width: 0 3px 3px 0; transform: rotate(45deg); }
+    .check-item.checked span:last-child { color: var(--muted); text-decoration: line-through; }
+    .stage-line { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+    .stage { border-top: 6px solid var(--green); }
+    .stage:nth-child(2) { border-top-color: var(--primary-2); }
+    .stage:nth-child(3) { border-top-color: var(--accent); }
+    .question { padding: 16px; border-radius: 16px; border: 1px solid var(--line); background: #f8fbff; }
+    .question + .question { margin-top: 12px; }
+    .question-title { margin-bottom: 10px; color: var(--primary); font-weight: 900; }
+    .rating { display: flex; flex-wrap: wrap; gap: 8px; }
+    .rating label { display: inline-flex; align-items: center; gap: 5px; padding: 6px 10px; border-radius: 999px; border: 1px solid var(--line); background: var(--card); cursor: pointer; }
+    .button-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+    .button { border: 0; border-radius: 999px; padding: 11px 18px; background: var(--primary); color: var(--card); font: inherit; font-weight: 900; cursor: pointer; transition: transform 0.18s ease, background 0.18s ease; }
+    .button:hover { transform: translateY(-2px); background: var(--primary-2); }
+    .button.secondary { background: var(--soft); color: var(--primary); border: 1px solid var(--line); }
+    .result { display: none; margin-top: 16px; padding: 18px; border-radius: 18px; border: 2px solid var(--green); background: var(--soft-green); }
+    .result.show { display: block; }
+    .source { color: var(--muted); font-size: 0.88rem; }
+    .source a { color: var(--primary-2); text-decoration: underline; }
+    .back-top { position: fixed; right: 18px; bottom: 18px; width: 46px; height: 46px; display: none; border: 0; border-radius: 50%; background: var(--primary); color: var(--card); box-shadow: var(--shadow); cursor: pointer; font-size: 20px; }
+    .back-top.show { display: block; }
+    @media (max-width: 900px) {
+      .grid, .grid.two, .grid.four, .timeline, .map-grid, .stage-line { grid-template-columns: 1fr; }
+      .hero { padding: 38px 24px; }
+      .schedule-row { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 560px) {
+      .container { width: min(100% - 22px, 1100px); padding-top: 14px; }
+      .hero, .card { border-radius: 18px; }
+      .hero { padding: 30px 18px; }
+      .section-head { align-items: flex-start; }
+      .rating label { flex: 1 1 72px; justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <section class="hero" id="top">
+      <div class="tag-row">
+        <span class="tag">适用对象：初三升高一 / 高一新生</span>
+        <span class="tag">目标：高考数学高分 / 985 方向</span>
+        <span class="tag">函数主线</span>
+        <span class="tag">知识地图</span>
+        <span class="tag">压轴题路线</span>
+      </div>
+      <h1>《高中数学三年学习路线与知识点规划》</h1>
+      <p class="subtitle">从初升高开始，搭好函数、几何、数列、概率与综合题的完整学习地图。</p>
+      <div class="hero-note">高中数学真正的差距，不是从高三才拉开的，而是从高一是否建立学习系统开始的。</div>
+    </section>
+
+    <nav class="nav" aria-label="页面导航">
+      <a href="#intro">写在前面</a>
+      <a href="#route">三年路线</a>
+      <a href="#grade1">高一</a>
+      <a href="#grade2">高二</a>
+      <a href="#grade3">高三</a>
+      <a href="#map">知识地图</a>
+      <a href="#module-function">核心模块</a>
+      <a href="#graph145">145 图谱</a>
+      <a href="#ability">能力训练</a>
+      <a href="#advanced">超纲工具箱</a>
+      <a href="#beyond">拔尖拓展</a>
+    </nav>
+
+    <section class="section" id="intro">
+      <div class="section-head"><div class="num">1</div><h2>写在前面：高中数学不是初中数学的简单加长版</h2></div>
+      <div class="grid two">
+        <div class="card compare-card">
+          <h3>初中数学更偏</h3>
+          <ul class="list"><li>公式套用</li><li>图形计算</li><li>明确题型</li><li>步骤相对短</li></ul>
+          <div class="formula-line">看见题型，套方法。</div>
+        </div>
+        <div class="card compare-card">
+          <h3>高中数学更偏</h3>
+          <ul class="list"><li>抽象概念和符号语言</li><li>函数思想和分类讨论</li><li>参数变化与多知识综合</li><li>证明、推理和运算稳定性</li></ul>
+          <div class="formula-line">看懂结构，选择方法。</div>
+        </div>
+      </div>
+      <div class="card"><strong>核心提醒：</strong>高中数学不是题变长了，而是思维层级变高了。真正要升级的是“理解结构、选择方法、稳定表达”的能力。</div>
+    </section>
+
+    <section class="section" id="route">
+      <div class="section-head"><div class="num">2</div><h2>高中数学三年总路线</h2></div>
+      <div class="timeline">
+        <div class="card timeline-card"><span class="badge timeline-badge">高一</span><h3>打基础，建系统</h3><p><strong>关键词：</strong>基础、习惯、函数、运算、复盘。</p><ul class="list"><li>适应函数语言</li><li>学好集合、逻辑、函数、三角、向量等基础模块</li><li>建立错题复盘习惯</li><li>提升运算准确率</li><li>不急着死磕压轴题</li></ul><div class="goal">目标：每章知识不留大坑，基础题和中档题稳定拿分。</div></div>
+        <div class="card timeline-card"><span class="badge timeline-badge">高二</span><h3>提能力，连模块</h3><p><strong>关键词：</strong>综合、模型、专题、难题、能力。</p><ul class="list"><li>学好数列、立体几何、解析几何、概率统计、导数等主干模块</li><li>开始做综合题</li><li>建立专题笔记</li><li>训练分类讨论、参数分析、函数思想、数形结合</li></ul><div class="goal">目标：从会做单题，升级到会分析题目结构。</div></div>
+        <div class="card timeline-card"><span class="badge timeline-badge">高三</span><h3>系统复习，稳定提分</h3><p><strong>关键词：</strong>复习、稳定、速度、策略、查漏补缺。</p><ul class="list"><li>一轮复习扫盲点</li><li>二轮复习攻专题</li><li>三轮复习练速度和稳定性</li><li>降低低级失误</li><li>建立考场策略</li></ul><div class="goal">目标：会的题拿满，中档题拿稳，难题尽量拿步骤分。</div></div>
+      </div>
+    </section>
+
+    <section class="section" id="grade1">
+      <div class="section-head"><div class="num">3</div><h2>高一数学学习路线</h2></div>
+      <div class="grid two">
+        <div class="card semester"><h3>高一上学期：适应函数语言</h3><p><strong>重点知识：</strong></p><ol class="list"><li>集合与常用逻辑用语</li><li>一元二次函数和基本不等式衔接</li><li>函数概念与表示</li><li>函数单调性、奇偶性</li><li>指数函数与对数函数</li><li>幂函数</li><li>三角函数基础</li></ol><p><strong>学习目标：</strong>看懂集合符号，理解函数是“变量之间的对应关系”，会判断定义域、值域、单调性、奇偶性，熟悉指数和对数运算。</p><div class="goal">提醒：高一函数没学透，高二导数、数列、解析几何都会受影响。</div></div>
+        <div class="card semester"><h3>高一下学期：建立图像和运算能力</h3><p><strong>重点知识：</strong></p><ol class="list"><li>三角恒等变换</li><li>三角函数图像与性质</li><li>解三角形</li><li>平面向量</li><li>复数</li><li>立体几何初步</li></ol><p><strong>学习目标：</strong>熟悉三角公式，会用单位圆和图像理解三角函数，会用向量处理几何问题，初步建立空间想象能力。</p><div class="goal">高一结束：基础题准确率高，中档题能独立分析，每周能整理错题。</div></div>
+      </div>
+    </section>
+
+    <section class="section" id="grade2">
+      <div class="section-head"><div class="num">4</div><h2>高二数学学习路线</h2></div>
+      <div class="grid two">
+        <div class="card semester"><h3>高二上学期：主干模块强化</h3><ol class="list"><li>数列</li><li>等差数列与等比数列</li><li>数列求和</li><li>空间向量与立体几何</li><li>直线与圆</li><li>圆锥曲线基础</li><li>概率与统计基础</li></ol><p><strong>目标：</strong>理解数列本质是特殊函数，用空间向量解决立体几何，建立解析几何坐标化思维。</p></div>
+        <div class="card semester"><h3>高二下学期：综合能力形成</h3><ol class="list"><li>导数及其应用</li><li>利用导数研究单调性、极值、最值</li><li>导数与不等式</li><li>导数与参数问题</li><li>解析几何综合</li><li>概率统计综合</li><li>数列与函数综合</li></ol><p><strong>目标：</strong>导数成为研究函数的工具，解析几何学会设点、列式、化简，初步接触压轴题思路。</p><div class="goal">高二结束：主干知识基本完整，能做中高档综合题，有自己的专题笔记。</div></div>
+      </div>
+    </section>
+
+    <section class="section" id="grade3">
+      <div class="section-head"><div class="num">5</div><h2>高三数学复习路线</h2></div>
+      <div class="stage-line">
+        <div class="card stage"><h3>一轮复习：全面重建知识体系</h3><ul class="list"><li>按章节回归课本</li><li>补齐概念漏洞</li><li>整理公式和方法</li><li>每章建立知识框架</li><li>错题按知识点分类</li></ul><p><strong>重点：</strong>不要只刷卷子，要把每个模块重新过一遍。</p></div>
+        <div class="card stage"><h3>二轮复习：专题突破</h3><ul class="list"><li>函数与导数专题</li><li>三角与向量专题</li><li>数列专题</li><li>立体几何与解析几何专题</li><li>概率统计专题</li><li>选择填空与大题压轴专题</li></ul><p><strong>任务：</strong>限时训练、题型归纳、方法比较、综合题拆解。</p></div>
+        <div class="card stage"><h3>三轮复习：模拟训练与考场策略</h3><ul class="list"><li>成套试卷训练</li><li>控制答题时间</li><li>稳定选择填空</li><li>大题分层拿分</li><li>减少计算失误</li><li>调整心态和作息</li></ul><p><strong>策略：</strong>先保证会做的全对，再争取难题步骤分。</p></div>
+      </div>
+    </section>
+
+    <section class="section" id="map">
+      <div class="section-head"><div class="num">6</div><h2>高中数学知识地图</h2></div>
+      <div class="map-grid" id="knowledgeMap"></div>
+      <div class="card" style="margin-top:16px;"><strong>主线提醒：</strong>函数思想贯穿整个高中数学。导数、数列、解析几何、不等式，很多题最后都要回到函数思想。</div>
+    </section>
+
+    <section class="section" id="graph145">
+      <div class="section-head"><div class="num">7</div><h2>冲 145 的知识图谱：从不遗漏到能综合</h2></div>
+      <div class="card">
+        <p><strong>145 分不是靠“会很多难题”堆出来的。</strong>它通常意味着：基础题几乎不丢分，中档题稳定全拿，压轴题前两问有把握，最后一问能找到入口并争取步骤分。下面这张图谱把高中数学按“必修基础、主干综合、压轴能力、拔尖拓展”分层，适合一项一项检查。</p>
+        <div class="formula-line">145 分路径 = 知识无漏点 + 运算少失误 + 主干能综合 + 压轴有入口 + 考场有策略</div>
+      </div>
+      <div class="grid two" id="graph145Grid"></div>
+    </section>
+
+    <section class="section" id="module-function">
+      <div class="section-head"><div class="num">8</div><h2>核心模块 1：函数与导数</h2></div>
+      <div class="card module-card"><p><strong>为什么是主线：</strong>函数是高中数学最核心的语言。数列可以看成特殊函数，导数是研究函数的工具，解析几何和不等式很多题也会回到函数思想。</p><p><strong>函数关键点：</strong>定义域、值域、单调性、奇偶性、周期性、零点、图像变换、指数函数、对数函数、幂函数。</p><p><strong>导数关键点：</strong>导数概念、导数运算、切线、单调性、极值、最值、恒成立、参数、不等式证明。</p><p><strong>学习重点：</strong>先看定义域，再看图像，再看性质，最后看应用。导数不是单独一章，它是研究函数的放大镜。</p><div class="goal">高考地位：函数与导数通常是核心模块，也是区分度较高的模块。</div></div>
+    </section>
+
+    <section class="section" id="module-trig">
+      <div class="section-head"><div class="num">9</div><h2>核心模块 2：三角函数与解三角形</h2></div>
+      <div class="card module-card"><p><strong>关键知识点：</strong>任意角和弧度制、三角函数定义、诱导公式、同角三角关系、和差角公式、倍角公式、三角函数图像、周期、单调区间、最值、正弦定理、余弦定理、三角形面积公式。</p><p><strong>学习重点：</strong>公式不能死背，要会变形；图像和单位圆要结合；解三角形要看边角关系；三角恒等变换重在“目标意识”。</p><div class="goal">常见难点：公式多、变形多、容易算错。</div></div>
+    </section>
+
+    <section class="section" id="module-sequence">
+      <div class="section-head"><div class="num">10</div><h2>核心模块 3：数列</h2></div>
+      <div class="card module-card"><p><strong>关键知识点：</strong>数列概念、通项公式、递推公式、等差数列、等比数列、前 n 项和、错位相减、裂项相消、分组求和、数列与函数、数列与不等式。</p><p><strong>学习重点：</strong>数列本质上是定义在正整数上的函数；通项是核心；求和方法要分类；递推关系要会转化。</p><div class="goal">常见难点：看不出规律、不会从递推走向通项、求和方法混乱。</div></div>
+    </section>
+
+    <section class="section" id="module-geometry">
+      <div class="section-head"><div class="num">11</div><h2>核心模块 4：立体几何与解析几何</h2></div>
+      <div class="grid two">
+        <div class="card module-card"><h3>立体几何</h3><p><strong>关键知识点：</strong>点线面位置关系、平行与垂直、空间角、空间距离、体积、截面、空间向量方法。</p><p><strong>学习重点：</strong>先建立图形直观，再用定理证明，最后用空间向量计算。</p><div class="goal">难点：看不出辅助线，不会把空间问题转成向量问题。</div></div>
+        <div class="card module-card"><h3>解析几何</h3><p><strong>关键知识点：</strong>直线、圆、椭圆、双曲线、抛物线、弦长、中点弦、斜率、定点定值、最值范围、参数问题。</p><p><strong>学习重点：</strong>建立坐标化思想，会设点设线，会把几何条件翻译成代数方程，计算要稳。</p><div class="goal">难点：思路不一定难，但计算很长，容易半路崩。</div></div>
+      </div>
+    </section>
+
+    <section class="section" id="module-probability">
+      <div class="section-head"><div class="num">12</div><h2>核心模块 5：概率统计与计数原理</h2></div>
+      <div class="grid two">
+        <div class="card module-card"><h3>计数原理</h3><p><strong>关键知识点：</strong>分类加法、分步乘法、排列、组合、二项式定理。</p><p><strong>学习重点：</strong>先判断是分类还是分步，再判断是否考虑顺序，防止重复和遗漏。</p></div>
+        <div class="card module-card"><h3>概率统计</h3><p><strong>关键知识点：</strong>古典概型、条件概率、独立事件、随机变量、分布列、期望、方差、统计图表、回归与相关性。</p><p><strong>学习重点：</strong>读懂题意，建立事件，列清情况，计算准确。</p><div class="goal">难点：题目文字长，条件多，容易漏条件。</div></div>
+      </div>
+    </section>
+
+    <section class="section" id="module-tools">
+      <div class="section-head"><div class="num">13</div><h2>核心模块 6：不等式、复数、集合逻辑等基础工具</h2></div>
+      <div class="grid">
+        <div class="card module-card warning"><h3>集合与逻辑</h3><p>集合关系、交并补、充分条件与必要条件、全称量词与存在量词。这是高中数学的符号语言。</p></div>
+        <div class="card module-card warning"><h3>不等式</h3><p>基本不等式、一元二次不等式、绝对值不等式、不等式证明、函数与导数中的不等式。不等式经常和函数、导数、数列结合。</p></div>
+        <div class="card module-card warning"><h3>复数</h3><p>复数概念、复数运算、共轭复数、复平面、模长。复数题通常不太长，但要求概念清楚、计算稳定。</p></div>
+      </div>
+    </section>
+
+    <section class="section" id="ability">
+      <div class="section-head"><div class="num">14</div><h2>数学能力训练路线：145 分需要的 10 种硬能力</h2></div>
+      <div class="card" style="margin-bottom:16px;">
+        <p>知识点学完只是第一层。要冲高分，还要把知识转化成稳定能力：看到题能判断结构，遇到参数能分类，计算很长也不乱，压轴题不会空白。</p>
+      </div>
+      <div class="grid two" id="abilityGrid"></div>
+    </section>
+
+    <section class="section" id="weekly-template">
+      <div class="section-head"><div class="num">15</div><h2>每周数学学习模板</h2></div>
+      <div class="card">
+        <div class="schedule-row"><strong>周一到周五</strong><div><ul class="list"><li>每天 15 分钟：回顾当天数学概念</li><li>每天 30-60 分钟：完成数学作业</li><li>每天 10 分钟：整理 1-2 道错题</li><li>每天 5 分钟：记一个公式或方法</li></ul></div></div>
+        <div class="schedule-row"><strong>周六</strong><div><ul class="list"><li>1-2 小时：薄弱模块专项训练</li><li>30 分钟：整理本周错题</li><li>30 分钟：复盘本周知识框架</li></ul></div></div>
+        <div class="schedule-row"><strong>周日</strong><div><ul class="list"><li>1 套小综合或限时训练</li><li>预习下周内容</li><li>写下下周数学目标</li></ul></div></div>
+      </div>
+    </section>
+
+    <section class="section" id="challenge">
+      <div class="section-head"><div class="num">16</div><h2>压轴题能力培养路线</h2></div>
+      <div class="stage-line">
+        <div class="card stage"><h3>高一</h3><p><strong>重点：</strong>基础概念准确，运算稳定，中档题做扎实，学会写完整过程。</p><p><strong>不要：</strong>高一刚开始就盲目刷高考压轴。</p></div>
+        <div class="card stage"><h3>高二</h3><p><strong>重点：</strong>开始接触综合题，学会拆题，建立专题模型，训练导数、解析几何、数列综合。</p></div>
+        <div class="card stage"><h3>高三</h3><p><strong>重点：</strong>分层拿分，识别第一问、第二问、第三问难度，先拿能拿的分，难题也要写出有效步骤。</p></div>
+      </div>
+      <div class="formula-line">压轴题能力 = 基础知识 + 方法模型 + 运算耐心 + 考场策略</div>
+    </section>
+
+    <section class="section" id="advanced">
+      <div class="section-head"><div class="num">17</div><h2>985 与拔尖选拔拓展：可以超纲，但不能乱学</h2></div>
+      <div class="card">
+        <p><strong>如果目标是稳定 145，并且还考虑强基、竞赛、少年班、英才计划或过去常说的自主招生类拔尖选拔，那么一些超纲工具确实要进入视野。</strong>它们不是用来替代课内方法，而是帮助你看清函数、极限、不等式和压轴题背后的结构。</p>
+        <p><strong>使用边界：</strong>普通高考卷面作答一般应优先使用高中范围内能被阅卷接受的方法。泰勒展开、洛必达等更适合用于理解、验算、强基校测、竞赛训练，或在老师明确允许的场景中使用。</p>
+        <div class="formula-line">145+ 超纲工具箱 = 极限意识 + 局部近似 + 凸性放缩 + 中值桥梁 + 高级不等式 + 竞赛式构造</div>
+        <div class="tool-warning">学习原则：先保证课内函数、导数、解析几何、数列、不等式无漏洞，再把这些工具作为“看结构、验思路、拓宽解法”的第二层武器。普通高考书写优先使用高中可接受语言；强基、竞赛、校测训练可以更大胆。</div>
+        <div class="grid two" id="advancedGrid"></div>
+      </div>
+    </section>
+
+    <section class="section" id="beyond">
+      <div class="section-head"><div class="num">18</div><h2>拔尖选拔与自主招生类路径提醒</h2></div>
+      <div class="card">
+        <p><strong>严谨提醒：</strong>过去常说的“自主招生”已经不是现在普通高考外的一条统一固定通道。现阶段更应关注强基计划、综合评价、学科竞赛、少年班 / 英才计划、大学数学营等拔尖选拔路径，具体以当年官方政策和高校招生简章为准。</p>
+        <p>如果目标是 985 或拔尖选拔，超纲内容可以作为“思维拓展”，但必须建立在课内主干稳定的基础上。不要因为追超纲，导致函数、导数、解析几何、数列这些高考主干漏洞越来越大。</p>
+        <div class="grid two" id="beyondGrid"></div>
+        <p class="source">政策参考：教育部《强基计划》试点文件与 2020 年起原有高校自主招生方式不再使用的公开说明。实际报名条件、流程和录取规则以当年官方政策及高校招生简章为准。</p>
+      </div>
+    </section>
+  </main>
+
+  <button class="back-top" id="backTop" aria-label="返回顶部">↑</button>
+
+  <script>
+    const knowledgeModules = [
+      ["集合与逻辑", ["基础模块"]],
+      ["函数", ["主干模块", "高频模块"]],
+      ["指数、对数、幂函数", ["基础模块", "高频模块"]],
+      ["三角函数", ["主干模块", "高频模块"]],
+      ["解三角形", ["主干模块"]],
+      ["平面向量", ["基础模块"]],
+      ["复数", ["基础模块"]],
+      ["数列", ["主干模块", "高频模块"]],
+      ["不等式", ["基础模块", "压轴模块"]],
+      ["立体几何", ["主干模块"]],
+      ["空间向量", ["主干模块"]],
+      ["解析几何", ["主干模块", "压轴模块"]],
+      ["概率统计", ["主干模块", "高频模块"]],
+      ["计数原理", ["基础模块"]],
+      ["导数", ["主干模块", "压轴模块"]],
+      ["数学建模与综合应用", ["压轴模块"]]
+    ];
+
+    const graph145Data = [
+      {
+        title: "1. 数学语言与基础工具",
+        type: "graph-card",
+        must: ["集合关系", "交并补", "命题真假", "充分必要条件", "全称量词", "存在量词", "一元二次不等式", "基本不等式", "绝对值与区间"],
+        leaks: ["忽略空集", "条件方向写反", "不等式端点丢失", "取交集出错"],
+        check: ["能把文字条件翻译成符号", "能判断必要/充分/充要", "能处理参数二次不等式"],
+        extend: ["反证法", "构造反例", "数学归纳法入门", "同余思想", "抽屉原理"]
+      },
+      {
+        title: "2. 函数主线",
+        type: "graph-card hot",
+        must: ["定义域", "值域", "解析式", "单调性", "奇偶性", "周期性", "零点", "图像变换", "复合函数", "分段函数", "指数函数", "对数函数", "幂函数"],
+        leaks: ["先求值域不看定义域", "图像平移方向错", "奇偶性不查定义域对称", "复合函数内外层混乱"],
+        check: ["拿到函数先查定义域", "能画草图判断趋势", "能用单调性解方程/不等式"],
+        extend: ["取整函数", "函数迭代", "凸函数思想", "反函数思想", "泰勒展开", "洛必达法则", "极限方法体系"]
+      },
+      {
+        title: "3. 三角与向量",
+        type: "graph-card",
+        must: ["弧度制", "诱导公式", "同角关系", "和差角公式", "倍角公式", "辅助角公式", "三角图像", "正弦定理", "余弦定理", "面积公式", "平面向量线性运算", "数量积"],
+        leaks: ["公式符号错", "角范围忘记限制", "辅助角化简不熟", "向量夹角和数量积混淆"],
+        check: ["能把三角式化到目标形式", "能由边角关系选择定理", "能用向量证明垂直/平行/夹角"],
+        extend: ["三角替换", "复数与三角联系", "De Moivre 公式", "单位根", "向量法处理竞赛几何入门"]
+      },
+      {
+        title: "4. 数列与递推",
+        type: "graph-card hot",
+        must: ["数列概念", "通项公式", "递推公式", "等差数列", "等比数列", "前 n 项和", "错位相减", "裂项相消", "分组求和", "累加累乘", "数列不等式"],
+        leaks: ["n 的范围不写", "首项漏算", "求和方法误选", "递推转通项卡住"],
+        check: ["能从递推得到通项", "能区分求和类型", "能把数列看成定义在正整数上的函数"],
+        extend: ["数学归纳法", "递推不等式", "特征根法入门", "单调有界", "Stolz-Cesaro", "生成函数直观了解"]
+      },
+      {
+        title: "5. 立体几何与空间向量",
+        type: "graph-card",
+        must: ["点线面关系", "平行证明", "垂直证明", "线面角", "二面角", "空间距离", "体积", "截面", "空间坐标系", "法向量"],
+        leaks: ["图形看不准", "辅助线找不到", "法向量方向乱", "角的定义混淆"],
+        check: ["能用传统法说明位置关系", "能建系转向量计算", "能规范写出证明过程"],
+        extend: ["截面变化", "空间轨迹", "向量投影思想"]
+      },
+      {
+        title: "6. 解析几何",
+        type: "graph-card hot",
+        must: ["直线方程", "圆", "椭圆", "双曲线", "抛物线", "焦点准线", "弦长公式", "中点弦", "斜率", "韦达定理", "定点定值", "最值范围"],
+        leaks: ["设点不统一", "联立计算崩", "判别式漏写", "参数范围忘记", "弦长公式套错"],
+        check: ["能把几何条件翻译成代数式", "能控制长计算", "能识别定点/定值/范围题入口"],
+        extend: ["极点极线直观", "参数化", "仿射变换", "齐次化", "圆锥曲线竞赛性质选学"]
+      },
+      {
+        title: "7. 概率统计与计数",
+        type: "graph-card",
+        must: ["分类加法", "分步乘法", "排列", "组合", "二项式定理", "古典概型", "条件概率", "独立事件", "分布列", "期望", "方差", "统计图表", "回归相关"],
+        leaks: ["分类分步混淆", "重复遗漏", "是否有顺序判断错", "事件条件漏读", "期望方差公式不熟"],
+        check: ["能列清样本空间", "能把文字转事件", "能解释统计量含义"],
+        extend: ["容斥原理", "抽屉原理", "递推计数", "贝叶斯公式", "期望线性性", "随机过程直观了解"]
+      },
+      {
+        title: "8. 导数、不等式与压轴综合",
+        type: "graph-card hot",
+        must: ["导数运算", "切线", "单调区间", "极值最值", "零点", "恒成立", "存在性", "参数讨论", "导数证明不等式", "函数构造", "分类讨论"],
+        leaks: ["定义域漏掉", "导数符号表不完整", "参数分类不全", "极值与最值混淆", "只写结论不写理由"],
+        check: ["能建立导数符号表", "能把恒成立转最值", "能构造函数证明不等式", "压轴题能拿第一二问"],
+        extend: ["洛必达法则", "泰勒展开", "等价无穷小", "二阶导与凸性", "Jensen 不等式", "中值定理", "Holder 不等式", "Schur 不等式", "柯西与均值不等式", "竞赛不等式入门"]
+      }
+    ];
+
+    const advancedTools = [
+      {
+        title: "1. 泰勒展开式与余项控制",
+        core: "把复杂函数在某点附近拆成多项式主项，直接看出局部大小、增长速度、极限主导项和不等式放缩方向。",
+        prereq: "导数定义、常见初等函数、极限直觉、阶数比较。先会算导数，再谈展开。",
+        formulas: ["e^x = 1 + x + x^2/2! + x^3/3! + ...", "ln(1+x) = x - x^2/2 + x^3/3 - ...", "sin x = x - x^3/3! + x^5/5! - ...", "cos x = 1 - x^2/2! + x^4/4! - ...", "f(x) = f(a) + f'(a)(x-a) + f''(a)(x-a)^2/2 + ... + R_n"],
+        use: "极限估算、函数局部比较、导数压轴、不等式证明、强基校测和竞赛中经常出现。",
+        sequence: ["背熟 e^x、ln(1+x)、sin x、cos x 在 0 附近的前 3 到 4 项", "练习只保留主项判断极限与正负", "学习余项意识：知道保留到几阶才够证明", "把泰勒与切线放缩、凸性、等价无穷小联系起来"],
+        drills: "每天 3 道小题：一个极限、一个函数比较、一个不等式放缩。重点不是展开很多项，而是判断主项是否足够。",
+        traps: "最常见错误是忽略展开点、适用范围和余项符号；不等式题中只写近似式不能替代严谨证明。",
+        boundary: "普通高考卷面优先使用导数单调性、切线放缩或高中可接受证明；泰勒可作为理解、验算、强基和竞赛工具。"
+      },
+      {
+        title: "2. 洛必达法则",
+        core: "在 0/0 或 ∞/∞ 型极限中，把函数值增长速度的比较转化为导数增长速度的比较。",
+        prereq: "极限基本概念、导数运算、函数趋近方向、分母导数不为 0 的条件意识。",
+        formulas: ["0/0 型：若 f(x)->0, g(x)->0，可考察 f'(x)/g'(x)", "∞/∞ 型：若 f(x), g(x) 同趋于无穷，可考察 f'(x)/g'(x)", "只有当 f'(x)/g'(x) 的极限存在或趋于无穷时，才能推出原极限", "其他型别常要先变形成 0/0 或 ∞/∞"],
+        use: "强基校测、大学先修、竞赛训练、极限题验算；也能帮助理解指数、对数、幂函数的增长速度。",
+        sequence: ["先判断是不是 0/0 或 ∞/∞", "检查分母导数附近是否为 0", "求导后重新判断新极限", "若反复洛必达仍复杂，退回泰勒、夹逼或等价无穷小"],
+        drills: "练 20 道典型极限：多项式比指数、对数比幂、三角极限、含参数极限。每题写出型别判断。",
+        traps: "不能看到分式就洛必达；不能在极限不存在、振荡、条件未满足时强行使用；求导是对分子分母分别求，不是对整个分式求导。",
+        boundary: "高考常规答案一般不依赖洛必达。考场可用它快速判断结果，再改写为因式分解、单调性、夹逼、导数构造等高中语言。"
+      },
+      {
+        title: "3. 等价无穷小与增长阶",
+        core: "用最简单的同阶表达式替代复杂函数，快速判断主项、极限、谁增长得快、误差是否可忽略。",
+        prereq: "极限、三角函数、指数对数、泰勒前两项。",
+        formulas: ["sin x ~ x, tan x ~ x", "1 - cos x ~ x^2/2", "ln(1+x) ~ x", "e^x - 1 ~ x", "(1+x)^a - 1 ~ ax", "增长速度：ln x << x^a << b^x << x!"],
+        use: "极限、近似估算、函数比较、选择填空快速判断、强基校测。",
+        sequence: ["先记住 5 个最常用等价式", "通过泰勒展开解释它们为什么成立", "专练乘除中的等价替换", "再练加减式中主项相消后的二阶替换"],
+        drills: "把每道极限题标出主项和被消掉的项；遇到加减式必须先判断是否相消。",
+        traps: "等价替换在乘除中最稳定，在加减中很危险；主项相消后，必须继续找下一阶项。",
+        boundary: "高考题可以用等价无穷小做草稿判断，但完整书写最好改成标准极限、夹逼、导数或恒等变形。"
+      },
+      {
+        title: "4. 极限方法体系与数列极限",
+        core: "把极限题从“套公式”升级为方法选择：代数化简、夹逼、单调有界、递推估计、Stolz-Cesaro 等。",
+        prereq: "函数极限直觉、数列单调性、有界性、递推关系。",
+        formulas: ["夹逼：a_n <= b_n <= c_n 且两边同极限，则中间同极限", "单调有界：单调递增且有上界的数列收敛", "Stolz 思想：数列商的极限可转为差分商的极限", "递推不动点：若 a_(n+1)=f(a_n)，极限 L 常满足 L=f(L)"],
+        use: "数列压轴、递推数列、强基极限题、竞赛初阶分析题。",
+        sequence: ["先用图像或数轴判断递推数列趋势", "证明单调性和有界性", "求可能极限并回代检验", "遇到求和或商式再考虑 Stolz 或夹逼"],
+        drills: "每周 6 道递推数列：2 道单调有界，2 道夹逼，2 道含求和或参数。",
+        traps: "只求 L=f(L) 不等于证明收敛；单调和有界缺一不可；递推初值不同会改变极限或稳定性。",
+        boundary: "高考数列题优先用递推变形、放缩、数学归纳法；Stolz-Cesaro 属于拔尖工具，适合强基和校测。"
+      },
+      {
+        title: "5. 凸性、Jensen 与切线放缩",
+        core: "用函数图像的弯曲方向处理平均、最值和不等式，把很多“硬凑不等式”的题变成结构判断。",
+        prereq: "二次函数、导数单调性、二阶导直觉、基本不等式。",
+        formulas: ["凸函数：图像在任意弦的下方，在切线的上方", "若 f''(x) >= 0，则 f 常为凸函数", "Jensen：f((x_1+...+x_n)/n) <= (f(x_1)+...+f(x_n))/n", "切线放缩：凸函数常有 f(x) >= f(a)+f'(a)(x-a)"],
+        use: "导数不等式、最值估计、强基面试、竞赛代数、参数恒成立题。",
+        sequence: ["先用二次函数和 e^x 看懂凸性", "用二阶导判断常见函数凹凸", "练切线放缩证明简单不等式", "再学 Jensen 的条件、等号和加权形式"],
+        drills: "整理一张常见函数凹凸表：x^2、e^x、ln x、sin x 局部、1/x。每个函数配一个切线放缩。",
+        traps: "Jensen 的定义域、权重、凸凹方向都不能错；等号条件必须写清；凹函数方向与凸函数相反。",
+        boundary: "高考导数题常可把切线放缩写成构造函数证明；Jensen 本身更适合强基、竞赛和拓展训练。"
+      },
+      {
+        title: "6. 中值定理体系",
+        core: "Rolle、拉格朗日、柯西中值定理把区间整体变化和某一点导数联系起来，是零点、不等式、函数构造的高级桥梁。",
+        prereq: "连续、可导、导数几何意义、平均变化率。",
+        formulas: ["Rolle：两端函数值相等，则中间某点导数为 0", "Lagrange：存在 c，使 f'(c) = (f(b)-f(a))/(b-a)", "Cauchy：两个函数的变化率可用导数比连接", "单调性本质：导数符号控制函数变化"],
+        use: "强基校测、函数证明、零点个数、不等式、导数压轴理解。",
+        sequence: ["先从平均速度等于某刻瞬时速度理解 Lagrange", "用 Rolle 证明零点与导数零点的关系", "把中值定理转化为高中可写的单调性证明", "再处理含两个函数的 Cauchy 中值定理"],
+        drills: "练 10 道零点题：先数函数零点，再数导函数零点，体会两者关系。",
+        traps: "连续和可导条件漏掉会导致定理失效；中值点存在但通常不能直接求出，不要把存在点当已知点计算。",
+        boundary: "高考可用导数符号表表达同样思想；中值定理适合拔尖理解和校测表达。"
+      },
+      {
+        title: "7. 高级不等式工具链",
+        core: "把柯西、均值链、Holder、排序、Schur、切线放缩串成工具链，解决数列、导数、代数最值中的难估计。",
+        prereq: "基本不等式、配方、函数单调性、等号条件意识。",
+        formulas: ["柯西：((a_1)^2+...+(a_n)^2)((b_1)^2+...+(b_n)^2) >= (a_1b_1+...+a_nb_n)^2", "均值链：调和平均 <= 几何平均 <= 算术平均 <= 平方平均", "Holder：适合三组或多组乘积和的估计", "排序不等式：同序乘积和最大，反序乘积和最小", "Schur：处理对称齐次三变量不等式"],
+        use: "竞赛代数、不等式证明、数列放缩、导数压轴、强基选拔。",
+        sequence: ["先熟练基本不等式和等号条件", "再练柯西的三种常见形态：平方和、 Engel、配凑", "学习均值链与排序不等式", "最后把 Holder、Schur 当竞赛增强工具"],
+        drills: "建立不等式错题卡：每题记录结构、套用工具、等号条件、为什么想到它。",
+        traps: "高级不等式不是公式堆砌。等号条件不匹配、变量正负不明、齐次性没看清，都会让证明失效。",
+        boundary: "高考压轴更常考导数构造和基本放缩；Holder、Schur 等更偏竞赛和强基。"
+      },
+      {
+        title: "8. 数学归纳法与递推估计",
+        core: "处理与 n 有关的命题、数列不等式、递推关系、组合恒等式，是从高考数列走向竞赛数列的关键工具。",
+        prereq: "数列通项、递推、放缩、逻辑证明。",
+        formulas: ["归纳基础：先证 n=1 或起始项成立", "归纳假设：假设 n=k 成立", "归纳递推：证明 n=k+1 成立", "强归纳：可同时使用前面多个结论", "递推估计：用上下界夹住 a_n"],
+        use: "数列证明、组合恒等式、整除问题、不等式递推、强基校测。",
+        sequence: ["先练标准归纳格式", "再练数列不等式中的放缩归纳", "学习强归纳处理递推或整除", "把归纳法和构造法、反证法结合"],
+        drills: "每周 8 道：2 道恒等式，2 道整除，2 道数列不等式，2 道递推上界下界。",
+        traps: "归纳假设写了但没用，是无效证明；起始项、适用范围、从 k 到 k+1 的关键变形不能省。",
+        boundary: "高考数列证明可以大量使用归纳思想；强基和竞赛会要求更灵活的强归纳、递推估计。"
+      },
+      {
+        title: "9. 组合计数、容斥与递推计数",
+        core: "把“有多少种”从直觉枚举升级为结构化计数，避免重复、遗漏和顺序判断错误。",
+        prereq: "分类加法、分步乘法、排列组合、二项式定理。",
+        formulas: ["容斥：|A∪B| = |A| + |B| - |A∩B|", "三集合容斥：加单项，减两两交，加三者交", "抽屉原理：n+1 个物体放入 n 个盒，至少一个盒不少于 2 个", "递推计数：把规模 n 的问题转化为 n-1 或 n-2"],
+        use: "概率压轴、强基组合题、竞赛组合入门、二项式与计数综合。",
+        sequence: ["先把是否有顺序、是否可重复、是否相邻分清", "练容斥处理至少、至多、不能同时出现", "学习递推计数和状态划分", "再接触生成函数作为选学工具"],
+        drills: "每题必须画出分类树或状态表；不要只写一个组合数。错题重点标注重复在哪里、遗漏在哪里。",
+        traps: "最常见丢分是把排列当组合、把分类和分步混用、事件互斥性没验证。",
+        boundary: "高考概率统计会用到组合思想；生成函数和复杂递推属于竞赛/强基选学。"
+      },
+      {
+        title: "10. 数论基础与同余思想",
+        core: "用整除、余数、奇偶性、同余和模运算处理整数结构题，是强基和竞赛里常见的拔尖分水岭。",
+        prereq: "整数运算、因式分解、质数、最大公因数、反证法。",
+        formulas: ["同余：a ≡ b (mod m) 表示 a 与 b 除以 m 余数相同", "若 a ≡ b (mod m)，则 a+c ≡ b+c，ac ≡ bc (mod m)", "费马小定理：若 p 为质数且 p 不整除 a，则 a^(p-1) ≡ 1 (mod p)", "奇偶性、模 3、模 4、模 9 是最常用检查"],
+        use: "强基笔试、竞赛数论、整除证明、构造反例、选择填空快速排除。",
+        sequence: ["先练奇偶性和模 3、模 4、模 9", "学习最大公因数和互质", "用同余证明整除与不可能性", "再接触费马小定理、欧几里得算法和丢番图方程"],
+        drills: "每周 6 道整数题：2 道整除，2 道同余，1 道反证，1 道构造。",
+        traps: "模数改变时结论不能随便迁移；互质条件经常被漏掉；费马小定理必须检查 p 为质数且 p 不整除 a。",
+        boundary: "高考几乎不系统考数论，但强基、竞赛、大学营和拔尖面试中很常见。"
+      },
+      {
+        title: "11. 解析几何进阶工具",
+        core: "在高考解析几何主干之外，补充参数化、极点极线直观、仿射思想和齐次化，帮助处理圆锥曲线难题。",
+        prereq: "直线与圆、圆锥曲线方程、韦达定理、弦长公式、斜率、判别式。",
+        formulas: ["参数化：用一个参数统一表示动点或动直线", "极点极线直观：点与直线在圆锥曲线下的对应关系", "仿射思想：把复杂曲线性质转到更简单图形理解", "齐次化：把斜率或比值关系整理成统一代数结构"],
+        use: "解析几何压轴、定点定值、轨迹、范围最值、强基几何题。",
+        sequence: ["先把联立、韦达、弦长、判别式练到稳定", "学习设参数减少计算量", "用极点极线理解定点定值现象", "再了解仿射与射影思想，不急于形式化"],
+        drills: "每周 3 道解析几何长题，要求完整写出设点、联立、韦达、目标式化简和范围检查。",
+        traps: "进阶工具不能掩盖基础计算。参数范围、判别式、焦点位置、斜率不存在情况仍然必须检查。",
+        boundary: "高考卷面仍以代数联立和高中圆锥曲线性质为主；极点极线、仿射更适合理解和强基拔高。"
+      },
+      {
+        title: "12. 复数与三角几何联系",
+        core: "把复数、向量、三角和几何统一起来，用模长、辐角、单位根和旋转思想解决结构题。",
+        prereq: "复数四则运算、复平面、三角恒等变换、向量运算。",
+        formulas: ["z = r(cos θ + i sin θ)", "乘以 cos θ + i sin θ 表示旋转 θ 并缩放", "De Moivre： (cos θ + i sin θ)^n = cos nθ + i sin nθ", "单位根：z^n = 1 的根在单位圆上均匀分布"],
+        use: "强基校测、竞赛几何、三角恒等式、旋转变换、复数压轴拓展。",
+        sequence: ["先把复数与平面点、向量对应起来", "理解乘法的旋转缩放意义", "练 De Moivre 推三角公式", "再学习单位根与正多边形"],
+        drills: "配合画图训练：每道题都标出模长、辐角、旋转角和几何对象。",
+        traps: "辐角多值、象限、共轭、模长平方容易错；复数法不能让几何条件消失，仍要翻译完整。",
+        boundary: "高考复数多为基础题；复数几何主要用于强基、竞赛和拓展视野。"
+      },
+      {
+        title: "13. 多项式、根与参数工具",
+        core: "用因式定理、韦达、根的分布、判别式和对称结构处理函数零点、参数范围、代数恒等式。",
+        prereq: "一元二次方程、因式分解、函数零点、韦达定理、导数单调性。",
+        formulas: ["因式定理：若 f(a)=0，则 x-a 是 f(x) 的因式", "韦达：二次方程根和、根积与系数对应", "判别式：Δ 控制二次方程实根个数", "根的分布：结合开口、对称轴、端点函数值和判别式判断"],
+        use: "函数零点、参数讨论、数列特征方程、强基代数题、解析几何联立后的根结构。",
+        sequence: ["先熟练二次根分布", "再练三次多项式因式分解和试根", "把韦达与对称式结合", "学习用导数判断高次多项式根个数"],
+        drills: "整理参数题模板：判别式、端点值、对称轴、定义域、根的位置，每题逐项检查。",
+        traps: "只看 Δ 不看根的位置会漏条件；定义域、端点、重根、参数临界值是高频失分点。",
+        boundary: "这是高考和强基都很有用的工具，但高次多项式理论不宜过度深入。"
+      },
+      {
+        title: "14. 概率统计拔尖工具",
+        core: "在高考概率统计基础上补充条件概率、贝叶斯、期望线性性和常见分布直觉，提升新情境题处理能力。",
+        prereq: "古典概型、排列组合、条件概率、独立事件、分布列、期望方差。",
+        formulas: ["条件概率：P(A|B)=P(AB)/P(B)", "贝叶斯：P(A|B)=P(B|A)P(A)/P(B)", "期望线性性：E(X+Y)=E(X)+E(Y)", "二项分布：X~B(n,p), E(X)=np, Var(X)=np(1-p)"],
+        use: "高考新情境概率、强基统计题、组合概率、随机变量综合。",
+        sequence: ["先把事件语言翻译清楚", "用树状图或表格拆条件概率", "学习期望线性性处理计数型随机变量", "再了解二项分布、超几何分布和简单贝叶斯"],
+        drills: "每周做 4 道概率题：要求写样本空间、事件定义、条件关系和随机变量取值表。",
+        traps: "独立与互斥混淆、条件概率分母写错、期望与最可能值混淆，是最常见失分点。",
+        boundary: "高考范围内要写清事件和分布列；贝叶斯和复杂分布更偏强基、竞赛和大学先修。"
+      }
+    ];
+
+    const beyondItems = [
+      ["强基 / 拔尖数学准备", "重点不是提前学完大学数学，而是把函数、数列、导数、解析几何、不等式的理解深度提高。可补充数学归纳法、反证法、构造法、组合计数和基础不等式。"],
+      ["竞赛方向选学", "如果数学天赋明显且校内成绩稳定，可在老师指导下学习竞赛代数、几何、组合、数论。不要靠碎片化视频盲目自学。"],
+      ["大学先修不宜贪多", "极限、微积分、线性代数可以作为视野拓展，但不应挤掉课内主干训练。高考 145 首先要求课内主干无漏洞。"],
+      ["资料选择原则", "一套主资料吃透，比同时刷五套资料更有效。拔尖学生应建立“知识图谱 + 题型模型 + 错因库 + 压轴入口库”。"]
+    ];
+
+    const abilityItems = [
+      ["运算能力", "把式子算对、算稳、算到底。", "145 要求基础和中档几乎不因计算丢分。", "每天 10-15 分钟专项：因式分解、配方、分式、根式、对数、三角化简。", "做解析几何、导数、数列长计算时练“分行、标记、回代检查”。", "模拟卷中给计算题留复查点，减少符号、端点、范围错误。", "检测标准：连续 2 周基础运算错题低于 5%。"],
+      ["抽象理解能力", "理解定义、符号、条件和对象。", "函数、导数、向量、概率题常先卡在概念。", "每学一个定义，用自己的话解释并举反例。", "把专题笔记分成“定义、性质、适用条件、易错点”。", "考场先圈对象和条件，避免把结论用错地方。", "检测标准：能讲清每章 5 个核心概念。"],
+      ["画图能力", "用图像、几何图和坐标图帮助判断。", "图像能快速暴露趋势、范围和交点。", "函数题必须画草图，几何题重画标准图。", "解析几何题训练设点、画弦、标斜率和焦点。", "考场用图判断答案合理性。", "检测标准：看到函数/几何题 30 秒内有辅助图。"],
+      ["函数思想", "用变量关系研究问题。", "导数、数列、解析几何、不等式都能转成函数。", "高一吃透定义域、图像、单调性、奇偶性。", "高二用导数研究函数，用函数看数列。", "高三把恒成立、最值、零点都转成函数分析。", "检测标准：能说出一道综合题中的自变量和目标函数。"],
+      ["分类讨论能力", "根据参数、符号、范围分情况。", "压轴题常输在分类不全。", "从二次函数参数题开始练分类标准。", "导数、不等式、解析几何中训练端点和临界值。", "写答案时先写“分类依据”。", "检测标准：参数题不漏临界值。"],
+      ["数形结合能力", "把代数式和图形互相翻译。", "能减少盲算，提升判断速度。", "用图像理解函数和三角。", "用坐标化处理几何，用图像判断不等式。", "用草图排除不合理答案。", "检测标准：能从图读出单调、交点、最值和范围。"],
+      ["化归转化能力", "把陌生题转成学过的模型。", "综合题本质是模型组合。", "积累基本模型：二次函数、单调性、均值、向量、韦达。", "建立专题模型库。", "压轴题先找能转化的入口。", "检测标准：每道错题能归入一个模型。"],
+      ["建模能力", "从文字或条件中抽出变量关系。", "概率统计、应用题和新情境题需要建模。", "训练设未知量和列关系式。", "概率统计中建立事件、变量、样本空间。", "新题先不急算，先写模型。", "检测标准：能把长题拆成变量、条件、目标。"],
+      ["证明表达能力", "把理由写完整、写规范。", "压轴题步骤分来自表达。", "高一开始写完整过程，不只写答案。", "训练几何证明、导数证明、不等式证明。", "难题也要写出有效条件、转化和结论。", "检测标准：老师能看懂每一步理由。"],
+      ["考试时间管理能力", "把会的题做完做对。", "145 不允许因时间失控丢中档题。", "小测开始计时，记录每类题耗时。", "专题限时训练选择填空和大题前两问。", "模拟卷形成固定节奏：先稳基础，再攻难题。", "检测标准：整卷至少留 8-10 分钟复查。"]
+    ];
+
+    document.addEventListener("DOMContentLoaded", initPage);
+
+    function initPage() {
+      renderKnowledgeMap();
+      renderGraph145();
+      renderAbilities();
+      renderAdvanced();
+      renderBeyond();
+      initSmoothScroll();
+      initBackToTop();
+    }
+
+    function renderKnowledgeMap() {
+      const grid = document.getElementById("knowledgeMap");
+      grid.innerHTML = knowledgeModules.map(([name, tags]) => {
+        const tagHtml = tags.map(tag => {
+          const cls = tag === "高频模块" ? "hot" : tag === "压轴模块" ? "hard" : "";
+          return `<span class="map-tag ${cls}">${tag}</span>`;
+        }).join("");
+        return `<div class="map-item"><div class="map-name">${name}</div><div class="map-tags">${tagHtml}</div></div>`;
+      }).join("");
+    }
+
+    function renderAbilities() {
+      const grid = document.getElementById("abilityGrid");
+      grid.innerHTML = abilityItems.map(item => `
+        <div class="card ability-card">
+          <h3>${item[0]}</h3>
+          <p><strong>是什么：</strong>${item[1]}</p>
+          <p><strong>为什么重要：</strong>${item[2]}</p>
+          <p><strong>高一怎么练：</strong>${item[3]}</p>
+          <p><strong>高二怎么提：</strong>${item[4]}</p>
+          <p><strong>高三怎么用：</strong>${item[5]}</p>
+          <p><strong>检测标准：</strong>${item[6]}</p>
+        </div>`).join("");
+    }
+
+    function renderGraph145() {
+      const grid = document.getElementById("graph145Grid");
+      grid.innerHTML = graph145Data.map(module => `
+        <div class="card ${module.type}">
+          <h3>${module.title}</h3>
+          ${renderNodeGroup("必会点", module.must, "core")}
+          ${renderNodeGroup("易漏点", module.leaks, "")}
+          ${renderNodeGroup("145 检查点", module.check, "core")}
+          ${renderNodeGroup("拔尖拓展", module.extend, "extend")}
+        </div>
+      `).join("");
+    }
+
+    function renderNodeGroup(title, nodes, className) {
+      return `<div class="node-group"><div class="node-title">${title}</div><div class="node-list">${nodes.map(node => `<span class="node ${className}">${node}</span>`).join("")}</div></div>`;
+    }
+
+    function renderBeyond() {
+      const grid = document.getElementById("beyondGrid");
+      grid.innerHTML = beyondItems.map(item => `<div class="card graph-card beyond"><h3>${item[0]}</h3><p>${item[1]}</p></div>`).join("");
+    }
+
+    function renderAdvanced() {
+      const grid = document.getElementById("advancedGrid");
+      grid.innerHTML = advancedTools.map(tool => `
+        <div class="card graph-card beyond">
+          <h3>${tool.title}</h3>
+          <p><strong>核心作用：</strong>${tool.core}</p>
+          ${renderNodeGroup("常见公式 / 工具形态", tool.formulas, "extend")}
+          <div class="tool-detail">
+            <div class="tool-row"><strong>前置条件：</strong>${tool.prereq}</div>
+            <div class="tool-row"><strong>适用场景：</strong>${tool.use}</div>
+            <div class="tool-row"><strong>训练顺序：</strong><div class="tool-sequence">${tool.sequence.map(step => `<span>${step}</span>`).join("")}</div></div>
+            <div class="tool-row"><strong>配套题型：</strong>${tool.drills}</div>
+            <div class="tool-row"><strong>易错风险：</strong>${tool.traps}</div>
+            <div class="tool-row"><strong>使用边界：</strong>${tool.boundary}</div>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function initSmoothScroll() {
+      document.querySelectorAll('a[href^="#"]').forEach(link => {
+        link.addEventListener("click", event => {
+          const target = document.querySelector(link.getAttribute("href"));
+          if (!target) return;
+          event.preventDefault();
+          target.scrollIntoView({ behavior: "smooth", block: "start" });
+        });
+      });
+    }
+
+    function initBackToTop() {
+      const button = document.getElementById("backTop");
+      button.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
+      window.addEventListener("scroll", () => {
+        button.classList.toggle("show", window.scrollY > 600);
+      });
+    }
+  </script>
+</body>
+</html>
