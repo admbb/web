@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>初中数学竞赛中的解题方法与策略 全书4篇</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=LXGW+WenKai:wght@400;700&display=swap');
+  :root {
+    --bg: #f8f7fc; --fg: #2c2c2c;
+    --accent: #5b21b6; --accent-light: #ede9fe;
+    --navy: #1e3a5f; --navy-light: #d6e4f0;
+    --border: #d5cfe6; --card-bg: #fff;
+    --algebra: #2563eb; --algebra-light: #dbeafe;
+    --geom: #059669; --geom-light: #d1fae5;
+    --number: #b45309; --number-light: #fef3c7;
+    --combo: #dc2626; --combo-light: #fee2e2;
+    --shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; font-size: 16px; }
+  body {
+    font-family: 'Noto Serif SC', 'SimSun', serif;
+    background: var(--bg); color: var(--fg); line-height: 1.85;
+  }
+  .header {
+    background: linear-gradient(135deg, #1e1b4b 0%, #5b21b6 50%, #7c3aed 100%);
+    color: #f0edf9; padding: 3.5rem 2rem 3rem; text-align: center;
+  }
+  .header h1 { font-size: 1.9rem; font-weight: 700; letter-spacing: 0.1em; margin-bottom: 0.4rem; }
+  .header .subtitle { font-size: 1rem; opacity: 0.85; letter-spacing: 0.06em; }
+  .header .meta { margin-top: 1rem; font-size: 0.85rem; opacity: 0.55; }
+  .nav-container {
+    position: sticky; top: 0; z-index: 100;
+    background: var(--card-bg); border-bottom: 1px solid var(--border);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+  .nav-toggle {
+    display: flex; align-items: center; justify-content: center;
+    padding: 0.55rem 1rem; cursor: pointer;
+    font-size: 0.9rem; color: var(--accent); font-weight: 600; user-select: none;
+  }
+  .nav-toggle::before { content: "▸ "; }
+  .nav-toggle.open::before { content: "▾ "; }
+  .nav-list {
+    display: none; padding: 0 1.2rem 1rem; list-style: none;
+    column-count: 3; column-gap: 1rem; max-width: 920px; margin: 0 auto;
+  }
+  .nav-list.show { display: block; }
+  .nav-list li a {
+    display: block; padding: 0.28rem 0.5rem; text-decoration: none;
+    color: var(--fg); font-size: 0.83rem; border-radius: 4px; transition: background 0.2s;
+  }
+  .nav-list li a:hover { background: var(--accent-light); }
+  .nav-list li a .num {
+    display: inline-block; width: 1.6rem; text-align: center;
+    font-weight: 700; color: var(--accent); margin-right: 0.2rem; font-size: 0.78rem;
+  }
+  .nav-list li.part a { font-weight: 700; color: var(--navy); margin-top: 0.4rem; }
+  .nav-list li.sub a { padding-left: 1.6rem; font-size: 0.8rem; color: #555; }
+  .main { max-width: 820px; margin: 0 auto; padding: 2rem 1.5rem 3rem; }
+  .divider { border: none; border-top: 1px solid var(--border); margin: 2.5rem 0; }
+  .part-header {
+    text-align: center; margin: 1rem 0 0.3rem; padding: 0.8rem 0;
+    border-top: 2px solid var(--accent); border-bottom: 2px solid var(--accent);
+  }
+  .part-header .part-label { font-size: 0.85rem; color: var(--accent); font-weight: 600; letter-spacing: 0.15em; }
+  .part-header .part-title { font-size: 1.2rem; font-weight: 700; color: var(--navy); letter-spacing: 0.1em; margin-top: 0.2rem; }
+  .chapter { margin-bottom: 1rem; }
+  .chapter-title {
+    font-size: 1.35rem; font-weight: 700; color: var(--navy);
+    margin-bottom: 0.8rem; display: flex; align-items: center; gap: 0.5rem;
+  }
+  .chapter-title .ch-num {
+    display: inline-block; color: #fff;
+    font-size: 0.78rem; padding: 0.15rem 0.6rem; border-radius: 4px;
+    background: var(--accent);
+  }
+  h3 {
+    font-size: 1.05rem; font-weight: 600; color: var(--accent);
+    margin: 1.5rem 0 0.6rem; border-left: 3px solid var(--accent); padding-left: 0.65rem;
+  }
+  p { margin-bottom: 0.85rem; text-indent: 2em; }
+  .formula-box {
+    background: var(--card-bg); border: 1px solid var(--border);
+    border-radius: 8px; padding: 1rem 1.3rem; margin: 1rem 0;
+    box-shadow: var(--shadow); overflow-x: auto;
+  }
+  .formula-label {
+    font-size: 0.8rem; font-weight: 600; color: var(--accent);
+    letter-spacing: 0.08em; margin-bottom: 0.4rem;
+  }
+  .key-point {
+    background: var(--accent-light); border-left: 3px solid var(--accent);
+    padding: 0.7rem 1.1rem; margin: 1rem 0;
+    font-size: 0.93rem; border-radius: 0 6px 6px 0;
+  }
+  .theorem-box {
+    background: var(--navy-light); border-left: 4px solid var(--navy);
+    padding: 0.9rem 1.2rem; margin: 1rem 0; border-radius: 0 8px 8px 0;
+  }
+  .theorem-box .thm-title { font-weight: 700; color: var(--navy); font-size: 0.93rem; margin-bottom: 0.3rem; }
+  .summary-table { width: 100%; border-collapse: collapse; margin: 0.7rem 0; font-size: 0.9rem; }
+  .summary-table th { background: var(--accent); color: #fff; padding: 0.5rem 0.7rem; text-align: left; font-weight: 600; }
+  .summary-table td { padding: 0.4rem 0.7rem; border-bottom: 1px solid var(--border); }
+  .summary-table tr:nth-child(even) td { background: var(--accent-light); }
+  .notation-table { width: 100%; border-collapse: collapse; margin: 0.7rem 0; font-size: 0.87rem; }
+  .notation-table th { background: var(--navy); color: #fff; padding: 0.4rem 0.65rem; text-align: left; }
+  .notation-table td { padding: 0.38rem 0.65rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .notation-table td:first-child { font-weight: 600; white-space: nowrap; color: var(--navy); }
+  .method-card {
+    background: linear-gradient(135deg, var(--card-bg), var(--accent-light));
+    border: 1px solid var(--border); border-radius: 10px;
+    padding: 1rem 1.3rem; margin: 1.2rem 0;
+  }
+  .method-card .card-title {
+    font-size: 0.93rem; font-weight: 700; color: var(--accent);
+    margin-bottom: 0.5rem; text-align: center;
+  }
+  .collapsible { margin: 0.8rem 0; }
+  .collapsible-header {
+    background: var(--card-bg); border: 1px solid var(--border);
+    padding: 0.5rem 0.9rem; border-radius: 6px; cursor: pointer;
+    font-size: 0.87rem; font-weight: 600; color: var(--accent); user-select: none;
+  }
+  .collapsible-header::after { content: " ▸"; float: right; }
+  .collapsible-header.open::after { content: " ▾"; }
+  .collapsible-body {
+    display: none; padding: 0.7rem 0.9rem; border: 1px solid var(--border);
+    border-top: none; border-radius: 0 0 6px 6px; background: #fff;
+  }
+  .footer {
+    text-align: center; padding: 2rem 1rem; font-size: 0.8rem;
+    color: #999; border-top: 1px solid var(--border); margin-top: 2rem;
+  }
+  @media print {
+    .nav-container { display: none; }
+    .collapsible-body { display: block !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>初中数学竞赛中的解题方法与策略</h1>
+  <div class="subtitle">数学奥林匹克小丛书 · 知识框架与方法论讲义</div>
+  <div class="meta">全书四篇二十三节系统梳理</div>
+</div>
+
+<div class="nav-container">
+  <div class="nav-toggle" onclick="toggleNav()">章节目录</div>
+  <ul class="nav-list" id="navList">
+    <li><a href="#ch0"><span class="num">0</span>记号与预备</a></li>
+    <li class="part"><a href="#part1"><span class="num">Ⅰ</span>代数篇</a></li>
+    <li class="sub"><a href="#s1-1"><span class="num">1.1</span>巧用平方差</a></li>
+    <li class="sub"><a href="#s1-2"><span class="num">1.2</span>恰当换元</a></li>
+    <li class="sub"><a href="#s1-3"><span class="num">1.3</span>判别式的应用</a></li>
+    <li class="sub"><a href="#s1-4"><span class="num">1.4</span>韦达定理</a></li>
+    <li class="sub"><a href="#s1-5"><span class="num">1.5</span>主元素方法</a></li>
+    <li class="sub"><a href="#s1-6"><span class="num">1.6</span>恰当放缩</a></li>
+    <li class="part"><a href="#part2"><span class="num">Ⅱ</span>几何篇</a></li>
+    <li class="sub"><a href="#s2-1"><span class="num">2.1</span>面积法</a></li>
+    <li class="sub"><a href="#s2-2"><span class="num">2.2</span>平移旋转翻折</a></li>
+    <li class="sub"><a href="#s2-3"><span class="num">2.3</span>利用相似</a></li>
+    <li class="sub"><a href="#s2-4"><span class="num">2.4</span>几何不等式</a></li>
+    <li class="sub"><a href="#s2-5"><span class="num">2.5</span>四点共圆</a></li>
+    <li class="sub"><a href="#s2-6"><span class="num">2.6</span>代数方法</a></li>
+    <li class="part"><a href="#part3"><span class="num">Ⅲ</span>数论篇</a></li>
+    <li class="sub"><a href="#s3-1"><span class="num">3.1</span>奇数与偶数</a></li>
+    <li class="sub"><a href="#s3-2"><span class="num">3.2</span>素因数分析</a></li>
+    <li class="sub"><a href="#s3-3"><span class="num">3.3</span>选择合适的模</a></li>
+    <li class="sub"><a href="#s3-4"><span class="num">3.4</span>恰当估计</a></li>
+    <li class="sub"><a href="#s3-5"><span class="num">3.5</span>最小数原理</a></li>
+    <li class="sub"><a href="#s3-6"><span class="num">3.6</span>存在性问题</a></li>
+    <li class="part"><a href="#part4"><span class="num">Ⅳ</span>组合篇</a></li>
+    <li class="sub"><a href="#s4-1"><span class="num">4.1</span>抽屉原则</a></li>
+    <li class="sub"><a href="#s4-2"><span class="num">4.2</span>染色或赋值</a></li>
+    <li class="sub"><a href="#s4-3"><span class="num">4.3</span>算两次</a></li>
+    <li class="sub"><a href="#s4-4"><span class="num">4.4</span>从局部到整体</a></li>
+    <li class="sub"><a href="#s4-5"><span class="num">4.5</span>命题一般化</a></li>
+    <li class="sub"><a href="#s4-6"><span class="num">4.6</span>先猜后证</a></li>
+  </ul>
+</div>
+
+<div class="main">
+
+<!-- ============ Chapter 0 ============ -->
+<section class="chapter" id="ch0">
+<h2 class="chapter-title"><span class="ch-num">§ 0</span>记号与预备知识</h2>
+
+<p>本书围绕竞赛中常用的解题方法与策略展开，分为代数、几何、数论、组合四篇。在正文开始之前，先统一全书使用的记号。</p>
+
+<div class="formula-box">
+  <div class="formula-label">常用记号表</div>
+  <table class="notation-table">
+    <tr><th>记号</th><th>含义</th></tr>
+    <tr><td>\([x]\)</td><td>不超过实数 \(x\) 的最大整数（高斯函数）</td></tr>
+    <tr><td>\(\{x\}\)</td><td>实数 \(x\) 的小数部分，即 \(\{x\} = x - [x]\)</td></tr>
+    <tr><td>\(\sum\)</td><td>求和运算</td></tr>
+    <tr><td>\(n!\)</td><td>\(1 \times 2 \times 3 \times \cdots \times n\)</td></tr>
+    <tr><td>\(n!!\)</td><td>若 \(n\) 为奇数：\(n(n{-}2)\cdots 3 \cdot 1\)；若 \(n\) 为偶数：\(n(n{-}2)\cdots 4 \cdot 2\)</td></tr>
+    <tr><td>\(a \mid b\)</td><td>整数 \(a\) 整除整数 \(b\)</td></tr>
+    <tr><td>\(a \nmid b\)</td><td>整数 \(a\) 不整除整数 \(b\)</td></tr>
+    <tr><td>\(d(m)\)</td><td>正整数 \(m\) 的正因数的个数</td></tr>
+    <tr><td>\(a \equiv b \pmod{m}\)</td><td>整数 \(a\) 与 \(b\) 对模 \(m\) 同余</td></tr>
+    <tr><td>\(a \not\equiv b \pmod{m}\)</td><td>整数 \(a\) 与 \(b\) 对模 \(m\) 不同余</td></tr>
+    <tr><td>\((a, b)\)</td><td>正整数 \(a\) 与 \(b\) 的最大公约数</td></tr>
+    <tr><td>\([a, b]\)</td><td>正整数 \(a\) 与 \(b\) 的最小公倍数</td></tr>
+    <tr><td>\(\max\{a, b\}\)</td><td>实数 \(a, b\) 中较大的一个</td></tr>
+    <tr><td>\(\min\{a, b\}\)</td><td>实数 \(a, b\) 中较小的一个</td></tr>
+  </table>
+</div>
+</section>
+
+<hr class="divider">
+
+<!-- ============ PART 1: 代数篇 ============ -->
+<div class="part-header" id="part1">
+  <div class="part-label">第 一 部 分</div>
+  <div class="part-title">代 数 篇</div>
+</div>
+<hr class="divider">
+
+<section class="chapter">
+
+<h3 id="s1-1">1.1 巧用平方差</h3>
+
+<div class="formula-box">
+  <div class="formula-label">核心公式</div>
+  \[a^2 - b^2 = (a+b)(a-b)\]
+  <p>平方差公式看似简单，却是竞赛中因式分解、化简、估算的利器。</p>
+</div>
+
+<p><strong>应用场景</strong>：① 连乘化简——构造 \((a-b)(a+b)\) 连锁消去；② 分母有理化——\(\frac{1}{\sqrt{a}+\sqrt{b}} = \frac{\sqrt{a}-\sqrt{b}}{a-b}\)；③ 整除性分析——将差值分解为乘积后分析因数。</p>
+
+<h3 id="s1-2">1.2 恰当换元</h3>
+
+<p>换元的本质是<strong>简化问题结构</strong>：用新变量替代复杂表达式，使隐藏的对称性或简洁结构显现。</p>
+
+<div class="method-card">
+  <div class="card-title">换元策略</div>
+  <table class="summary-table">
+    <tr><th>换元类型</th><th>适用场景</th><th>示例</th></tr>
+    <tr><td>对称换元</td><td>含 \(x + \frac{1}{x}\) 型</td><td>令 \(t = x + \frac{1}{x}\)</td></tr>
+    <tr><td>整体换元</td><td>重复出现的子表达式</td><td>令 \(u = x^2 + x\)</td></tr>
+    <tr><td>三角换元</td><td>含 \(\sqrt{a^2 - x^2}\) 型</td><td>令 \(x = a\sin\theta\)</td></tr>
+    <tr><td>均值换元</td><td>含对称变量</td><td>令 \(x = s+d,\; y = s-d\)</td></tr>
+  </table>
+</div>
+
+<h3 id="s1-3">1.3 判别式的应用</h3>
+
+<div class="formula-box">
+  <div class="formula-label">判别式</div>
+  <p>对一元二次方程 \(ax^2 + bx + c = 0\)（\(a \neq 0\)），判别式</p>
+  \[\Delta = b^2 - 4ac\]
+  <p>\(\Delta \gt 0\)：两个不等实根；\(\Delta = 0\)：两个相等实根；\(\Delta \lt 0\)：无实根。</p>
+</div>
+
+<p><strong>竞赛技巧</strong>：将问题转化为"某二次方程有实根"，从而建立 \(\Delta \geq 0\) 的不等式。这是求最值、证不等式的隐蔽手法。</p>
+
+<h3 id="s1-4">1.4 试试韦达定理</h3>
+
+<div class="theorem-box">
+  <div class="thm-title">韦达定理（Vieta's Formulas）</div>
+  <p>若 \(x_1, x_2\) 是 \(ax^2 + bx + c = 0\) 的两根，则：</p>
+  \[x_1 + x_2 = -\frac{b}{a}, \qquad x_1 x_2 = \frac{c}{a}\]
+</div>
+
+<p>韦达定理的价值：<strong>不需要求出根</strong>，就能用系数直接表达根的和与积。常用于构造方程、对称式求值、根的分布问题。</p>
+
+<h3 id="s1-5">1.5 主元素方法</h3>
+
+<p>在多变量问题中，选定一个变量作为"主角"，将其他变量视为参数或常数，把问题化归为该变量的方程或不等式。这是一种<strong>化多为少</strong>的策略。</p>
+
+<h3 id="s1-6">1.6 恰当放缩</h3>
+
+<div class="formula-box">
+  <div class="formula-label">常用不等式</div>
+  <p><strong>AM-GM 不等式</strong>（均值不等式）：对正实数 \(a_1, a_2, \ldots, a_n\)，</p>
+  \[\frac{a_1 + a_2 + \cdots + a_n}{n} \geq \sqrt[n]{a_1 a_2 \cdots a_n}\]
+  <p>等号成立当且仅当 \(a_1 = a_2 = \cdots = a_n\)。</p>
+</div>
+
+<p>放缩的关键在于"恰到好处"——放得太多失去精确性，放得太少无法推进。需要在练习中积累经验。</p>
+</section>
+
+<hr class="divider">
+
+<!-- ============ PART 2: 几何篇 ============ -->
+<div class="part-header" id="part2">
+  <div class="part-label">第 二 部 分</div>
+  <div class="part-title">几 何 篇</div>
+</div>
+<hr class="divider">
+
+<section class="chapter">
+
+<h3 id="s2-1">2.1 面积法</h3>
+
+<p>面积法是几何中最强大的工具之一：通过计算同一个图形的面积（用两种不同方式），建立等量关系，从而推导出线段比例、角度关系等。</p>
+
+<div class="formula-box">
+  <div class="formula-label">面积法的常用公式</div>
+  <p>\(S = \frac{1}{2}ab\sin C\)（两边夹角）；\(S = \frac{1}{2} \cdot \text{底} \cdot \text{高}\)；\(S = \sqrt{s(s-a)(s-b)(s-c)}\)（海伦公式），其中 \(s = \frac{a+b+c}{2}\)。</p>
+</div>
+
+<h3 id="s2-2">2.2 平移、旋转与翻折</h3>
+
+<p>几何变换能将分散的条件"搬运"到一起：平移使平行关系显现，旋转将分散的角和线段集中，翻折构造对称点。<strong>旋转变换</strong>在等边三角形和正方形问题中尤为有效。</p>
+
+<div class="key-point">旋转变换的核心思想：若图形中有等边三角形或正方形，尝试绕其中心旋转 \(60°\) 或 \(90°\)，将分散的线段"拼接"成新的三角形。</div>
+
+<h3 id="s2-3">2.3 利用相似</h3>
+
+<div class="formula-box">
+  <div class="formula-label">相似三角形的判定</div>
+  <p>AA（两角相等）、SAS（两边成比例且夹角相等）、SSS（三边成比例）。</p>
+  <p>若 \(\triangle ABC \sim \triangle DEF\)，则对应边之比相等，面积比等于相似比的平方。</p>
+</div>
+
+<h3 id="s2-4">2.4 几何不等式</h3>
+
+<p>几何不等式研究图形的度量关系。核心工具包括：三角形两边之和大于第三边、大边对大角、点到直线距离最短（垂线段）等。</p>
+
+<h3 id="s2-5">2.5 四点共圆</h3>
+
+<div class="theorem-box">
+  <div class="thm-title">四点共圆的判定</div>
+  <p>四点 \(A, B, C, D\) 共圆，当且仅当以下任一条件成立：</p>
+  <p>① 对角互补：\(\angle A + \angle C = 180°\)；② 同弧上的圆周角相等：\(\angle ADB = \angle ACB\)；③ 交弦定理：\(PA \cdot PB = PC \cdot PD\)（\(P\) 为两弦交点）。</p>
+</div>
+
+<h3 id="s2-6">2.6 代数方法</h3>
+
+<p>将几何问题坐标化或参数化，转化为代数方程求解。常见手段：建系法（解析几何）、三角法（用 \(\sin, \cos\) 表示线段和角）、向量法。</p>
+</section>
+
+<hr class="divider">
+
+<!-- ============ PART 3: 数论篇 ============ -->
+<div class="part-header" id="part3">
+  <div class="part-label">第 三 部 分</div>
+  <div class="part-title">数 论 篇</div>
+</div>
+<hr class="divider">
+
+<section class="chapter">
+
+<h3 id="s3-1">3.1 奇数与偶数</h3>
+
+<p>奇偶分析是数论中最基本的"不变量"方法。通过判断某个量在操作前后的奇偶性是否改变，可以证明某些状态不可达。本质是模 2 同余。</p>
+
+<h3 id="s3-2">3.2 素因数分析</h3>
+
+<p>利用算术基本定理（唯一分解定理），将整数分解为素因子的乘积，从而分析整除性、约数个数、最大公因数等问题。</p>
+
+<div class="formula-box">
+  <div class="formula-label">\(n!\) 中素数 \(p\) 的幂次（Legendre 公式）</div>
+  \[
+  v_p(n!) = \sum_{k=1}^{\infty} \left\lfloor \frac{n}{p^k} \right\rfloor = \left\lfloor \frac{n}{p} \right\rfloor + \left\lfloor \frac{n}{p^2} \right\rfloor + \left\lfloor \frac{n}{p^3} \right\rfloor + \cdots
+  \]
+</div>
+
+<h3 id="s3-3">3.3 选择合适的模</h3>
+
+<p>同余是数论的核心工具。关键是选择恰当的模 \(m\)，使得取模后问题的结构简化。常用模：\(m = 2\)（奇偶分析）、\(m = 3, 4\)（平方剩余分析）、\(m = p\)（费马小定理）。</p>
+
+<h3 id="s3-4">3.4 作出恰当的估计</h3>
+
+<p>在数论中，许多问题可以通过不等式夹逼来缩小搜索范围。例如利用 \(\sqrt{n} \lt \lfloor\sqrt{n}\rfloor + 1\) 来限定完全平方数的范围，或利用 \(p \leq \sqrt{n}\) 来限定素因子。</p>
+
+<h3 id="s3-5">3.5 最小数原理</h3>
+
+<div class="theorem-box">
+  <div class="thm-title">最小数原理（Well-ordering Principle）</div>
+  <p>任何非空的正整数集合中，一定存在最小元素。</p>
+</div>
+
+<p>这一原理看似平凡，却是反证法和无穷递降法的理论基础：假设存在某个满足条件的正整数，取其中最小的一个，证明还存在更小的——矛盾。</p>
+
+<h3 id="s3-6">3.6 存在性问题</h3>
+
+<p>数论中的存在性问题通常用构造法（给出一个具体例子）或反证法+抽屉原理来证明。关键是巧妙选取模或构造抽屉。</p>
+</section>
+
+<hr class="divider">
+
+<!-- ============ PART 4: 组合篇 ============ -->
+<div class="part-header" id="part4">
+  <div class="part-label">第 四 部 分</div>
+  <div class="part-title">组 合 篇</div>
+</div>
+<hr class="divider">
+
+<section class="chapter">
+
+<h3 id="s4-1">4.1 抽屉原则</h3>
+
+<p>将 \(n+1\) 个物品放入 \(n\) 个抽屉，至少有一个抽屉含 \(\geq 2\) 个物品。加强形式：\(N\) 个物品放入 \(n\) 个抽屉，至少有一个含 \(\geq \lceil N/n \rceil\) 个。关键：如何构造抽屉。</p>
+
+<h3 id="s4-2">4.2 染色或赋值</h3>
+
+<p>给对象赋予颜色或数值标签，构造不变量或对称结构。棋盘黑白染色是最经典的例子：利用黑白格数的奇偶性证明某些铺排不可行。</p>
+
+<h3 id="s4-3">4.3 算两次</h3>
+
+<div class="formula-box">
+  <div class="formula-label">算两次（Double Counting）</div>
+  <p>对同一个量用两种不同方式计数，得到等式或不等式。</p>
+  <p>例如：统计"满足某关系的有序对 \((a, b)\) 的个数"，先按 \(a\) 计、再按 \(b\) 计，建立等式。</p>
+</div>
+
+<h3 id="s4-4">4.4 从局部到整体</h3>
+
+<p>先分析单个元素的局部性质，再利用整体约束（总和固定、总数有限等）推导全局结论。例如：已知每个点的度数，推断图的总边数。</p>
+
+<h3 id="s4-5">4.5 将命题一般化</h3>
+
+<p>将特殊问题推广到一般情形，有时反而更容易证明。例如：\(n=3\) 时的结论不好证，但 \(n\) 为任意正整数时反而可以用归纳法。</p>
+
+<h3 id="s4-6">4.6 先猜后证</h3>
+
+<p>先用小例子猜测答案（极值、构造方案等），再严格证明猜测正确。这是组合问题中最实用的策略：</p>
+
+<div class="method-card">
+  <div class="card-title">先猜后证·步骤</div>
+  <table class="summary-table">
+    <tr><th>步骤</th><th>内容</th></tr>
+    <tr><td>① 试验</td><td>对 \(n = 1, 2, 3, \ldots\) 分别求解，记录结果</td></tr>
+    <tr><td>② 猜测</td><td>观察规律，提出猜想公式或构造方案</td></tr>
+    <tr><td>③ 上界</td><td>证明任何方案都不超过猜测值</td></tr>
+    <tr><td>④ 构造</td><td>给出一个恰好达到猜测值的方案</td></tr>
+  </table>
+</div>
+</section>
+
+</div>
+
+<div class="footer">
+  初中数学竞赛中的解题方法与策略 · 全书4篇23节<br>
+  知识框架与方法论讲义
+</div>
+
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  renderMathInElement(document.body, {
+    delimiters: [
+      {left: "\\(", right: "\\)", display: false},
+      {left: "\\[", right: "\\]", display: true}
+    ],
+    throwOnError: false
+  });
+});
+function toggleNav() {
+  var list = document.getElementById('navList');
+  var btn = document.querySelector('.nav-toggle');
+  list.classList.toggle('show');
+  btn.classList.toggle('open');
+}
+function toggleCollapse(el) {
+  var body = el.nextElementSibling;
+  body.style.display = body.style.display === 'block' ? 'none' : 'block';
+  el.classList.toggle('open');
+}
+</script>
+</body>
+</html>

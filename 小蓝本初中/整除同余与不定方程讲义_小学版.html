@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>整除、同余与不定方程 全书3章</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=LXGW+WenKai:wght@400;700&display=swap');
+  :root {
+    --bg: #fffaf5; --fg: #333;
+    --primary: #c2410c; --primary-light: #fed7aa;
+    --warm: #92400e; --warm-light: #fef3c7;
+    --blue: #1d4ed8; --blue-light: #dbeafe;
+    --green: #166534; --green-light: #dcfce7;
+    --purple: #7c3aed; --purple-light: #ede9fe;
+    --card-bg: #fff; --border: #e5ddd3;
+    --shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; font-size: 16px; }
+  body {
+    font-family: 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
+    background: var(--bg); color: var(--fg); line-height: 1.85;
+  }
+  .header {
+    background: linear-gradient(135deg, #9a3412 0%, #c2410c 50%, #ea580c 100%);
+    color: #fff; padding: 3rem 2rem 2.5rem; text-align: center;
+    position: relative; overflow: hidden;
+  }
+  .header::after {
+    content: ''; position: absolute; bottom: -2px; left: 0; right: 0; height: 36px;
+    background: var(--bg); clip-path: ellipse(55% 100% at 50% 100%);
+  }
+  .header h1 { font-size: 2rem; font-weight: 700; letter-spacing: 0.08em; }
+  .header .subtitle { font-size: 1rem; opacity: 0.9; margin-top: 0.4rem; }
+  .header .meta { font-size: 0.82rem; opacity: 0.55; margin-top: 0.8rem; }
+  .nav-bar {
+    position: sticky; top: 0; z-index: 100;
+    background: var(--card-bg); border-bottom: 1px solid var(--border);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  }
+  .nav-toggle {
+    display: flex; align-items: center; justify-content: center;
+    padding: 0.55rem 1rem; cursor: pointer;
+    font-size: 0.88rem; color: var(--primary); font-weight: 600; user-select: none;
+  }
+  .nav-toggle .arrow { transition: transform 0.2s; display: inline-block; margin-right: 0.4rem; }
+  .nav-toggle.open .arrow { transform: rotate(90deg); }
+  .nav-grid {
+    display: none; padding: 0.4rem 1rem 1rem;
+    grid-template-columns: repeat(3, 1fr); gap: 0.5rem;
+    max-width: 760px; margin: 0 auto;
+  }
+  .nav-grid.show { display: grid; }
+  .nav-grid a {
+    display: flex; align-items: center; gap: 0.35rem;
+    padding: 0.4rem 0.65rem; text-decoration: none;
+    color: var(--fg); font-size: 0.82rem;
+    border: 1px solid var(--border); border-radius: 8px;
+    background: #fff; transition: all 0.2s;
+  }
+  .nav-grid a:hover { background: var(--primary-light); border-color: var(--primary); }
+  .nav-grid a .nav-num {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 1.3rem; height: 1.3rem; border-radius: 50%;
+    background: var(--primary); color: #fff; font-size: 0.7rem; font-weight: 700; flex-shrink: 0;
+  }
+  .main { max-width: 760px; margin: 0 auto; padding: 1.5rem 1.2rem 3rem; }
+  .divider { border: none; border-top: 2px dashed var(--primary-light); margin: 2.5rem 0; }
+  .chapter { margin-bottom: 1.5rem; }
+  .ch-header { display: flex; align-items: center; gap: 0.8rem; margin-bottom: 1rem; }
+  .ch-icon {
+    width: 2.8rem; height: 2.8rem; border-radius: 12px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 1.2rem; font-weight: 700;
+    background: linear-gradient(135deg, var(--primary), #ea580c);
+  }
+  .ch-header h2 { font-size: 1.3rem; font-weight: 700; color: var(--primary); margin: 0; }
+  .ch-sub { font-size: 0.82rem; color: #888; margin-top: 0.1rem; }
+  h3 {
+    font-size: 1.02rem; font-weight: 700; color: var(--primary);
+    margin: 1.4rem 0 0.6rem; padding-left: 0.5rem; border-left: 3px solid var(--primary);
+  }
+  p { margin-bottom: 0.8rem; }
+  .intro-card {
+    background: var(--warm-light); border: 1px solid #f0d5b5;
+    border-radius: 12px; padding: 1rem 1.3rem; margin: 1rem 0;
+  }
+  .intro-card h2 { color: var(--warm); font-size: 0.95rem; margin-bottom: 0.4rem; }
+  .think-box {
+    background: var(--green-light); border: 1px solid #b5e0c8;
+    border-radius: 12px; padding: 1rem 1.3rem; margin: 1rem 0;
+  }
+  .think-box h3 { color: var(--green); border: none; padding: 0; margin: 0 0 0.4rem; }
+  .formula-card {
+    background: var(--card-bg); border: 1px solid var(--border);
+    border-radius: 10px; padding: 0.9rem 1.2rem; margin: 0.8rem 0;
+    box-shadow: var(--shadow); overflow-x: auto;
+  }
+  .formula-title {
+    font-size: 0.8rem; font-weight: 700; color: var(--primary);
+    margin-bottom: 0.4rem; letter-spacing: 0.05em;
+  }
+  .tip-box {
+    background: #fff8e1; border-left: 4px solid #ffb300;
+    padding: 0.7rem 1.1rem; margin: 0.8rem 0;
+    border-radius: 0 8px 8px 0; font-size: 0.9rem;
+  }
+  .example-box {
+    background: #fff; border: 2px dashed var(--primary-light);
+    border-radius: 12px; padding: 0.9rem 1.2rem; margin: 1rem 0;
+  }
+  .example-box .ex-title {
+    font-size: 0.92rem; font-weight: 700; color: var(--warm); margin-bottom: 0.4rem;
+  }
+  .info-table { width: 100%; border-collapse: collapse; margin: 0.6rem 0; font-size: 0.88rem; }
+  .info-table th {
+    background: var(--primary); color: #fff; padding: 0.45rem 0.65rem;
+    text-align: left; font-weight: 600;
+  }
+  .info-table td { padding: 0.4rem 0.65rem; border-bottom: 1px solid var(--border); }
+  .info-table tr:nth-child(even) td { background: var(--warm-light); }
+  .collapsible { margin: 0.8rem 0; }
+  .coll-header {
+    background: var(--card-bg); border: 1px solid var(--border);
+    padding: 0.5rem 0.9rem; border-radius: 8px; cursor: pointer;
+    font-size: 0.85rem; font-weight: 600; color: var(--primary); user-select: none;
+  }
+  .coll-header::after { content: " ▸"; float: right; }
+  .coll-header.open::after { content: " ▾"; }
+  .coll-body {
+    display: none; padding: 0.7rem 0.9rem; border: 1px solid var(--border);
+    border-top: none; border-radius: 0 0 8px 8px; background: #fff;
+  }
+  .footer {
+    text-align: center; padding: 2rem 1rem; font-size: 0.78rem;
+    color: #999; border-top: 1px solid var(--border); margin-top: 2rem;
+  }
+  @media (max-width: 600px) {
+    .nav-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media print {
+    .nav-bar { display: none; }
+    .chapter { page-break-before: always; }
+    .coll-body { display: block !important; }
+  }
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+</head>
+<body>
+
+<div class="header">
+  <h1>整除、同余与不定方程</h1>
+  <div class="subtitle">小学生也能看懂的数论入门</div>
+  <div class="meta">全书三章 · 生活化讲解</div>
+</div>
+
+<div class="nav-bar">
+  <div class="nav-toggle" onclick="toggleNav()">
+    <span class="arrow">&#9654;</span> 章节目录
+  </div>
+  <div class="nav-grid" id="navGrid">
+    <a href="#ch0"><span class="nav-num">0</span>写在前面</a>
+    <a href="#ch1"><span class="nav-num">1</span>整除</a>
+    <a href="#ch2"><span class="nav-num">2</span>同余</a>
+    <a href="#ch3"><span class="nav-num">3</span>不定方程</a>
+    <a href="#closing"><span class="nav-num" style="background:var(--green);">★</span>写在最后</a>
+  </div>
+</div>
+
+<div class="main">
+
+<!-- Chapter 0 -->
+<section class="chapter" id="ch0">
+<div class="ch-header">
+  <div class="ch-icon" style="background: linear-gradient(135deg, #92400e, #d97706);">0</div>
+  <div>
+    <h2>写在前面：数论是什么</h2>
+    <div class="ch-sub">专门研究整数的数学</div>
+  </div>
+</div>
+
+<div class="intro-card">
+  <h2>想象一个场景</h2>
+  <p>你有 12 颗糖，要平均分给小朋友。分给 2 人，每人 6 颗，刚好；分给 5 人，每人 2 颗剩 2 颗，分不完。"能不能刚好分完"——这就是<strong>整除</strong>的问题。</p>
+  <p>数论就是研究整数之间"分不分得开""余数是几""能不能凑出某个数"这些看似简单、实则深奥的问题。数学家高斯说："数论是数学的女王。"</p>
+</div>
+</section>
+
+<hr class="divider">
+
+<!-- Chapter 1 -->
+<section class="chapter" id="ch1">
+<div class="ch-header">
+  <div class="ch-icon">1</div>
+  <div>
+    <h2>整除</h2>
+    <div class="ch-sub">谁能被谁"刚好分完"？</div>
+  </div>
+</div>
+
+<div class="intro-card">
+  <h2>生活小比方</h2>
+  <p>12 块饼干分给 3 个人，每人 4 块，一块不多一块不少。我们说"3 整除 12"，记作 \(3 \mid 12\)。</p>
+  <p>12 块饼干分给 5 个人，每人 2 块剩 2 块。"5 不整除 12"，记作 \(5 \nmid 12\)。</p>
+</div>
+
+<h3>什么是整除？</h3>
+
+<div class="formula-card">
+  <div class="formula-title">定义</div>
+  <p>如果整数 \(b\) 除以整数 \(a\)（\(a \neq 0\)）<strong>没有余数</strong>，就说 \(a\) <strong>整除</strong> \(b\)，记作 \(a \mid b\)。</p>
+  <p>此时 \(a\) 是 \(b\) 的<strong>因数</strong>，\(b\) 是 \(a\) 的<strong>倍数</strong>。</p>
+</div>
+
+<div class="tip-box">
+  <strong>记住</strong>：因数是"小的那个"，倍数是"大的那个"。3 是 12 的因数，12 是 3 的倍数。
+</div>
+
+<h3>素数：数字的"原子"</h3>
+
+<div class="think-box">
+  <h3>想一想</h3>
+  <p>有些数可以被拆开：\(12 = 2 \times 6 = 2 \times 2 \times 3\)。</p>
+  <p>有些数拆不开：7 只能写成 \(1 \times 7\)。这种"拆不开"的数就叫<strong>素数</strong>（质数）。</p>
+  <p>前几个素数：2, 3, 5, 7, 11, 13, 17, 19, 23……</p>
+</div>
+
+<div class="formula-card">
+  <div class="formula-title">算术基本定理</div>
+  <p>每个大于 1 的整数，都可以<strong>唯一</strong>地拆成素数的乘积（就像分子由原子组成一样）：</p>
+  \[
+  360 = 2^3 \times 3^2 \times 5
+  \]
+  <p>这个拆法只有一种，不会重复！</p>
+</div>
+
+<h3>最大公因数和最小公倍数</h3>
+
+<div class="example-box">
+  <div class="ex-title">动手看看</div>
+  <p>12 的因数：1, 2, 3, 4, 6, 12。</p>
+  <p>18 的因数：1, 2, 3, 6, 9, 18。</p>
+  <p><strong>公因数</strong>（两个都有的）：1, 2, 3, 6。其中最大的是 6，所以 \((12, 18) = 6\)。</p>
+  <p><strong>公倍数</strong>（同时是两者倍数的）：36, 72, 108……最小的是 36，所以 \([12, 18] = 36\)。</p>
+</div>
+
+<div class="formula-card">
+  <div class="formula-title">一个神奇的关系</div>
+  \[
+  \text{最大公因数} \times \text{最小公倍数} = a \times b
+  \]
+  <p>验证：\((12, 18) \times [12, 18] = 6 \times 36 = 216 = 12 \times 18\)。✓</p>
+</div>
+</section>
+
+<hr class="divider">
+
+<!-- Chapter 2 -->
+<section class="chapter" id="ch2">
+<div class="ch-header">
+  <div class="ch-icon" style="background: linear-gradient(135deg, #1d4ed8, #3b82f6);">2</div>
+  <div>
+    <h2>同余</h2>
+    <div class="ch-sub">余数相同的数，有什么关系？</div>
+  </div>
+</div>
+
+<div class="intro-card">
+  <h2>生活小比方</h2>
+  <p>钟表上 14 点和 2 点，看起来是同一个位置——因为 \(14 - 2 = 12\)，刚好是一圈。我们说"14 和 2 对模 12 同余"。</p>
+  <p>同余就是"除完以后余数一样"。这是数论中最重要的工具之一！</p>
+</div>
+
+<h3>什么是同余？</h3>
+
+<div class="formula-card">
+  <div class="formula-title">定义</div>
+  <p>如果 \(a\) 和 \(b\) 除以 \(m\) 的<strong>余数相同</strong>（即 \(a - b\) 能被 \(m\) 整除），就说 \(a\) 和 \(b\) 对模 \(m\) <strong>同余</strong>，记作：</p>
+  \[
+  a \equiv b \pmod{m}
+  \]
+  <p>例如：\(17 \equiv 5 \pmod{6}\)，因为 \(17 - 5 = 12\)，而 \(6 \mid 12\)。</p>
+</div>
+
+<div class="tip-box">
+  <strong>同余的好处</strong>：大数可以用小数代替！比如算 \(1000000 \div 7\) 的余数，可以用同余一步步简化，不用真的去算一百万。
+</div>
+
+<h3>同余的运算规则</h3>
+
+<div class="formula-card">
+  <div class="formula-title">加法和乘法都可以"取模"</div>
+  <p>如果 \(a \equiv b \pmod{m}\)，\(c \equiv d \pmod{m}\)，那么：</p>
+  <p>加法：\(a + c \equiv b + d \pmod{m}\)</p>
+  <p>乘法：\(a \times c \equiv b \times d \pmod{m}\)</p>
+  <p>乘方：\(a^k \equiv b^k \pmod{m}\)</p>
+</div>
+
+<h3>费马小定理：大幂次的"快捷键"</h3>
+
+<div class="formula-card">
+  <div class="formula-title">费马小定理</div>
+  <p>如果 \(p\) 是素数，\(a\) 不被 \(p\) 整除，那么：</p>
+  \[
+  a^{p-1} \equiv 1 \pmod{p}
+  \]
+  <p>意思是：\(a\) 的 \(p-1\) 次方除以 \(p\)，余数一定是 1！</p>
+</div>
+
+<div class="example-box">
+  <div class="ex-title">动手看看：\(2^{100}\) 除以 13 余几？</div>
+  <p>13 是素数，所以 \(2^{12} \equiv 1 \pmod{13}\)（费马小定理）。</p>
+  <p>\(100 = 12 \times 8 + 4\)，所以 \(2^{100} = (2^{12})^8 \times 2^4 \equiv 1^8 \times 16 \equiv 3 \pmod{13}\)。</p>
+  <p>答：余数是 3。不用真的算 \(2^{100}\)（那是个 31 位数！）</p>
+</div>
+
+<h3>奇数和偶数 = 模 2 同余</h3>
+
+<div class="think-box">
+  <h3>你知道吗？</h3>
+  <p>奇偶分析其实就是同余的最简单版本——模 2！</p>
+  <p>偶数 \(\equiv 0 \pmod{2}\)，奇数 \(\equiv 1 \pmod{2}\)。</p>
+  <p>奇 + 奇 = 偶，奇 × 偶 = 偶……这些你早就知道的规则，现在有了"同余"这个统一的名字。</p>
+</div>
+
+<h3>完全平方数的"秘密特征"</h3>
+
+<div class="formula-card">
+  <div class="formula-title">完全平方数除以某些数的余数有规律</div>
+  <table class="info-table" style="margin-top:0.5rem;">
+    <tr><th>除以几</th><th>可能的余数</th><th>不可能的余数</th></tr>
+    <tr><td>除以 3</td><td>0, 1</td><td>2</td></tr>
+    <tr><td>除以 4</td><td>0, 1</td><td>2, 3</td></tr>
+    <tr><td>除以 8</td><td>0, 1, 4</td><td>2, 3, 5, 6, 7</td></tr>
+  </table>
+  <p>这些规律是证明"某个数不是完全平方数"的利器！</p>
+</div>
+</section>
+
+<hr class="divider">
+
+<!-- Chapter 3 -->
+<section class="chapter" id="ch3">
+<div class="ch-header">
+  <div class="ch-icon" style="background: linear-gradient(135deg, #166534, #22c55e);">3</div>
+  <div>
+    <h2>不定方程</h2>
+    <div class="ch-sub">找整数解的"侦探游戏"</div>
+  </div>
+</div>
+
+<div class="intro-card">
+  <h2>生活小比方</h2>
+  <p>你有 100 元钱，要买若干支 7 元的笔和若干本 11 元的本子，刚好花完。有多少种买法？</p>
+  <p>这就是解不定方程 \(7x + 11y = 100\)（\(x, y\) 为非负整数）。普通的方程可以用公式解，但"要求整数解"的方程叫<strong>不定方程</strong>——解法更像破案！</p>
+</div>
+
+<h3>一次不定方程</h3>
+
+<div class="formula-card">
+  <div class="formula-title">什么时候有解？</div>
+  <p>方程 \(ax + by = c\) 有整数解，当且仅当 \(a\) 和 \(b\) 的最大公因数能整除 \(c\)。</p>
+  <p>用符号说：\((a, b) \mid c\)。</p>
+</div>
+
+<div class="example-box">
+  <div class="ex-title">动手看看</div>
+  <p>\(6x + 9y = 10\) 有整数解吗？</p>
+  <p>最大公因数 \((6, 9) = 3\)。3 不整除 10（\(10 \div 3\) 有余数），所以<strong>无解</strong>！</p>
+  <p>但 \(6x + 9y = 12\) 有解，因为 \(3 \mid 12\)。比如 \(x = 2, y = 0\) 就是一组解。</p>
+</div>
+
+<h3>解不定方程的方法</h3>
+
+<div class="formula-card">
+  <div class="formula-title">五大常用策略</div>
+  <table class="info-table" style="margin-top:0.5rem;">
+    <tr><th>方法</th><th>怎么用</th></tr>
+    <tr><td><strong>因式分解</strong></td><td>把方程变成"A × B = 某个数"，然后枚举因数</td></tr>
+    <tr><td><strong>同余分析</strong></td><td>取模看余数，排除不可能的情况</td></tr>
+    <tr><td><strong>不等式夹逼</strong></td><td>用大小关系限定变量的范围</td></tr>
+    <tr><td><strong>无穷递降</strong></td><td>如果有解就一定有更小的解，推到矛盾</td></tr>
+    <tr><td><strong>参数化</strong></td><td>用一个参数把所有解表示出来</td></tr>
+  </table>
+</div>
+
+<h3>勾股数：最经典的不定方程</h3>
+
+<div class="formula-card">
+  <div class="formula-title">勾股方程</div>
+  \[x^2 + y^2 = z^2\]
+  <p>满足这个方程的正整数组 \((x, y, z)\) 叫<strong>勾股数</strong>。最著名的：\((3, 4, 5)\)！</p>
+</div>
+
+<div class="example-box">
+  <div class="ex-title">动手看看：怎么生成勾股数？</div>
+  <p>选两个正整数 \(m \gt n\)（一奇一偶，互素），令：</p>
+  \[
+  x = m^2 - n^2, \quad y = 2mn, \quad z = m^2 + n^2
+  \]
+  <p>取 \(m = 2, n = 1\)：\(x = 3, y = 4, z = 5\) → \((3, 4, 5)\) ✓</p>
+  <p>取 \(m = 3, n = 2\)：\(x = 5, y = 12, z = 13\) → \((5, 12, 13)\) ✓</p>
+  <p>取 \(m = 4, n = 1\)：\(x = 15, y = 8, z = 17\) → \((8, 15, 17)\) ✓</p>
+</div>
+
+<div class="tip-box">
+  <strong>所有勾股数</strong>都可以用这个公式生成（或其整数倍）！这是一个两千多年前就被发现的定理，但证明非常优美。
+</div>
+</section>
+
+<hr class="divider">
+
+<!-- Closing -->
+<section class="chapter" id="closing">
+<div class="intro-card" style="background: var(--green-light); border-color: var(--green);">
+  <h2 style="color: var(--green);">写在最后</h2>
+  <p>数论研究的是最朴素的对象——整数，却有着最深刻的结论。整除告诉我们"分不分得开"；同余让我们用"余数"代替大数；不定方程则是寻找整数世界的"隐藏答案"。</p>
+  <p>记住三个核心工具：<strong>素因数分解</strong>（把数拆成"原子"）、<strong>同余运算</strong>（用余数简化计算）、<strong>因式分解 + 枚举</strong>（解不定方程的万能钥匙）。有了这三把钥匙，数论的大门就向你敞开了！</p>
+</div>
+</section>
+
+</div>
+
+<div class="footer">
+  整除、同余与不定方程 · 小学生也能看懂的版本<br>
+  参考书目：《数学奥林匹克小丛书》
+</div>
+
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  renderMathInElement(document.body, {
+    delimiters: [
+      {left: "\\(", right: "\\)", display: false},
+      {left: "\\[", right: "\\]", display: true}
+    ],
+    throwOnError: false
+  });
+});
+function toggleNav() {
+  var grid = document.getElementById('navGrid');
+  var btn = document.querySelector('.nav-toggle');
+  grid.classList.toggle('show');
+  btn.classList.toggle('open');
+}
+function toggleCollapse(el) {
+  var body = el.nextElementSibling;
+  body.style.display = body.style.display === 'block' ? 'none' : 'block';
+  el.classList.toggle('open');
+}
+</script>
+</body>
+</html>

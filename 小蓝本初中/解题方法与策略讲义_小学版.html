@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>初中数学竞赛中的解题方法与策略 全书4篇</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=LXGW+WenKai:wght@400;700&display=swap');
+  :root {
+    --bg: #fefce8; --fg: #333;
+    --primary: #b45309; --primary-light: #fef3c7;
+    --blue: #1d4ed8; --blue-light: #dbeafe;
+    --green: #166534; --green-light: #dcfce7;
+    --red: #b91c1c; --red-light: #fee2e2;
+    --purple: #7c3aed; --purple-light: #ede9fe;
+    --card-bg: #fff; --border: #e5ddd3;
+    --shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; font-size: 16px; }
+  body {
+    font-family: 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
+    background: var(--bg); color: var(--fg); line-height: 1.85;
+  }
+  .header {
+    background: linear-gradient(135deg, #92400e 0%, #b45309 40%, #d97706 100%);
+    color: #fff; padding: 3rem 2rem 2.5rem; text-align: center;
+    position: relative; overflow: hidden;
+  }
+  .header::after {
+    content: ''; position: absolute; bottom: -2px; left: 0; right: 0; height: 36px;
+    background: var(--bg); clip-path: ellipse(55% 100% at 50% 100%);
+  }
+  .header h1 { font-size: 1.8rem; font-weight: 700; letter-spacing: 0.08em; }
+  .header .subtitle { font-size: 0.95rem; opacity: 0.9; margin-top: 0.4rem; }
+  .header .meta { font-size: 0.8rem; opacity: 0.55; margin-top: 0.8rem; }
+  .nav-bar {
+    position: sticky; top: 0; z-index: 100;
+    background: var(--card-bg); border-bottom: 1px solid var(--border);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  }
+  .nav-toggle {
+    display: flex; align-items: center; justify-content: center;
+    padding: 0.5rem 1rem; cursor: pointer;
+    font-size: 0.85rem; color: var(--primary); font-weight: 600; user-select: none;
+  }
+  .nav-toggle .arrow { transition: transform 0.2s; display: inline-block; margin-right: 0.3rem; }
+  .nav-toggle.open .arrow { transform: rotate(90deg); }
+  .nav-grid {
+    display: none; padding: 0.3rem 0.8rem 0.8rem;
+    grid-template-columns: repeat(3, 1fr); gap: 0.4rem;
+    max-width: 760px; margin: 0 auto;
+  }
+  .nav-grid.show { display: grid; }
+  .nav-grid a {
+    display: flex; align-items: center; gap: 0.3rem;
+    padding: 0.35rem 0.55rem; text-decoration: none;
+    color: var(--fg); font-size: 0.78rem;
+    border: 1px solid var(--border); border-radius: 8px;
+    background: #fff; transition: all 0.2s;
+  }
+  .nav-grid a:hover { background: var(--primary-light); border-color: var(--primary); }
+  .nav-grid a .nav-num {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 1.2rem; height: 1.2rem; border-radius: 50%;
+    background: var(--primary); color: #fff; font-size: 0.65rem; font-weight: 700; flex-shrink: 0;
+  }
+  .nav-grid a .nav-num.bl { background: var(--blue); }
+  .nav-grid a .nav-num.gr { background: var(--green); }
+  .nav-grid a .nav-num.re { background: var(--red); }
+  .nav-grid a .nav-num.pu { background: var(--purple); }
+  .main { max-width: 740px; margin: 0 auto; padding: 1.5rem 1.2rem 3rem; }
+  .divider { border: none; border-top: 2px dashed var(--primary-light); margin: 2.2rem 0; }
+  .part-banner {
+    text-align: center; padding: 0.8rem 1rem; margin: 1rem 0;
+    border-radius: 12px; font-weight: 700; letter-spacing: 0.15em; font-size: 1.05rem;
+  }
+  .part-banner.algebra { background: var(--blue-light); color: var(--blue); }
+  .part-banner.geom { background: var(--green-light); color: var(--green); }
+  .part-banner.number { background: var(--primary-light); color: var(--primary); }
+  .part-banner.combo { background: var(--red-light); color: var(--red); }
+  .chapter { margin-bottom: 1.2rem; }
+  .ch-header { display: flex; align-items: center; gap: 0.7rem; margin-bottom: 0.8rem; }
+  .ch-icon {
+    width: 2.5rem; height: 2.5rem; border-radius: 10px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 0.85rem; font-weight: 700;
+    background: linear-gradient(135deg, var(--primary), #d97706);
+  }
+  .ch-header h2 { font-size: 1.2rem; font-weight: 700; color: var(--primary); margin: 0; }
+  .ch-sub { font-size: 0.8rem; color: #888; margin-top: 0.1rem; }
+  h3 {
+    font-size: 1rem; font-weight: 700; color: var(--primary);
+    margin: 1.3rem 0 0.5rem; padding-left: 0.5rem; border-left: 3px solid var(--primary);
+  }
+  p { margin-bottom: 0.75rem; }
+  .intro-card {
+    background: var(--primary-light); border: 1px solid #f0d5b5;
+    border-radius: 12px; padding: 0.9rem 1.2rem; margin: 0.8rem 0;
+  }
+  .intro-card h2 { color: var(--primary); font-size: 0.92rem; margin-bottom: 0.3rem; }
+  .think-box {
+    background: var(--green-light); border: 1px solid #b5e0c8;
+    border-radius: 12px; padding: 0.9rem 1.2rem; margin: 0.8rem 0;
+  }
+  .think-box h3 { color: var(--green); border: none; padding: 0; margin: 0 0 0.3rem; }
+  .formula-card {
+    background: var(--card-bg); border: 1px solid var(--border);
+    border-radius: 10px; padding: 0.85rem 1.1rem; margin: 0.7rem 0;
+    box-shadow: var(--shadow); overflow-x: auto;
+  }
+  .formula-title {
+    font-size: 0.78rem; font-weight: 700; color: var(--primary);
+    margin-bottom: 0.35rem; letter-spacing: 0.05em;
+  }
+  .tip-box {
+    background: #fff8e1; border-left: 4px solid #ffb300;
+    padding: 0.65rem 1rem; margin: 0.7rem 0;
+    border-radius: 0 8px 8px 0; font-size: 0.88rem;
+  }
+  .example-box {
+    background: #fff; border: 2px dashed var(--primary-light);
+    border-radius: 12px; padding: 0.85rem 1.1rem; margin: 0.8rem 0;
+  }
+  .example-box .ex-title {
+    font-size: 0.9rem; font-weight: 700; color: var(--red); margin-bottom: 0.3rem;
+  }
+  .info-table { width: 100%; border-collapse: collapse; margin: 0.5rem 0; font-size: 0.85rem; }
+  .info-table th {
+    background: var(--primary); color: #fff; padding: 0.4rem 0.6rem;
+    text-align: left; font-weight: 600;
+  }
+  .info-table td { padding: 0.38rem 0.6rem; border-bottom: 1px solid var(--border); }
+  .info-table tr:nth-child(even) td { background: var(--primary-light); }
+  .footer {
+    text-align: center; padding: 1.8rem 1rem; font-size: 0.75rem;
+    color: #999; border-top: 1px solid var(--border); margin-top: 2rem;
+  }
+  @media (max-width: 600px) {
+    .nav-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media print {
+    .nav-bar { display: none; }
+    .chapter { page-break-before: always; }
+  }
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+</head>
+<body>
+
+<div class="header">
+  <h1>解题方法与策略</h1>
+  <div class="subtitle">小学生也能看懂的竞赛思维指南</div>
+  <div class="meta">全书四篇 · 生活化讲解</div>
+</div>
+
+<div class="nav-bar">
+  <div class="nav-toggle" onclick="toggleNav()">
+    <span class="arrow">&#9654;</span> 目录
+  </div>
+  <div class="nav-grid" id="navGrid">
+    <a href="#ch0"><span class="nav-num">0</span>写在前面</a>
+    <a href="#part1"><span class="nav-num bl">Ⅰ</span>代数篇</a>
+    <a href="#part2"><span class="nav-num gr">Ⅱ</span>几何篇</a>
+    <a href="#part3"><span class="nav-num">Ⅲ</span>数论篇</a>
+    <a href="#part4"><span class="nav-num re">Ⅳ</span>组合篇</a>
+    <a href="#closing"><span class="nav-num pu">★</span>写在最后</a>
+  </div>
+</div>
+
+<div class="main">
+
+<!-- Chapter 0 -->
+<section class="chapter" id="ch0">
+<div class="ch-header">
+  <div class="ch-icon" style="background: linear-gradient(135deg, #92400e, #d97706);">0</div>
+  <div>
+    <h2>写在前面：什么是"解题策略"？</h2>
+    <div class="ch-sub">解题不只是靠算，更要靠想法</div>
+  </div>
+</div>
+
+<div class="intro-card">
+  <h2>想象一个场景</h2>
+  <p>你做一道数学题，算了半天算不出来。换个思路，突然灵光一闪——"啊，原来可以这样！"——两分钟就解出来了。</p>
+  <p>这就是"策略"的力量。竞赛数学不是比谁算得快，而是比谁的<strong>想法巧妙</strong>。这本书收集了23种最常用的解题策略，按代数、几何、数论、组合四大类分好，每种策略都用通俗的语言讲清楚。</p>
+</div>
+</section>
+
+<hr class="divider">
+
+<!-- ============ PART 1 ============ -->
+<div class="part-banner algebra" id="part1">第 一 部 分 · 代 数 篇</div>
+
+<section class="chapter">
+<div class="ch-header">
+  <div class="ch-icon" style="background: linear-gradient(135deg, #1d4ed8, #3b82f6);">Ⅰ</div>
+  <div>
+    <h2>代数篇：和式子打交道</h2>
+    <div class="ch-sub">化简、变形、找规律</div>
+  </div>
+</div>
+
+<h3>1.1 巧用平方差</h3>
+
+<div class="formula-card">
+  <div class="formula-title">平方差公式</div>
+  \[a^2 - b^2 = (a + b)(a - b)\]
+  <p>这个公式虽然简单，但在竞赛中非常好用：把一个"差"变成"乘积"，就能分析因数、约分了。</p>
+</div>
+
+<div class="example-box">
+  <div class="ex-title">动手看看</div>
+  <p>计算 \(99^2 - 1\)。直接算：\(9801 - 1 = 9800\)。</p>
+  <p>用平方差：\(99^2 - 1^2 = (99+1)(99-1) = 100 \times 98 = 9800\)。快多了！</p>
+</div>
+
+<h3>1.2 恰当换元</h3>
+
+<div class="think-box">
+  <h3>换一个角度看</h3>
+  <p>题目里有一大坨复杂的式子？试试用一个新的字母代替它。就像给一个很长的名字取个简称——"清华大学"太长了，叫"清华"就行。</p>
+  <p>比如式子里反复出现 \(x^2 + x\)，就令 \(t = x^2 + x\)，整个式子就简洁多了！</p>
+</div>
+
+<h3>1.3 判别式</h3>
+
+<div class="formula-card">
+  <div class="formula-title">判别式 \(\Delta = b^2 - 4ac\)</div>
+  <p>二次方程 \(ax^2 + bx + c = 0\) 有没有实数解？看 \(\Delta\)：</p>
+  <p>\(\Delta \gt 0\)：两个不同的解；\(\Delta = 0\)：一个解（两个相同）；\(\Delta \lt 0\)：无解。</p>
+</div>
+
+<h3>1.4 韦达定理</h3>
+
+<div class="formula-card">
+  <div class="formula-title">韦达定理（根与系数的关系）</div>
+  <p>方程 \(ax^2 + bx + c = 0\) 的两个解 \(x_1, x_2\) 满足：</p>
+  \[x_1 + x_2 = -\frac{b}{a}, \qquad x_1 \times x_2 = \frac{c}{a}\]
+  <p>不用真的解方程，就能知道两个解的和与积！</p>
+</div>
+
+<h3>1.5 主元素方法 &amp; 1.6 恰当放缩</h3>
+
+<div class="tip-box">
+  <strong>主元素</strong>：变量太多时，选一个当"主角"，其他当"配角"（参数），问题就简单了。<br>
+  <strong>放缩</strong>：不用精确算出答案，只要估计一个范围就够了。就像不用称出你的准确体重，只要说"在50到60公斤之间"就行。
+</div>
+</section>
+
+<hr class="divider">
+
+<!-- ============ PART 2 ============ -->
+<div class="part-banner geom" id="part2">第 二 部 分 · 几 何 篇</div>
+
+<section class="chapter">
+<div class="ch-header">
+  <div class="ch-icon" style="background: linear-gradient(135deg, #166534, #22c55e);">Ⅱ</div>
+  <div>
+    <h2>几何篇：和图形打交道</h2>
+    <div class="ch-sub">变换、面积、圆的秘密</div>
+  </div>
+</div>
+
+<h3>2.1 面积法</h3>
+
+<div class="think-box">
+  <h3>算两次面积</h3>
+  <p>同一个三角形，用底边 \(a\) 和高 \(h_1\) 算一次面积，再用底边 \(b\) 和高 \(h_2\) 算一次。两个面积相等，就能得到 \(a \times h_1 = b \times h_2\)，从而推导出线段之间的关系！</p>
+  <p>这是几何中"无中生有"的好办法。</p>
+</div>
+
+<h3>2.2 平移、旋转与翻折</h3>
+
+<div class="intro-card">
+  <h2>搬一搬、转一转、翻一翻</h2>
+  <p>有些线段和角分散在图形各处，很难直接比较。试试把图形的一部分"搬"到另一部分旁边：</p>
+  <p><strong>旋转</strong>最有用：如果图形中有等边三角形，绕一个顶点旋转 60°，原来分散的线段就"拼"到一起了！</p>
+</div>
+
+<h3>2.3 利用相似 &amp; 2.4 几何不等式</h3>
+
+<div class="formula-card">
+  <div class="formula-title">相似三角形</div>
+  <p>两个三角形如果"形状相同"（角对应相等），就叫相似。相似三角形的对应边成比例。</p>
+  <p>面积比 = 相似比的平方。比如边长比是 2:3，面积比就是 4:9。</p>
+</div>
+
+<h3>2.5 四点共圆 &amp; 2.6 代数方法</h3>
+
+<div class="tip-box">
+  <strong>四点共圆</strong>：四个点能画一个圆同时穿过它们。判定方法：对角互补（两个对角加起来 = 180°）。<br>
+  <strong>代数方法</strong>：把几何问题变成坐标和方程，用代数来解。有时候"笨方法"反而最有效！
+</div>
+</section>
+
+<hr class="divider">
+
+<!-- ============ PART 3 ============ -->
+<div class="part-banner number" id="part3">第 三 部 分 · 数 论 篇</div>
+
+<section class="chapter">
+<div class="ch-header">
+  <div class="ch-icon">Ⅲ</div>
+  <div>
+    <h2>数论篇：和整数打交道</h2>
+    <div class="ch-sub">整除、余数、奇偶</div>
+  </div>
+</div>
+
+<h3>3.1 奇数与偶数</h3>
+
+<div class="example-box">
+  <div class="ex-title">奇偶不变量</div>
+  <p>一堆棋子，每次操作取 2 颗放回去 1 颗。问：能不能从 10 颗变成 1 颗？</p>
+  <p>分析：每次减少 1 颗，奇偶性改变。10（偶）→ 9（奇）→ 8（偶）→ ……→ 1（奇）。</p>
+  <p>从偶变到奇需要奇数次操作。10 - 1 = 9 次操作，9 是奇数。所以<strong>可以</strong>！</p>
+</div>
+
+<h3>3.2 素因数分析 &amp; 3.3 选择合适的模</h3>
+
+<div class="think-box">
+  <h3>把数"拆开"看</h3>
+  <p>每个整数都可以唯一地拆成素数的乘积：\(60 = 2^2 \times 3 \times 5\)。拆开之后，整除、公约数、倍数之类的问题就一目了然了。</p>
+  <p><strong>选模</strong>：想知道一个数除以 3 余几？对 3 取模！不同问题选不同的模，就像用不同的尺子量东西。</p>
+</div>
+
+<h3>3.4 恰当估计 &amp; 3.5 最小数原理</h3>
+
+<div class="tip-box">
+  <strong>估计</strong>：有时候不用精确计算，只要估一个范围就能排除不可能的答案。<br>
+  <strong>最小数原理</strong>：一堆正整数里一定有一个最小的。如果假设"有解"，取最小的那个解，证明还有更小的——矛盾！说明无解。
+</div>
+
+<h3>3.6 存在性问题</h3>
+
+<div class="intro-card">
+  <h2>"一定存在"怎么证明？</h2>
+  <p>两种方法：① 构造法——直接给出一个例子；② 反证法——假设不存在，推出矛盾。</p>
+  <p>就像证明"这个班里一定有两个同月生日的人"：如果班里超过 12 人，抽屉原理直接保证存在！</p>
+</div>
+</section>
+
+<hr class="divider">
+
+<!-- ============ PART 4 ============ -->
+<div class="part-banner combo" id="part4">第 四 部 分 · 组 合 篇</div>
+
+<section class="chapter">
+<div class="ch-header">
+  <div class="ch-icon" style="background: linear-gradient(135deg, #b91c1c, #ef4444);">Ⅳ</div>
+  <div>
+    <h2>组合篇：和"策略"打交道</h2>
+    <div class="ch-sub">计数、构造、博弈</div>
+  </div>
+</div>
+
+<h3>4.1 抽屉原则</h3>
+
+<div class="formula-card">
+  <div class="formula-title">东西多了，总得挤一挤</div>
+  <p>\(n+1\) 个东西放进 \(n\) 个抽屉，一定有一个抽屉装了 \(\geq 2\) 个东西。</p>
+  <p>366 个人（闰年多一天），一定有两个同一天生日！</p>
+</div>
+
+<h3>4.2 染色或赋值</h3>
+
+<div class="think-box">
+  <h3>给格子涂颜色</h3>
+  <p>把棋盘涂成黑白交替的颜色。利用黑白格数的差异，可以证明某些铺排方案不可行——比如"能不能用 \(1 \times 2\) 的多米诺骨牌铺满缺了两个角的棋盘"。</p>
+</div>
+
+<h3>4.3 算两次</h3>
+
+<div class="example-box">
+  <div class="ex-title">数一数握手次数</div>
+  <p>5 个人，每两人握一次手，共握了几次？</p>
+  <p><strong>方法一</strong>：第 1 人握 4 次，第 2 人握 3 次（已和第 1 人握过），……共 \(4+3+2+1 = 10\) 次。</p>
+  <p><strong>方法二</strong>：从 5 人中选 2 人握手，\(\binom{5}{2} = 10\) 次。</p>
+  <p>两种方法答案一样——但有些问题中，"算两次"能推出一个意想不到的等式！</p>
+</div>
+
+<h3>4.4 从局部到整体 &amp; 4.5 命题一般化</h3>
+
+<div class="tip-box">
+  <strong>局部到整体</strong>：先分析单个元素的性质，再利用总和或总数的约束推导全局结论。<br>
+  <strong>命题一般化</strong>：有时候 \(n=3\) 的情况难证，但推广到任意 \(n\) 反而能用归纳法——"以大欺小"！
+</div>
+
+<h3>4.6 先猜后证</h3>
+
+<div class="formula-card">
+  <div class="formula-title">竞赛中最实用的策略</div>
+  <table class="info-table" style="margin-top:0.4rem;">
+    <tr><th>步骤</th><th>做什么</th></tr>
+    <tr><td>① 试验</td><td>用 \(n = 1, 2, 3\) 试算，记录结果</td></tr>
+    <tr><td>② 猜测</td><td>观察规律，猜出答案</td></tr>
+    <tr><td>③ 证上界</td><td>证明不可能比猜的更好</td></tr>
+    <tr><td>④ 构造</td><td>给出一个恰好达到答案的例子</td></tr>
+  </table>
+</div>
+</section>
+
+<hr class="divider">
+
+<!-- Closing -->
+<section class="chapter" id="closing">
+<div class="intro-card" style="background: var(--purple-light); border-color: var(--purple);">
+  <h2 style="color: var(--purple);">写在最后</h2>
+  <p>解题策略不是死记硬背的公式，而是灵活的<strong>思考方式</strong>。面对一道新题，先想想：这题属于哪一类？代数变形？几何变换？数论的奇偶余数？还是组合的计数构造？</p>
+  <p>然后试试这23种策略里的几种——平方差、换元、面积法、旋转、奇偶分析、抽屉原理、算两次、先猜后证……总有一种能帮你打开突破口。</p>
+  <p>记住：做竞赛题最重要的不是算得快，而是<strong>想法巧妙</strong>。多练多想，你也能成为解题高手！</p>
+</div>
+</section>
+
+</div>
+
+<div class="footer">
+  初中数学竞赛中的解题方法与策略 · 小学生也能看懂的版本<br>
+  参考书目：《数学奥林匹克小丛书》
+</div>
+
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  renderMathInElement(document.body, {
+    delimiters: [
+      {left: "\\(", right: "\\)", display: false},
+      {left: "\\[", right: "\\]", display: true}
+    ],
+    throwOnError: false
+  });
+});
+function toggleNav() {
+  var grid = document.getElementById('navGrid');
+  var btn = document.querySelector('.nav-toggle');
+  grid.classList.toggle('show');
+  btn.classList.toggle('open');
+}
+</script>
+</body>
+</html>

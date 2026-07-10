@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>整除、同余与不定方程 全书3章</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=LXGW+WenKai:wght@400;700&display=swap');
+  :root {
+    --bg: #f8f7f4; --fg: #2c2c2c;
+    --accent: #7c5e10; --accent-light: #f0e6c8;
+    --navy: #1e3a5f; --navy-light: #d6e4f0;
+    --border: #d5cfc0; --card-bg: #fffdf7;
+    --red: #b91c1c; --red-light: #fee2e2;
+    --green: #166534; --green-light: #dcfce7;
+    --highlight: #fef9e7;
+    --shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; font-size: 16px; }
+  body {
+    font-family: 'Noto Serif SC', 'SimSun', 'Songti SC', serif;
+    background: var(--bg); color: var(--fg); line-height: 1.85;
+  }
+  .header {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 40%, #0f3460 100%);
+    color: #f0e6c8; padding: 3.5rem 2rem 3rem; text-align: center;
+  }
+  .header h1 { font-size: 2.1rem; font-weight: 700; letter-spacing: 0.12em; margin-bottom: 0.4rem; }
+  .header .subtitle { font-size: 1rem; opacity: 0.85; letter-spacing: 0.06em; }
+  .header .meta { margin-top: 1rem; font-size: 0.85rem; opacity: 0.55; }
+  .nav-container {
+    position: sticky; top: 0; z-index: 100;
+    background: var(--card-bg); border-bottom: 1px solid var(--border);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+  .nav-toggle {
+    display: flex; align-items: center; justify-content: center;
+    padding: 0.6rem 1rem; cursor: pointer;
+    font-size: 0.9rem; color: var(--accent); font-weight: 600;
+    letter-spacing: 0.05em; user-select: none;
+  }
+  .nav-toggle::before { content: "▸ "; }
+  .nav-toggle.open::before { content: "▾ "; }
+  .nav-list {
+    display: none; padding: 0 1.5rem 1rem; list-style: none;
+    column-count: 3; column-gap: 1.2rem; max-width: 900px; margin: 0 auto;
+  }
+  .nav-list.show { display: block; }
+  .nav-list li a {
+    display: block; padding: 0.3rem 0.5rem; text-decoration: none;
+    color: var(--fg); font-size: 0.85rem; border-radius: 4px; transition: background 0.2s;
+  }
+  .nav-list li a:hover { background: var(--highlight); }
+  .nav-list li a .num {
+    display: inline-block; width: 1.4rem; text-align: center;
+    font-weight: 700; color: var(--accent); margin-right: 0.3rem; font-size: 0.8rem;
+  }
+  .nav-list li.sub a { padding-left: 1.8rem; font-size: 0.82rem; color: #666; }
+  .main { max-width: 820px; margin: 0 auto; padding: 2rem 1.5rem 3rem; }
+  .divider { border: none; border-top: 1px solid var(--border); margin: 2.5rem 0; }
+  .part-title {
+    text-align: center; font-size: 1.1rem; color: var(--navy);
+    font-weight: 700; letter-spacing: 0.2em; margin: 0.5rem 0 0.3rem;
+  }
+  .chapter { page-break-before: always; margin-bottom: 1rem; }
+  .chapter-title {
+    font-size: 1.4rem; font-weight: 700; color: var(--navy);
+    margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;
+  }
+  .chapter-title .ch-num {
+    display: inline-block; background: var(--navy); color: #fff;
+    font-size: 0.8rem; width: 1.7rem; height: 1.7rem;
+    line-height: 1.7rem; text-align: center; border-radius: 50%;
+  }
+  h3 {
+    font-size: 1.05rem; font-weight: 600; color: var(--accent);
+    margin: 1.6rem 0 0.7rem; border-left: 3px solid var(--accent); padding-left: 0.7rem;
+  }
+  h4 { font-size: 0.95rem; font-weight: 600; color: var(--navy); margin: 1.2rem 0 0.5rem; }
+  p { margin-bottom: 0.85rem; text-indent: 2em; }
+  .formula-box {
+    background: var(--card-bg); border: 1px solid var(--border);
+    border-radius: 8px; padding: 1.1rem 1.4rem; margin: 1rem 0;
+    box-shadow: var(--shadow); overflow-x: auto;
+  }
+  .formula-label {
+    font-size: 0.8rem; font-weight: 600; color: var(--accent);
+    text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.5rem;
+  }
+  .key-point {
+    background: var(--highlight); border-left: 3px solid var(--accent);
+    padding: 0.75rem 1.1rem; margin: 1rem 0;
+    font-size: 0.93rem; border-radius: 0 6px 6px 0;
+  }
+  .theorem-box {
+    background: var(--navy-light); border-left: 4px solid var(--navy);
+    padding: 1rem 1.3rem; margin: 1.2rem 0; border-radius: 0 8px 8px 0;
+  }
+  .theorem-box .thm-title {
+    font-weight: 700; color: var(--navy); font-size: 0.95rem; margin-bottom: 0.4rem;
+  }
+  .summary-table { width: 100%; border-collapse: collapse; margin: 0.8rem 0; font-size: 0.9rem; }
+  .summary-table th { background: var(--navy); color: #fff; padding: 0.5rem 0.7rem; text-align: left; font-weight: 600; }
+  .summary-table td { padding: 0.45rem 0.7rem; border-bottom: 1px solid var(--border); }
+  .summary-table tr:nth-child(even) td { background: var(--highlight); }
+  .notation-table { width: 100%; border-collapse: collapse; margin: 0.8rem 0; font-size: 0.88rem; }
+  .notation-table th { background: var(--accent); color: #fff; padding: 0.45rem 0.7rem; text-align: left; }
+  .notation-table td { padding: 0.4rem 0.7rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .notation-table td:first-child { font-weight: 600; white-space: nowrap; color: var(--navy); }
+  .method-card {
+    background: linear-gradient(135deg, var(--card-bg), var(--highlight));
+    border: 1px solid var(--border); border-radius: 10px;
+    padding: 1.1rem 1.4rem; margin: 1.3rem 0;
+  }
+  .method-card .card-title {
+    font-size: 0.95rem; font-weight: 700; color: var(--accent);
+    margin-bottom: 0.6rem; text-align: center;
+  }
+  ol.steps { padding-left: 1.8rem; margin: 0.5rem 0; }
+  ol.steps li { margin-bottom: 0.4rem; font-size: 0.92rem; }
+  .collapsible { margin: 1rem 0; }
+  .collapsible-header {
+    background: var(--card-bg); border: 1px solid var(--border);
+    padding: 0.55rem 1rem; border-radius: 6px; cursor: pointer;
+    font-size: 0.88rem; font-weight: 600; color: var(--accent); user-select: none;
+  }
+  .collapsible-header::after { content: " ▸"; float: right; }
+  .collapsible-header.open::after { content: " ▾"; }
+  .collapsible-body {
+    display: none; padding: 0.8rem 1rem; border: 1px solid var(--border);
+    border-top: none; border-radius: 0 0 6px 6px; background: #fff;
+  }
+  .footer {
+    text-align: center; padding: 2rem 1rem; font-size: 0.8rem;
+    color: #999; border-top: 1px solid var(--border); margin-top: 2rem;
+  }
+  @media print {
+    .nav-container { display: none; }
+    .chapter { page-break-before: always; }
+    .collapsible-body { display: block !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>整除、同余与不定方程</h1>
+  <div class="subtitle">数学奥林匹克小丛书 · 知识框架与方法论讲义</div>
+  <div class="meta">全书三章系统梳理</div>
+</div>
+
+<div class="nav-container">
+  <div class="nav-toggle" onclick="toggleNav()">章节目录</div>
+  <ul class="nav-list" id="navList">
+    <li><a href="#ch0"><span class="num">0</span>记号与预备</a></li>
+    <li><a href="#ch1"><span class="num">1</span>整除</a></li>
+    <li class="sub"><a href="#s1-1"><span class="num">1.1</span>整除的概念与性质</a></li>
+    <li class="sub"><a href="#s1-2"><span class="num">1.2</span>素数与合数</a></li>
+    <li class="sub"><a href="#s1-3"><span class="num">1.3</span>最大公因数与最小公倍数</a></li>
+    <li class="sub"><a href="#s1-4"><span class="num">1.4</span>算术基本定理</a></li>
+    <li><a href="#ch2"><span class="num">2</span>同余</a></li>
+    <li class="sub"><a href="#s2-1"><span class="num">2.1</span>同余的概念与性质</a></li>
+    <li class="sub"><a href="#s2-2"><span class="num">2.2</span>剩余系及其应用</a></li>
+    <li class="sub"><a href="#s2-3"><span class="num">2.3</span>费马小定理</a></li>
+    <li class="sub"><a href="#s2-4"><span class="num">2.4</span>奇数与偶数</a></li>
+    <li class="sub"><a href="#s2-5"><span class="num">2.5</span>完全平方数</a></li>
+    <li><a href="#ch3"><span class="num">3</span>不定方程</a></li>
+    <li class="sub"><a href="#s3-1"><span class="num">3.1</span>一次不定方程</a></li>
+    <li class="sub"><a href="#s3-2"><span class="num">3.2</span>常用解法</a></li>
+    <li class="sub"><a href="#s3-3"><span class="num">3.3</span>勾股方程</a></li>
+  </ul>
+</div>
+
+<div class="main">
+
+<!-- ============ Chapter 0 ============ -->
+<section class="chapter" id="ch0">
+<h2 class="chapter-title"><span class="ch-num">0</span>记号与预备知识</h2>
+
+<p>数论是研究整数性质的数学分支，被誉为"数学的女王"。本章介绍全书使用的标准记号，并回顾一些基本预备知识。</p>
+
+<div class="formula-box">
+  <div class="formula-label">常用记号表</div>
+  <table class="notation-table">
+    <tr><th>记号</th><th>含义</th></tr>
+    <tr><td>\(a \mid b\)</td><td>\(a\) 整除 \(b\)（即 \(b\) 是 \(a\) 的倍数）</td></tr>
+    <tr><td>\(a \nmid b\)</td><td>\(a\) 不整除 \(b\)</td></tr>
+    <tr><td>\((a, b)\)</td><td>\(a\) 与 \(b\) 的最大公因数（\(\gcd\)）</td></tr>
+    <tr><td>\([a, b]\)</td><td>\(a\) 与 \(b\) 的最小公倍数（\(\text{lcm}\)）</td></tr>
+    <tr><td>\(p^{\alpha} \| n\)</td><td>\(p^{\alpha} \mid n\) 但 \(p^{\alpha+1} \nmid n\)</td></tr>
+    <tr><td>\(v_p(n)\)</td><td>\(n\) 的素因数分解中 \(p\) 的幂次</td></tr>
+    <tr><td>\(a \equiv b \pmod{m}\)</td><td>\(a\) 与 \(b\) 对模 \(m\) 同余</td></tr>
+    <tr><td>\(a \not\equiv b \pmod{m}\)</td><td>\(a\) 与 \(b\) 对模 \(m\) 不同余</td></tr>
+    <tr><td>\(a^{-1} \pmod{m}\)</td><td>\(a\) 对模 \(m\) 的数论倒数（满足 \(a \cdot a^{-1} \equiv 1 \pmod{m}\)）</td></tr>
+    <tr><td>\(\lfloor x \rfloor\)</td><td>不超过 \(x\) 的最大整数（高斯函数）</td></tr>
+    <tr><td>\(\max\{a,b\},\;\min\{a,b\}\)</td><td>实数 \(a, b\) 中较大/较小的数</td></tr>
+  </table>
+</div>
+</section>
+
+<hr class="divider">
+
+<!-- ============ PART 1 ============ -->
+<p class="part-title">上 篇 · 整 除</p>
+<hr class="divider">
+
+<!-- ============ Chapter 1 ============ -->
+<section class="chapter" id="ch1">
+<h2 class="chapter-title"><span class="ch-num">1</span>整除</h2>
+
+<!-- 1.1 -->
+<h3 id="s1-1">1.1 整除的概念与基本性质</h3>
+
+<div class="formula-box">
+  <div class="formula-label">定义</div>
+  <p>设 \(a, b \in \mathbb{Z}\)，\(a \neq 0\)。若存在整数 \(q\) 使得 \(b = aq\)，则称 \(a\) <strong>整除</strong> \(b\)，记作 \(a \mid b\)。此时 \(a\) 称为 \(b\) 的<strong>因数</strong>（约数），\(b\) 称为 \(a\) 的<strong>倍数</strong>。</p>
+</div>
+
+<div class="theorem-box">
+  <div class="thm-title">整除的基本性质</div>
+  <p>① 自反性：\(a \mid a\)；② 反对称性：若 \(a \mid b\) 且 \(b \mid a\)，则 \(a = \pm b\)。</p>
+  <p>③ 传递性：若 \(a \mid b\) 且 \(b \mid c\)，则 \(a \mid c\)。</p>
+  <p>④ 线性组合：若 \(a \mid b\) 且 \(a \mid c\)，则 \(a \mid (bx + cy)\)，对任意整数 \(x, y\) 成立。</p>
+  <p>⑤ 带余除法：对任意整数 \(a\) 和正整数 \(b\)，存在唯一的整数 \(q, r\) 使得</p>
+  \[a = bq + r, \quad 0 \leq r \lt b\]
+</div>
+
+<!-- 1.2 -->
+<h3 id="s1-2">1.2 素数与合数</h3>
+
+<div class="formula-box">
+  <div class="formula-label">定义</div>
+  <p>大于 1 的正整数 \(p\)，若其正因数只有 \(1\) 和 \(p\) 本身，则称 \(p\) 为<strong>素数</strong>（质数）。否则称为<strong>合数</strong>。</p>
+  <p>前几个素数：\(2, 3, 5, 7, 11, 13, 17, 19, 23, 29, \ldots\)</p>
+</div>
+
+<div class="theorem-box">
+  <div class="thm-title">素数的无穷性（Euclid 证明）</div>
+  <p>假设素数只有有限个 \(p_1, p_2, \ldots, p_k\)，令 \(N = p_1 p_2 \cdots p_k + 1\)。则 \(N\) 不被任何 \(p_i\) 整除（余数均为 1），故 \(N\) 要么本身是素数，要么有不在列表中的素因子——矛盾。因此素数有无穷多个。</p>
+</div>
+
+<div class="key-point">素数是整数的"原子"——每个大于 1 的整数都可以唯一分解为素数之积。这一事实在下一节中给出精确表述。</div>
+
+<!-- 1.3 -->
+<h3 id="s1-3">1.3 最大公因数与最小公倍数</h3>
+
+<div class="formula-box">
+  <div class="formula-label">定义</div>
+  <p>正整数 \(a, b\) 的<strong>最大公因数</strong> \((a, b)\) 是能同时整除 \(a, b\) 的最大正整数。</p>
+  <p>正整数 \(a, b\) 的<strong>最小公倍数</strong> \([a, b]\) 是能同时被 \(a, b\) 整除的最小正整数。</p>
+</div>
+
+<div class="theorem-box">
+  <div class="thm-title">核心关系与算法</div>
+  <p><strong>辗转相除法（Euclid 算法）</strong>：\((a, b) = (b,\; a \bmod b)\)，反复迭代直至余数为 0。</p>
+  <p><strong>公因倍数关系</strong>：</p>
+  \[(a, b) \times [a, b] = a \times b\]
+  <p><strong>Bézout 恒等式</strong>：存在整数 \(x, y\) 使得</p>
+  \[ax + by = (a, b)\]
+</div>
+
+<!-- 1.4 -->
+<h3 id="s1-4">1.4 算术基本定理</h3>
+
+<div class="theorem-box">
+  <div class="thm-title">算术基本定理（唯一分解定理）</div>
+  <p>每个大于 1 的正整数 \(n\) 都可以唯一（不计因子排列顺序）地分解为素数的乘积：</p>
+  \[n = p_1^{\alpha_1} \cdot p_2^{\alpha_2} \cdots p_k^{\alpha_k}\]
+  <p>其中 \(p_1 \lt p_2 \lt \cdots \lt p_k\) 为素数，\(\alpha_i \geq 1\) 为正整数。</p>
+</div>
+
+<div class="formula-box">
+  <div class="formula-label">由唯一分解计算因数个数与因数之和</div>
+  <p>若 \(n = p_1^{\alpha_1} p_2^{\alpha_2} \cdots p_k^{\alpha_k}\)，则：</p>
+  \[
+  \tau(n) = (\alpha_1 + 1)(\alpha_2 + 1)\cdots(\alpha_k + 1) \quad \text{（正因数个数）}
+  \]
+  \[
+  \sigma(n) = \prod_{i=1}^{k} \frac{p_i^{\alpha_i + 1} - 1}{p_i - 1} \quad \text{（正因数之和）}
+  \]
+</div>
+
+<div class="collapsible">
+  <div class="collapsible-header" onclick="toggleCollapse(this)">示例：\(n = 360 = 2^3 \cdot 3^2 \cdot 5\)</div>
+  <div class="collapsible-body">
+    <p>因数个数：\(\tau(360) = (3+1)(2+1)(1+1) = 4 \times 3 \times 2 = 24\)。</p>
+    <p>因数之和：\(\sigma(360) = \frac{2^4-1}{2-1} \cdot \frac{3^3-1}{3-1} \cdot \frac{5^2-1}{5-1} = 15 \times 13 \times 6 = 1170\)。</p>
+  </div>
+</div>
+</section>
+
+<hr class="divider">
+
+<!-- ============ PART 2 ============ -->
+<p class="part-title">中 篇 · 同 余</p>
+<hr class="divider">
+
+<!-- ============ Chapter 2 ============ -->
+<section class="chapter" id="ch2">
+<h2 class="chapter-title"><span class="ch-num">2</span>同余</h2>
+
+<!-- 2.1 -->
+<h3 id="s2-1">2.1 同余的概念与基本性质</h3>
+
+<div class="formula-box">
+  <div class="formula-label">定义</div>
+  <p>设 \(m\) 为正整数。若 \(m \mid (a - b)\)，则称 \(a\) 与 \(b\) 对模 \(m\) <strong>同余</strong>，记作</p>
+  \[a \equiv b \pmod{m}\]
+  <p>等价条件：\(a\) 和 \(b\) 除以 \(m\) 的余数相同。</p>
+</div>
+
+<div class="theorem-box">
+  <div class="thm-title">同余的基本运算</div>
+  <p>若 \(a \equiv b \pmod{m}\)，\(c \equiv d \pmod{m}\)，则：</p>
+  <p>① 加法：\(a + c \equiv b + d \pmod{m}\)</p>
+  <p>② 乘法：\(ac \equiv bd \pmod{m}\)</p>
+  <p>③ 幂：\(a^k \equiv b^k \pmod{m}\)（\(k\) 为正整数）</p>
+  <p>④ 多项式：\(f(a) \equiv f(b) \pmod{m}\)（\(f\) 为整系数多项式）</p>
+</div>
+
+<div class="key-point">同余是一种"等价关系"：满足自反性（\(a \equiv a\)）、对称性（若 \(a \equiv b\) 则 \(b \equiv a\)）、传递性（若 \(a \equiv b, b \equiv c\) 则 \(a \equiv c\)）。它将整数按模 \(m\) 的余数分为 \(m\) 个等价类。</div>
+
+<!-- 2.2 -->
+<h3 id="s2-2">2.2 剩余系及其应用</h3>
+
+<div class="formula-box">
+  <div class="formula-label">定义</div>
+  <p>模 \(m\) 的<strong>完全剩余系</strong>：\(\{0, 1, 2, \ldots, m-1\}\)（共 \(m\) 个元素）。</p>
+  <p>模 \(m\) 的<strong>缩剩余系</strong>（既约剩余系）：\(\{a : 1 \leq a \leq m,\; (a, m) = 1\}\)，元素个数为 Euler 函数 \(\varphi(m)\)。</p>
+</div>
+
+<div class="formula-box">
+  <div class="formula-label">Euler 函数 \(\varphi(n)\)</div>
+  \[
+  \varphi(n) = n \prod_{p \mid n}\left(1 - \frac{1}{p}\right)
+  \]
+  <p>特别地：若 \(p\) 为素数，\(\varphi(p) = p - 1\)；\(\varphi(p^k) = p^{k-1}(p - 1)\)。</p>
+  <p>若 \((m, n) = 1\)，则 \(\varphi(mn) = \varphi(m)\varphi(n)\)（积性函数）。</p>
+</div>
+
+<div class="theorem-box">
+  <div class="thm-title">Euler 定理</div>
+  <p>若 \((a, m) = 1\)，则</p>
+  \[a^{\varphi(m)} \equiv 1 \pmod{m}\]
+</div>
+
+<!-- 2.3 -->
+<h3 id="s2-3">2.3 费马小定理及其应用</h3>
+
+<div class="theorem-box">
+  <div class="thm-title">费马小定理（Fermat's Little Theorem）</div>
+  <p>若 \(p\) 为素数，\(p \nmid a\)，则</p>
+  \[a^{p-1} \equiv 1 \pmod{p}\]
+  <p>等价形式（对任意整数 \(a\)）：\(a^p \equiv a \pmod{p}\)。</p>
+</div>
+
+<p>费马小定理是 Euler 定理在 \(m = p\)（素数）时的特例（因为 \(\varphi(p) = p - 1\)）。它在竞赛中常用于简化大幂次运算。</p>
+
+<div class="collapsible">
+  <div class="collapsible-header" onclick="toggleCollapse(this)">示例：求 \(2^{100}\) 除以 13 的余数</div>
+  <div class="collapsible-body">
+    <p>由费马小定理，\(2^{12} \equiv 1 \pmod{13}\)。</p>
+    <p>\(100 = 12 \times 8 + 4\)，所以 \(2^{100} = (2^{12})^8 \cdot 2^4 \equiv 1^8 \cdot 16 \equiv 3 \pmod{13}\)。</p>
+    <p>余数为 3。</p>
+  </div>
+</div>
+
+<!-- 2.4 -->
+<h3 id="s2-4">2.4 奇数与偶数</h3>
+
+<div class="formula-box">
+  <div class="formula-label">奇偶分析</div>
+  <p>奇偶分析本质上是模 2 同余：偶数 \(\equiv 0 \pmod{2}\)，奇数 \(\equiv 1 \pmod{2}\)。</p>
+  <table class="summary-table" style="margin-top:0.5rem;">
+    <tr><th>运算</th><th>结果</th></tr>
+    <tr><td>偶 + 偶</td><td>偶</td></tr>
+    <tr><td>奇 + 奇</td><td>偶</td></tr>
+    <tr><td>奇 + 偶</td><td>奇</td></tr>
+    <tr><td>奇 × 奇</td><td>奇</td></tr>
+    <tr><td>偶 × 任意</td><td>偶</td></tr>
+  </table>
+</div>
+
+<div class="key-point">奇偶分析是竞赛中最常用的"不变量"工具：通过判断某个量的奇偶性在操作过程中是否改变，来证明某些状态不可达。</div>
+
+<!-- 2.5 -->
+<h3 id="s2-5">2.5 完全平方数</h3>
+
+<div class="formula-box">
+  <div class="formula-label">完全平方数的特征</div>
+  <p>正整数 \(n\) 是完全平方数，当且仅当其素因数分解中每个素因子的幂次都是偶数：</p>
+  \[n = p_1^{2\beta_1} p_2^{2\beta_2} \cdots p_k^{2\beta_k}\]
+</div>
+
+<div class="theorem-box">
+  <div class="thm-title">完全平方数的模约束</div>
+  <p>完全平方数 \(n^2\) 对模 3 的余数只能是 0 或 1（不可能是 2）。</p>
+  <p>对模 4 的余数只能是 0 或 1。</p>
+  <p>对模 8 的余数只能是 0、1 或 4。</p>
+  <p>末位数字只能是 0、1、4、5、6、9。</p>
+</div>
+
+<p>这些约束是证明"某个表达式不是完全平方数"的利器：只需找到某个模，使得该表达式的值不在平方剩余集合中即可。</p>
+</section>
+
+<hr class="divider">
+
+<!-- ============ PART 3 ============ -->
+<p class="part-title">下 篇 · 不 定 方 程</p>
+<hr class="divider">
+
+<!-- ============ Chapter 3 ============ -->
+<section class="chapter" id="ch3">
+<h2 class="chapter-title"><span class="ch-num">3</span>不定方程</h2>
+
+<!-- 3.1 -->
+<h3 id="s3-1">3.1 一次不定方程</h3>
+
+<div class="theorem-box">
+  <div class="thm-title">一次不定方程的解的存在性</div>
+  <p>方程 \(ax + by = c\)（\(a, b, c \in \mathbb{Z}\)，\(a, b\) 不全为 0）有整数解，当且仅当</p>
+  \[(a, b) \mid c\]
+  <p>若 \((x_0, y_0)\) 是一组特解，则通解为：</p>
+  \[
+  \begin{cases}
+  x = x_0 + \dfrac{b}{d} \cdot t \\[6pt]
+  y = y_0 - \dfrac{a}{d} \cdot t
+  \end{cases}
+  \qquad (t \in \mathbb{Z},\; d = (a, b))
+  \]
+</div>
+
+<div class="formula-box">
+  <div class="formula-label">求解步骤</div>
+  <ol class="steps">
+    <li>用辗转相除法求 \(d = (a, b)\)。</li>
+    <li>验证 \(d \mid c\)；若不整除则无整数解。</li>
+    <li>回代 Bézout 等式，求出一组特解 \((x_0, y_0)\)。</li>
+    <li>代入通解公式，写出所有整数解。</li>
+  </ol>
+</div>
+
+<!-- 3.2 -->
+<h3 id="s3-2">3.2 不定方程的常用解法</h3>
+
+<div class="method-card">
+  <div class="card-title">不定方程·解题策略工具箱</div>
+  <table class="summary-table">
+    <tr><th>方法</th><th>适用场景</th><th>核心思想</th></tr>
+    <tr><td>因式分解法</td><td>方程可化为 \((\cdots)(\cdots) = n\)</td><td>利用整数因数有限性枚举</td></tr>
+    <tr><td>同余法（模分析）</td><td>证明无解或缩小搜索范围</td><td>取模排除不可能的情况</td></tr>
+    <tr><td>不等式夹逼</td><td>变量取值范围可限定</td><td>用不等式确定有限种可能</td></tr>
+    <tr><td>无穷递降法</td><td>齐次方程、Pell 方程</td><td>若有解则有更小解，递降至矛盾</td></tr>
+    <tr><td>参数化</td><td>勾股方程等可参数化的方程</td><td>用参数表示所有解</td></tr>
+  </table>
+</div>
+
+<div class="collapsible">
+  <div class="collapsible-header" onclick="toggleCollapse(this)">示例：求 \(x^2 - y^2 = 15\) 的所有整数解</div>
+  <div class="collapsible-body">
+    <p>因式分解：\((x+y)(x-y) = 15\)。</p>
+    <p>15 的因数对：\((\pm1, \pm15)\)，\((\pm3, \pm5)\)，\((\pm5, \pm3)\)，\((\pm15, \pm1)\)。</p>
+    <p>令 \(x + y = A\)，\(x - y = B\)，则 \(x = \frac{A+B}{2}\)，\(y = \frac{A-B}{2}\)。要求 \(A, B\) 同奇偶。</p>
+    <p>15 的因数对均为奇数，满足条件。解为 \((\pm 8, \pm 7)\)，\((\pm 4, \pm 1)\) 及其符号组合。</p>
+  </div>
+</div>
+
+<!-- 3.3 -->
+<h3 id="s3-3">3.3 勾股方程</h3>
+
+<div class="formula-box">
+  <div class="formula-label">勾股方程</div>
+  \[x^2 + y^2 = z^2\]
+  <p>满足上述方程的正整数三元组 \((x, y, z)\) 称为<strong>勾股数</strong>（Pythagorean triple）。</p>
+</div>
+
+<div class="theorem-box">
+  <div class="thm-title">本原勾股数的参数化</div>
+  <p>满足 \((x, y, z) = 1\) 的本原勾股数可参数化为：</p>
+  \[
+  \begin{cases}
+  x = m^2 - n^2 \\
+  y = 2mn \\
+  z = m^2 + n^2
+  \end{cases}
+  \quad \text{或交换 } x, y
+  \]
+  <p>其中 \(m \gt n \gt 0\)，\((m, n) = 1\)，且 \(m, n\) 一奇一偶。</p>
+</div>
+
+<div class="formula-box">
+  <div class="formula-label">常见勾股数</div>
+  <table class="summary-table" style="margin-top:0.5rem;">
+    <tr><th>\(x\)</th><th>\(y\)</th><th>\(z\)</th><th>参数 \((m, n)\)</th></tr>
+    <tr><td>3</td><td>4</td><td>5</td><td>\((2, 1)\)</td></tr>
+    <tr><td>5</td><td>12</td><td>13</td><td>\((3, 2)\)</td></tr>
+    <tr><td>8</td><td>15</td><td>17</td><td>\((4, 1)\)</td></tr>
+    <tr><td>7</td><td>24</td><td>25</td><td>\((4, 3)\)</td></tr>
+    <tr><td>20</td><td>21</td><td>29</td><td>\((5, 2)\)</td></tr>
+  </table>
+</div>
+
+<div class="key-point">所有勾股数都是某组本原勾股数的整数倍：若 \((x, y, z)\) 是勾股数，则 \((x, y, z) = d \cdot (x', y', z')\)，其中 \((x', y', z')\) 是本原勾股数。</div>
+</section>
+
+</div>
+
+<div class="footer">
+  整除、同余与不定方程 · 全书3章<br>
+  知识框架与方法论讲义
+</div>
+
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  renderMathInElement(document.body, {
+    delimiters: [
+      {left: "\\(", right: "\\)", display: false},
+      {left: "\\[", right: "\\]", display: true}
+    ],
+    throwOnError: false
+  });
+});
+function toggleNav() {
+  var list = document.getElementById('navList');
+  var btn = document.querySelector('.nav-toggle');
+  list.classList.toggle('show');
+  btn.classList.toggle('open');
+}
+function toggleCollapse(el) {
+  var body = el.nextElementSibling;
+  body.style.display = body.style.display === 'block' ? 'none' : 'block';
+  el.classList.toggle('open');
+}
+</script>
+</body>
+</html>
