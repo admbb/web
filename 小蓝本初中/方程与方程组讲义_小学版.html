@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>方程与方程组 全书18章</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=LXGW+WenKai:wght@400;700&family=Noto+Sans+SC:wght@400;500;700&display=swap');
+
+  :root {
+    --bg: #fdfaf6;
+    --fg: #3a3a3a;
+    --primary: #b85c2f;
+    --primary-light: #fdf0e6;
+    --warm: #d4813b;
+    --warm-light: #fef7ee;
+    --green: #3a8a5c;
+    --green-light: #edf7f0;
+    --blue: #2d6da3;
+    --blue-light: #edf4fb;
+    --purple: #7b5ea7;
+    --purple-light: #f3effa;
+    --red: #c0392b;
+    --red-light: #fdf0ef;
+    --border: #dcc9b0;
+    --card-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; font-size: 16px; }
+
+  body {
+    font-family: 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
+    background: var(--bg); color: var(--fg); line-height: 1.9;
+  }
+
+  .header {
+    background: linear-gradient(135deg, #6b2f10 0%, #b85c2f 40%, #d4813b 100%);
+    color: #fff; padding: 3rem 2rem 2.5rem; text-align: center;
+    position: relative; overflow: hidden;
+  }
+  .header::before {
+    content: ""; position: absolute; top: -30%; left: -10%;
+    width: 120%; height: 160%;
+    background: radial-gradient(ellipse at 30% 50%, rgba(255,255,255,0.08) 0%, transparent 60%);
+  }
+  .header h1 {
+    font-family: 'LXGW WenKai', serif; font-size: 2.4rem;
+    font-weight: 700; letter-spacing: 0.08em; position: relative; margin-bottom: 0.4rem;
+  }
+  .header .subtitle { font-size: 1.05rem; opacity: 0.9; position: relative; }
+
+  .nav-bar {
+    position: sticky; top: 0; z-index: 100;
+    background: #f7f2eb; border-bottom: 1px solid var(--border);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .nav-toggle {
+    display: flex; align-items: center; justify-content: center;
+    padding: 0.65rem; cursor: pointer; font-size: 0.9rem;
+    color: var(--primary); font-weight: 600; user-select: none;
+  }
+  .nav-toggle .arrow { transition: transform 0.2s; display: inline-block; margin-right: 0.4rem; }
+  .nav-toggle.open .arrow { transform: rotate(90deg); }
+  .nav-grid {
+    display: none; padding: 0 1rem 1rem; max-width: 900px; margin: 0 auto;
+  }
+  .nav-grid.show {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.4rem;
+  }
+  .nav-grid a {
+    display: block; padding: 0.45rem 0.7rem; background: #fff;
+    border: 1px solid var(--border); border-radius: 6px;
+    text-decoration: none; color: var(--fg); font-size: 0.82rem; transition: all 0.15s;
+  }
+  .nav-grid a:hover { background: var(--primary-light); border-color: var(--primary); }
+  .nav-grid a .nav-num {
+    display: inline-block; width: 1.4rem; height: 1.4rem; line-height: 1.4rem;
+    text-align: center; background: var(--primary); color: #fff;
+    font-size: 0.7rem; font-weight: 700; border-radius: 50%;
+    margin-right: 0.4rem; vertical-align: middle;
+  }
+
+  .main { max-width: 800px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+
+  .intro-card {
+    background: var(--primary-light); border: 2px solid var(--primary);
+    border-radius: 12px; padding: 1.5rem 1.8rem; margin-bottom: 2.5rem;
+    box-shadow: var(--card-shadow);
+  }
+  .intro-card h2 {
+    font-family: 'LXGW WenKai', serif; font-size: 1.3rem;
+    color: var(--primary); margin-bottom: 0.8rem;
+  }
+  .intro-card p { font-size: 0.95rem; }
+
+  .chapter { margin-bottom: 3rem; scroll-margin-top: 3.5rem; }
+  .ch-header {
+    display: flex; align-items: center; gap: 0.8rem;
+    margin-bottom: 1.2rem; padding-bottom: 0.7rem;
+    border-bottom: 3px solid var(--primary);
+  }
+  .ch-icon {
+    width: 3rem; height: 3rem; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.3rem; flex-shrink: 0; color: #fff; font-weight: 700;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+  }
+  .ch-header h2 {
+    font-family: 'LXGW WenKai', serif; font-size: 1.4rem;
+    color: var(--primary); font-weight: 700;
+  }
+  .ch-header .ch-sub { font-size: 0.82rem; color: #999; font-weight: 400; }
+
+  h3 {
+    font-family: 'LXGW WenKai', serif; font-size: 1.1rem; font-weight: 700;
+    color: var(--warm); margin: 1.5rem 0 0.6rem;
+    padding-left: 0.8rem; border-left: 4px solid var(--warm);
+  }
+  p { margin-bottom: 0.8rem; font-size: 0.95rem; }
+
+  .analogy {
+    background: var(--warm-light); border: 1px solid #f0d4b0;
+    border-radius: 10px; padding: 1rem 1.2rem; margin: 1rem 0; position: relative;
+  }
+  .analogy::before {
+    content: "生活小比方"; position: absolute; top: -0.6rem; left: 1rem;
+    background: var(--warm); color: #fff; font-size: 0.72rem;
+    padding: 0.15rem 0.6rem; border-radius: 10px; font-weight: 600;
+  }
+  .analogy p { margin-top: 0.3rem; font-size: 0.92rem; }
+
+  .formula {
+    background: var(--blue-light); border: 1px solid #c4d9ee;
+    border-radius: 10px; padding: 1rem 1.2rem; margin: 1rem 0;
+    text-align: center; position: relative;
+  }
+  .formula::before {
+    content: "数学公式"; position: absolute; top: -0.6rem; left: 1rem;
+    background: var(--blue); color: #fff; font-size: 0.72rem;
+    padding: 0.15rem 0.6rem; border-radius: 10px; font-weight: 600;
+  }
+  .formula .math {
+    font-family: 'LXGW WenKai', serif; font-size: 1.15rem;
+    color: #1a4a7a; line-height: 2.2; font-style: italic;
+  }
+
+  .example {
+    background: #f9f9f5; border: 1px solid var(--border);
+    border-radius: 10px; padding: 1rem 1.2rem; margin: 1rem 0; position: relative;
+  }
+  .example::before {
+    content: "动手看看"; position: absolute; top: -0.6rem; left: 1rem;
+    background: var(--green); color: #fff; font-size: 0.72rem;
+    padding: 0.15rem 0.6rem; border-radius: 10px; font-weight: 600;
+  }
+  .example .math {
+    font-family: 'LXGW WenKai', serif; font-size: 1.02rem;
+    line-height: 2; color: #2c5a2c;
+  }
+
+  .magic {
+    background: var(--purple-light); border: 1px solid #d5c9e8;
+    border-radius: 10px; padding: 1rem 1.2rem; margin: 1rem 0; position: relative;
+  }
+  .magic::before {
+    content: "数学小魔法"; position: absolute; top: -0.6rem; left: 1rem;
+    background: var(--purple); color: #fff; font-size: 0.72rem;
+    padding: 0.15rem 0.6rem; border-radius: 10px; font-weight: 600;
+  }
+
+  .caution {
+    background: var(--red-light); border: 1px solid #e8c4c4;
+    border-radius: 10px; padding: 0.8rem 1rem; margin: 1rem 0;
+    font-size: 0.9rem; position: relative;
+  }
+  .caution::before {
+    content: "小心别踩坑"; position: absolute; top: -0.6rem; left: 1rem;
+    background: var(--red); color: #fff; font-size: 0.72rem;
+    padding: 0.15rem 0.6rem; border-radius: 10px; font-weight: 600;
+  }
+
+  .steps { list-style: none; padding: 0; counter-reset: step; margin: 0.8rem 0; }
+  .steps li {
+    counter-increment: step; padding: 0.5rem 0 0.5rem 2.8rem;
+    position: relative; font-size: 0.93rem;
+  }
+  .steps li::before {
+    content: counter(step); position: absolute; left: 0; top: 0.55rem;
+    width: 2rem; height: 2rem; line-height: 2rem; text-align: center;
+    background: var(--primary); color: #fff; font-size: 0.85rem;
+    font-weight: 700; border-radius: 50%;
+  }
+  .steps li strong { color: var(--primary); }
+
+  .tool-summary {
+    background: #fff; border: 2px solid var(--primary);
+    border-radius: 12px; padding: 1.2rem 1.5rem; margin: 1.2rem 0;
+    box-shadow: var(--card-shadow);
+  }
+  .tool-summary .ts-title {
+    font-family: 'LXGW WenKai', serif; font-size: 1rem;
+    font-weight: 700; color: var(--primary); margin-bottom: 0.5rem;
+  }
+
+  .info-table {
+    width: 100%; border-collapse: collapse; margin: 1rem 0;
+    font-size: 0.88rem; border-radius: 8px; overflow: hidden;
+  }
+  .info-table th {
+    background: var(--primary); color: #fff; padding: 0.55rem 0.7rem;
+    text-align: left; font-weight: 600;
+  }
+  .info-table td { padding: 0.5rem 0.7rem; border-bottom: 1px solid var(--border); }
+  .info-table tr:nth-child(even) td { background: #faf6f0; }
+
+  .divider {
+    border: none; height: 2px;
+    background: repeating-linear-gradient(90deg, var(--border) 0, var(--border) 6px, transparent 6px, transparent 12px);
+    margin: 2.5rem 0;
+  }
+
+  .footer {
+    text-align: center; padding: 2rem 1rem; font-size: 0.82rem;
+    color: #aaa; border-top: 1px solid var(--border); margin-top: 2rem;
+  }
+
+  @media (max-width: 600px) {
+    .main { padding: 1.2rem 0.8rem 3rem; }
+    .header h1 { font-size: 1.7rem; }
+    .ch-header h2 { font-size: 1.15rem; }
+    .nav-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media print {
+    .nav-bar { display: none; }
+    .chapter { page-break-before: always; }
+  }
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+</head>
+<body>
+
+<div class="header">
+  <h1>方程与方程组</h1>
+  <div class="subtitle">全书18章</div>
+</div>
+
+<div class="nav-bar">
+  <div class="nav-toggle" onclick="toggleNav()">
+    <span class="arrow">&#9654;</span> 点击展开章节目录
+  </div>
+  <div class="nav-grid" id="navGrid">
+    <a href="#ch1"><span class="nav-num">1</span>看 a 与 1</a>
+    <a href="#ch2"><span class="nav-num">2</span>一元一次方程</a>
+    <a href="#ch3"><span class="nav-num">3</span>一次方程应用</a>
+    <a href="#ch4"><span class="nav-num">4</span>一次方程技巧</a>
+    <a href="#ch5"><span class="nav-num">5</span>二元一次方程组</a>
+    <a href="#ch6"><span class="nav-num">6</span>多元一次方程组</a>
+    <a href="#ch7"><span class="nav-num">7</span>配方法</a>
+    <a href="#ch8"><span class="nav-num">8</span>一元二次方程</a>
+    <a href="#ch9"><span class="nav-num">9</span>化为二次方程</a>
+    <a href="#ch10"><span class="nav-num">10</span>根与系数</a>
+    <a href="#ch11"><span class="nav-num">11</span>高次方程</a>
+    <a href="#ch12"><span class="nav-num">12</span>分式方程</a>
+    <a href="#ch13"><span class="nav-num">13</span>无理方程</a>
+    <a href="#ch14"><span class="nav-num">14</span>二次方程组</a>
+    <a href="#ch15"><span class="nav-num">15</span>不定方程整数解</a>
+    <a href="#ch16"><span class="nav-num">16</span>二次方程整数根</a>
+    <a href="#ch17"><span class="nav-num">17</span>二次方程应用</a>
+    <a href="#ch18"><span class="nav-num">18</span>知识地图</a>
+  </div>
+</div>
+
+<div class="main">
+
+<div class="intro-card">
+  <h2>写在前面：什么是"方程"？</h2>
+  <p>方程就像一个<strong>天平</strong>：等号左边和右边必须一样重。</p>
+  <p>比如 <em>x + 3 = 7</em>，就是说"某个神秘数字加上 3，跟 7 一样重"。你的任务就是找出那个神秘数字！</p>
+  <p>这本书有 18 章，从最简单的天平（一次方程）一直讲到复杂的天平组（方程组）。我们一步一步来！</p>
+</div>
+
+<!-- ===== 上篇 ===== -->
+<p style="text-align:center; font-family:'LXGW WenKai',serif; font-size:1.15rem; color:var(--primary); font-weight:700; letter-spacing:0.15em; margin-bottom:0.5rem;">上 篇 · 一 次 方 程</p>
+<hr class="divider">
+
+<!-- Chapter 1 -->
+<section class="chapter" id="ch1">
+<div class="ch-header">
+  <div class="ch-icon" style="background:linear-gradient(135deg,#b85c2f,#d4813b);">1</div>
+  <div><h2>看 a 与 1</h2><div class="ch-sub">参数变了，答案也会变</div></div>
+</div>
+
+<div class="analogy">
+  <p>想象你有个方程 <span style="font-style:italic;">ax = 5</span>。这里的 <em>a</em> 就像一个"开关"：</p>
+  <p>如果 <em>a = 1</em>，那 <em>x = 5</em>，简单！</p>
+  <p>如果 <em>a = 0</em> 呢？<span style="font-style:italic;">0 &times; x = 5</span>？不管 <em>x</em> 是什么，0 乘以任何数都是 0，永远不等于 5——所以<strong>无解</strong>！</p>
+</div>
+
+<h3>三种情况</h3>
+<div class="tool-summary">
+  <div class="ts-title">方程 ax = b 的三种命运</div>
+  <p><strong>a 不是 0：</strong>有唯一答案 <em>x = b/a</em>。比如 2x = 6，x = 3。</p>
+  <p><strong>a 是 0，b 不是 0：</strong>无解。比如 0x = 5，不可能。</p>
+  <p><strong>a 是 0，b 也是 0：</strong>任何数都行！比如 0x = 0，x 可以是任何数。</p>
+</div>
+<p>这就是"含参方程"的核心思想：<strong>参数的值不同，方程的命运就不同</strong>。</p>
+</section>
+
+<hr class="divider">
+
+<!-- Chapter 2 -->
+<section class="chapter" id="ch2">
+<div class="ch-header">
+  <div class="ch-icon" style="background:linear-gradient(135deg,#3a8a5c,#5cb88a);">2</div>
+  <div><h2>一元一次方程</h2><div class="ch-sub">最基础的天平</div></div>
+</div>
+
+<div class="analogy">
+  <p>方程就像天平：左边放一堆东西，右边放另一堆，两边必须一样重。</p>
+  <p>解方程就是要把"神秘数字 <em>x</em>"单独放在天平一边，让另一边只剩已知的数字。</p>
+</div>
+
+<h3>解题五步法</h3>
+<ol class="steps">
+  <li><strong>去分母</strong>——如果有分数，先让所有项都乘上公分母，消掉分数。</li>
+  <li><strong>去括号</strong>——把括号展开（用分配律）。</li>
+  <li><strong>搬家（移项）</strong>——把含 <em>x</em> 的项搬到左边，数字搬到右边。</li>
+  <li><strong>合并</strong>——把同类项加在一起。</li>
+  <li><strong>除过去</strong>——两边除以 <em>x</em> 的系数，让 <em>x</em> 变成"1个 x"。</li>
+</ol>
+
+<div class="example">
+  <p>解 \(3x + 5 = 2x + 9\)</p>
+  <p>把 2x 搬到左边（变号）：\(3x - 2x + 5 = 9\)</p>
+  <p>把 5 搬到右边（变号）：\(x = 9 - 5 = 4\)</p>
+  <p>验证：\(3(4)+5 = 17\)，\(2(4)+9 = 17\) &check;</p>
+</div>
+
+<div class="caution">
+  <p><strong>搬家一定要变号！</strong>从左搬到右（或从右搬到左），加号变减号，减号变加号。这是最常见的错误！</p>
+</div>
+</section>
+
+<hr class="divider">
+
+<!-- Chapter 3 -->
+<section class="chapter" id="ch3">
+<div class="ch-header">
+  <div class="ch-icon" style="background:linear-gradient(135deg,#2d6da3,#5a9fd4);">3</div>
+  <div><h2>一次方程的简单应用</h2><div class="ch-sub">用方程解决生活问题</div></div>
+</div>
+
+<div class="analogy">
+  <p>小明买了 3 本笔记本和 1 支笔，一共花了 22 元。每支笔 4 元，每本笔记本多少元？</p>
+  <p>这就是方程大显身手的时候！设每本笔记本 <em>x</em> 元：3x + 4 = 22，解出 x = 6 元。</p>
+</div>
+
+<h3>列方程的秘诀</h3>
+<div class="tool-summary">
+  <div class="ts-title">四步搞定应用题</div>
+  <ol class="steps">
+    <li><strong>设</strong>——选一个不知道的数，叫它 <em>x</em>。</li>
+    <li><strong>列</strong>——找到题目里"相等"的关系，写成等式。</li>
+    <li><strong>解</strong>——用前面学的五步法解方程。</li>
+    <li><strong>验</strong>——把答案代回题目看看对不对，合不合理。</li>
+  </ol>
+</div>
+
+<table class="info-table">
+  <tr><th>题目类型</th><th>关键等量关系</th></tr>
+  <tr><td>路程问题</td><td>路程 = 速度 &times; 时间</td></tr>
+  <tr><td>买东西</td><td>总价 = 单价 &times; 数量</td></tr>
+  <tr><td>年龄问题</td><td>两个人的年龄差永远不变</td></tr>
+  <tr><td>工程问题</td><td>工作总量 = 效率 &times; 时间</td></tr>
+</table>
+</section>
+
+<hr class="divider">
+
+<!-- Chapter 4 -->
+<section class="chapter" id="ch4">
+<div class="ch-header">
+  <div class="ch-icon" style="background:linear-gradient(135deg,#7b5ea7,#a184cc);">4</div>
+  <div><h2>一次方程技巧</h2><div class="ch-sub">聪明人的快捷方式</div></div>
+</div>
+
+<h3>整体法——别急着拆</h3>
+<div class="analogy">
+  <p>如果你看到 <span style="font-style:italic">3(x+1) &minus; 2(x+1) = 5</span>，别急着展开括号！</p>
+  <p>你会发现两边都有 <span style="font-style:italic">(x+1)</span>，就像"3 个苹果减去 2 个苹果"：</p>
+  <p><span style="font-style:italic">(3&minus;2)(x+1) = 5</span>，所以 <span style="font-style:italic">x+1 = 5</span>，<span style="font-style:italic">x = 4</span>。</p>
+</div>
+
+<h3>绝对值方程</h3>
+<div class="formula">
+  \[
+|x - 3| = 5
+
+    \text{意思是：}"x \text{和} 3 \text{的距离是} 5"
+\]
+</div>
+<p>所以 <em>x</em> 可以是 3+5 = <strong>8</strong>，也可以是 3&minus;5 = <strong>&minus;2</strong>。两个答案！</p>
+
+<div class="magic">
+  <p><strong>检验大法：</strong>解完方程后，把答案代回原来的方程算一遍，看看等号两边是不是一样。这只需要 10 秒钟，但能避免大部分错误！</p>
+</div>
+</section>
+
+<hr class="divider">
+
+<!-- Chapter 5 -->
+<section class="chapter" id="ch5">
+<div class="ch-header">
+  <div class="ch-icon" style="background:linear-gradient(135deg,#c0392b,#e74c3c);">5</div>
+  <div><h2>二元一次方程组</h2><div class="ch-sub">两个天平，两个秘密数字</div></div>
+</div>
+
+<div class="analogy">
+  <p>你有两个天平的线索：</p>
+  <p>线索一：<em>x + y = 10</em>（两个神秘数字加起来是 10）</p>
+  <p>线索二：<em>x &minus; y = 4</em>（一个比另一个大 4）</p>
+  <p>只有两条线索合在一起，才能确定 <em>x</em> 和 <em>y</em> 各是多少。这就是"方程组"。</p>
+</div>
+
+<h3>两种解法</h3>
+<div class="tool-summary">
+  <div class="ts-title">代入法——从一条线索推另一条</div>
+  <p>从线索一得到 \(x = 10 - y\)，代入线索二：</p>
+  <p>\((10-y) - y = 4\)，解出 \(y = 3\)，再算 \(x = 7\)。</p>
+</div>
+<div class="tool-summary">
+  <div class="ts-title">加减法——两个天平叠在一起</div>
+  <p>把两个方程加起来：\((x+y) + (x-y) = 10 + 4\)</p>
+  <p>\(2x = 14\)，所以 \(x = 7\)，再算 \(y = 3\)。</p>
+</div>
+
+<h3>三种结局</h3>
+<table class="info-table">
+  <tr><th>结局</th><th>什么意思</th><th>比方</th></tr>
+  <tr><td>唯一解</td><td>两条线相交于一点</td><td>两条路在十字路口相遇</td></tr>
+  <tr><td>无解</td><td>两条平行线永不相交</td><td>两条路永远平行，走不到一起</td></tr>
+  <tr><td>无穷多解</td><td>两条线完全重合</td><td>两条路其实是同一条路</td></tr>
+</table>
+</section>
+
+<hr class="divider">
+
+<!-- Chapter 6 -->
+<section class="chapter" id="ch6">
+<div class="ch-header">
+  <div class="ch-icon" style="background:linear-gradient(135deg,#16a085,#2ecc71);">6</div>
+  <div><h2>多元一次方程组</h2><div class="ch-sub">三个或更多秘密数字</div></div>
+</div>
+
+<div class="analogy">
+  <p>如果二元方程组像"两个线索找两个嫌疑人"，那三元方程组就是"三个线索找三个嫌疑人"。方法一样——一步一步消去，先变成两个未知数，再变成一个。</p>
+</div>
+
+<h3>消元大法</h3>
+<ol class="steps">
+  <li>挑一个最容易消掉的变量（系数是 1 或 &minus;1 的最好）。</li>
+  <li>用加减法把这个变量从两个方程里消掉，得到少一个变量的新方程组。</li>
+  <li>重复，直到只剩一个变量，解出来。</li>
+  <li>把答案<strong>回代</strong>，一个个求出其他变量。</li>
+</ol>
+
+<div class="magic">
+  <p><strong>对称方程组的捷径：</strong>如果方程组里 <em>x</em> 和 <em>y</em> 地位相同（交换后方程不变），可以令 <em>s = x + y</em>，<em>p = xy</em>，把问题变简单。</p>
+</div>
+</section>
+
+<hr class="divider">
+
+<!-- ===== 中篇 ===== -->
+<p style="text-align:center; font-family:'LXGW WenKai',serif; font-size:1.15rem; color:var(--primary); font-weight:700; letter-spacing:0.15em; margin:2rem 0 0.5rem;">中 篇 · 二 次 方 程</p>
+<hr class="divider">
+
+<!-- Chapter 7 -->
+<section class="chapter" id="ch7">
+<div class="ch-header">
+  <div class="ch-icon" style="background:linear-gradient(135deg,#d35400,#e67e22);">7</div>
+  <div><h2>配方法</h2><div class="ch-sub">把算式变成"完美方块"</div></div>
+</div>
+
+<div class="analogy">
+  <p>想象你有一块不完整的正方形地砖，缺了一个角。你"借"来一小块补齐，就变成了完整的正方形——然后就可以用正方形的面积公式了！</p>
+  <p>配方法就是给算式"补角"，把它变成 <span style="font-style:italic">(x + m)&sup2;</span> 的完美形式。</p>
+</div>
+
+<h3>怎么配？</h3>
+<div class="example">
+  <p>\(x^{2} + 6x + 5 = 0\)</p>
+  <p><strong>第一步：</strong>看一次项系数 6，除以 2 得 <strong>3</strong>，再平方得 <strong>9</strong>。</p>
+  <p><strong>第二步：</strong>加上 9 再减去 9（保持等式不变）：</p>
+  <p>\(x^{2} + 6x + 9 - 9 + 5 = 0\)</p>
+  <p><strong>第三步：</strong>前三项变成完全平方：</p>
+  <p>\((x + 3)^{2} - 4 = 0\)</p>
+  <p><strong>第四步：</strong>移项开方：\((x+3)^{2} = 4\)，\(x+3 = \pm2\)</p>
+  <p>所以 \(x = -1\) 或 \(x = -5\)</p>
+</div>
+
+<div class="tool-summary">
+  <div class="ts-title">配方口诀</div>
+  <p>"<strong>一次项系数除以 2，再平方，加上又减去</strong>"——这三步记住了，配方法就掌握了！</p>
+</div>
+</section>
+
+<hr class="divider">
+
+<!-- Chapter 8 -->
+<section class="chapter" id="ch8">
+<div class="ch-header">
+  <div class="ch-icon" style="background:linear-gradient(135deg,#8e44ad,#c39bd3);">8</div>
+  <div><h2>一元二次方程</h2><div class="ch-sub">有 x&sup2; 的方程</div></div>
+</div>
+
+<div class="analogy">
+  <p>一次方程只有一个答案。但二次方程（有 x&sup2; 的方程）通常有<strong>两个</strong>答案！</p>
+  <p>就像问"什么数平方等于 9？"——答案可以是 3，也可以是 &minus;3。</p>
+</div>
+
+<h3>万能求根公式</h3>
+<div class="formula">
+  \[
+\text{对于} ax^{2} + bx + c = 0
+
+
+    x = (-b \pm \sqrt(b^{2}-4ac)) &frasl; (2a)
+\]
+</div>
+
+<h3>判别式——提前知道答案长什么样</h3>
+<div class="tool-summary">
+  <div class="ts-title">&Delta; = b&sup2; &minus; 4ac</div>
+  <p><strong>&Delta; > 0：</strong>两个不同的答案（两个实数根）</p>
+  <p><strong>&Delta; = 0：</strong>两个一样的答案（一个重根）</p>
+  <p><strong>&Delta; < 0：</strong>没有实数答案（在实数范围内无解）</p>
+</div>
+
+<h3>四种解法对比</h3>
+<table class="info-table">
+  <tr><th>方法</th><th>什么时候用</th></tr>
+  <tr><td>直接开方</td><td>方程已经长成 (x+m)&sup2; = n 的样子</td></tr>
+  <tr><td>配方法</td><td>什么二次方程都行，但计算多</td></tr>
+  <tr><td>公式法</td><td>万能！代入公式就能算</td></tr>
+  <tr><td>因式分解</td><td>左边恰好能拆成两个因式相乘</td></tr>
+</table>
+
+<div class="caution">
+  <p>用因式分解法的前提是<strong>右边必须等于 0</strong>！比如 \((x-2)(x-3) = 0\)，才能说 x=2 或 x=3。如果右边不是 0，就不能这样拆。</p>
+</div>
+</section>
+
+<hr class="divider">
+
+<!-- Chapter 9 -->
+<section class="chapter" id="ch9">
+<div class="ch-header">
+  <div class="ch-icon" style="background:linear-gradient(135deg,#2980b9,#5dade2);">9</div>
+  <div><h2>可化为一元二次方程的方程</h2><div class="ch-sub">披着复杂外衣的二次方程</div></div>
+</div>
+
+<div class="analogy">
+  <p>有些方程看起来吓人（比如有 x&#8308;），但其实是"穿了马甲"的二次方程。只要给它"脱掉马甲"（换元），就变成了你熟悉的二次方程。</p>
+</div>
+
+<h3>换元法</h3>
+<div class="example">
+  <p>\(x&#8308; - 5x^{2} + 6 = 0\)</p>
+  <p>令 \(t = x^{2}\)，方程变成：</p>
+  <p>\(t^{2} - 5t + 6 = 0\) &rarr; \((t-2)(t-3) = 0\)</p>
+  <p>所以 \(t = 2\) 或 \(t = 3\)</p>
+  <p>换回来：\(x^{2} = 2\) 或 \(x^{2} = 3\)</p>
+  <p>\(x = \pm\sqrt2\) 或 \(x = \pm\sqrt3\)，一共四个答案！</p>
+</div>
+
+<div class="caution">
+  <p>换元后解出来的答案，一定要<strong>换回来检查</strong>。有时候换元过程会引入"假答案"（增根），需要排除。</p>
+</div>
+</section>
+
+<hr class="divider">
+
+<!-- Chapter 10 -->
+<section class="chapter" id="ch10">
+<div class="ch-header">
+  <div class="ch-icon" style="background:linear-gradient(135deg,#1abc9c,#48d1a5);">10</div>
+  <div><h2>根与系数的关系</h2><div class="ch-sub">韦达定理——不计算就知道答案的秘密</div></div>
+</div>
+
+<div class="analogy">
+  <p>你不需要解方程，就能知道两个答案加起来是多少、乘起来是多少。这就像不用打开礼物盒，就能知道里面礼物的总重量！</p>
+</div>
+
+<h3>韦达定理</h3>
+<div class="formula">
+  \[
+\text{方程} ax^{2} + bx + c = 0 \text{的两个根} x&#8321; \text{和} x&#8322;\text{：}
+
+
+    x&#8321; + x&#8322; = -b/a &emsp;\text{（两根之和）}
+
+    x&#8321; \times x&#8322; = c/a &emsp;\text{（两根之积）}
+\]
+</div>
+
+<div class="example">
+  <p>方程 \(x^{2} - 7x + 10 = 0\)：</p>
+  <p>两根之和 = \(7\)，两根之积 = \(10\)。</p>
+  <p>不用解方程就知道！当然，你可以验证：\(x = 2\) 和 \(x = 5\)，2+5 = 7，2&times;5 = 10 &check;</p>
+</div>
+
+<h3>韦达定理能干什么？</h3>
+<div class="magic">
+  <p>知道了两根之和与积，你可以算出很多"关于根的表达式"：</p>
+  <p>\(x&#8321;^{2} + x&#8322;^{2} = (x&#8321;+x&#8322;)^{2} - 2x&#8321;x&#8322;     |x&#8321; - x&#8322;| = \sqrt\Delta / |a|\)</p>
+  <p>这些都不用真的解方程！</p>
+</div>
+
+<div class="caution">
+  <p>用韦达定理之前，先确认方程<strong>确实有两个实数根</strong>——也就是 \(\Delta \ge 0\)。如果 \(\Delta < 0\)，根不是实数，韦达定理虽然成立但没什么用。</p>
+</div>
+</section>
+
+<hr class="divider">
+
+<!-- Chapter 11 -->
+<section class="chapter" id="ch11">
+<div class="ch-header">
+  <div class="ch-icon" style="background:linear-gradient(135deg,#34495e,#5d7b94);">11</div>
+  <div><h2>高次方程</h2><div class="ch-sub">三次、四次、五次……怎么办？</div></div>
+</div>
+
+<div class="analogy">
+  <p>高次方程就像一个更复杂的密码锁——可能有3个、4个甚至更多答案。但别怕，核心策略只有一个字：<strong>降</strong>——把高次变成低次。</p>
+</div>
+
+<h3>降次三板斧</h3>
+<div class="tool-summary">
+  <div class="ts-title">方法一：试根 + 除法</div>
+  <p>先试试 <em>x = 1, &minus;1, 2, &minus;2, ...</em>，找到一个根后，用除法把方程"降一级"。</p>
+</div>
+<div class="tool-summary">
+  <div class="ts-title">方法二：换元</div>
+  <p>比如 \(x&#8308; - 5x^{2} + 6 = 0\)，令 \(t = x^{2}\) 就变成二次方程了。</p>
+</div>
+<div class="tool-summary">
+  <div class="ts-title">方法三：因式分解</div>
+  <p>如果能把高次多项式拆成几个低次因式相乘，就大事化小了。</p>
+</div>
+</section>
+
+<hr class="divider">
+
+<!-- Chapter 12 -->
+<section class="chapter" id="ch12">
+<div class="ch-header">
+  <div class="ch-icon" style="background:linear-gradient(135deg,#e07a3a,#f5b041);">12</div>
+  <div><h2>分式方程</h2><div class="ch-sub">x 藏在分母里</div></div>
+</div>
+
+<div class="analogy">
+  <p>分式方程就是 <em>x</em> 躲在分母里的方程，比如 <span style="font-style:italic">1/x + 1/(x+1) = 1</span>。解决思路很简单：把分母"消灭"掉！</p>
+</div>
+
+<h3>怎么消灭分母？</h3>
+<ol class="steps">
+  <li>找到所有分母的"最小公倍数"。</li>
+  <li>等式两边都乘上这个公倍数——分母就全没了。</li>
+  <li>解化简后的普通方程。</li>
+  <li><strong>验根！</strong>把答案代回原方程，检查有没有让某个分母变成 0 的——那种就是"假答案"，要扔掉。</li>
+</ol>
+
+<div class="caution">
+  <p><strong>消灭分母的过程一定会引入"假答案"的可能</strong>，所以验根绝对不能省略！</p>
+</div>
+</section>
+
+<hr class="divider">
+
+<!-- Chapter 13 -->
+<section class="chapter" id="ch13">
+<div class="ch-header">
+  <div class="ch-icon" style="background:linear-gradient(135deg,#27ae60,#52d689);">13</div>
+  <div><h2>无理方程</h2><div class="ch-sub">根号里面有 x</div></div>
+</div>
+
+<div class="analogy">
+  <p>无理方程就是根号里藏着 <em>x</em> 的方程，比如 <span style="font-style:italic">&radic;(x+3) = 5</span>。怎么去掉根号？——<strong>两边平方</strong>！</p>
+</div>
+
+<h3>解题步骤</h3>
+<div class="example">
+  <p>\(\sqrt(2x + 1) = x - 1\)</p>
+  <p>两边平方：\(2x + 1 = (x-1)^{2} = x^{2} - 2x + 1\)</p>
+  <p>整理：\(x^{2} - 4x = 0\)，\(x(x-4) = 0\)</p>
+  <p>所以 \(x = 0\) 或 \(x = 4\)</p>
+  <p><strong>验根：</strong>x = 0 代入原式：&radic;1 = &minus;1？不对！扔掉。</p>
+  <p>x = 4 代入：&radic;9 = 3 &check; 保留。</p>
+  <p>最终答案：\(x = 4\)</p>
+</div>
+
+<div class="caution">
+  <p>平方会把负数变成正数，所以一定会引入"假答案"。<strong>每个答案都必须代回原方程检查！</strong></p>
+</div>
+</section>
+
+<hr class="divider">
+
+<!-- ===== 下篇 ===== -->
+<p style="text-align:center; font-family:'LXGW WenKai',serif; font-size:1.15rem; color:var(--primary); font-weight:700; letter-spacing:0.15em; margin:2rem 0 0.5rem;">下 篇 · 方 程 组 与 专 题</p>
+<hr class="divider">
+
+<!-- Chapter 14 -->
+<section class="chapter" id="ch14">
+<div class="ch-header">
+  <div class="ch-icon" style="background:linear-gradient(135deg,#2c5282,#4a7ab5);">14</div>
+  <div><h2>二次方程组</h2><div class="ch-sub">方程组里出现了 x&sup2;</div></div>
+</div>
+
+<div class="analogy">
+  <p>之前的方程组都是"直线和直线相交"，现在方程组里有了"曲线"，可能交于两个点甚至更多！</p>
+</div>
+
+<h3>一个一次 + 一个二次</h3>
+<p>从一次方程解出一个变量，代入二次方程，就变成了一个一元二次方程。因为二次方程可以有两个根，所以方程组通常有<strong>两组解</strong>。</p>
+
+<h3>对称方程组的妙招</h3>
+<div class="magic">
+  <p>如果方程组关于 <em>x</em> 和 <em>y</em> 对称（交换后不变），就用<strong>韦达定理</strong>：</p>
+  <p>令 \(s = x + y\)，\(p = xy\)，解出 <em>s</em> 和 <em>p</em>。</p>
+  <p>然后 <em>x</em> 和 <em>y</em> 就是方程 \(t^{2} - st + p = 0\) 的两个根！</p>
+</div>
+</section>
+
+<hr class="divider">
+
+<!-- Chapter 15 -->
+<section class="chapter" id="ch15">
+<div class="ch-header">
+  <div class="ch-icon" style="background:linear-gradient(135deg,#d35400,#f39c12);">15</div>
+  <div><h2>一次不定方程的整数解</h2><div class="ch-sub">只找整数答案</div></div>
+</div>
+
+<div class="analogy">
+  <p>你有 100 元，要买 7 元一支的笔和 3 元一块的橡皮，刚好花完。能买几支笔几块橡皮？</p>
+  <p>这就是"不定方程求整数解"——方程 <span style="font-style:italic">7x + 3y = 100</span>，但 <em>x</em> 和 <em>y</em> 必须是正整数。</p>
+</div>
+
+<h3>怎么找整数解？</h3>
+<div class="tool-summary">
+  <div class="ts-title">核心方法</div>
+  <p>把方程变形：\(y = (100 - 7x) / 3\)</p>
+  <p>要求 <em>y</em> 是整数，就要 \(100 - 7x\) 能被 3 整除。</p>
+  <p>逐一检验 <em>x = 1, 2, 3, ...</em>，找出所有让 <em>y</em> 也是正整数的组合。</p>
+</div>
+
+<div class="formula">
+  \[
+ax + by = c \text{有整数解的条件：}
+
+    a \text{和} b \text{的最大公约数必须能整除} c
+\]
+</div>
+</section>
+
+<hr class="divider">
+
+<!-- Chapter 16 -->
+<section class="chapter" id="ch16">
+<div class="ch-header">
+  <div class="ch-icon" style="background:linear-gradient(135deg,#c0392b,#e67e22);">16</div>
+  <div><h2>二次方程的整数根</h2><div class="ch-sub">什么时候答案刚好是整数？</div></div>
+</div>
+
+<div class="analogy">
+  <p>二次方程的答案大多数是小数或无理数。但竞赛经常问："参数取什么值时，答案刚好是整数？"——就像要求飞镖必须正中靶心。</p>
+</div>
+
+<h3>两个必要条件</h3>
+<div class="tool-summary">
+  <div class="ts-title">整数根必须同时满足</div>
+  <p><strong>条件一：</strong>判别式 \(\Delta = b^{2} - 4ac\) 必须是完全平方数（这样根号才能开得出来）。</p>
+  <p><strong>条件二：</strong>\((-b \pm \sqrt\Delta) / (2a)\) 必须是整数（开方后的结果除以 2a 得整数）。</p>
+</div>
+
+<div class="magic">
+  <p><strong>韦达定理法：</strong>如果方程是 \(x^{2} + bx + c = 0\)（首项系数为 1），那整数根必须整除 <em>c</em>。只要列出 <em>c</em> 的所有因数，逐个试就行了！</p>
+</div>
+</section>
+
+<hr class="divider">
+
+<!-- Chapter 17 -->
+<section class="chapter" id="ch17">
+<div class="ch-header">
+  <div class="ch-icon" style="background:linear-gradient(135deg,#2c3e50,#546a7b);">17</div>
+  <div><h2>一元二次方程的应用</h2><div class="ch-sub">二次方程在生活中的用武之地</div></div>
+</div>
+
+<h3>经典应用</h3>
+<table class="info-table">
+  <tr><th>类型</th><th>例子</th></tr>
+  <tr><td>面积问题</td><td>一块长方形草坪，长比宽多 3 米，面积 40 m&sup2;，求长和宽</td></tr>
+  <tr><td>连续增长</td><td>存款 1000 元，年利率 r，两年后变成 1210 元，求 r</td></tr>
+  <tr><td>最值问题</td><td>用 20 米栅栏围长方形，怎么围面积最大？</td></tr>
+  <tr><td>抛物线运动</td><td>向上抛球，什么时候球达到最高点？</td></tr>
+</table>
+
+<div class="caution">
+  <p>二次方程通常有两个根，但在应用题里，有些答案<strong>不合常理</strong>（比如长度是负数、人数是小数），必须排除！</p>
+</div>
+
+<div class="tool-summary">
+  <div class="ts-title">求最大/最小值的秘诀</div>
+  <p>把二次表达式配方成 \(a(x - h)^{2} + k\) 的形式：</p>
+  <p>如果 <em>a > 0</em>（开口朝上），最小值是 <em>k</em>，在 <em>x = h</em> 时取到。</p>
+  <p>如果 <em>a < 0</em>（开口朝下），最大值是 <em>k</em>，在 <em>x = h</em> 时取到。</p>
+</div>
+</section>
+
+<hr class="divider">
+
+<!-- Chapter 18 -->
+<section class="chapter" id="ch18">
+<div class="ch-header">
+  <div class="ch-icon" style="background:linear-gradient(135deg,#e07a3a,#f5b041);">!</div>
+  <div><h2>一元二次方程的知识地图</h2><div class="ch-sub">把整本书串起来</div></div>
+</div>
+
+<p>恭喜你学完了全书！现在让我们把一元二次方程的所有知识画成一张"地图"。</p>
+
+<h3>公式速查表</h3>
+<div class="tool-summary">
+  <div class="ts-title">必背公式</div>
+  <p><strong>求根公式：</strong>\(x = \frac{-b \pm \sqrt{b^{2}-4ac}}{2a}\)</p>
+  <p><strong>判别式：</strong>\(\Delta = b^{2} - 4ac\)</p>
+  <p><strong>韦达定理：</strong>\(x&#8321; + x&#8322; = -b/a\)，\(x&#8321;x&#8322; = c/a\)</p>
+  <p><strong>顶点坐标：</strong>\((-b/2a, -\Delta/4a)\)</p>
+  <p><strong>两根之差：</strong>\(|x&#8321; - x&#8322;| = \sqrt\Delta / |a|\)</p>
+</div>
+
+<h3>全书知识地图</h3>
+<table class="info-table">
+  <tr><th>模块</th><th>核心内容</th><th>章节</th></tr>
+  <tr><td>基础</td><td>方程的概念、含参讨论</td><td>1–4</td></tr>
+  <tr><td>一次方程组</td><td>消元法、解的判别</td><td>5–6</td></tr>
+  <tr><td>解法</td><td>配方、公式、因式分解</td><td>7–8</td></tr>
+  <tr><td>理论</td><td>判别式、韦达定理</td><td>8、10</td></tr>
+  <tr><td>降次</td><td>换元、高次方程</td><td>9、11</td></tr>
+  <tr><td>特殊方程</td><td>分式方程（验根）、无理方程（验根）</td><td>12–13</td></tr>
+  <tr><td>方程组</td><td>二次方程组、对称方程组</td><td>14</td></tr>
+  <tr><td>整数解</td><td>不定方程、整数根判定</td><td>15–16</td></tr>
+  <tr><td>应用</td><td>建模、最值、实际问题</td><td>17</td></tr>
+</table>
+
+<div class="intro-card" style="margin-top:2rem; background:var(--warm-light); border-color:var(--warm);">
+  <h2 style="color:var(--warm);">写在最后</h2>
+  <p>方程的本质就是一个"等量关系"——一个天平。不管方程多复杂，核心思路永远不变：<strong>想办法把未知数单独放到天平的一边</strong>。一次方程用搬家，二次方程用配方或公式，高次方程用降次，分式方程用去分母——方法不同，但思想相通。掌握了这个思想，再复杂的方程也不怕！</p>
+</div>
+</section>
+
+</div><!-- /.main -->
+
+<div class="footer">
+  方程与方程组 · 全书18章
+</div>
+
+<script>
+function toggleNav() {
+  var grid = document.getElementById('navGrid');
+  var btn = document.querySelector('.nav-toggle');
+  grid.classList.toggle('show');
+  btn.classList.toggle('open');
+}
+</script>
+
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  renderMathInElement(document.body, {
+    delimiters: [
+      {left: "\\(", right: "\\)", display: false},
+      {left: "\\[", right: "\\]", display: true}
+    ],
+    throwOnError: false
+  });
+});
+</script>
+</body>
+</html>

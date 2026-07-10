@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>方程与方程组 全书18章</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=LXGW+WenKai:wght@400;700&display=swap');
+
+  :root {
+    --bg: #f8f9fc;
+    --fg: #2c2c2c;
+    --accent: #2c5282;
+    --accent-light: #a3bfdb;
+    --border: #b8c6d9;
+    --card-bg: #f0f4f9;
+    --card-border: #d0d9e6;
+    --highlight: #edf2ff;
+    --section-num: #1a365d;
+    --warm: #9c4221;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; font-size: 16px; }
+
+  body {
+    font-family: 'Noto Serif SC', 'SimSun', 'Songti SC', serif;
+    background: var(--bg);
+    color: var(--fg);
+    line-height: 1.85;
+  }
+
+  .header {
+    background: linear-gradient(135deg, #1a2a4a 0%, #2c5282 50%, #1a2a4a 100%);
+    color: #eef2f9;
+    padding: 3.5rem 2rem 3rem;
+    text-align: center;
+  }
+  .header h1 { font-size: 2.2rem; font-weight: 700; letter-spacing: 0.15em; margin-bottom: 0.5rem; }
+  .header .subtitle { font-size: 1.05rem; opacity: 0.85; letter-spacing: 0.08em; }
+  .header .meta { margin-top: 1.2rem; font-size: 0.88rem; opacity: 0.65; }
+
+  .nav-container {
+    position: sticky; top: 0; z-index: 100;
+    background: var(--card-bg); border-bottom: 1px solid var(--border);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+  .nav-toggle {
+    display: flex; align-items: center; justify-content: center;
+    padding: 0.6rem 1rem; cursor: pointer;
+    font-size: 0.92rem; color: var(--accent); font-weight: 600;
+    letter-spacing: 0.05em; user-select: none;
+  }
+  .nav-toggle::before { content: "▸ "; }
+  .nav-toggle.open::before { content: "▾ "; }
+  .nav-list {
+    display: none; padding: 0 1.5rem 1rem; list-style: none;
+    column-count: 3; column-gap: 1.5rem; max-width: 960px; margin: 0 auto;
+  }
+  .nav-list.show { display: block; }
+  .nav-list li { break-inside: avoid; padding: 0.2rem 0; }
+  .nav-list a { color: var(--fg); text-decoration: none; font-size: 0.85rem; line-height: 1.6; }
+  .nav-list a:hover { color: var(--accent); }
+  .nav-list a .num { color: var(--section-num); font-weight: 600; margin-right: 0.3em; }
+
+  .main { max-width: 820px; margin: 0 auto; padding: 2rem 1.8rem 4rem; }
+
+  .chapter { margin-bottom: 3.5rem; scroll-margin-top: 3.5rem; }
+  .chapter-title {
+    font-size: 1.55rem; font-weight: 700; color: var(--section-num);
+    border-bottom: 2.5px solid var(--accent);
+    padding-bottom: 0.5rem; margin-bottom: 1.6rem; letter-spacing: 0.06em;
+  }
+  .chapter-title .ch-num {
+    display: inline-block; background: var(--accent); color: #fff;
+    font-size: 0.85rem; width: 1.8rem; height: 1.8rem; line-height: 1.8rem;
+    text-align: center; border-radius: 50%; margin-right: 0.5rem;
+    vertical-align: middle; letter-spacing: 0;
+  }
+
+  h3 {
+    font-size: 1.12rem; font-weight: 600; color: var(--accent);
+    margin: 1.8rem 0 0.8rem; padding-left: 0.8rem;
+    border-left: 3px solid var(--accent-light);
+  }
+  h4 { font-size: 1rem; font-weight: 600; color: #3a4a6a; margin: 1.2rem 0 0.5rem; }
+  p { margin-bottom: 0.9rem; text-align: justify; }
+
+  .formula-box {
+    background: var(--highlight); border: 1px solid var(--card-border);
+    border-left: 4px solid var(--accent);
+    padding: 1rem 1.2rem; margin: 1rem 0 1.2rem;
+    border-radius: 0 6px 6px 0;
+    font-family: 'LXGW WenKai', 'KaiTi', 'Kaiti SC', serif;
+    overflow-x: auto;
+  }
+  .formula-box .formula-label {
+    font-size: 0.82rem; color: var(--accent); font-weight: 600;
+    letter-spacing: 0.08em; margin-bottom: 0.4rem;
+  }
+  .formula-box .formula-content { font-size: 1.05rem; line-height: 2; }
+
+  .method-card {
+    background: var(--card-bg); border: 1px solid var(--card-border);
+    border-radius: 6px; padding: 1.1rem 1.3rem; margin: 1.2rem 0;
+  }
+  .method-card .card-title {
+    font-size: 0.95rem; font-weight: 700; color: var(--section-num);
+    margin-bottom: 0.6rem; letter-spacing: 0.04em;
+  }
+
+  .key-point {
+    background: #fef9f0; border: 1px dashed var(--border);
+    padding: 0.8rem 1rem; margin: 0.8rem 0; border-radius: 4px; font-size: 0.93rem;
+  }
+  .key-point::before {
+    content: "要点"; display: inline-block; background: var(--accent);
+    color: #fff; font-size: 0.72rem; padding: 0.1rem 0.5rem;
+    border-radius: 3px; margin-right: 0.5rem; vertical-align: middle; font-weight: 600;
+  }
+
+  .caution {
+    background: #fdf5f5; border: 1px solid #e8c4c4;
+    border-left: 4px solid #c0392b;
+    padding: 0.8rem 1rem; margin: 0.8rem 0; border-radius: 0 4px 4px 0; font-size: 0.93rem;
+  }
+  .caution::before {
+    content: "注意"; display: inline-block; background: #c0392b;
+    color: #fff; font-size: 0.72rem; padding: 0.1rem 0.5rem;
+    border-radius: 3px; margin-right: 0.5rem; vertical-align: middle; font-weight: 600;
+  }
+
+  .steps { list-style: none; padding-left: 0; counter-reset: step; }
+  .steps li { counter-increment: step; padding: 0.4rem 0 0.4rem 2.2rem; position: relative; }
+  .steps li::before {
+    content: counter(step); position: absolute; left: 0; top: 0.45rem;
+    width: 1.6rem; height: 1.6rem; line-height: 1.6rem; text-align: center;
+    background: var(--accent); color: #fff; font-size: 0.78rem;
+    font-weight: 700; border-radius: 50%;
+  }
+
+  .collapsible { margin: 1rem 0; border: 1px solid var(--card-border); border-radius: 6px; overflow: hidden; }
+  .collapsible-header {
+    background: var(--card-bg); padding: 0.7rem 1rem; cursor: pointer;
+    font-weight: 600; font-size: 0.95rem; color: var(--section-num);
+    user-select: none; display: flex; align-items: center;
+  }
+  .collapsible-header::before { content: "▸"; margin-right: 0.5rem; transition: transform 0.2s; font-size: 0.85rem; }
+  .collapsible-header.open::before { transform: rotate(90deg); }
+  .collapsible-body { display: none; padding: 1rem 1.2rem; background: #fff; }
+  .collapsible-body.show { display: block; }
+
+  .math { font-family: 'LXGW WenKai', 'KaiTi', 'Kaiti SC', serif; font-style: italic; }
+
+  .summary-table {
+    width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.92rem;
+  }
+  .summary-table th {
+    background: var(--accent); color: #fff; padding: 0.6rem 0.8rem;
+    text-align: left; font-weight: 600;
+  }
+  .summary-table td { padding: 0.5rem 0.8rem; border-bottom: 1px solid var(--card-border); }
+  .summary-table tr:nth-child(even) td { background: var(--card-bg); }
+
+  .divider { border: none; border-top: 1px dashed var(--border); margin: 2.5rem 0; }
+
+  .footer {
+    text-align: center; padding: 2rem 1rem; font-size: 0.82rem;
+    color: #999; border-top: 1px solid var(--card-border); margin-top: 2rem;
+  }
+
+  @media (max-width: 700px) {
+    .main { padding: 1.2rem 1rem 3rem; }
+    .header h1 { font-size: 1.6rem; }
+    .nav-list { column-count: 2; }
+    .chapter-title { font-size: 1.3rem; }
+  }
+  @media print {
+    .nav-container { display: none; }
+    .chapter { page-break-before: always; }
+    .collapsible-body { display: block !important; }
+  }
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+</head>
+<body>
+
+<div class="header">
+  <h1>方程与方程组</h1>
+  <div class="subtitle">数学奥林匹克初中卷 · 知识框架与方法论讲义</div>
+  <div class="meta">全书十八章系统梳理</div>
+</div>
+
+<div class="nav-container">
+  <div class="nav-toggle" onclick="toggleNav()">章节目录</div>
+  <ul class="nav-list" id="navList">
+    <li><a href="#ch0"><span class="num">0</span>什么是方程</a></li>
+    <li><a href="#ch1"><span class="num">1</span>看 a 与 1</a></li>
+    <li><a href="#ch2"><span class="num">2</span>一元一次方程</a></li>
+    <li><a href="#ch3"><span class="num">3</span>一次方程的简单应用</a></li>
+    <li><a href="#ch4"><span class="num">4</span>一次方程技巧</a></li>
+    <li><a href="#ch5"><span class="num">5</span>二元一次方程组</a></li>
+    <li><a href="#ch6"><span class="num">6</span>多元一次方程组</a></li>
+    <li><a href="#ch7"><span class="num">7</span>配方法</a></li>
+    <li><a href="#ch8"><span class="num">8</span>一元二次方程</a></li>
+    <li><a href="#ch9"><span class="num">9</span>可化为一元二次方程的方程</a></li>
+    <li><a href="#ch10"><span class="num">10</span>根与系数的关系</a></li>
+    <li><a href="#ch11"><span class="num">11</span>高次方程</a></li>
+    <li><a href="#ch12"><span class="num">12</span>分式方程</a></li>
+    <li><a href="#ch13"><span class="num">13</span>无理方程</a></li>
+    <li><a href="#ch14"><span class="num">14</span>二次方程组</a></li>
+    <li><a href="#ch15"><span class="num">15</span>一次不定方程的整数解</a></li>
+    <li><a href="#ch16"><span class="num">16</span>二次方程的整数根</a></li>
+    <li><a href="#ch17"><span class="num">17</span>一元二次方程的应用</a></li>
+    <li><a href="#ch18"><span class="num">18</span>一元二次方程的知识地图</a></li>
+  </ul>
+</div>
+
+<div class="main">
+
+
+<!-- Chapter 0: 导言 -->
+<section class="chapter" id="ch0">
+<h2 class="chapter-title"><span class="ch-num">0</span>什么是方程</h2>
+
+<p>方程是含有未知数的等式。方程的核心思想是：通过建立等量关系，将实际问题或数学问题转化为关于未知数的等式，再运用代数方法求解。</p>
+
+<div class="formula-box">
+  <div class="formula-label">基本概念</div>
+  <p><strong>方程</strong>：含有未知数的等式，如 \(2x + 3 = 7\)。</p>
+  <p><strong>方程的解</strong>：使等式成立的未知数的值。</p>
+  <p><strong>解方程</strong>：求方程的解的过程。</p>
+</div>
+
+<h3>方程的分类</h3>
+<table class="summary-table">
+  <tr><th>分类标准</th><th>类型</th></tr>
+  <tr><td>按未知数个数</td><td>一元方程、二元方程、多元方程</td></tr>
+  <tr><td>按最高次数</td><td>一次方程、二次方程、高次方程</td></tr>
+  <tr><td>按表达形式</td><td>整式方程、分式方程、无理方程</td></tr>
+</table>
+
+<p>本书按"一次方程→二次方程→方程组→特殊方程"的顺序，系统介绍各类方程的解法与技巧。</p>
+</section>
+
+<hr class="divider">
+
+<!-- ===== 上篇：一次方程 ===== -->
+<p style="text-align:center; font-size:1.1rem; color:var(--section-num); font-weight:700; letter-spacing:0.2em; margin-bottom:0.5rem;">上 篇 · 一 次 方 程</p>
+<hr class="divider">
+
+<!-- Chapter 1 -->
+<section class="chapter" id="ch1">
+<h2 class="chapter-title"><span class="ch-num">1</span>看 a 与 1</h2>
+
+<p>本章从最基础的问题出发：方程中系数 \(a\) 与常数 \(1\) 的关系如何影响方程的解。这看似简单，实则是理解含参方程的起点。</p>
+
+<h3>含参方程的分类讨论</h3>
+<div class="formula-box">
+  <div class="formula-label">核心问题</div>
+  <p>讨论方程 \(ax = b\) 的解：</p>
+  \[
+  \begin{cases}
+  a \neq 0 & \Rightarrow x = \dfrac{b}{a} \quad \text{（唯一解）} \\[6pt]
+  a = 0,\; b \neq 0 & \Rightarrow \text{无解} \\[4pt]
+  a = 0,\; b = 0 & \Rightarrow \text{无穷多解}
+  \end{cases}
+  \]
+</div>
+<p>这一分类思想贯穿全书：含参数的方程，必须对参数的不同取值分别讨论解的情况。</p>
+
+<div class="key-point">含参方程的"三分法"（唯一解 / 无解 / 无穷多解）是代数方程理论的基本框架。即使在高次方程中，这一思想仍然适用。</div>
+</section>
+
+<hr class="divider">
+
+<!-- Chapter 2 -->
+<section class="chapter" id="ch2">
+<h2 class="chapter-title"><span class="ch-num">2</span>一元一次方程</h2>
+
+<h3>基本解法</h3>
+<p>一元一次方程 \(ax + b = 0 (a \ne 0)\) 的标准解法流程：</p>
+<ol class="steps">
+  <li><strong>去分母</strong>——等式两边同乘最小公倍数。</li>
+  <li><strong>去括号</strong>——按分配律展开。</li>
+  <li><strong>移项</strong>——含 \(x\) 的项移到一边，常数移到另一边。</li>
+  <li><strong>合并同类项</strong>——化简为 \(ax = b\) 的形式。</li>
+  <li><strong>系数化为 1</strong>——两边同除以 \(a\)。</li>
+</ol>
+
+<h3>含参一次方程</h3>
+<p>当方程的系数含有字母参数时，需要对参数进行分类讨论（见第1章的三分法）。竞赛中的典型问题是确定参数取何值时方程有唯一解、无解或无穷多解。</p>
+
+<div class="caution">移项变号是最容易出错的地方。记住：<strong>移过等号的项必须变号</strong>。</div>
+</section>
+
+<hr class="divider">
+
+<!-- Chapter 3 -->
+<section class="chapter" id="ch3">
+<h2 class="chapter-title"><span class="ch-num">3</span>一次方程的简单应用</h2>
+
+<p>将实际问题转化为方程是数学建模的第一步。关键在于找准<strong>等量关系</strong>。</p>
+
+<h3>常见应用类型</h3>
+<table class="summary-table">
+  <tr><th>类型</th><th>核心等量关系</th></tr>
+  <tr><td>行程问题</td><td>路程 = 速度 × 时间</td></tr>
+  <tr><td>工程问题</td><td>工作量 = 效率 × 时间</td></tr>
+  <tr><td>浓度问题</td><td>溶质 = 溶液 × 浓度</td></tr>
+  <tr><td>利润问题</td><td>利润 = 售价 − 成本</td></tr>
+  <tr><td>年龄问题</td><td>年龄差不变</td></tr>
+</table>
+
+<h3>列方程的思维步骤</h3>
+<ol class="steps">
+  <li><strong>设未知数</strong>——选一个量作为 \(x\)（通常选题目问的量，或选中间量使关系最简单）。</li>
+  <li><strong>列等量关系</strong>——用 \(x\) 表示其他量，找出等式。</li>
+  <li><strong>解方程</strong>——用标准方法求解。</li>
+  <li><strong>检验</strong>——代入原题验证，排除不合理解。</li>
+</ol>
+</section>
+
+<hr class="divider">
+
+<!-- Chapter 4 -->
+<section class="chapter" id="ch4">
+<h2 class="chapter-title"><span class="ch-num">4</span>一次方程技巧</h2>
+
+<p>竞赛中的一次方程问题往往需要特殊技巧，而不仅仅是按部就班的运算。</p>
+
+<h3>常用技巧</h3>
+
+<h4>整体代入</h4>
+<p>不急于展开，而是将某个子表达式视为整体。例如 \(3(x+1) - 2(x+1) = 5\)，直接合并为 \((x+1) = 5\)。</p>
+
+<h4>巧用比例</h4>
+<p>当方程中含有分数或比例关系时，利用比例的性质（如合比、分比定理）可以大幅简化运算。</p>
+
+<h4>绝对值方程</h4>
+<div class="formula-box">
+  <div class="formula-label">方法</div>
+  \[
+|ax + b| = c\text{（}c \ge 0\text{）}
+    \text{等价于} ax + b = c \text{或} ax + b = -c\text{，分别求解即可。}
+\]
+</div>
+
+<div class="method-card">
+  <div class="card-title">一次方程技巧·核心思维</div>
+  <p>①观察结构再动手——不要一上来就去括号；②寻找对称性——左右两边结构相似时可以整体处理；③善用特殊值检验——解出答案后代入原式快速验证。</p>
+</div>
+</section>
+
+<hr class="divider">
+
+<!-- Chapter 5 -->
+<section class="chapter" id="ch5">
+<h2 class="chapter-title"><span class="ch-num">5</span>二元一次方程组</h2>
+
+<h3>两种基本消元法</h3>
+<div class="formula-box">
+  <div class="formula-label">代入消元法</div>
+  \[
+\text{从一个方程解出一个变量（如} x = ...\text{），代入另一个方程，化为一元方程。}
+\]
+</div>
+<div class="formula-box">
+  <div class="formula-label">加减消元法</div>
+  \[
+\text{将两个方程乘以适当系数后相加或相减，消去一个变量。}
+\]
+</div>
+
+<h3>解的判别</h3>
+<p>对于方程组 \(a_{1}x + b_{1}y = c_{1}, a_{2}x + b_{2}y = c_{2}\)：</p>
+<div class="formula-box">
+  \[
+\begin{cases}
+\dfrac{a_1}{a_2} \neq \dfrac{b_1}{b_2} & \text{唯一解} \\[6pt]
+\dfrac{a_1}{a_2} = \dfrac{b_1}{b_2} \neq \dfrac{c_1}{c_2} & \text{无解} \\[6pt]
+\dfrac{a_1}{a_2} = \dfrac{b_1}{b_2} = \dfrac{c_1}{c_2} & \text{无穷多解}
+\end{cases}
+\]
+</div>
+
+<div class="key-point">从几何角度看，二元一次方程组的解对应两条直线的交点情况：相交（唯一解）、平行（无解）、重合（无穷多解）。</div>
+</section>
+
+<hr class="divider">
+
+<!-- Chapter 6 -->
+<section class="chapter" id="ch6">
+<h2 class="chapter-title"><span class="ch-num">6</span>多元一次方程组</h2>
+
+<h3>三元及以上方程组</h3>
+<p>解多元一次方程组的核心策略是<strong>逐步消元</strong>：每次消去一个变量，将多元问题逐步降为一元问题。</p>
+<ol class="steps">
+  <li>选定要消去的变量（通常选系数最简单的）。</li>
+  <li>利用加减法或代入法消去该变量，得到减少一个变量的方程组。</li>
+  <li>重复消元，直到化为一元方程。</li>
+  <li>逐步回代，求出所有变量。</li>
+</ol>
+
+<h3>对称方程组</h3>
+<p>当方程组具有对称结构时，可以利用对称性简化。例如令 \(s = x + y, p = xy\)，将对称关系转化为关于 \(s, p\) 的方程。</p>
+
+<div class="method-card">
+  <div class="card-title">多元消元·选变量的原则</div>
+  <p>①优先消去在多个方程中系数相同或成比例的变量；②优先消去系数为 1 或 −1 的变量（避免分数运算）；③若方程组有轮换/对称结构，先利用结构特征简化。</p>
+</div>
+</section>
+
+<hr class="divider">
+
+<!-- ===== 中篇：二次方程 ===== -->
+<p style="text-align:center; font-size:1.1rem; color:var(--section-num); font-weight:700; letter-spacing:0.2em; margin:2rem 0 0.5rem;">中 篇 · 二 次 方 程</p>
+<hr class="divider">
+
+<!-- Chapter 7 -->
+<section class="chapter" id="ch7">
+<h2 class="chapter-title"><span class="ch-num">7</span>配方法</h2>
+
+<p>配方法是代数学中最基本也最强大的技巧之一，是连接一次方程与二次方程的桥梁。</p>
+
+<h3>基本原理</h3>
+<div class="formula-box">
+  <div class="formula-label">配方公式</div>
+  \[
+ax^{2} + bx + c = a\!\left(x + \frac{b}{2a}\right)^{\!2} + c - \frac{b^{2}}{4a}
+\]
+</div>
+
+<h3>配方法的三大应用</h3>
+<table class="summary-table">
+  <tr><th>应用</th><th>说明</th></tr>
+  <tr><td>解二次方程</td><td>将一般二次方程化为 \((x+m)^{2} = n\) 的形式，直接开方</td></tr>
+  <tr><td>求最值</td><td>配方后直接读出顶点坐标，确定最大/最小值</td></tr>
+  <tr><td>证明不等式</td><td>将表达式化为完全平方之和，利用"平方 ≥ 0"得出结论</td></tr>
+</table>
+
+<div class="key-point">配方时记住口诀："二次项系数提出来，一次项系数除以二再平方，加上再减去。"这是推导求根公式的核心步骤。</div>
+</section>
+
+<hr class="divider">
+
+<!-- Chapter 8 -->
+<section class="chapter" id="ch8">
+<h2 class="chapter-title"><span class="ch-num">8</span>一元二次方程</h2>
+
+<h3>四种解法</h3>
+<table class="summary-table">
+  <tr><th>方法</th><th>适用情形</th><th>关键操作</th></tr>
+  <tr><td>直接开平方法</td><td>形如 \((x+m)^{2} = n\)</td><td>两边开方，注意 ±</td></tr>
+  <tr><td>配方法</td><td>一般二次方程</td><td>化为 \((x+m)^{2} = n\)</td></tr>
+  <tr><td>公式法</td><td>任何二次方程</td><td>代入求根公式</td></tr>
+  <tr><td>因式分解法</td><td>左边可分解时</td><td>用因式分解 + 零因子定理</td></tr>
+</table>
+
+<h3>求根公式与判别式</h3>
+<div class="formula-box">
+  <div class="formula-label">求根公式</div>
+  \[
+ax^{2} + bx + c = 0 \;\;(a \neq 0) \quad\Longrightarrow\quad x = \frac{-b \pm \sqrt{\Delta}}{2a}, \;\; \Delta = b^{2} - 4ac
+\]
+</div>
+
+<div class="formula-box">
+  <div class="formula-label">判别式 \Delta 的作用</div>
+  \[
+\begin{cases}
+\Delta > 0 & \text{两个不等实根} \\
+\Delta = 0 & \text{两个相等实根（重根）} \\
+\Delta < 0 & \text{无实数根（共轭复根）}
+\end{cases}
+\]
+</div>
+
+<div class="caution">使用因式分解法时，等号右边必须是 0。若 \((x-2)(x-3) = 0\)，则 \(x = 2\) 或 \(x = 3\)。但若 \((x-2)(x-3) = 1\)，不能直接令每个因式等于 1！</div>
+</section>
+
+<hr class="divider">
+
+<!-- Chapter 9 -->
+<section class="chapter" id="ch9">
+<h2 class="chapter-title"><span class="ch-num">9</span>可化为一元二次方程的方程</h2>
+
+<p>许多看似复杂的方程，通过适当的变换可以化为标准的一元二次方程来求解。</p>
+
+<h3>常见类型</h3>
+
+<h4>双二次方程</h4>
+<div class="formula-box">
+  \[
+ax^{4} + bx^{2} + c = 0
+    \text{令} t = x^{2} (t \ge 0)\text{，化为} at^{2} + bt + c = 0\text{，解出} t \text{后再求} x\text{。}
+\]
+</div>
+
+<h4>倒数方程</h4>
+<p>形如 \(ax^{2} + bx + a = 0\)（首尾系数相同），两边除以 \(x\)，令 \(t = x + 1/x\) 化为二次方程。</p>
+
+<h4>换元法</h4>
+<p>当方程中出现重复的子表达式时，用新变量替换，降次处理。解出后务必回代并检验。</p>
+
+<div class="caution">换元后求出的根必须回代检验——换元过程可能引入增根（不满足原方程的"假根"），或因变量替换的限制条件（如 \(t \ge 0\)）而舍去部分根。</div>
+</section>
+
+<hr class="divider">
+
+<!-- Chapter 10 -->
+<section class="chapter" id="ch10">
+<h2 class="chapter-title"><span class="ch-num">10</span>根与系数的关系</h2>
+
+<h3>韦达定理（Vieta's Formulas）</h3>
+<div class="formula-box">
+  <div class="formula-label">定理</div>
+  \[
+  x_1 + x_2 = -\frac{b}{a}\,, \qquad x_1 \cdot x_2 = \frac{c}{a}
+  \]
+</div>
+
+<h3>韦达定理的应用</h3>
+<table class="summary-table">
+  <tr><th>问题类型</th><th>转化方法</th></tr>
+  <tr><td>求两根的对称式</td><td>用 \(x_{1}+x_{2}\) 和 \(x_{1}x_{2}\) 表示，如 \(x_{1}^{2}+x_{2}^{2} = (x_{1}+x_{2})^{2}-2x_{1}x_{2}\)</td></tr>
+  <tr><td>构造新方程</td><td>已知根的关系，构造以它们为根的新方程</td></tr>
+  <tr><td>判断根的符号</td><td>由和与积的符号推断根的正负</td></tr>
+  <tr><td>含参方程的条件</td><td>由韦达定理建立参数方程，结合判别式 \(\Delta \ge 0\)</td></tr>
+</table>
+
+<div class="key-point">使用韦达定理的前提是方程<strong>有两个实数根</strong>，即 \(\Delta \ge 0\)。忘记验证判别式是最常见的错误。</div>
+
+<div class="collapsible">
+  <div class="collapsible-header" onclick="toggleCollapse(this)">推广：高次方程的韦达定理</div>
+  <div class="collapsible-body">
+    <p>对于 \(n\) 次方程 \(aₙxⁿ + aₙ₋_{1}xⁿ⁻ + \cdots + a_{0} = 0\)，韦达定理推广为：</p>
+    <p>所有根之和 = \(-aₙ₋_{1}/aₙ\)；所有根两两乘积之和 = \(aₙ₋_{2}/aₙ\)；以此类推，正负号交替。</p>
+  </div>
+</div>
+</section>
+
+<hr class="divider">
+
+<!-- Chapter 11 -->
+<section class="chapter" id="ch11">
+<h2 class="chapter-title"><span class="ch-num">11</span>高次方程</h2>
+
+<p>三次及以上的方程称为高次方程。在竞赛中，解高次方程的核心策略是<strong>降次</strong>。</p>
+
+<h3>降次方法</h3>
+<table class="summary-table">
+  <tr><th>方法</th><th>适用情形</th></tr>
+  <tr><td>因式分解</td><td>能分解出一次因式或二次因式</td></tr>
+  <tr><td>换元法</td><td>高次项与低次项存在对称关系</td></tr>
+  <tr><td>试根+综合除法</td><td>整系数方程，先找有理根</td></tr>
+  <tr><td>配方法</td><td>部分项可凑成完全平方/立方</td></tr>
+</table>
+
+<h3>特殊高次方程</h3>
+<h4>倒数方程（回文方程）</h4>
+<p>系数关于中间对称的方程（如 \(2x^{4} + 3x^{3} - 5x^{2} + 3x + 2 = 0\)），可用 \(t = x + 1/x\) 降次。</p>
+
+<h4>二项方程</h4>
+<p>形如 \(xⁿ = a\) 的方程，利用单位根求解。</p>
+
+<div class="method-card">
+  <div class="card-title">高次方程·求解策略</div>
+  <ol class="steps">
+    <li>观察结构：是否有换元降次的可能？</li>
+    <li>尝试有理根：整系数时用有理根定理试根。</li>
+    <li>因式分解：提取已知因式后降次。</li>
+    <li>对剩余低次方程继续求解。</li>
+  </ol>
+</div>
+</section>
+
+<hr class="divider">
+
+<!-- Chapter 12 -->
+<section class="chapter" id="ch12">
+<h2 class="chapter-title"><span class="ch-num">12</span>分式方程</h2>
+
+<h3>基本解法</h3>
+<p>分式方程是指未知数出现在分母中的方程。标准解法是<strong>去分母</strong>——等式两边同乘各分母的最小公倍式，化为整式方程。</p>
+<ol class="steps">
+  <li>确定各分母的最小公倍式。</li>
+  <li>等式两边同乘该公倍式，消去分母。</li>
+  <li>解化得的整式方程。</li>
+  <li><strong>验根</strong>——将所得根代入原方程的分母，排除使分母为零的增根。</li>
+</ol>
+
+<div class="caution">去分母过程<strong>必然可能引入增根</strong>（使某分母为零的根）。因此验根是不可省略的步骤。</div>
+
+<h3>竞赛技巧</h3>
+<div class="method-card">
+  <div class="card-title">分式方程的巧妙处理</div>
+  <p><strong>拆项法：</strong>将复杂分式拆成部分分式之和，如 \(1/(x(x+1)) = 1/x - 1/(x+1)\)。</p>
+  <p><strong>换元法：</strong>当分式中出现重复结构时，设子表达式为新变量。</p>
+  <p><strong>对称处理：</strong>若方程关于某些分式对称，利用对称性简化。</p>
+</div>
+</section>
+
+<hr class="divider">
+
+<!-- Chapter 13 -->
+<section class="chapter" id="ch13">
+<h2 class="chapter-title"><span class="ch-num">13</span>无理方程</h2>
+
+<p>无理方程是指含有未知数的根式（如 \(\sqrt(x+1)\)）的方程。</p>
+
+<h3>基本解法</h3>
+<p>核心策略是<strong>去根号</strong>：将含根号的项移到等号一侧，两边平方，化为有理方程。</p>
+<ol class="steps">
+  <li>整理方程，使根号项尽量集中在一侧。</li>
+  <li>两边平方，消去一个根号。</li>
+  <li>若仍有根号，重复平方。</li>
+  <li>解化得的有理方程。</li>
+  <li><strong>验根</strong>——代入原方程检验，排除增根。</li>
+</ol>
+
+<div class="caution">平方过程会引入增根（因为 \(a^{2} = b^{2}\) 不能推出 \(a = b\)，也可能 \(a = -b\)）。<strong>所有根都必须代入原方程验证。</strong></div>
+
+<div class="key-point">有时可以通过换元（令根号内的表达式为新变量）来避免反复平方，使运算更简洁。</div>
+</section>
+
+<hr class="divider">
+
+<!-- ===== 下篇：方程组与专题 ===== -->
+<p style="text-align:center; font-size:1.1rem; color:var(--section-num); font-weight:700; letter-spacing:0.2em; margin:2rem 0 0.5rem;">下 篇 · 方 程 组 与 专 题</p>
+<hr class="divider">
+
+<!-- Chapter 14 -->
+<section class="chapter" id="ch14">
+<h2 class="chapter-title"><span class="ch-num">14</span>二次方程组</h2>
+
+<p>二次方程组是指至少含有一个二次方程的方程组。其解法核心是<strong>消元降次</strong>。</p>
+
+<h3>常见类型与解法</h3>
+
+<h4>一个一次 + 一个二次</h4>
+<p>从一次方程解出一个变量，代入二次方程，化为一个一元二次方程。</p>
+
+<h4>两个二次方程</h4>
+<p>通过加减消去二次项（或某个特定的高次项），降为一次方程，再代入求解。</p>
+
+<h4>对称方程组</h4>
+<div class="formula-box">
+  <div class="formula-label">典型方法</div>
+  \[
+\text{当方程组关于} x, y \text{对称时，令} s = x + y, p = xy\text{，}
+    \text{将方程组化为关于} s, p \text{的方程组，解出后再求} x, y\text{。}
+    \text{此时} x, y \text{是方程} t^{2} - st + p = 0 \text{的两个根。}
+\]
+</div>
+
+<div class="key-point">对称方程组中，\((x, y)\) 和 \((y, x)\) 总是成对出现的解。利用韦达定理和 \(s, p\) 换元可以系统求出所有解。</div>
+</section>
+
+<hr class="divider">
+
+<!-- Chapter 15 -->
+<section class="chapter" id="ch15">
+<h2 class="chapter-title"><span class="ch-num">15</span>一次不定方程的整数解</h2>
+
+<p>不定方程是指未知数个数多于方程个数的方程，通常有无穷多组实数解，但<strong>整数解</strong>可能有限。</p>
+
+<h3>二元一次不定方程</h3>
+<div class="formula-box">
+  <div class="formula-label">标准形式</div>
+  \[
+ax + by = c\text{（}a, b, c \text{为整数）}
+    \text{有整数解的充要条件：}gcd(a, b) | c\text{（即} a, b \text{的最大公约数整除} c\text{）。}
+\]
+</div>
+
+<h3>求解方法</h3>
+<ol class="steps">
+  <li>用<strong>辗转相除法</strong>（扩展欧几里得算法）求出一组特解 \((x_{0}, y_{0})\)。</li>
+  <li>通解公式：\(x = x_{0} + (b/d)t, y = y_{0} - (a/d)t\)，其中 \(d = gcd(a,b)\)，\(t\) 为任意整数。</li>
+  <li>若有限制条件（如正整数解），由通解中的不等式确定 \(t\) 的范围。</li>
+</ol>
+
+<div class="method-card">
+  <div class="card-title">竞赛中的常用技巧</div>
+  <p><strong>整除分析法：</strong>将方程变形为 \(x = (c - by)/a\)，要求 \(a | (c - by)\)，由此确定 \(y\) 的条件。</p>
+  <p><strong>模运算法：</strong>对某个数取模，利用同余关系缩小搜索范围。</p>
+</div>
+</section>
+
+<hr class="divider">
+
+<!-- Chapter 16 -->
+<section class="chapter" id="ch16">
+<h2 class="chapter-title"><span class="ch-num">16</span>二次方程的整数根</h2>
+
+<p>确定一元二次方程何时有整数根，以及求出所有整数根，是竞赛中的高频考点。</p>
+
+<h3>整系数方程的整数根</h3>
+<div class="formula-box">
+  <div class="formula-label">必要条件</div>
+  \[
+\text{对于首一方程} x^{2} + bx + c = 0\text{（}b, c \text{为整数）：}
+    \text{整数根} x_{1}, x_{2} \text{必整除常数项} c\text{。}
+    \text{且} \Delta = b^{2} - 4c \text{必须是完全平方数。}
+\]
+</div>
+
+<h3>常用方法</h3>
+<table class="summary-table">
+  <tr><th>方法</th><th>思路</th></tr>
+  <tr><td>判别式法</td><td>令 \(\Delta = k^{2}\)，将问题转化为关于 \(k\) 的不定方程</td></tr>
+  <tr><td>韦达定理法</td><td>利用 \(x_{1}+x_{2} = -b\)，\(x_{1}x_{2} = c\)，枚举 \(c\) 的因数对</td></tr>
+  <tr><td>因式分解法</td><td>将方程左边分解为 \((x-x_{1})(x-x_{2}) = 0\)</td></tr>
+  <tr><td>模运算法</td><td>对特定数取模，排除不可能的情况</td></tr>
+</table>
+
+<div class="key-point">含参二次方程的整数根问题，通常需要同时满足两个条件：① \(\Delta\) 为完全平方数；② \((-b \pm \sqrt\Delta) / (2a)\) 为整数。这两个条件缺一不可。</div>
+</section>
+
+<hr class="divider">
+
+<!-- Chapter 17 -->
+<section class="chapter" id="ch17">
+<h2 class="chapter-title"><span class="ch-num">17</span>一元二次方程的应用</h2>
+
+<p>二次方程的应用题比一次方程更复杂，关键在于建立正确的等量关系并合理设元。</p>
+
+<h3>典型应用场景</h3>
+<table class="summary-table">
+  <tr><th>场景</th><th>建模要点</th></tr>
+  <tr><td>面积问题</td><td>利用面积公式建立二次关系</td></tr>
+  <tr><td>增长率问题</td><td>连续增长：终值 = 初值 × (1+r)ⁿ</td></tr>
+  <tr><td>抛物线运动</td><td>位移 = 初速 × 时间 − ½g × 时间²</td></tr>
+  <tr><td>最优化问题</td><td>利用配方求顶点，确定最大/最小值</td></tr>
+  <tr><td>几何中的二次关系</td><td>勾股定理、相似比等常产生二次方程</td></tr>
+</table>
+
+<div class="caution">应用题的解必须符合实际意义。例如：长度不能为负、人数必须是正整数、增长率需合理等。解完方程后务必检验每个根的实际合理性。</div>
+
+<div class="method-card">
+  <div class="card-title">二次方程应用·建模步骤</div>
+  <ol class="steps">
+    <li>读题，明确已知量和未知量。</li>
+    <li>设未知数（选使关系最简单的量）。</li>
+    <li>用未知数表示其他相关量。</li>
+    <li>根据等量关系列方程。</li>
+    <li>解方程，检验根的合理性。</li>
+  </ol>
+</div>
+</section>
+
+<hr class="divider">
+
+<!-- Chapter 18 -->
+<section class="chapter" id="ch18">
+<h2 class="chapter-title"><span class="ch-num">18</span>一元二次方程的知识地图</h2>
+
+<p>本章将一元二次方程的全部知识体系做系统梳理，建立完整的知识框架。</p>
+
+<h3>知识体系总览</h3>
+<table class="summary-table">
+  <tr><th>模块</th><th>核心内容</th><th>关联章节</th></tr>
+  <tr><td>解法体系</td><td>直接开方、配方、公式法、因式分解法</td><td>7, 8</td></tr>
+  <tr><td>根的性质</td><td>判别式 \Delta 判断根的存在性与个数</td><td>8</td></tr>
+  <tr><td>根与系数</td><td>韦达定理及其逆定理</td><td>10</td></tr>
+  <tr><td>方程构造</td><td>已知根的关系反推方程系数</td><td>10</td></tr>
+  <tr><td>降次技术</td><td>换元法、双二次方程、倒数方程</td><td>9, 11</td></tr>
+  <tr><td>特殊方程</td><td>分式方程（去分母+验根）、无理方程（平方+验根）</td><td>12, 13</td></tr>
+  <tr><td>整数根</td><td>判别式为完全平方 + 韦达定理枚举</td><td>16</td></tr>
+  <tr><td>应用</td><td>建模 → 列方程 → 解方程 → 检验</td><td>17</td></tr>
+</table>
+
+<h3>核心思维链</h3>
+<div class="method-card">
+  <div class="card-title">一元二次方程·问题解决框架</div>
+  <ol class="steps">
+    <li><strong>识别</strong>——确认是二次方程（或可化为二次方程的形式）。</li>
+    <li><strong>化简</strong>——去分母、去根号、换元，化为标准形式 \(ax^{2} + bx + c = 0\)。</li>
+    <li><strong>判别</strong>——计算 \(\Delta = b^{2} - 4ac\)，判断根的情况。</li>
+    <li><strong>求解</strong>——选择最便捷的方法（因式分解优先，否则用公式）。</li>
+    <li><strong>验证</strong>——代入原方程检验，排除增根或不合理解。</li>
+    <li><strong>利用</strong>——根据题意进一步利用根的信息（韦达定理、构造新方程等）。</li>
+  </ol>
+</div>
+
+<div class="collapsible">
+  <div class="collapsible-header" onclick="toggleCollapse(this)">一元二次方程公式速查</div>
+  <div class="collapsible-body">
+    <p><strong>求根公式：</strong>\(x = (-b \pm \sqrt(b^{2}-4ac)) / (2a)\)</p>
+    <p><strong>韦达定理：</strong>\(x_{1} + x_{2} = -b/a\)，\(x_{1}x_{2} = c/a\)</p>
+    <p><strong>判别式：</strong>\(\Delta = b^{2} - 4ac\)</p>
+    <p><strong>顶点坐标：</strong>\((-b/2a, -\Delta/4a)\)</p>
+    <p><strong>对称轴：</strong>\(x = -b/2a\)</p>
+    <p><strong>常用恒等式：</strong></p>
+    <p>\(x_{1}^{2} + x_{2}^{2} = (x_{1}+x_{2})^{2} - 2x_{1}x_{2}\)</p>
+    <p>\(|x_{1} - x_{2}| = \sqrt\Delta / |a|\)</p>
+    <p>\(x_{1}^{3} + x_{2}^{3} = (x_{1}+x_{2})^{3} - 3x_{1}x_{2}(x_{1}+x_{2})\)</p>
+  </div>
+</div>
+</section>
+
+</div><!-- /.main -->
+
+<div class="footer">
+  方程与方程组 · 知识框架与方法论讲义<br>
+  全书十八章系统梳理
+</div>
+
+<script>
+function toggleNav() {
+  var list = document.getElementById('navList');
+  var btn = document.querySelector('.nav-toggle');
+  list.classList.toggle('show');
+  btn.classList.toggle('open');
+}
+function toggleCollapse(el) {
+  var body = el.nextElementSibling;
+  body.classList.toggle('show');
+  el.classList.toggle('open');
+}
+</script>
+
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  renderMathInElement(document.body, {
+    delimiters: [
+      {left: "\\(", right: "\\)", display: false},
+      {left: "\\[", right: "\\]", display: true}
+    ],
+    throwOnError: false
+  });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>因式分解技巧 全书13章</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=LXGW+WenKai:wght@400;700&display=swap');
+  :root {
+    --bg: #faf8f5; --fg: #2c2c2c; --accent: #8b4513; --accent-light: #d4a574;
+    --border: #c9b99a; --card-bg: #f5f0ea; --card-border: #ddd0bc;
+    --highlight: #fff8e7; --section-num: #6b3a0a;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; font-size: 16px; }
+  body { font-family: 'Noto Serif SC', 'SimSun', serif; background: var(--bg); color: var(--fg); line-height: 1.85; }
+  .header { background: linear-gradient(135deg, #3a1c0a 0%, #5c2e0e 50%, #3a1c0a 100%); color: #f5efe6; padding: 3.5rem 2rem 3rem; text-align: center; }
+  .header h1 { font-size: 2.2rem; font-weight: 700; letter-spacing: 0.15em; margin-bottom: 0.6rem; }
+  .header .subtitle { font-size: 1.05rem; opacity: 0.85; letter-spacing: 0.08em; }
+  .header .meta { margin-top: 1.2rem; font-size: 0.88rem; opacity: 0.65; }
+  .nav-container { position: sticky; top: 0; z-index: 100; background: var(--card-bg); border-bottom: 1px solid var(--border); box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+  .nav-toggle { display: flex; align-items: center; justify-content: center; padding: 0.6rem 1rem; cursor: pointer; font-size: 0.92rem; color: var(--accent); font-weight: 600; user-select: none; }
+  .nav-toggle::before { content: "▸ "; }
+  .nav-toggle.open::before { content: "▾ "; }
+  .nav-list { display: none; padding: 0 1.5rem 1rem; list-style: none; column-count: 3; column-gap: 1.5rem; max-width: 960px; margin: 0 auto; }
+  .nav-list.show { display: block; }
+  .nav-list li { break-inside: avoid; padding: 0.2rem 0; }
+  .nav-list a { color: var(--fg); text-decoration: none; font-size: 0.85rem; }
+  .nav-list a:hover { color: var(--accent); }
+  .nav-list a .num { color: var(--section-num); font-weight: 600; margin-right: 0.3em; }
+  .main { max-width: 820px; margin: 0 auto; padding: 2rem 1.8rem 4rem; }
+  .chapter { margin-bottom: 3.5rem; scroll-margin-top: 3.5rem; }
+  .chapter-title { font-size: 1.55rem; font-weight: 700; color: var(--section-num); border-bottom: 2.5px solid var(--accent); padding-bottom: 0.5rem; margin-bottom: 1.6rem; }
+  .chapter-title .ch-num { display: inline-block; background: var(--accent); color: #fff; font-size: 0.85rem; width: 1.8rem; height: 1.8rem; line-height: 1.8rem; text-align: center; border-radius: 50%; margin-right: 0.5rem; }
+  h3 { font-size: 1.12rem; font-weight: 600; color: var(--accent); margin: 1.8rem 0 0.8rem; padding-left: 0.8rem; border-left: 3px solid var(--accent-light); }
+  p { margin-bottom: 0.9rem; text-align: justify; }
+  .formula-box { background: var(--highlight); border: 1px solid var(--card-border); border-left: 4px solid var(--accent); padding: 1rem 1.2rem; margin: 1rem 0 1.2rem; border-radius: 0 6px 6px 0; overflow-x: auto; }
+  .formula-box .formula-label { font-size: 0.82rem; color: var(--accent); font-weight: 600; letter-spacing: 0.08em; margin-bottom: 0.4rem; }
+  .method-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 6px; padding: 1.1rem 1.3rem; margin: 1.2rem 0; }
+  .method-card .card-title { font-size: 0.95rem; font-weight: 700; color: var(--section-num); margin-bottom: 0.6rem; }
+  .key-point { background: #fef9f0; border: 1px dashed var(--border); padding: 0.8rem 1rem; margin: 0.8rem 0; border-radius: 4px; font-size: 0.93rem; }
+  .key-point::before { content: "要点"; display: inline-block; background: var(--accent); color: #fff; font-size: 0.72rem; padding: 0.1rem 0.5rem; border-radius: 3px; margin-right: 0.5rem; font-weight: 600; }
+  .caution { background: #fdf5f5; border: 1px solid #e8c4c4; border-left: 4px solid #c0392b; padding: 0.8rem 1rem; margin: 0.8rem 0; border-radius: 0 4px 4px 0; font-size: 0.93rem; }
+  .caution::before { content: "注意"; display: inline-block; background: #c0392b; color: #fff; font-size: 0.72rem; padding: 0.1rem 0.5rem; border-radius: 3px; margin-right: 0.5rem; font-weight: 600; }
+  .steps { list-style: none; padding-left: 0; counter-reset: step; }
+  .steps li { counter-increment: step; padding: 0.4rem 0 0.4rem 2.2rem; position: relative; }
+  .steps li::before { content: counter(step); position: absolute; left: 0; top: 0.45rem; width: 1.6rem; height: 1.6rem; line-height: 1.6rem; text-align: center; background: var(--accent); color: #fff; font-size: 0.78rem; font-weight: 700; border-radius: 50%; }
+  .collapsible { margin: 1rem 0; border: 1px solid var(--card-border); border-radius: 6px; overflow: hidden; }
+  .collapsible-header { background: var(--card-bg); padding: 0.7rem 1rem; cursor: pointer; font-weight: 600; font-size: 0.95rem; color: var(--section-num); user-select: none; display: flex; align-items: center; }
+  .collapsible-header::before { content: "▸"; margin-right: 0.5rem; transition: transform 0.2s; }
+  .collapsible-header.open::before { transform: rotate(90deg); }
+  .collapsible-body { display: none; padding: 1rem 1.2rem; background: #fff; }
+  .collapsible-body.show { display: block; }
+  .summary-table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.92rem; }
+  .summary-table th { background: var(--accent); color: #fff; padding: 0.6rem 0.8rem; text-align: left; font-weight: 600; }
+  .summary-table td { padding: 0.5rem 0.8rem; border-bottom: 1px solid var(--card-border); }
+  .summary-table tr:nth-child(even) td { background: var(--card-bg); }
+  .divider { border: none; border-top: 1px dashed var(--border); margin: 2.5rem 0; }
+  .footer { text-align: center; padding: 2rem 1rem; font-size: 0.82rem; color: #999; border-top: 1px solid var(--card-border); margin-top: 2rem; }
+  @media (max-width: 700px) { .main { padding: 1.2rem 1rem 3rem; } .header h1 { font-size: 1.6rem; } .nav-list { column-count: 2; } }
+  @media print { .nav-container { display: none; } .chapter { page-break-before: always; } .collapsible-body { display: block !important; } }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>因式分解技巧</h1>
+  <div class="subtitle">全书13章</div>
+  <div class="meta">知识框架与方法论讲义</div>
+</div>
+
+<div class="nav-container">
+  <div class="nav-toggle" onclick="toggleNav()">章节目录</div>
+  <ul class="nav-list" id="navList">
+    <li><a href="#ch0"><span class="num">0</span>什么是因式分解</a></li>
+    <li><a href="#ch1"><span class="num">1</span>提公因式</a></li>
+    <li><a href="#ch2"><span class="num">2</span>应用公式</a></li>
+    <li><a href="#ch3"><span class="num">3</span>分组分解</a></li>
+    <li><a href="#ch4"><span class="num">4</span>拆项与添项</a></li>
+    <li><a href="#ch5"><span class="num">5</span>十字相乘</a></li>
+    <li><a href="#ch6"><span class="num">6</span>二元二次式的分解</a></li>
+    <li><a href="#ch7"><span class="num">7</span>综合运用</a></li>
+    <li><a href="#ch8"><span class="num">8</span>多项式的一次因式</a></li>
+    <li><a href="#ch9"><span class="num">9</span>待定系数法</a></li>
+    <li><a href="#ch10"><span class="num">10</span>轮换式与对称式</a></li>
+    <li><a href="#ch11"><span class="num">11</span>实数集与复数集内的分解</a></li>
+    <li><a href="#ch12"><span class="num">12</span>既约多项式</a></li>
+    <li><a href="#ch13"><span class="num">13</span>综合与应用</a></li>
+  </ul>
+</div>
+
+<div class="main">
+
+<!-- Chapter 0 -->
+<section class="chapter" id="ch0">
+<h2 class="chapter-title"><span class="ch-num">0</span>什么是因式分解</h2>
+<p>因式分解是将一个多项式表示为若干个<strong>不可再分解</strong>的多项式之积的过程。它是整式乘法的逆运算。</p>
+<div class="formula-box">
+  <div class="formula-label">定义</div>
+  \[f(x) = g(x) \cdot h(x)\]
+  <p>其中 \(g(x)\)、\(h(x)\) 均为次数低于 \(f(x)\) 的多项式，则称 \(f(x)\) 是<strong>可约的</strong>。</p>
+</div>
+<div class="key-point">因式分解与整式乘法互为逆运算。检验分解是否正确，可将各因式展开，验证是否还原为原式。</div>
+<table class="summary-table">
+  <tr><th>层次</th><th>方法</th><th>适用场景</th></tr>
+  <tr><td>基础层</td><td>提公因式、应用公式</td><td>有明显公因式或符合公式特征</td></tr>
+  <tr><td>技巧层</td><td>分组分解、拆项添项、十字相乘</td><td>需观察结构、灵活变形</td></tr>
+  <tr><td>进阶层</td><td>换元法、待定系数法、余数定理</td><td>高次多项式、含参多项式</td></tr>
+  <tr><td>高阶层</td><td>轮换对称式、复数域分解、既约判别</td><td>竞赛专题、理论问题</td></tr>
+</table>
+</section>
+
+<hr class="divider">
+
+<!-- Chapter 1 -->
+<section class="chapter" id="ch1">
+<h2 class="chapter-title"><span class="ch-num">1</span>提公因式</h2>
+<p>提公因式法是因式分解的第一步。核心思想：找出各项的公共因子，提取到括号外面。</p>
+<div class="formula-box">
+  <div class="formula-label">原则</div>
+  \[ma + mb + mc = m(a + b + c)\]
+</div>
+<div class="caution">最常见的错误是"未提净"——公因式只提了一部分。例如 \(4x^2 + 8x\) 的公因式是 \(4x\)，提完得 \(4x(x + 2)\)。</div>
+<div class="key-point">当公因式是一个多项式时，应将其视为整体来提取。如 \(a(x+y) + b(x+y) = (x+y)(a+b)\)。</div>
+<div class="caution">当某项恰好等于公因式时，提出后应留下 1。如 \(3x^2 + 6x + 3 = 3(x^2 + 2x + 1)\)，末项留下 1。</div>
+<div class="method-card">
+  <div class="card-title">提公因式法·操作流程</div>
+  <ol class="steps">
+    <li>确定公因式：系数取最大公约数，字母取最低次幂。</li>
+    <li>用原式除以公因式，得到括号内的商式。</li>
+    <li>检查括号内是否仍有公因式，展开验证还原。</li>
+  </ol>
+</div>
+</section>
+
+<hr class="divider">
+
+<!-- Chapter 2 -->
+<section class="chapter" id="ch2">
+<h2 class="chapter-title"><span class="ch-num">2</span>应用公式</h2>
+<p>乘法公式的逆用是因式分解的核心武器。</p>
+<div class="formula-box">
+  <div class="formula-label">平方差</div>
+  \[a^2 - b^2 = (a+b)(a-b)\]
+</div>
+<div class="formula-box">
+  <div class="formula-label">立方和与立方差</div>
+  \[a^3 + b^3 = (a+b)(a^2 - ab + b^2)\]
+  \[a^3 - b^3 = (a-b)(a^2 + ab + b^2)\]
+</div>
+<div class="formula-box">
+  <div class="formula-label">完全平方</div>
+  \[a^2 \pm 2ab + b^2 = (a \pm b)^2\]
+</div>
+<div class="formula-box">
+  <div class="formula-label">完全立方</div>
+  \[a^3 + 3a^2b + 3ab^2 + b^3 = (a+b)^3\]
+</div>
+<div class="formula-box">
+  <div class="formula-label">常用恒等式</div>
+  \[a^2 + b^2 = (a+b)^2 - 2ab = (a-b)^2 + 2ab\]
+  \[(a+b)^2 + (a-b)^2 = 2(a^2 + b^2)\]
+</div>
+<div class="formula-box">
+  <div class="formula-label">Sophie Germain 恒等式</div>
+  \[a^4 + 4b^4 = (a^2 + 2b^2 + 2ab)(a^2 + 2b^2 - 2ab)\]
+</div>
+<div class="method-card">
+  <div class="card-title">公式法·识别清单</div>
+  <table class="summary-table">
+    <tr><th>式子特征</th><th>联想公式</th></tr>
+    <tr><td>两项之差，各项为平方</td><td>平方差</td></tr>
+    <tr><td>两项之和/差，各项为立方</td><td>立方和/差</td></tr>
+    <tr><td>三项式，两项平方+中间项为积的2倍</td><td>完全平方</td></tr>
+    <tr><td>四次方 + 4×四次方</td><td>Sophie Germain</td></tr>
+  </table>
+</div>
+</section>
+
+<hr class="divider">
+
+<!-- Chapter 3 -->
+<section class="chapter" id="ch3">
+<h2 class="chapter-title"><span class="ch-num">3</span>分组分解</h2>
+<p>当多项式项数较多且无法直接提公因式或套公式时，将各项适当分组。</p>
+<div class="formula-box">
+  <div class="formula-label">典型模式</div>
+  \[ax + ay + bx + by = a(x+y) + b(x+y) = (a+b)(x+y)\]
+  \[x^3 + x^2y + xy^2 + y^3 = x^2(x+y) + y^2(x+y) = (x^2+y^2)(x+y)\]
+</div>
+<div class="method-card">
+  <div class="card-title">分组策略</div>
+  <ol class="steps">
+    <li><strong>合理分组</strong>——通常每组两项或三项。</li>
+    <li><strong>组内分解</strong>——在每组内提公因式或套公式。</li>
+    <li><strong>组间合并</strong>——各组结果是否有新公因式。</li>
+  </ol>
+</div>
+<div class="collapsible">
+  <div class="collapsible-header" onclick="toggleCollapse(this)">"加零"技巧</div>
+  <div class="collapsible-body">
+    <p>添加一对相反项，创造分组条件：</p>
+    \[x^4 + x^2 + 1 = x^4 + 2x^2 + 1 - x^2 = (x^2+1)^2 - x^2 = (x^2+x+1)(x^2-x+1)\]
+  </div>
+</div>
+</section>
+
+<hr class="divider">
+
+<!-- Chapter 4 -->
+<section class="chapter" id="ch4">
+<h2 class="chapter-title"><span class="ch-num">4</span>拆项与添项</h2>
+<p>通过将某一项拆成两项，或添加一对相反项（加零），创造分解条件。</p>
+<div class="formula-box">
+  <div class="formula-label">拆开中项</div>
+  \[\text{对 } ax^2 + bx + c,\text{ 寻找 } p, q \text{ 使 } p + q = b,\; p \cdot q = ac\]
+  \[ax^2 + bx + c = ax^2 + px + qx + c\]
+</div>
+<div class="formula-box">
+  <div class="formula-label">无中生有（加零法）</div>
+  \[x^4 + 4 = x^4 + 4x^2 + 4 - 4x^2 = (x^2+2)^2 - (2x)^2 = (x^2+2x+2)(x^2-2x+2)\]
+</div>
+<div class="method-card">
+  <div class="card-title">配方法</div>
+  <ol class="steps">
+    <li>选定要配方的部分。</li>
+    <li>添加和减去适当的量，使之成为完全平方。</li>
+    <li>利用 \(A^2 - B^2 = (A+B)(A-B)\) 完成分解。</li>
+  </ol>
+</div>
+</section>
+
+<hr class="divider">
+
+<!-- Chapter 5 -->
+<section class="chapter" id="ch5">
+<h2 class="chapter-title"><span class="ch-num">5</span>十字相乘</h2>
+<p>十字相乘法是分解二次三项式的高效方法。</p>
+<div class="formula-box">
+  <div class="formula-label">首一二次三项式</div>
+  \[x^2 + px + q = (x + m)(x + n),\quad m + n = p,\; m \cdot n = q\]
+</div>
+<div class="formula-box">
+  <div class="formula-label">一般二次三项式</div>
+  \[ax^2 + bx + c = (a_1x + c_1)(a_2x + c_2)\]
+  <p>其中 \(a_1 a_2 = a\)，\(c_1 c_2 = c\)，\(a_1 c_2 + a_2 c_1 = b\)。</p>
+</div>
+<div class="formula-box">
+  <div class="formula-label">快捷判别</div>
+  \[\text{若 } f(1) = 0 \text{（各项系数之和为0），则 } (x-1) \text{ 是因式}\]
+  \[\text{若 } f(-1) = 0 \text{（奇偶次项系数和相等），则 } (x+1) \text{ 是因式}\]
+</div>
+</section>
+
+<hr class="divider">
+
+<!-- Chapter 6 -->
+<section class="chapter" id="ch6">
+<h2 class="chapter-title"><span class="ch-num">6</span>二元二次式的分解</h2>
+<p>一般形式 \(ax^2 + bxy + cy^2 + dx + ey + f\)，目标分解为两个一次因式之积。</p>
+<div class="formula-box">
+  <div class="formula-label">目标形式</div>
+  \[ax^2 + bxy + cy^2 + dx + ey + f = (a_1x + c_1y + f_1)(a_2x + c_2y + f_2)\]
+</div>
+<div class="formula-box">
+  <div class="formula-label">判别条件</div>
+  \[\Delta(y) = (by+d)^2 - 4a(cy^2+ey+f)\]
+  <p>若 \(\Delta(y)\) 为完全平方式，则原式可分解。</p>
+</div>
+<div class="method-card">
+  <div class="card-title">分解流程</div>
+  <ol class="steps">
+    <li>提取二次项 \(ax^2 + bxy + cy^2\)，十字相乘分解。</li>
+    <li>设 \((a_1x + c_1y + f_1)(a_2x + c_2y + f_2)\)，待定系数确定 \(f_1, f_2\)。</li>
+    <li>若无法找到合适的 \(f_1, f_2\)，则不可分解。</li>
+  </ol>
+</div>
+</section>
+
+<hr class="divider">
+
+<!-- Chapter 7 -->
+<section class="chapter" id="ch7">
+<h2 class="chapter-title"><span class="ch-num">7</span>综合运用</h2>
+<h3>换元法</h3>
+<div class="formula-box">
+  \[(x^2+x+1)(x^2+x+2) - 12\]
+  <p>令 \(t = x^2+x\)，原式 \(= (t+1)(t+2) - 12 = t^2+3t-10 = (t+5)(t-2)\)。</p>
+  <p>回代：\((x^2+x+5)(x^2+x-2)\)，再分解 \(x^2+x-2 = (x+2)(x-1)\)。</p>
+</div>
+<h3>选主元</h3>
+<p>多字母多项式，选一个字母为主元，其余视为常数。原则：选次数最低或系数最简单的字母。</p>
+<h3>先展开再分解</h3>
+<div class="formula-box">
+  \[(x+1)(x+2)(x+3)(x+4) + 1\]
+  <p>配对：\((x^2+5x+4)(x^2+5x+6)+1\)，令 \(t = x^2+5x+5\)，得 \(t^2 = (x^2+5x+5)^2\)。</p>
+</div>
+</section>
+
+<hr class="divider">
+
+<!-- Chapter 8 -->
+<section class="chapter" id="ch8">
+<h2 class="chapter-title"><span class="ch-num">8</span>多项式的一次因式</h2>
+<div class="formula-box">
+  <div class="formula-label">因式定理</div>
+  \[\text{若 } f(a) = 0\text{，则 } (x-a) \text{ 是 } f(x) \text{ 的因式}\]
+</div>
+<div class="formula-box">
+  <div class="formula-label">有理根定理</div>
+  \[\text{若 } \frac{p}{q} \text{ 是整系数多项式的根，则 } p \mid a_0,\; q \mid a_n\]
+</div>
+<div class="method-card">
+  <div class="card-title">求解流程</div>
+  <ol class="steps">
+    <li>用有理根定理列出候选根。</li>
+    <li>逐一代入 \(f(x)\)，找出使 \(f(r) = 0\) 的根 \(r\)。</li>
+    <li>用综合除法将 \(f(x)\) 除以 \((x-r)\)，降次。</li>
+    <li>对商式重复上述过程。</li>
+  </ol>
+</div>
+</section>
+
+<hr class="divider">
+
+<!-- Chapter 9 -->
+<section class="chapter" id="ch9">
+<h2 class="chapter-title"><span class="ch-num">9</span>待定系数法</h2>
+<p>先假设分解形式，通过比较系数确定未知参数。</p>
+<div class="formula-box">
+  \[x^4 + ax^3 + bx^2 + cx + d = (x^2 + px + q)(x^2 + rx + s)\]
+  <p>展开右边，逐项比较系数，解关于 \(p, q, r, s\) 的方程组。</p>
+</div>
+<div class="caution">待定系数法的方程组通常是非线性的。技巧：利用对称性减少变量，从最高次项和最低次项入手。</div>
+</section>
+
+<hr class="divider">
+
+<!-- Chapter 10 -->
+<section class="chapter" id="ch10">
+<h2 class="chapter-title"><span class="ch-num">10</span>轮换式与对称式</h2>
+<div class="formula-box">
+  <div class="formula-label">定义</div>
+  <p><strong>对称式</strong>：交换任意两个变量，多项式不变。</p>
+  <p><strong>轮换式</strong>：按 \(x \to y \to z \to x\) 轮换，多项式不变。</p>
+</div>
+<div class="formula-box">
+  <div class="formula-label">经典公式</div>
+  \[a^3 + b^3 + c^3 - 3abc = (a+b+c)(a^2+b^2+c^2-ab-bc-ca)\]
+  \[= (a+b+c) \cdot \tfrac{1}{2}\bigl[(a-b)^2 + (b-c)^2 + (c-a)^2\bigr]\]
+</div>
+<div class="method-card">
+  <div class="card-title">分解步骤</div>
+  <ol class="steps">
+    <li>用因式定理令某变量取特殊值，找出一次因式。</li>
+    <li>由对称性/轮换性，写出所有同族因式。</li>
+    <li>比较次数，确定待定常数。</li>
+  </ol>
+</div>
+</section>
+
+<hr class="divider">
+
+<!-- Chapter 11 -->
+<section class="chapter" id="ch11">
+<h2 class="chapter-title"><span class="ch-num">11</span>实数集与复数集内的分解</h2>
+<div class="formula-box">
+  <div class="formula-label">代数基本定理</div>
+  <p>\(n\) 次多项式在复数域上恰好有 \(n\) 个根（计入重数），可完全分解为一次因式之积。</p>
+</div>
+<div class="formula-box">
+  <div class="formula-label">单位根</div>
+  \[\omega_k = e^{2\pi i k/n} = \cos\frac{2\pi k}{n} + i\sin\frac{2\pi k}{n}, \quad k = 0, 1, \ldots, n{-}1\]
+  \[x^n - 1 = \prod_{k=0}^{n-1}(x - \omega_k) = \prod_{d \mid n} \Phi_d(x)\]
+</div>
+<div class="formula-box">
+  <div class="formula-label">共轭配对</div>
+  \[(x - \alpha)(x - \bar{\alpha}) = x^2 - 2\text{Re}(\alpha)x + |\alpha|^2\]
+</div>
+<table class="summary-table">
+  <tr><th>数域</th><th>不可约因式</th></tr>
+  <tr><td>\(\mathbb{Q}\)</td><td>一次因式、某些高次因式</td></tr>
+  <tr><td>\(\mathbb{R}\)</td><td>一次因式、判别式 \(< 0\) 的二次因式</td></tr>
+  <tr><td>\(\mathbb{C}\)</td><td>只有一次因式</td></tr>
+</table>
+</section>
+
+<hr class="divider">
+
+<!-- Chapter 12 -->
+<section class="chapter" id="ch12">
+<h2 class="chapter-title"><span class="ch-num">12</span>既约多项式</h2>
+<div class="formula-box">
+  <div class="formula-label">艾森斯坦判别法</div>
+  <p>对整系数多项式 \(f(x) = a_n x^n + \cdots + a_0\)，若存在质数 \(p\) 使得：</p>
+  \[\begin{cases}
+  p \nmid a_n \\
+  p \mid a_i \quad (i = 0, 1, \ldots, n{-}1) \\
+  p^2 \nmid a_0
+  \end{cases}\]
+  <p>则 \(f(x)\) 在 \(\mathbb{Q}\) 上不可约。</p>
+</div>
+<div class="formula-box">
+  <div class="formula-label">模 2 约化</div>
+  <p>将各系数模 2 约化为 0 或 1。若在 \(\mathbb{Z}_2[x]\) 中不可约，则在 \(\mathbb{Q}\) 上也不可约。</p>
+</div>
+<div class="formula-box">
+  <div class="formula-label">分圆多项式</div>
+  \[\Phi_n(x) = \prod_{\omega}(x - \omega), \quad \deg \Phi_n = \varphi(n)\]
+  <p>\(\Phi_n(x)\) 是整系数不可约多项式，且 \(x^n - 1 = \prod_{d \mid n} \Phi_d(x)\)。</p>
+</div>
+<div class="formula-box">
+  <div class="formula-label">常见分圆多项式</div>
+  \[\Phi_1(x) = x-1, \quad \Phi_2(x) = x+1, \quad \Phi_3(x) = x^2+x+1\]
+  \[\Phi_4(x) = x^2+1, \quad \Phi_6(x) = x^2-x+1\]
+  \[\Phi_p(x) = x^{p-1} + x^{p-2} + \cdots + x + 1 \quad (p \text{ 为质数})\]
+</div>
+<div class="collapsible">
+  <div class="collapsible-header" onclick="toggleCollapse(this)">艾森斯坦判别法证明思路</div>
+  <div class="collapsible-body">
+    <p>假设 \(f(x) = g(x) \cdot h(x)\)，反证法：</p>
+    <ol class="steps">
+      <li>由 \(p \nmid a_n\)，\(p\) 不整除 \(g, h\) 的首项系数。</li>
+      <li>模 \(p\) 考虑：\(f(x) \equiv a_n x^n \pmod{p}\)。</li>
+      <li>因此 \(g(x) \equiv cx^r,\; h(x) \equiv dx^s \pmod{p}\)。</li>
+      <li>\(g, h\) 的常数项被 \(p\) 整除，故 \(a_0 = g(0)h(0)\) 被 \(p^2\) 整除，与 \(p^2 \nmid a_0\) 矛盾。</li>
+    </ol>
+  </div>
+</div>
+<div class="method-card">
+  <div class="card-title">既约性判别·工具箱</div>
+  <table class="summary-table">
+    <tr><th>方法</th><th>结论</th></tr>
+    <tr><td>艾森斯坦判别法</td><td>在 \(\mathbb{Q}\) 上不可约</td></tr>
+    <tr><td>模 \(p\) 约化</td><td>在 \(\mathbb{Q}\) 上不可约</td></tr>
+    <tr><td>变量替换 \(x \to x + a\)</td><td>重新尝试艾氏判别</td></tr>
+    <tr><td>分圆多项式</td><td>各 \(\Phi_d(x)\) 在 \(\mathbb{Q}\) 上不可约</td></tr>
+  </table>
+</div>
+</section>
+
+<hr class="divider">
+
+<section class="chapter" id="ch13">
+<h2 class="chapter-title"><span class="ch-num">13</span>综合与应用</h2>
+
+<p>本章是全书的收束，将前十二章的方法融会贯通，构建完整的因式分解方法论体系。</p>
+
+<h3>方法论总览</h3>
+<table class="summary-table">
+  <tr><th>方法层级</th><th>章节</th><th>核心思想</th></tr>
+  <tr><td rowspan="3">基础方法</td><td>0–1</td><td>识别公因式</td></tr>
+  <tr><td>2</td><td>公式逆用</td></tr>
+  <tr><td>3</td><td>分组分解</td></tr>
+  <tr><td rowspan="3">进阶技巧</td><td>4</td><td>拆项添项</td></tr>
+  <tr><td>5</td><td>十字相乘</td></tr>
+  <tr><td>6</td><td>二元二次式</td></tr>
+  <tr><td rowspan="2">综合策略</td><td>7</td><td>换元与展开</td></tr>
+  <tr><td>9</td><td>待定系数法</td></tr>
+  <tr><td rowspan="3">理论工具</td><td>8</td><td>因式定理</td></tr>
+  <tr><td>10</td><td>对称与轮换</td></tr>
+  <tr><td>11</td><td>多域分解</td></tr>
+  <tr><td>既约理论</td><td>12</td><td>不可约判别</td></tr>
+</table>
+<div class="method-card">
+  <div class="card-title">因式分解·通用思维流程</div>
+  <ol class="steps">
+    <li><strong>提</strong>——检查是否有公因式可提。</li>
+    <li><strong>套</strong>——观察是否符合公式结构。</li>
+    <li><strong>分</strong>——尝试分组分解。</li>
+    <li><strong>变</strong>——拆项、添项、换元、配方。</li>
+    <li><strong>试</strong>——用因式定理试根。</li>
+    <li><strong>验</strong>——展开检验，确保各因式已既约。</li>
+  </ol>
+</div>
+
+<h3>综合示例</h3>
+<div class="formula-box">
+  <div class="formula-label">示例</div>
+  <p>分解 \(x^4 + 4\)。</p>
+  <p><strong>分析</strong>：此式无公因式，不符合标准公式，但可拆项添项构造平方差。</p>
+  \[
+  x^4 + 4 = x^4 + 4x^2 + 4 - 4x^2 = (x^2 + 2)^2 - (2x)^2 = (x^2 + 2x + 2)(x^2 - 2x + 2)
+  \]
+</div>
+
+<div class="formula-box">
+  <div class="formula-label">示例</div>
+  <p>分解 \(x^5 + x + 1\)。</p>
+  <p><strong>分析</strong>：观察发现 \(x^2 + x + 1\) 可能是因式（单位根 \(\omega\) 满足 \(\omega^3 = 1\)）。</p>
+  \[
+  x^5 + x + 1 = x^5 - x^2 + x^2 + x + 1 = x^2(x^3 - 1) + (x^2 + x + 1) = (x^2 + x + 1)(x^3 - x^2 + 1)
+  \]
+</div>
+
+<div class="key-point">因式分解的最高境界，不在于掌握某一种方法，而在于面对一个陌生的多项式时，能够灵活选择、组合多种策略。这需要大量的练习与深刻的数学直觉。</div>
+</section>
+
+</div>
+
+<div class="footer">
+  因式分解技巧 · 全书13章<br>
+  知识框架与方法论讲义
+</div>
+
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  renderMathInElement(document.body, {
+    delimiters: [
+      {left: "\\(", right: "\\)", display: false},
+      {left: "\\[", right: "\\]", display: true}
+    ],
+    throwOnError: false
+  });
+});
+function toggleNav() {
+  var list = document.getElementById('navList');
+  var btn = document.querySelector('.nav-toggle');
+  list.classList.toggle('show');
+  btn.classList.toggle('open');
+}
+function toggleCollapse(el) {
+  var body = el.nextElementSibling;
+  body.classList.toggle('show');
+  el.classList.toggle('open');
+}
+</script>
+</body>
+</html>

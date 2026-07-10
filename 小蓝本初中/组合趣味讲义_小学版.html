@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>组合趣味 全书5章</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=LXGW+WenKai:wght@400;700&display=swap');
+
+  :root {
+    --bg: #faf7ff;
+    --fg: #333;
+    --primary: #7b2ff2;
+    --primary-light: #d4bcf9;
+    --warm: #e07a3a;
+    --warm-light: #fef0e4;
+    --card-bg: #f3edff;
+    --card-border: #d4c4f0;
+    --green: #2d9c5e;
+    --green-light: #e4f7ec;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; font-size: 16px; }
+
+  body {
+    font-family: 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
+    background: var(--bg);
+    color: var(--fg);
+    line-height: 1.85;
+  }
+
+  .header {
+    background: linear-gradient(135deg, #5b1cc7 0%, #7b2ff2 50%, #9b5ff5 100%);
+    color: #fff; padding: 3rem 2rem 2.5rem; text-align: center;
+  }
+  .header h1 { font-size: 2rem; font-weight: 700; letter-spacing: 0.08em; }
+  .header .subtitle { font-size: 1rem; opacity: 0.9; margin-top: 0.5rem; }
+  .header .meta { font-size: 0.85rem; opacity: 0.6; margin-top: 1rem; }
+
+  .nav-bar {
+    position: sticky; top: 0; z-index: 100;
+    background: var(--card-bg); border-bottom: 1px solid var(--card-border);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  }
+  .nav-toggle {
+    display: flex; align-items: center; justify-content: center;
+    padding: 0.55rem 1rem; cursor: pointer;
+    font-size: 0.9rem; color: var(--primary); font-weight: 600;
+    user-select: none;
+  }
+  .nav-toggle .arrow { transition: transform 0.2s; display: inline-block; margin-right: 0.4rem; }
+  .nav-toggle.open .arrow { transform: rotate(90deg); }
+  .nav-grid {
+    display: none; padding: 0.5rem 1rem 1rem;
+    grid-template-columns: repeat(3, 1fr); gap: 0.5rem;
+    max-width: 780px; margin: 0 auto;
+  }
+  .nav-grid.show { display: grid; }
+  .nav-grid a {
+    display: flex; align-items: center; gap: 0.4rem;
+    padding: 0.45rem 0.7rem; text-decoration: none;
+    color: var(--fg); font-size: 0.85rem;
+    border: 1px solid var(--card-border); border-radius: 8px;
+    background: #fff; transition: all 0.2s;
+  }
+  .nav-grid a:hover { background: var(--primary-light); border-color: var(--primary); }
+  .nav-grid a .nav-num {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 1.4rem; height: 1.4rem; border-radius: 50%;
+    background: var(--primary); color: #fff; font-size: 0.75rem; font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .main { max-width: 780px; margin: 0 auto; padding: 1.5rem 1.2rem 3rem; }
+
+  .divider { border: none; border-top: 2px dashed var(--primary-light); margin: 2.5rem 0; }
+
+  .chapter { margin-bottom: 1.5rem; }
+
+  .ch-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.2rem; }
+  .ch-icon {
+    width: 3rem; height: 3rem; border-radius: 12px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 1.3rem; font-weight: 700;
+    background: linear-gradient(135deg, var(--primary), #9b5ff5);
+  }
+  .ch-header h2 { font-size: 1.35rem; font-weight: 700; color: var(--primary); margin: 0; }
+  .ch-sub { font-size: 0.85rem; color: #888; margin-top: 0.15rem; }
+
+  h3 {
+    font-size: 1.05rem; font-weight: 700; color: var(--primary);
+    margin: 1.5rem 0 0.7rem; padding-left: 0.6rem;
+    border-left: 3px solid var(--primary);
+  }
+
+  p { margin-bottom: 0.85rem; }
+
+  .intro-card {
+    background: var(--warm-light); border: 1px solid #f0d5b5;
+    border-radius: 12px; padding: 1.2rem 1.5rem; margin: 1.2rem 0;
+  }
+  .intro-card h2 { color: var(--warm); font-size: 1rem; margin-bottom: 0.5rem; }
+
+  .think-box {
+    background: var(--green-light); border: 1px solid #b5e0c8;
+    border-radius: 12px; padding: 1.2rem 1.5rem; margin: 1.2rem 0;
+  }
+  .think-box h3 { color: var(--green); border: none; padding: 0; margin: 0 0 0.5rem; }
+
+  .formula-card {
+    background: var(--card-bg); border: 1px solid var(--card-border);
+    border-radius: 10px; padding: 1rem 1.3rem; margin: 1rem 0;
+    overflow-x: auto;
+  }
+  .formula-title {
+    font-size: 0.82rem; font-weight: 700; color: var(--primary);
+    margin-bottom: 0.5rem; letter-spacing: 0.05em;
+  }
+
+  .tip-box {
+    background: #fff8e1; border-left: 4px solid #ffb300;
+    padding: 0.8rem 1.2rem; margin: 1rem 0;
+    border-radius: 0 8px 8px 0; font-size: 0.93rem;
+  }
+
+  .info-table { width: 100%; border-collapse: collapse; margin: 0.8rem 0; font-size: 0.9rem; }
+  .info-table th {
+    background: var(--primary); color: #fff; padding: 0.5rem 0.7rem;
+    text-align: left; font-weight: 600;
+  }
+  .info-table td { padding: 0.45rem 0.7rem; border-bottom: 1px solid var(--card-border); }
+  .info-table tr:nth-child(even) td { background: var(--card-bg); }
+
+  .example-box {
+    background: #fff; border: 2px dashed var(--primary-light);
+    border-radius: 12px; padding: 1rem 1.3rem; margin: 1.2rem 0;
+  }
+  .example-box .ex-title {
+    font-size: 0.95rem; font-weight: 700; color: var(--warm);
+    margin-bottom: 0.5rem;
+  }
+
+  .collapsible { margin: 1rem 0; }
+  .coll-header {
+    background: var(--card-bg); border: 1px solid var(--card-border);
+    padding: 0.55rem 1rem; border-radius: 8px; cursor: pointer;
+    font-size: 0.88rem; font-weight: 600; color: var(--primary);
+    user-select: none;
+  }
+  .coll-header::after { content: " ▸"; float: right; }
+  .coll-header.open::after { content: " ▾"; }
+  .coll-body {
+    display: none; padding: 0.8rem 1rem; border: 1px solid var(--card-border);
+    border-top: none; border-radius: 0 0 8px 8px; background: #fff;
+  }
+
+  .footer {
+    text-align: center; padding: 2rem 1rem; font-size: 0.8rem;
+    color: #999; border-top: 1px solid var(--card-border); margin-top: 2rem;
+  }
+
+  @media print {
+    .nav-bar { display: none; }
+    .chapter { page-break-before: always; }
+    .coll-body { display: block !important; }
+  }
+  @media (max-width: 600px) {
+    .nav-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+</head>
+<body>
+
+<div class="header">
+  <h1>组合趣味</h1>
+  <div class="subtitle">小学生也能看懂的组合数学</div>
+  <div class="meta">全书五章 · 生活化讲解</div>
+</div>
+
+<div class="nav-bar">
+  <div class="nav-toggle" onclick="toggleNav()">
+    <span class="arrow">&#9654;</span> 章节目录
+  </div>
+  <div class="nav-grid" id="navGrid">
+    <a href="#ch0"><span class="nav-num">0</span>什么是组合</a>
+    <a href="#ch1"><span class="nav-num">1</span>计数问题</a>
+    <a href="#ch2"><span class="nav-num">2</span>抽屉原理</a>
+    <a href="#ch3"><span class="nav-num">3</span>染色问题</a>
+    <a href="#ch4"><span class="nav-num">4</span>操作与游戏</a>
+    <a href="#ch5"><span class="nav-num">5</span>组合最值</a>
+  </div>
+</div>
+
+<div class="main">
+
+<!-- Chapter 0 -->
+<section class="chapter" id="ch0">
+<div class="ch-header">
+  <div class="ch-icon" style="background: linear-gradient(135deg, #e07a3a, #f5b041);">0</div>
+  <div>
+    <h2>写在前面：什么是"组合数学"</h2>
+    <div class="ch-sub">不用公式也能玩转的数学</div>
+  </div>
+</div>
+
+<div class="intro-card">
+  <h2>想象一个场景</h2>
+  <p>妈妈让你从 5 个朋友中选 2 个来参加生日派对，有多少种选法？这就是组合数学要解决的问题！</p>
+  <p>组合数学研究的是"离散的"东西——比如人数、格子、颜色、步骤——怎么数、怎么排、怎么分、怎么选。它不需要复杂的公式，靠的是<strong>聪明的想法</strong>和<strong>清晰的逻辑</strong>。</p>
+</div>
+
+<p>这本书会带你看 5 类有趣的组合问题：数一数有多少种（计数）、"一定有"某个东西存在（抽屉原理）、给东西涂颜色（染色）、玩游戏找必胜策略（操作与游戏）、找出"最多"或"最少"是多少（组合最值）。</p>
+</section>
+
+<hr class="divider">
+
+<!-- Chapter 1 -->
+<section class="chapter" id="ch1">
+<div class="ch-header">
+  <div class="ch-icon">1</div>
+  <div>
+    <h2>计数问题</h2>
+    <div class="ch-sub">数一数：到底有多少种？</div>
+  </div>
+</div>
+
+<div class="intro-card">
+  <h2>生活小比方</h2>
+  <p>想象你要从家走到学校。你可以坐公交（有 3 条线路）或者骑车（有 2 条路线）。一共有多少种走法？</p>
+  <p>答：3 + 2 = 5 种。这就是<strong>加法原理</strong>——把选择分成几类，类别之间不重叠，把各类数加起来就行。</p>
+</div>
+
+<h3>两条黄金法则</h3>
+
+<div class="formula-card">
+  <div class="formula-title">法则一：加法原理（分类）</div>
+  <p>做一件事有 \(n\) 类方法，第 \(i\) 类有 \(m_i\) 种，总方法数 = \(m_1 + m_2 + \cdots + m_n\)。</p>
+  <p>关键：各类方法之间<strong>不重叠</strong>。</p>
+</div>
+
+<div class="formula-card">
+  <div class="formula-title">法则二：乘法原理（分步）</div>
+  <p>做一件事要 \(n\) 步，第 \(i\) 步有 \(m_i\) 种选择，总方法数 = \(m_1 \times m_2 \times \cdots \times m_n\)。</p>
+  <p>关键：每一步的选择<strong>互相独立</strong>。</p>
+</div>
+
+<div class="example-box">
+  <div class="ex-title">动手看看：搭配衣服</div>
+  <p>衣柜里有 3 件上衣、4 条裤子、2 双鞋。选一件上衣 + 一条裤子 + 一双鞋，有多少种搭配？</p>
+  <p>答：\(3 \times 4 \times 2 = 24\) 种。三步独立选择，用乘法！</p>
+</div>
+
+<h3>阶乘：一串数连乘</h3>
+
+<div class="formula-card">
+  <div class="formula-title">什么是阶乘？</div>
+  <p><strong>阶乘</strong>就是从 1 一直乘到某个数，用感叹号 "!" 表示：</p>
+  \[
+  n! = n \times (n-1) \times (n-2) \times \cdots \times 2 \times 1
+  \]
+  <p>举几个例子：</p>
+  <p>\(3! = 3 \times 2 \times 1 = 6\) &emsp; \(5! = 5 \times 4 \times 3 \times 2 \times 1 = 120\)</p>
+  <p>特别规定：\(0! = 1\)（"什么都不乘"也算 1 种方式）。</p>
+</div>
+
+<div class="tip-box">
+  <strong>为什么阶乘重要？</strong>因为它恰好等于 \(n\) 个不同东西排成一排的方法数！比如 3 个人排队有 \(3! = 6\) 种排法。阶乘增长非常快：\(10! = 3{,}628{,}800\)，已经超过三百万了！
+</div>
+
+<h3>排列和组合</h3>
+
+<div class="think-box">
+  <h3>想一想：排队 vs 选人</h3>
+  <p><strong>排队</strong>（排列）：从 5 人中选 3 人排成一排，顺序重要。ABC 和 BAC 是不同排列。</p>
+  <p><strong>选人</strong>（组合）：从 5 人中选 3 人组队，顺序不重要。选 A、B、C 只算一种。</p>
+</div>
+
+<div class="formula-card">
+  <div class="formula-title">排列数怎么来的？</div>
+  <p>从 \(n\) 个不同元素中选 \(m\) 个排成一排：</p>
+  <p>第 1 个位置：有 \(n\) 种选择；第 2 个位置：剩 \(n-1\) 种；……第 \(m\) 个位置：剩 \(n-m+1\) 种。</p>
+  <p>用乘法原理一连：</p>
+  \[
+  \mathrm{A}_n^m = n \times (n-1) \times \cdots \times (n-m+1) = \frac{n!}{(n-m)!}
+  \]
+</div>
+
+<div class="formula-card">
+  <div class="formula-title">组合数怎么来的？</div>
+  <p>从 \(n\) 个不同元素中选 \(m\) 个组成一组（不分先后）：</p>
+  <p>先用排列的方法选出 \(m\) 个并排好（\(\mathrm{A}_n^m\) 种），但同一组 \(m\) 个元素有 \(m!\) 种排法都算同一种组合，所以要除以 \(m!\)：</p>
+  \[
+  \mathrm{C}_n^m = \binom{n}{m} = \frac{\mathrm{A}_n^m}{m!} = \frac{n!}{m!(n-m)!}
+  \]
+</div>
+
+<div class="tip-box">
+  <strong>记住</strong>：排列关注"顺序"，组合不关注"顺序"。它们的关系很简单：排列数 = 组合数 \(\times m!\)（先选再排）。
+</div>
+
+<h3>数不清楚怎么办？试试"反过来数"</h3>
+
+<div class="tip-box">
+  <strong>补集法</strong>：想知道"至少有一个"的情况有多少种？用"总数"减去"一个都没有"的情况。正着数难就反着数！
+</div>
+
+<div class="collapsible">
+  <div class="coll-header" onclick="toggleCollapse(this)">更多计数技巧</div>
+  <div class="coll-body">
+    <p><strong>隔板法</strong>：把 \(n\) 个一样的苹果分给 \(k\) 个小朋友，每人至少一个，有多少种分法？</p>
+    <p>想象 \(n\) 个苹果排成一排，中间有 \(n-1\) 个缝隙。在其中 \(k-1\) 个缝隙处放隔板，就把苹果分成了 \(k\) 份。</p>
+    <p>答案：\(\binom{n-1}{k-1}\) 种。</p>
+    <p><strong>一一对应</strong>：如果要数的东西很难直接数，可以把它变成另一个容易数的东西——只要两者能一一对应就行。就像数一个房间有多少人，可以数椅子——前提是每人坐一把椅子。</p>
+  </div>
+</div>
+</section>
+
+<hr class="divider">
+
+<!-- Chapter 2 -->
+<section class="chapter" id="ch2">
+<div class="ch-header">
+  <div class="ch-icon" style="background: linear-gradient(135deg, #e07a3a, #f5b041);">2</div>
+  <div>
+    <h2>抽屉原理</h2>
+    <div class="ch-sub">东西多了，总得挤一挤</div>
+  </div>
+</div>
+
+<div class="intro-card">
+  <h2>生活小比方</h2>
+  <p>你有 13 只袜子，抽屉只有 12 个月份的标签。不管你怎么放，总有一个月份标签下面至少有 2 只袜子。</p>
+  <p>听起来像废话？但这个"废话"能证明很多惊人的结论！</p>
+</div>
+
+<h3>基本原理</h3>
+
+<div class="formula-card">
+  <div class="formula-title">抽屉原理（简单版）</div>
+  <p>把 \(n+1\) 个东西放进 \(n\) 个抽屉，至少有一个抽屉里放了 \(\geq 2\) 个东西。</p>
+</div>
+
+<div class="formula-card">
+  <div class="formula-title">抽屉原理（加强版）</div>
+  <p>把 \(N\) 个东西放进 \(n\) 个抽屉，至少有一个抽屉里放了至少</p>
+  \[
+  \left\lceil \frac{N}{n} \right\rceil
+  \]
+  <p>个东西。（\(\lceil x \rceil\) 就是"向上取整"，比如 \(\lceil 2.3 \rceil = 3\)。）</p>
+</div>
+
+<div class="example-box">
+  <div class="ex-title">动手看看：生日悖论</div>
+  <p>一年有 365 天（忽略闰年）。如果有 366 个人，根据抽屉原理，至少有两个人同一天生日！</p>
+  <p>更神奇的是：只要 23 个人，两人同一天生日的概率就超过 50%——这就是著名的"生日悖论"。</p>
+</div>
+
+<h3>关键：怎么造"抽屉"</h3>
+
+<div class="think-box">
+  <h3>抽屉原理的威力在"造抽屉"</h3>
+  <p>同一个问题，抽屉造得越巧妙，结论就越强。比如：</p>
+  <p><strong>问题</strong>：任取 5 个整数，证明其中一定有 3 个数的和是 3 的倍数。</p>
+  <p><strong>造抽屉</strong>：按除以 3 的余数分成 3 个抽屉——余 0、余 1、余 2。5 个数放进 3 个抽屉，要么某个抽屉有 \(\geq 3\) 个数（这 3 个同余数之和是 3 的倍数），要么每个抽屉至少有 1 个数（从 3 个抽屉各取一个，余数之和 = 0+1+2 = 3，也是 3 的倍数）。</p>
+</div>
+
+<div class="tip-box">
+  <strong>记住</strong>：抽屉原理只告诉你"一定有"，不告诉你"在哪里"。它是一种存在性证明工具。
+</div>
+</section>
+
+<hr class="divider">
+
+<!-- Chapter 3 -->
+<section class="chapter" id="ch3">
+<div class="ch-header">
+  <div class="ch-icon">3</div>
+  <div>
+    <h2>染色问题</h2>
+    <div class="ch-sub">给东西涂颜色，有什么规矩？</div>
+  </div>
+</div>
+
+<div class="intro-card">
+  <h2>生活小比方</h2>
+  <p>想象你在画一排栅栏。你有 3 种颜色的油漆，但规定相邻两根栅栏不能同色。第一根有 3 种选择，第二根就只能选 2 种（避开第一根的颜色），第三根也只能选 2 种（避开第二根）……</p>
+  <p>\(n\) 根栅栏的方案数 = \(3 \times 2^{n-1}\)。</p>
+</div>
+
+<h3>直线染色 vs 环形染色</h3>
+
+<div class="formula-card">
+  <div class="formula-title">直线排列染色</div>
+  <p>用 \(k\) 种颜色给 \(n\) 个排成一排的格子染色，相邻格子颜色不同：</p>
+  \[
+  \text{方案数} = k \times (k-1)^{n-1}
+  \]
+  <p>第一个格子随便选（\(k\) 种），后面每个格子避开前一个就行（\(k-1\) 种）。</p>
+</div>
+
+<div class="formula-card">
+  <div class="formula-title">环形染色（首尾也相邻）</div>
+  <p>如果格子排成一个圆圈，首尾也相邻，那最后一格既要避开前一个，又要避开第一个：</p>
+  \[
+  \text{方案数} = (k-1)^n + (-1)^n (k-1)
+  \]
+  <p>环形比直线难，因为首尾"撞"在一起了。</p>
+</div>
+
+<div class="example-box">
+  <div class="ex-title">动手看看：4 个格子，3 种颜色</div>
+  <p><strong>直线</strong>：\(3 \times 2^3 = 24\) 种。</p>
+  <p><strong>环形</strong>：\((3-1)^4 + (-1)^4 \times (3-1) = 16 + 2 = 18\) 种。比直线少了 6 种，因为首尾同色的方案被排除了。</p>
+</div>
+
+<h3>地图染色：最少要几种颜色？</h3>
+
+<div class="think-box">
+  <h3>四色定理</h3>
+  <p>任何一张地图（画在平面上的），最多只需要 <strong>4 种颜色</strong>就能让相邻区域颜色不同。</p>
+  <p>这个定理 1976 年才被证明——而且是靠计算机帮忙检查了上千种情况才完成的。这是历史上第一个"计算机辅助证明"的数学大定理！</p>
+</div>
+
+<div class="collapsible">
+  <div class="coll-header" onclick="toggleCollapse(this)">环形染色公式怎么来的？</div>
+  <div class="coll-body">
+    <p>思路很巧妙：把环"剪开"变成直线。</p>
+    <p>设 \(n\) 格环形方案数为 \(f(n)\)。直线方案数是 \(k(k-1)^{n-1}\)。但直线方案里有些首尾颜色相同——这些"不合法"的方案数恰好等于 \(f(n-1)\)（把首尾合成一格就是一个 \(n-1\) 的环）。</p>
+    <p>所以：\(f(n) = k(k-1)^{n-1} - f(n-1)\)。</p>
+    <p>从这个递推关系可以推出那个漂亮的公式！</p>
+  </div>
+</div>
+</section>
+
+<hr class="divider">
+
+<!-- Chapter 4 -->
+<section class="chapter" id="ch4">
+<div class="ch-header">
+  <div class="ch-icon" style="background: linear-gradient(135deg, #e07a3a, #f5b041);">4</div>
+  <div>
+    <h2>操作与游戏</h2>
+    <div class="ch-sub">谁有必胜策略？</div>
+  </div>
+</div>
+
+<div class="intro-card">
+  <h2>生活小比方</h2>
+  <p>两个人玩翻棋子游戏：棋盘上有些黑棋和白棋，每次翻两个相邻的。问：能不能从"全白"翻到"全黑"？</p>
+  <p>答案可能出乎你的意料——取决于棋盘的大小！秘密就在"不变量"。</p>
+</div>
+
+<h3>不变量：怎么变都不变的东西</h3>
+
+<div class="formula-card">
+  <div class="formula-title">什么是不变量？</div>
+  <p>不管你怎么操作，某个量始终不变（或者只增不减、只减不增）。找到这个量，就能判断"做不做得到"。</p>
+</div>
+
+<div class="example-box">
+  <div class="ex-title">动手看看：奇偶不变量</div>
+  <p>棋盘上有黑格和白格。每次操作翻转 2 个相邻格子（黑变白、白变黑）。</p>
+  <p>观察：每次操作改变 2 个格子，所以黑格数的变化一定是偶数（+2、-2 或 0）。</p>
+  <p>所以黑格数的<strong>奇偶性永远不变</strong>！如果一开始黑格数是偶数，你永远也变不成奇数个黑格。</p>
+  <p>这就是为什么 \(5 \times 5\) 棋盘（25 格，奇数）从全白翻不到全黑——全白有 0 个黑格（偶数），全黑有 25 个黑格（奇数），奇偶性不同！</p>
+</div>
+
+<h3>博弈策略</h3>
+
+<div class="think-box">
+  <h3>策略窃取：先手永远不亏</h3>
+  <p>想象一个对称的游戏（比如两人轮流在对称棋盘上放棋子）。如果后手有必胜策略，先手可以这样：</p>
+  <p>先随便走一步"废话棋"，然后假装自己是后手，用后手的必胜策略来应对。</p>
+  <p>这就矛盾了——说明后手不可能有必胜策略！所以对称游戏里，先手要么赢、要么平局。</p>
+</div>
+
+<div class="formula-card">
+  <div class="formula-title">配对策略</div>
+  <p>把局面配对成一对一对的。对手在其中一边行动时，你在另一边"镜像"操作。只要能完成配对，你就必胜！</p>
+  <p>就像照镜子——对手做什么，你在对称位置做同样的事。</p>
+</div>
+
+<div class="tip-box">
+  <strong>解题口诀</strong>：先找不变量（能不能做到），再找策略（怎么做到）。两步缺一不可！
+</div>
+</section>
+
+<hr class="divider">
+
+<!-- Chapter 5 -->
+<section class="chapter" id="ch5">
+<div class="ch-header">
+  <div class="ch-icon">5</div>
+  <div>
+    <h2>组合最值</h2>
+    <div class="ch-sub">最多能有多少？最少要多少？</div>
+  </div>
+</div>
+
+<div class="intro-card">
+  <h2>生活小比方</h2>
+  <p>你有 10 块饼干要分给 3 个小朋友。怎么分能让"拿到最多饼干的那个人"尽可能少？</p>
+  <p>答：尽量平均分！每人 3 块，剩 1 块给某一个人，所以最多的人拿到 4 块。这就是"最小化最大值"——组合最值中的一种典型问题。</p>
+</div>
+
+<h3>证明最值的两步走</h3>
+
+<div class="formula-card">
+  <div class="formula-title">组合最值的证明框架</div>
+  <p>要证明"最多（或最少）是 \(M\)"，必须做两件事：</p>
+  <p><strong>第一步（上界）</strong>：证明不可能超过 \(M\)。——用推理说明为什么更多就不行。</p>
+  <p><strong>第二步（构造）</strong>：给出一个恰好等于 \(M\) 的例子。——确实能做到！</p>
+  <p>两步都完成，答案就"焊死"了——不多不少，就是 \(M\)。</p>
+</div>
+
+<div class="example-box">
+  <div class="ex-title">动手看看：最多几条对角线互不相交？</div>
+  <p>一个凸 \(n\) 边形中，最多能画多少条互不相交的对角线？</p>
+  <p><strong>上界</strong>：每条对角线把多边形分成两块。不相交的对角线就像"切蛋糕"，\(k\) 条对角线把多边形分成 \(k+1\) 块，每块至少是三角形（3 条边）。用边数算：\(k \leq n - 3\)。</p>
+  <p><strong>构造</strong>：从一个顶点出发画 \(n-3\) 条对角线到其他顶点，它们互不相交。正好达到 \(n-3\)！</p>
+</div>
+
+<h3>常用工具</h3>
+
+<div class="think-box">
+  <h3>极端原理：取"最极端"的那个</h3>
+  <p>在一大堆对象中，取最大、最小、最长、最短的那个来分析。"最极端"的那个往往有特殊的性质，能帮你打开突破口。</p>
+  <p>就像找最高的那棵树——它上面一定没有被别的树遮住的叶子。</p>
+</div>
+
+<div class="formula-card">
+  <div class="formula-title">双重计数</div>
+  <p>把同一个东西数两遍，得到等式或不等式。</p>
+  <p>比如：统计班上"男生-女生同桌"的对数。先从男生那边数，再从女生那边数，总数应该一样。利用这个等式，有时能推出意想不到的不等式。</p>
+</div>
+
+<div class="tip-box">
+  <strong>组合最值之美</strong>：当"不可能更多"和"确实能做到"恰好吻合时，你就找到了精确答案。数学家管这叫"紧"（tight），就像鞋子刚好合脚——这种完美契合的感觉，就是组合数学最优雅的时刻。
+</div>
+</section>
+
+<hr class="divider">
+
+<!-- Closing -->
+<section class="chapter" id="closing">
+<div class="intro-card" style="background: var(--card-bg); border-color: var(--primary);">
+  <h2 style="color: var(--primary);">写在最后</h2>
+  <p>组合数学不像代数和几何那样有固定的公式套路。它更像是一种<strong>思维方式</strong>——面对一个新问题，你需要观察、分类、构造、反证。</p>
+  <p>记住几个核心思想：数东西要"不重不漏"（计数）；东西多了总能挤出结论（抽屉原理）；颜色有限时相邻约束创造结构（染色）；找到不变的东西就能判断"能不能"（操作与游戏）；证明"不能超过"和"确实能做到"就锁定答案（组合最值）。</p>
+  <p>组合数学最大的乐趣在于——很多问题的答案，在你看到解法的那一瞬间，会忍不住说一声"妙！"</p>
+</div>
+</section>
+
+</div>
+
+<div class="footer">
+  组合趣味 · 小学生也能看懂的版本<br>
+  参考书目：《数学奥林匹克小丛书 · 组合趣味》
+</div>
+
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  renderMathInElement(document.body, {
+    delimiters: [
+      {left: "\\(", right: "\\)", display: false},
+      {left: "\\[", right: "\\]", display: true}
+    ],
+    throwOnError: false
+  });
+});
+</script>
+<script>
+function toggleNav() {
+  var grid = document.getElementById('navGrid');
+  var btn = document.querySelector('.nav-toggle');
+  grid.classList.toggle('show');
+  btn.classList.toggle('open');
+}
+function toggleCollapse(el) {
+  var body = el.nextElementSibling;
+  body.style.display = body.style.display === 'block' ? 'none' : 'block';
+  el.classList.toggle('open');
+}
+</script>
+</body>
+</html>

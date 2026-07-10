@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>高斯函数与取整 向上取整 · 向下取整</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=LXGW+WenKai:wght@400;700&display=swap');
+
+  :root {
+    --bg: #f7f9fc;
+    --fg: #2d3748;
+    --floor: #2563eb;
+    --floor-light: #dbeafe;
+    --floor-bg: #eff6ff;
+    --ceil: #dc2626;
+    --ceil-light: #fee2e2;
+    --ceil-bg: #fef2f2;
+    --accent: #7c3aed;
+    --accent-light: #ede9fe;
+    --warm: #d97706;
+    --warm-light: #fef3c7;
+    --green: #059669;
+    --green-light: #d1fae5;
+    --card-bg: #ffffff;
+    --border: #e2e8f0;
+    --shadow: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.03);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; font-size: 16px; }
+
+  body {
+    font-family: 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
+    background: var(--bg); color: var(--fg); line-height: 1.85;
+  }
+
+  /* ── Header ── */
+  .header {
+    background: linear-gradient(135deg, #1e3a5f 0%, #2563eb 40%, #7c3aed 100%);
+    color: #fff; padding: 3rem 2rem 2.5rem; text-align: center;
+    position: relative; overflow: hidden;
+  }
+  .header::after {
+    content: ''; position: absolute; bottom: -2px; left: 0; right: 0; height: 40px;
+    background: var(--bg); clip-path: ellipse(55% 100% at 50% 100%);
+  }
+  .header h1 { font-size: 2rem; font-weight: 700; letter-spacing: 0.1em; margin-bottom: 0.3rem; }
+  .header .subtitle { font-size: 1.05rem; opacity: 0.9; letter-spacing: 0.06em; }
+  .header .meta { font-size: 0.82rem; opacity: 0.55; margin-top: 0.8rem; }
+
+  /* ── Nav ── */
+  .nav-bar {
+    position: sticky; top: 0; z-index: 100;
+    background: var(--card-bg); border-bottom: 1px solid var(--border);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+  .nav-toggle {
+    display: flex; align-items: center; justify-content: center;
+    padding: 0.55rem 1rem; cursor: pointer;
+    font-size: 0.9rem; color: var(--accent); font-weight: 600; user-select: none;
+  }
+  .nav-toggle .arrow { transition: transform 0.2s; display: inline-block; margin-right: 0.4rem; }
+  .nav-toggle.open .arrow { transform: rotate(90deg); }
+  .nav-grid {
+    display: none; padding: 0.4rem 1rem 1rem;
+    grid-template-columns: repeat(3, 1fr); gap: 0.5rem;
+    max-width: 780px; margin: 0 auto;
+  }
+  .nav-grid.show { display: grid; }
+  .nav-grid a {
+    display: flex; align-items: center; gap: 0.35rem;
+    padding: 0.4rem 0.65rem; text-decoration: none;
+    color: var(--fg); font-size: 0.82rem;
+    border: 1px solid var(--border); border-radius: 8px;
+    background: #fff; transition: all 0.2s;
+  }
+  .nav-grid a:hover { background: var(--accent-light); border-color: var(--accent); }
+  .nav-grid a .nav-num {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 1.3rem; height: 1.3rem; border-radius: 50%;
+    background: var(--accent); color: #fff; font-size: 0.7rem; font-weight: 700; flex-shrink: 0;
+  }
+  .nav-grid a .nav-num.blue { background: var(--floor); }
+  .nav-grid a .nav-num.red { background: var(--ceil); }
+  .nav-grid a .nav-num.warm { background: var(--warm); }
+  .nav-grid a .nav-num.green { background: var(--green); }
+
+  /* ── Main ── */
+  .main { max-width: 800px; margin: 0 auto; padding: 2rem 1.5rem 3rem; }
+  .section { margin-bottom: 2.5rem; }
+
+  .sec-title {
+    font-size: 1.3rem; font-weight: 700; color: var(--accent);
+    margin-bottom: 1rem; display: flex; align-items: center; gap: 0.6rem;
+  }
+  .sec-title .badge {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 2rem; height: 2rem; border-radius: 8px;
+    background: var(--accent); color: #fff;
+    font-size: 0.85rem; font-weight: 700; flex-shrink: 0;
+  }
+
+  h3 {
+    font-size: 1.05rem; font-weight: 700; margin: 1.6rem 0 0.7rem;
+    padding-left: 0.6rem; border-left: 3px solid var(--accent);
+  }
+  h3.floor-h { color: var(--floor); border-color: var(--floor); }
+  h3.ceil-h { color: var(--ceil); border-color: var(--ceil); }
+  h3.prop-h { color: var(--accent); }
+
+  p { margin-bottom: 0.85rem; }
+
+  /* ── Cards ── */
+  .card {
+    background: var(--card-bg); border: 1px solid var(--border);
+    border-radius: 12px; padding: 1.2rem 1.5rem; margin: 1rem 0;
+    box-shadow: var(--shadow);
+  }
+  .card-label {
+    font-size: 0.8rem; font-weight: 700; letter-spacing: 0.08em; margin-bottom: 0.5rem;
+  }
+  .card-label.floor { color: var(--floor); }
+  .card-label.ceil { color: var(--ceil); }
+  .card-label.prop { color: var(--accent); }
+  .card.floor-card { border-left: 4px solid var(--floor); }
+  .card.ceil-card { border-left: 4px solid var(--ceil); }
+  .card.prop-card { border-left: 4px solid var(--accent); }
+  .card.warm-card { border-left: 4px solid var(--warm); background: var(--warm-light); }
+  .card.green-card { border-left: 4px solid var(--green); background: var(--green-light); }
+
+  .tip {
+    background: var(--warm-light); border-left: 4px solid var(--warm);
+    padding: 0.8rem 1.2rem; margin: 1rem 0;
+    border-radius: 0 8px 8px 0; font-size: 0.93rem;
+  }
+  .key-point {
+    background: var(--accent-light); border-left: 3px solid var(--accent);
+    padding: 0.8rem 1.2rem; margin: 1rem 0;
+    font-size: 0.95rem; border-radius: 0 6px 6px 0;
+  }
+
+  /* ── Diagrams ── */
+  .diagram {
+    background: #fff; border: 1px solid var(--border);
+    border-radius: 12px; padding: 1rem 0.5rem; margin: 1.2rem 0;
+    overflow-x: auto; text-align: center; box-shadow: var(--shadow);
+  }
+  .diagram-title {
+    font-size: 0.85rem; font-weight: 700; color: #666;
+    margin-bottom: 0.5rem; text-align: center;
+  }
+  .diagram svg { max-width: 100%; height: auto; }
+
+  /* ── Tables ── */
+  .table-wrap { overflow-x: auto; margin: 1rem 0; }
+  table.props { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+  table.props th {
+    background: var(--accent); color: #fff; padding: 0.55rem 0.8rem;
+    text-align: left; font-weight: 600;
+  }
+  table.props td { padding: 0.5rem 0.8rem; border-bottom: 1px solid var(--border); }
+  table.props tr:nth-child(even) td { background: var(--accent-light); }
+  table.props.blue th { background: var(--floor); }
+  table.props.blue tr:nth-child(even) td { background: var(--floor-bg); }
+  table.props.red th { background: var(--ceil); }
+  table.props.red tr:nth-child(even) td { background: var(--ceil-bg); }
+
+  /* ── Grids ── */
+  .example-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1rem 0; }
+  .example-grid .card { margin: 0; }
+  .life-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 1rem; margin: 1rem 0;
+  }
+  .life-item {
+    background: var(--card-bg); border: 1px solid var(--border);
+    border-radius: 12px; padding: 1rem 1.1rem; text-align: center;
+    box-shadow: var(--shadow); transition: transform 0.15s;
+  }
+  .life-item:hover { transform: translateY(-2px); }
+  .life-icon { font-size: 2rem; margin-bottom: 0.4rem; }
+  .life-item h4 { font-size: 0.92rem; color: var(--accent); margin-bottom: 0.25rem; }
+  .life-item p { font-size: 0.83rem; color: #666; margin: 0; text-indent: 0; line-height: 1.6; }
+
+  .divider { border: none; border-top: 2px dashed var(--border); margin: 2.5rem 0; }
+
+  .footer {
+    text-align: center; padding: 2rem 1rem; font-size: 0.8rem;
+    color: #999; border-top: 1px solid var(--border); margin-top: 2rem;
+  }
+
+  @media (max-width: 600px) {
+    .example-grid { grid-template-columns: 1fr; }
+    .life-grid { grid-template-columns: 1fr 1fr; }
+    .nav-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media print {
+    .nav-bar { display: none; }
+    .section { page-break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>高斯函数与取整</h1>
+  <div class="subtitle">向上取整 · 向下取整</div>
+  <div class="meta">初中数学拓展 · 竞赛基础</div>
+</div>
+
+<div class="nav-bar">
+  <div class="nav-toggle" onclick="toggleNav()">
+    <span class="arrow">&#9654;</span> 目录导航
+  </div>
+  <div class="nav-grid" id="navGrid">
+    <a href="#s1"><span class="nav-num">1</span>什么是取整</a>
+    <a href="#s2"><span class="nav-num blue">2</span>向下取整 ⌊x⌋</a>
+    <a href="#s3"><span class="nav-num red">3</span>向上取整 ⌈x⌉</a>
+    <a href="#s4"><span class="nav-num warm">4</span>对比与对照</a>
+    <a href="#s5"><span class="nav-num">5</span>重要性质</a>
+    <a href="#s6"><span class="nav-num">6</span>阶梯函数图像</a>
+    <a href="#s7"><span class="nav-num warm">7</span>生活中的取整</a>
+    <a href="#s8"><span class="nav-num">8</span>经典例题</a>
+    <a href="#s9"><span class="nav-num green">★</span>全章总结</a>
+  </div>
+</div>
+
+<div class="main">
+
+<!-- ============ Section 1 ============ -->
+<div class="section" id="s1">
+<div class="sec-title"><span class="badge">1</span>什么是"取整"？</div>
+
+<p>生活中我们经常需要把一个"带小数"的数归拢到最近的整数。比如电梯在第 3.7 层——不存在这个楼层，你要么在第 3 层，要么在第 4 层。<strong>取整</strong>就是给实数找一个最合适的整数"代表"。</p>
+
+<p>但"找整数"有两种方向：<strong>向下</strong>（往更小的整数靠）和<strong>向上</strong>（往更大的整数靠）。对应的两个函数，分别叫"地板函数"和"天花板函数"。</p>
+</div>
+
+<!-- ============ Section 2 ============ -->
+<div class="section" id="s2">
+<div class="sec-title"><span class="badge" style="background:var(--floor);">2</span>向下取整函数 \(\lfloor x \rfloor\)</div>
+
+<div class="card floor-card">
+  <div class="card-label floor">定义</div>
+  <p>\(\lfloor x \rfloor\) 表示<strong>不超过</strong> \(x\) 的最大整数，也叫"地板函数"（floor）。</p>
+  <p>通俗说法：在数轴上，从 \(x\) 出发往<strong>左</strong>走，碰到的第一个整数。</p>
+</div>
+
+<div class="diagram">
+  <div class="diagram-title">数轴图解：\(\lfloor x \rfloor\) 的含义</div>
+  <svg viewBox="0 0 720 200" xmlns="http://www.w3.org/2000/svg" style="width:700px;">
+    <line x1="40" y1="100" x2="680" y2="100" stroke="#cbd5e1" stroke-width="2"/>
+    <g font-size="14" fill="#64748b" text-anchor="middle" font-family="sans-serif">
+      <line x1="100" y1="92" x2="100" y2="108" stroke="#94a3b8" stroke-width="1.5"/><text x="100" y="128">0</text>
+      <line x1="220" y1="92" x2="220" y2="108" stroke="#94a3b8" stroke-width="1.5"/><text x="220" y="128">1</text>
+      <line x1="340" y1="92" x2="340" y2="108" stroke="#94a3b8" stroke-width="1.5"/><text x="340" y="128">2</text>
+      <line x1="460" y1="92" x2="460" y2="108" stroke="#94a3b8" stroke-width="1.5"/><text x="460" y="128">3</text>
+      <line x1="580" y1="92" x2="580" y2="108" stroke="#94a3b8" stroke-width="1.5"/><text x="580" y="128">4</text>
+    </g>
+    <rect x="100" y="88" width="120" height="4" rx="2" fill="#2563eb" opacity="0.25"/>
+    <rect x="220" y="88" width="120" height="4" rx="2" fill="#2563eb" opacity="0.25"/>
+    <rect x="340" y="88" width="120" height="4" rx="2" fill="#2563eb" opacity="0.25"/>
+    <rect x="460" y="88" width="120" height="4" rx="2" fill="#2563eb" opacity="0.25"/>
+    <circle cx="100" cy="100" r="5" fill="#2563eb"/>
+    <circle cx="220" cy="100" r="5" fill="#2563eb"/>
+    <circle cx="340" cy="100" r="5" fill="#2563eb"/>
+    <circle cx="460" cy="100" r="5" fill="#2563eb"/>
+    <circle cx="580" cy="100" r="5" fill="#2563eb"/>
+    <!-- x = 2.6 → floor = 2 -->
+    <circle cx="412" cy="100" r="6" fill="#f59e0b" stroke="#fff" stroke-width="2"/>
+    <text x="412" y="75" font-size="13" fill="#f59e0b" text-anchor="middle" font-weight="bold" font-family="sans-serif">x = 2.6</text>
+    <line x1="412" y1="80" x2="412" y2="92" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="4,3"/>
+    <path d="M 412,108 C 412,145 340,145 340,118" fill="none" stroke="#2563eb" stroke-width="2" marker-end="url(#aB)"/>
+    <text x="340" y="170" font-size="13" fill="#2563eb" text-anchor="middle" font-weight="bold" font-family="sans-serif">⌊2.6⌋ = 2</text>
+    <!-- x = 0.3 → floor = 0 -->
+    <circle cx="136" cy="100" r="6" fill="#10b981" stroke="#fff" stroke-width="2"/>
+    <text x="136" y="55" font-size="13" fill="#10b981" text-anchor="middle" font-weight="bold" font-family="sans-serif">x = 0.3</text>
+    <line x1="136" y1="60" x2="136" y2="92" stroke="#10b981" stroke-width="1.5" stroke-dasharray="4,3"/>
+    <path d="M 136,108 C 136,140 100,140 100,118" fill="none" stroke="#2563eb" stroke-width="2" marker-end="url(#aB)"/>
+    <text x="100" y="185" font-size="13" fill="#2563eb" text-anchor="middle" font-weight="bold" font-family="sans-serif">⌊0.3⌋ = 0</text>
+    <defs><marker id="aB" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#2563eb"/></marker></defs>
+  </svg>
+</div>
+
+<h3 class="floor-h">计算示例</h3>
+
+<div class="example-grid">
+  <div class="card floor-card">
+    <div class="card-label floor">正数</div>
+    <p>\(\lfloor 3.7 \rfloor = 3\)，\(\lfloor 5.99 \rfloor = 5\)，\(\lfloor 2.0 \rfloor = 2\)</p>
+  </div>
+  <div class="card floor-card">
+    <div class="card-label floor">负数（易错！）</div>
+    <p>\(\lfloor -1.2 \rfloor = -2\)，\(\lfloor -3.0 \rfloor = -3\)，\(\lfloor -0.5 \rfloor = -1\)</p>
+  </div>
+</div>
+
+<div class="tip">
+  <strong>易错提醒</strong>：\(\lfloor -1.2 \rfloor = -2\)，不是 \(-1\)！因为"不超过 \(-1.2\) 的最大整数"是 \(-2\)（\(-2 \lt -1.2 \lt -1\)，而 \(-1\) 比 \(-1.2\) 大）。记住：向下取整永远往数轴<strong>左边</strong>靠。
+</div>
+</div>
+
+<!-- ============ Section 3 ============ -->
+<div class="section" id="s3">
+<div class="sec-title"><span class="badge" style="background:var(--ceil);">3</span>向上取整函数 \(\lceil x \rceil\)</div>
+
+<div class="card ceil-card">
+  <div class="card-label ceil">定义</div>
+  <p>\(\lceil x \rceil\) 表示<strong>不小于</strong> \(x\) 的最小整数，也叫"天花板函数"（ceiling）。</p>
+  <p>通俗说法：在数轴上，从 \(x\) 出发往<strong>右</strong>走，碰到的第一个整数。</p>
+</div>
+
+<div class="diagram">
+  <div class="diagram-title">数轴图解：\(\lceil x \rceil\) 的含义</div>
+  <svg viewBox="0 0 720 200" xmlns="http://www.w3.org/2000/svg" style="width:700px;">
+    <line x1="40" y1="100" x2="680" y2="100" stroke="#cbd5e1" stroke-width="2"/>
+    <g font-size="14" fill="#64748b" text-anchor="middle" font-family="sans-serif">
+      <line x1="100" y1="92" x2="100" y2="108" stroke="#94a3b8" stroke-width="1.5"/><text x="100" y="128">0</text>
+      <line x1="220" y1="92" x2="220" y2="108" stroke="#94a3b8" stroke-width="1.5"/><text x="220" y="128">1</text>
+      <line x1="340" y1="92" x2="340" y2="108" stroke="#94a3b8" stroke-width="1.5"/><text x="340" y="128">2</text>
+      <line x1="460" y1="92" x2="460" y2="108" stroke="#94a3b8" stroke-width="1.5"/><text x="460" y="128">3</text>
+      <line x1="580" y1="92" x2="580" y2="108" stroke="#94a3b8" stroke-width="1.5"/><text x="580" y="128">4</text>
+    </g>
+    <rect x="100" y="108" width="120" height="4" rx="2" fill="#dc2626" opacity="0.25"/>
+    <rect x="220" y="108" width="120" height="4" rx="2" fill="#dc2626" opacity="0.25"/>
+    <rect x="340" y="108" width="120" height="4" rx="2" fill="#dc2626" opacity="0.25"/>
+    <rect x="460" y="108" width="120" height="4" rx="2" fill="#dc2626" opacity="0.25"/>
+    <circle cx="100" cy="100" r="5" fill="#dc2626"/>
+    <circle cx="220" cy="100" r="5" fill="#dc2626"/>
+    <circle cx="340" cy="100" r="5" fill="#dc2626"/>
+    <circle cx="460" cy="100" r="5" fill="#dc2626"/>
+    <circle cx="580" cy="100" r="5" fill="#dc2626"/>
+    <!-- x = 2.6 → ceil = 3 -->
+    <circle cx="412" cy="100" r="6" fill="#f59e0b" stroke="#fff" stroke-width="2"/>
+    <text x="412" y="75" font-size="13" fill="#f59e0b" text-anchor="middle" font-weight="bold" font-family="sans-serif">x = 2.6</text>
+    <line x1="412" y1="80" x2="412" y2="92" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="4,3"/>
+    <path d="M 412,108 C 412,145 460,145 460,118" fill="none" stroke="#dc2626" stroke-width="2" marker-end="url(#aR)"/>
+    <text x="460" y="170" font-size="13" fill="#dc2626" text-anchor="middle" font-weight="bold" font-family="sans-serif">⌈2.6⌉ = 3</text>
+    <!-- x = 0.3 → ceil = 1 -->
+    <circle cx="136" cy="100" r="6" fill="#10b981" stroke="#fff" stroke-width="2"/>
+    <text x="136" y="55" font-size="13" fill="#10b981" text-anchor="middle" font-weight="bold" font-family="sans-serif">x = 0.3</text>
+    <line x1="136" y1="60" x2="136" y2="92" stroke="#10b981" stroke-width="1.5" stroke-dasharray="4,3"/>
+    <path d="M 136,108 C 136,140 220,140 220,118" fill="none" stroke="#dc2626" stroke-width="2" marker-end="url(#aR)"/>
+    <text x="220" y="185" font-size="13" fill="#dc2626" text-anchor="middle" font-weight="bold" font-family="sans-serif">⌈0.3⌉ = 1</text>
+    <defs><marker id="aR" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#dc2626"/></marker></defs>
+  </svg>
+</div>
+
+<h3 class="ceil-h">计算示例</h3>
+
+<div class="example-grid">
+  <div class="card ceil-card">
+    <div class="card-label ceil">正数</div>
+    <p>\(\lceil 3.2 \rceil = 4\)，\(\lceil 5.01 \rceil = 6\)，\(\lceil 7.0 \rceil = 7\)</p>
+  </div>
+  <div class="card ceil-card">
+    <div class="card-label ceil">负数</div>
+    <p>\(\lceil -1.8 \rceil = -1\)，\(\lceil -4.0 \rceil = -4\)，\(\lceil -0.1 \rceil = 0\)</p>
+  </div>
+</div>
+</div>
+
+<!-- ============ Section 4 ============ -->
+<div class="section" id="s4">
+<div class="sec-title"><span class="badge" style="background:var(--warm);">4</span>向上 vs 向下：一图对比</div>
+
+<div class="diagram">
+  <div class="diagram-title">同一个数 \(x = 2.6\) 的两种取整</div>
+  <svg viewBox="0 0 720 230" xmlns="http://www.w3.org/2000/svg" style="width:700px;">
+    <line x1="60" y1="115" x2="660" y2="115" stroke="#cbd5e1" stroke-width="2.5"/>
+    <g font-size="15" fill="#64748b" text-anchor="middle" font-family="sans-serif" font-weight="600">
+      <line x1="120" y1="105" x2="120" y2="125" stroke="#94a3b8" stroke-width="2"/><text x="120" y="147">0</text>
+      <line x1="250" y1="105" x2="250" y2="125" stroke="#94a3b8" stroke-width="2"/><text x="250" y="147">1</text>
+      <line x1="380" y1="105" x2="380" y2="125" stroke="#94a3b8" stroke-width="2"/><text x="380" y="147">2</text>
+      <line x1="510" y1="105" x2="510" y2="125" stroke="#94a3b8" stroke-width="2"/><text x="510" y="147">3</text>
+      <line x1="640" y1="105" x2="640" y2="125" stroke="#94a3b8" stroke-width="2"/><text x="640" y="147">4</text>
+    </g>
+    <!-- x = 2.6 -->
+    <circle cx="458" cy="115" r="8" fill="#f59e0b" stroke="#fff" stroke-width="3"/>
+    <text x="458" y="83" font-size="16" fill="#f59e0b" text-anchor="middle" font-weight="bold" font-family="sans-serif">x = 2.6</text>
+    <line x1="458" y1="89" x2="458" y2="105" stroke="#f59e0b" stroke-width="2"/>
+    <!-- floor arrow → 2 -->
+    <path d="M 458,127 C 458,172 380,172 380,140" fill="none" stroke="#2563eb" stroke-width="2.5" marker-end="url(#aB2)"/>
+    <rect x="332" y="190" width="96" height="26" rx="6" fill="#2563eb"/>
+    <text x="380" y="208" font-size="13" fill="#fff" text-anchor="middle" font-weight="bold" font-family="sans-serif">⌊2.6⌋ = 2</text>
+    <!-- ceil arrow → 3 -->
+    <path d="M 458,127 C 458,172 510,172 510,140" fill="none" stroke="#dc2626" stroke-width="2.5" marker-end="url(#aR2)"/>
+    <rect x="462" y="190" width="96" height="26" rx="6" fill="#dc2626"/>
+    <text x="510" y="208" font-size="13" fill="#fff" text-anchor="middle" font-weight="bold" font-family="sans-serif">⌈2.6⌉ = 3</text>
+    <!-- dots -->
+    <circle cx="380" cy="115" r="6" fill="#2563eb"/>
+    <circle cx="510" cy="115" r="6" fill="#dc2626"/>
+    <!-- Legend -->
+    <rect x="140" y="18" width="14" height="14" rx="3" fill="#2563eb"/>
+    <text x="160" y="30" font-size="12" fill="#2563eb" font-family="sans-serif">向下取整（地板）</text>
+    <rect x="320" y="18" width="14" height="14" rx="3" fill="#dc2626"/>
+    <text x="340" y="30" font-size="12" fill="#dc2626" font-family="sans-serif">向上取整（天花板）</text>
+    <defs>
+      <marker id="aB2" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#2563eb"/></marker>
+      <marker id="aR2" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#dc2626"/></marker>
+    </defs>
+  </svg>
+</div>
+
+<h3 style="color:var(--warm); border-color:var(--warm);">数值对照表</h3>
+
+<div class="table-wrap">
+<table class="props">
+  <tr><th>\(x\)</th><th>\(\lfloor x \rfloor\)</th><th>\(\lceil x \rceil\)</th><th>\(\{x\}\)</th><th>\(\lceil x \rceil - \lfloor x \rfloor\)</th></tr>
+  <tr><td>\(3.7\)</td><td>3</td><td>4</td><td>0.7</td><td>1</td></tr>
+  <tr><td>\(-1.2\)</td><td>\(-2\)</td><td>\(-1\)</td><td>0.8</td><td>1</td></tr>
+  <tr><td>\(5.0\)</td><td>5</td><td>5</td><td>0</td><td>0</td></tr>
+  <tr><td>\(0.01\)</td><td>0</td><td>1</td><td>0.01</td><td>1</td></tr>
+  <tr><td>\(-3.0\)</td><td>\(-3\)</td><td>\(-3\)</td><td>0</td><td>0</td></tr>
+  <tr><td>\(-0.5\)</td><td>\(-1\)</td><td>0</td><td>0.5</td><td>1</td></tr>
+</table>
+</div>
+
+<div class="card warm-card">
+  <div class="card-label" style="color:var(--warm);">核心区别</div>
+  <p>当 \(x\) 本身就是整数时，\(\lfloor x \rfloor = \lceil x \rceil = x\)，两者相等。</p>
+  <p>当 \(x\) 不是整数时，\(\lfloor x \rfloor\) 取左边的整数，\(\lceil x \rceil\) 取右边的整数，且 \(\lceil x \rceil - \lfloor x \rfloor = 1\)。</p>
+</div>
+</div>
+
+<!-- ============ Section 5 ============ -->
+<div class="section" id="s5">
+<div class="sec-title"><span class="badge">5</span>重要性质与公式</div>
+
+<div class="table-wrap">
+<table class="props">
+  <tr><th>编号</th><th>性质</th><th>说明</th></tr>
+  <tr><td>①</td><td>\(x - 1 \lt \lfloor x \rfloor \leq x \leq \lceil x \rceil \lt x + 1\)</td><td>取整函数的基本不等式</td></tr>
+  <tr><td>②</td><td>\(\lceil x \rceil - \lfloor x \rfloor = 0\) 或 \(1\)</td><td>整数时差为 0，非整数时差为 1</td></tr>
+  <tr><td>③</td><td>\(\lfloor x + n \rfloor = \lfloor x \rfloor + n\)（\(n \in \mathbb{Z}\)）</td><td>整数可以"提出"取整符号</td></tr>
+  <tr><td>④</td><td>\(\lceil x \rceil = -\lfloor -x \rfloor\)</td><td>向上与向下取整的对偶关系</td></tr>
+  <tr><td>⑤</td><td>\(\lfloor x \rfloor + \lfloor y \rfloor \leq \lfloor x + y \rfloor\)</td><td>取整函数具有"次可加性"</td></tr>
+  <tr><td>⑥</td><td>\(\left\lfloor \dfrac{n}{m} \right\rfloor\) = \(n \div m\) 的商</td><td>\(n, m\) 为正整数时，取整就是整除</td></tr>
+</table>
+</div>
+
+<div class="card prop-card">
+  <div class="card-label prop">性质④的直观理解</div>
+  <p>对偶关系 \(\lceil x \rceil = -\lfloor -x \rfloor\)：把数轴"翻转"（取相反数），原来的"向上取整"就变成了"向下取整"。</p>
+  <p>验证：\(\lceil 2.3 \rceil = 3\)，而 \(-\lfloor -2.3 \rfloor = -(-3) = 3\)。✓</p>
+</div>
+
+<div class="card green-card">
+  <div class="card-label" style="color:var(--green);">小数部分（分数部分）</div>
+  <p>任何实数 \(x\) 都可以唯一分解为：</p>
+  \[
+  x = \lfloor x \rfloor + \{x\}
+  \]
+  <p>其中 \(\{x\} = x - \lfloor x \rfloor\) 称为 \(x\) 的<strong>小数部分</strong>，满足 \(0 \leq \{x\} \lt 1\)。</p>
+  <p>正数例子：\(3.7 = 3 + 0.7\)，故 \(\{3.7\} = 0.7\)。</p>
+  <p>负数例子：\(-1.2 = -2 + 0.8\)，故 \(\{-1.2\} = 0.8\)。（注意不是 \(-0.2\)！）</p>
+</div>
+</div>
+
+<!-- ============ Section 6 ============ -->
+<div class="section" id="s6">
+<div class="sec-title"><span class="badge" style="background:var(--green);">6</span>阶梯函数图像</div>
+
+<p>取整函数的图像呈"阶梯"状——在两个整数之间保持水平，在每个整数处"跳"一步。</p>
+
+<div class="example-grid">
+  <div class="diagram" style="margin:0;">
+    <div class="diagram-title" style="color:var(--floor);">\(y = \lfloor x \rfloor\)（向下取整）</div>
+    <svg viewBox="0 0 480 340" xmlns="http://www.w3.org/2000/svg" style="width:100%;">
+      <g stroke="#f1f5f9" stroke-width="1">
+        <line x1="60" y1="30" x2="60" y2="300"/><line x1="160" y1="30" x2="160" y2="300"/>
+        <line x1="260" y1="30" x2="260" y2="300"/><line x1="360" y1="30" x2="360" y2="300"/>
+        <line x1="460" y1="30" x2="460" y2="300"/>
+        <line x1="30" y1="100" x2="470" y2="100"/><line x1="30" y1="170" x2="470" y2="170"/>
+        <line x1="30" y1="240" x2="470" y2="240"/>
+      </g>
+      <line x1="30" y1="170" x2="470" y2="170" stroke="#94a3b8" stroke-width="1.5"/>
+      <line x1="260" y1="30" x2="260" y2="300" stroke="#94a3b8" stroke-width="1.5"/>
+      <g font-size="11" fill="#94a3b8" text-anchor="middle" font-family="sans-serif">
+        <text x="60" y="186">-2</text><text x="160" y="186">-1</text><text x="260" y="186">0</text>
+        <text x="360" y="186">1</text><text x="460" y="186">2</text>
+      </g>
+      <g font-size="11" fill="#94a3b8" text-anchor="end" font-family="sans-serif">
+        <text x="255" y="104">1</text><text x="255" y="244">-1</text><text x="255" y="314">-2</text>
+      </g>
+      <!-- Staircase -->
+      <line x1="60" y1="310" x2="158" y2="310" stroke="#2563eb" stroke-width="3"/>
+      <circle cx="60" cy="310" r="3.5" fill="#2563eb"/>
+      <circle cx="160" cy="310" r="3.5" fill="none" stroke="#2563eb" stroke-width="1.5"/>
+      <line x1="160" y1="240" x2="258" y2="240" stroke="#2563eb" stroke-width="3"/>
+      <circle cx="160" cy="240" r="3.5" fill="#2563eb"/>
+      <circle cx="260" cy="240" r="3.5" fill="none" stroke="#2563eb" stroke-width="1.5"/>
+      <line x1="260" y1="170" x2="358" y2="170" stroke="#2563eb" stroke-width="3"/>
+      <circle cx="260" cy="170" r="3.5" fill="#2563eb"/>
+      <circle cx="360" cy="170" r="3.5" fill="none" stroke="#2563eb" stroke-width="1.5"/>
+      <line x1="360" y1="100" x2="458" y2="100" stroke="#2563eb" stroke-width="3"/>
+      <circle cx="360" cy="100" r="3.5" fill="#2563eb"/>
+      <circle cx="460" cy="100" r="3.5" fill="none" stroke="#2563eb" stroke-width="1.5"/>
+      <!-- legend -->
+      <circle cx="365" cy="40" r="3" fill="#2563eb"/>
+      <text x="373" y="44" font-size="10" fill="#64748b" font-family="sans-serif">含端点</text>
+      <circle cx="365" cy="55" r="3" fill="none" stroke="#2563eb" stroke-width="1.5"/>
+      <text x="373" y="59" font-size="10" fill="#64748b" font-family="sans-serif">不含</text>
+    </svg>
+  </div>
+
+  <div class="diagram" style="margin:0;">
+    <div class="diagram-title" style="color:var(--ceil);">\(y = \lceil x \rceil\)（向上取整）</div>
+    <svg viewBox="0 0 480 340" xmlns="http://www.w3.org/2000/svg" style="width:100%;">
+      <g stroke="#f1f5f9" stroke-width="1">
+        <line x1="60" y1="30" x2="60" y2="300"/><line x1="160" y1="30" x2="160" y2="300"/>
+        <line x1="260" y1="30" x2="260" y2="300"/><line x1="360" y1="30" x2="360" y2="300"/>
+        <line x1="460" y1="30" x2="460" y2="300"/>
+        <line x1="30" y1="100" x2="470" y2="100"/><line x1="30" y1="170" x2="470" y2="170"/>
+        <line x1="30" y1="240" x2="470" y2="240"/>
+      </g>
+      <line x1="30" y1="170" x2="470" y2="170" stroke="#94a3b8" stroke-width="1.5"/>
+      <line x1="260" y1="30" x2="260" y2="300" stroke="#94a3b8" stroke-width="1.5"/>
+      <g font-size="11" fill="#94a3b8" text-anchor="middle" font-family="sans-serif">
+        <text x="60" y="186">-2</text><text x="160" y="186">-1</text><text x="260" y="186">0</text>
+        <text x="360" y="186">1</text><text x="460" y="186">2</text>
+      </g>
+      <g font-size="11" fill="#94a3b8" text-anchor="end" font-family="sans-serif">
+        <text x="255" y="104">1</text><text x="255" y="244">-1</text><text x="255" y="314">-2</text>
+      </g>
+      <!-- Ceiling staircase: value jumps at integers, constant on (n-1, n] -->
+      <!-- y = -1 for x in (-2, -1] -->
+      <line x1="62" y1="240" x2="160" y2="240" stroke="#dc2626" stroke-width="3"/>
+      <circle cx="60" cy="240" r="3.5" fill="none" stroke="#dc2626" stroke-width="1.5"/>
+      <circle cx="160" cy="240" r="3.5" fill="#dc2626"/>
+      <!-- y = 0 for x in (-1, 0] -->
+      <line x1="162" y1="170" x2="260" y2="170" stroke="#dc2626" stroke-width="3"/>
+      <circle cx="160" cy="170" r="3.5" fill="none" stroke="#dc2626" stroke-width="1.5"/>
+      <circle cx="260" cy="170" r="3.5" fill="#dc2626"/>
+      <!-- y = 1 for x in (0, 1] -->
+      <line x1="262" y1="100" x2="360" y2="100" stroke="#dc2626" stroke-width="3"/>
+      <circle cx="260" cy="100" r="3.5" fill="none" stroke="#dc2626" stroke-width="1.5"/>
+      <circle cx="360" cy="100" r="3.5" fill="#dc2626"/>
+      <!-- y = 2 for x in (1, 2] -->
+      <line x1="362" y1="30" x2="460" y2="30" stroke="#dc2626" stroke-width="3"/>
+      <circle cx="360" cy="30" r="3.5" fill="none" stroke="#dc2626" stroke-width="1.5"/>
+      <circle cx="460" cy="30" r="3.5" fill="#dc2626"/>
+      <!-- legend -->
+      <circle cx="365" cy="260" r="3" fill="#dc2626"/>
+      <text x="373" y="264" font-size="10" fill="#64748b" font-family="sans-serif">含端点</text>
+      <circle cx="365" cy="275" r="3" fill="none" stroke="#dc2626" stroke-width="1.5"/>
+      <text x="373" y="279" font-size="10" fill="#64748b" font-family="sans-serif">不含</text>
+    </svg>
+  </div>
+</div>
+
+<div class="tip">
+  <strong>读图要点</strong>：\(\lfloor x \rfloor\) 的每段<strong>左实右空</strong>（左闭右开），因为"不超过 \(x\)"包含左端整数。\(\lceil x \rceil\) 的每段<strong>左空右实</strong>（左开右闭），因为"不小于 \(x\)"包含右端整数。两幅图关于原点中心对称——这正是对偶关系 \(\lceil x \rceil = -\lfloor -x \rfloor\) 的几何体现。
+</div>
+</div>
+
+<!-- ============ Section 7 ============ -->
+<div class="section" id="s7">
+<div class="sec-title"><span class="badge" style="background:var(--warm);">7</span>生活中的取整</div>
+
+<div class="life-grid">
+  <div class="life-item">
+    <div class="life-icon">🛗</div>
+    <h4>电梯楼层</h4>
+    <p>你在 3.7 层？不存在。<br>只能在第 3 层（向下）<br>或第 4 层（向上）。</p>
+  </div>
+  <div class="life-item">
+    <div class="life-icon">📦</div>
+    <h4>装箱问题</h4>
+    <p>17 个球，每箱装 5 个。<br>需要 \(\lceil 17/5 \rceil = 4\) 箱。<br>3 箱不够，得用第 4 箱！</p>
+  </div>
+  <div class="life-item">
+    <div class="life-icon">💰</div>
+    <h4>整除与余数</h4>
+    <p>\(\lfloor n/m \rfloor\) 就是商。<br>\(n - m\lfloor n/m \rfloor\) 就是余数。<br>取整 = 整除运算！</p>
+  </div>
+  <div class="life-item">
+    <div class="life-icon">🎫</div>
+    <h4>买票找零</h4>
+    <p>票价 7 元，你有 20 元。<br>最多买 \(\lfloor 20/7 \rfloor = 2\) 张。<br>找零 \(20 - 14 = 6\) 元。</p>
+  </div>
+</div>
+</div>
+
+<!-- ============ Section 8 ============ -->
+<div class="section" id="s8">
+<div class="sec-title"><span class="badge">8</span>经典例题</div>
+
+<div class="card prop-card">
+  <div class="card-label prop">例 1：计算求和</div>
+  <p>求 \(\lfloor \sqrt{2} \rfloor + \lfloor \sqrt{3} \rfloor + \lfloor \sqrt{5} \rfloor + \lfloor \sqrt{7} \rfloor + \lfloor \sqrt{11} \rfloor\) 的值。</p>
+  <p><strong>解</strong>：逐一估算：</p>
+  <p>\(\sqrt{2} \approx 1.414 \Rightarrow 1\)；\(\sqrt{3} \approx 1.732 \Rightarrow 1\)；\(\sqrt{5} \approx 2.236 \Rightarrow 2\)；\(\sqrt{7} \approx 2.646 \Rightarrow 2\)；\(\sqrt{11} \approx 3.317 \Rightarrow 3\)。</p>
+  <p>原式 = \(1 + 1 + 2 + 2 + 3 = \boxed{9}\)。</p>
+</div>
+
+<div class="card prop-card">
+  <div class="card-label prop">例 2：Hermite 恒等式</div>
+  <p>证明：对任意实数 \(x\) 和正整数 \(n\)，</p>
+  \[
+  \lfloor x \rfloor + \left\lfloor x + \frac{1}{n} \right\rfloor + \left\lfloor x + \frac{2}{n} \right\rfloor + \cdots + \left\lfloor x + \frac{n-1}{n} \right\rfloor = \lfloor nx \rfloor
+  \]
+  <p><strong>思路</strong>：设 \(x = k + \frac{j}{n} + \varepsilon\)，其中 \(k\) 为整数，\(0 \leq j \leq n-1\)，\(0 \leq \varepsilon \lt \frac{1}{n}\)。代入左边逐项计算即可验证。</p>
+  <p>当 \(n = 2\) 时的特例：\(\lfloor x \rfloor + \lfloor x + \tfrac{1}{2} \rfloor = \lfloor 2x \rfloor\)。</p>
+</div>
+
+<div class="card prop-card">
+  <div class="card-label prop">例 3：计数问题</div>
+  <p>在 \(1, 2, 3, \ldots, 100\) 中，有多少个整数 \(k\) 使得 \(\lfloor \sqrt{k} \rfloor\) 为奇数？</p>
+  <p><strong>解</strong>：\(\lfloor \sqrt{k} \rfloor = m\) 当且仅当 \(m^2 \leq k \lt (m+1)^2\)，即 \(k \in [m^2,\, (m+1)^2 - 1]\)，共 \((m+1)^2 - m^2 = 2m + 1\) 个。</p>
+  <p>取 \(m\) 为奇数，且 \(m^2 \leq 100\)，即 \(m \in \{1, 3, 5, 7, 9\}\)：</p>
+  <p>\(m = 1\)：\(k \in [1, 3]\)，3 个。</p>
+  <p>\(m = 3\)：\(k \in [9, 15]\)，7 个。</p>
+  <p>\(m = 5\)：\(k \in [25, 35]\)，11 个。</p>
+  <p>\(m = 7\)：\(k \in [49, 63]\)，15 个。</p>
+  <p>\(m = 9\)：\(k \in [81, 99]\)，19 个。（注意：\(\lfloor\sqrt{100}\rfloor = 10\) 是偶数，故 \(k = 100\) 不计入。）</p>
+  <p>总计：\(3 + 7 + 11 + 15 + 19 = \boxed{55}\) 个。</p>
+</div>
+</div>
+
+<!-- ============ Section 9 ============ -->
+<div class="section" id="s9">
+<div class="sec-title"><span class="badge" style="background:var(--green);">★</span>全章总结</div>
+
+<div class="card green-card">
+  <div class="card-label" style="color:var(--green);">核心公式速查</div>
+  <div class="table-wrap">
+  <table class="props">
+    <tr><th>概念</th><th>符号</th><th>含义</th><th>举例</th></tr>
+    <tr><td>向下取整</td><td>\(\lfloor x \rfloor\)</td><td>不超过 \(x\) 的最大整数</td><td>\(\lfloor 3.7 \rfloor = 3,\;\lfloor -1.2 \rfloor = -2\)</td></tr>
+    <tr><td>向上取整</td><td>\(\lceil x \rceil\)</td><td>不小于 \(x\) 的最小整数</td><td>\(\lceil 3.2 \rceil = 4,\;\lceil -1.8 \rceil = -1\)</td></tr>
+    <tr><td>小数部分</td><td>\(\{x\}\)</td><td>\(x - \lfloor x \rfloor\)，满足 \(0 \leq \{x\} \lt 1\)</td><td>\(\{3.7\} = 0.7,\;\{-1.2\} = 0.8\)</td></tr>
+  </table>
+  </div>
+</div>
+
+<div class="key-point">
+  <strong>记忆口诀</strong>：向下取整看地板（往左靠），向上取整看天花板（往右靠）。正数直接"砍小数"，负数向下要"多退一步"。整数最省心——两种取整都等于它自己！
+</div>
+</div>
+
+</div>
+
+<div class="footer">
+  高斯函数与取整 · 向上取整 · 向下取整<br>
+  初中数学拓展 · 竞赛基础
+</div>
+
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  renderMathInElement(document.body, {
+    delimiters: [
+      {left: "\\(", right: "\\)", display: false},
+      {left: "\\[", right: "\\]", display: true}
+    ],
+    throwOnError: false
+  });
+});
+function toggleNav() {
+  var grid = document.getElementById('navGrid');
+  var btn = document.querySelector('.nav-toggle');
+  grid.classList.toggle('show');
+  btn.classList.toggle('open');
+}
+</script>
+</body>
+</html>

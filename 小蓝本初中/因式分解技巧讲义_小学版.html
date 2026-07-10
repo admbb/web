@@ -1,0 +1,1239 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>因式分解技巧 全书13章</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=LXGW+WenKai:wght@400;700&family=Noto+Sans+SC:wght@400;500;700&display=swap');
+
+  :root {
+    --bg: #fefcf8;
+    --fg: #3a3a3a;
+    --primary: #2e7d6f;
+    --primary-light: #e8f5f0;
+    --warm: #e07a3a;
+    --warm-light: #fef3ea;
+    --purple: #7b5ea7;
+    --purple-light: #f3effa;
+    --blue: #3a7bbf;
+    --blue-light: #edf4fb;
+    --red: #c0392b;
+    --red-light: #fdf0ef;
+    --border: #d8d0c4;
+    --card-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; font-size: 16px; }
+
+  body {
+    font-family: 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
+    background: var(--bg);
+    color: var(--fg);
+    line-height: 1.9;
+  }
+
+  /* ===== Header ===== */
+  .header {
+    background: linear-gradient(135deg, #1a5c4e 0%, #2e7d6f 40%, #3a9985 100%);
+    color: #fff;
+    padding: 3rem 2rem 2.5rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: "";
+    position: absolute;
+    top: -30%; left: -10%;
+    width: 120%; height: 160%;
+    background: radial-gradient(ellipse at 30% 50%, rgba(255,255,255,0.08) 0%, transparent 60%);
+  }
+  .header h1 {
+    font-family: 'LXGW WenKai', serif;
+    font-size: 2.4rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    position: relative;
+    margin-bottom: 0.4rem;
+  }
+  .header .subtitle {
+    font-size: 1.05rem;
+    opacity: 0.9;
+    position: relative;
+    font-weight: 400;
+  }
+  .header .badge {
+    display: inline-block;
+    background: rgba(255,255,255,0.2);
+    padding: 0.3rem 1rem;
+    border-radius: 20px;
+    font-size: 0.82rem;
+    margin-top: 1rem;
+    position: relative;
+    letter-spacing: 0.05em;
+  }
+
+  /* ===== Navigation ===== */
+  .nav-bar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: #f7f4ee;
+    border-bottom: 1px solid var(--border);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .nav-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.65rem;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: var(--primary);
+    font-weight: 600;
+    user-select: none;
+  }
+  .nav-toggle .arrow { transition: transform 0.2s; display: inline-block; margin-right: 0.4rem; }
+  .nav-toggle.open .arrow { transform: rotate(90deg); }
+  .nav-grid {
+    display: none;
+    padding: 0 1rem 1rem;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  .nav-grid.show {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 0.4rem;
+  }
+  .nav-grid a {
+    display: block;
+    padding: 0.45rem 0.7rem;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    text-decoration: none;
+    color: var(--fg);
+    font-size: 0.82rem;
+    transition: all 0.15s;
+  }
+  .nav-grid a:hover { background: var(--primary-light); border-color: var(--primary); }
+  .nav-grid a .nav-num {
+    display: inline-block;
+    width: 1.4rem;
+    height: 1.4rem;
+    line-height: 1.4rem;
+    text-align: center;
+    background: var(--primary);
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 700;
+    border-radius: 50%;
+    margin-right: 0.4rem;
+    vertical-align: middle;
+  }
+
+  /* ===== Main ===== */
+  .main {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+  }
+
+  /* ===== Intro Card ===== */
+  .intro-card {
+    background: var(--primary-light);
+    border: 2px solid var(--primary);
+    border-radius: 12px;
+    padding: 1.5rem 1.8rem;
+    margin-bottom: 2.5rem;
+    box-shadow: var(--card-shadow);
+  }
+  .intro-card h2 {
+    font-family: 'LXGW WenKai', serif;
+    font-size: 1.3rem;
+    color: var(--primary);
+    margin-bottom: 0.8rem;
+  }
+  .intro-card p { font-size: 0.95rem; }
+
+  /* ===== Chapter ===== */
+  .chapter {
+    margin-bottom: 3rem;
+    scroll-margin-top: 3.5rem;
+  }
+  .ch-header {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-bottom: 1.2rem;
+    padding-bottom: 0.7rem;
+    border-bottom: 3px solid var(--primary);
+  }
+  .ch-icon {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+    color: #fff;
+    font-weight: 700;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+  }
+  .ch-header h2 {
+    font-family: 'LXGW WenKai', serif;
+    font-size: 1.4rem;
+    color: var(--primary);
+    font-weight: 700;
+  }
+  .ch-header .ch-sub {
+    font-size: 0.82rem;
+    color: #999;
+    font-weight: 400;
+  }
+
+  h3 {
+    font-family: 'LXGW WenKai', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--warm);
+    margin: 1.5rem 0 0.6rem;
+    padding-left: 0.8rem;
+    border-left: 4px solid var(--warm);
+  }
+
+  p { margin-bottom: 0.8rem; font-size: 0.95rem; }
+
+  /* ===== Analogy Box ===== */
+  .analogy {
+    background: var(--warm-light);
+    border: 1px solid #f0d4b0;
+    border-radius: 10px;
+    padding: 1rem 1.2rem;
+    margin: 1rem 0;
+    position: relative;
+  }
+  .analogy::before {
+    content: "生活小比方";
+    position: absolute;
+    top: -0.6rem;
+    left: 1rem;
+    background: var(--warm);
+    color: #fff;
+    font-size: 0.72rem;
+    padding: 0.15rem 0.6rem;
+    border-radius: 10px;
+    font-weight: 600;
+  }
+  .analogy p { margin-top: 0.3rem; font-size: 0.92rem; }
+
+  /* ===== Formula Card ===== */
+  .formula {
+    background: var(--blue-light);
+    border: 1px solid #c4d9ee;
+    border-radius: 10px;
+    padding: 1rem 1.2rem;
+    margin: 1rem 0;
+    text-align: center;
+    position: relative;
+  }
+  .formula::before {
+    content: "数学公式";
+    position: absolute;
+    top: -0.6rem;
+    left: 1rem;
+    background: var(--blue);
+    color: #fff;
+    font-size: 0.72rem;
+    padding: 0.15rem 0.6rem;
+    border-radius: 10px;
+    font-weight: 600;
+  }
+  .formula .math {
+    font-family: 'LXGW WenKai', serif;
+    font-size: 1.15rem;
+    color: #1a4a7a;
+    line-height: 2.2;
+    font-style: italic;
+  }
+
+  /* ===== Example Box ===== */
+  .example {
+    background: #f9f9f5;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem 1.2rem;
+    margin: 1rem 0;
+    position: relative;
+  }
+  .example::before {
+    content: "动手看看";
+    position: absolute;
+    top: -0.6rem;
+    left: 1rem;
+    background: var(--primary);
+    color: #fff;
+    font-size: 0.72rem;
+    padding: 0.15rem 0.6rem;
+    border-radius: 10px;
+    font-weight: 600;
+  }
+  .example .math {
+    font-family: 'LXGW WenKai', serif;
+    font-size: 1.02rem;
+    line-height: 2;
+    color: #2c5a2c;
+  }
+
+  /* ===== Magic Box ===== */
+  .magic {
+    background: var(--purple-light);
+    border: 1px solid #d5c9e8;
+    border-radius: 10px;
+    padding: 1rem 1.2rem;
+    margin: 1rem 0;
+    position: relative;
+  }
+  .magic::before {
+    content: "数学小魔法";
+    position: absolute;
+    top: -0.6rem;
+    left: 1rem;
+    background: var(--purple);
+    color: #fff;
+    font-size: 0.72rem;
+    padding: 0.15rem 0.6rem;
+    border-radius: 10px;
+    font-weight: 600;
+  }
+
+  /* ===== Caution ===== */
+  .caution {
+    background: var(--red-light);
+    border: 1px solid #e8c4c4;
+    border-radius: 10px;
+    padding: 0.8rem 1rem;
+    margin: 1rem 0;
+    font-size: 0.9rem;
+    position: relative;
+  }
+  .caution::before {
+    content: "小心别踩坑";
+    position: absolute;
+    top: -0.6rem;
+    left: 1rem;
+    background: var(--red);
+    color: #fff;
+    font-size: 0.72rem;
+    padding: 0.15rem 0.6rem;
+    border-radius: 10px;
+    font-weight: 600;
+  }
+
+  /* ===== Step List ===== */
+  .steps {
+    list-style: none;
+    padding: 0;
+    counter-reset: step;
+    margin: 0.8rem 0;
+  }
+  .steps li {
+    counter-increment: step;
+    padding: 0.5rem 0 0.5rem 2.8rem;
+    position: relative;
+    font-size: 0.93rem;
+  }
+  .steps li::before {
+    content: counter(step);
+    position: absolute;
+    left: 0;
+    top: 0.55rem;
+    width: 2rem;
+    height: 2rem;
+    line-height: 2rem;
+    text-align: center;
+    background: var(--primary);
+    color: #fff;
+    font-size: 0.85rem;
+    font-weight: 700;
+    border-radius: 50%;
+  }
+  .steps li strong { color: var(--primary); }
+
+  /* ===== Tool Summary ===== */
+  .tool-summary {
+    background: #fff;
+    border: 2px solid var(--primary);
+    border-radius: 12px;
+    padding: 1.2rem 1.5rem;
+    margin: 1.2rem 0;
+    box-shadow: var(--card-shadow);
+  }
+  .tool-summary .ts-title {
+    font-family: 'LXGW WenKai', serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 0.5rem;
+  }
+
+  /* ===== Visual Demo ===== */
+  .visual {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin: 1rem 0;
+    font-family: 'LXGW WenKai', serif;
+    font-size: 1.1rem;
+    color: var(--primary);
+  }
+  .visual .block {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.4rem 0.8rem;
+    border: 2px solid var(--primary);
+    border-radius: 8px;
+    background: var(--primary-light);
+    font-weight: 700;
+  }
+  .visual .op {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--warm);
+  }
+  .visual .eq {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--blue);
+  }
+
+  /* ===== Collapsible ===== */
+  .collapsible {
+    margin: 1rem 0;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .coll-header {
+    background: #f5f2ec;
+    padding: 0.7rem 1rem;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.93rem;
+    color: var(--primary);
+    user-select: none;
+    display: flex;
+    align-items: center;
+  }
+  .coll-header .arrow {
+    display: inline-block;
+    margin-right: 0.5rem;
+    transition: transform 0.2s;
+    font-size: 0.8rem;
+  }
+  .coll-header.open .arrow { transform: rotate(90deg); }
+  .coll-body {
+    display: none;
+    padding: 1rem 1.2rem;
+    background: #fff;
+    font-size: 0.93rem;
+  }
+  .coll-body.show { display: block; }
+
+  /* ===== Table ===== */
+  .info-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+    font-size: 0.88rem;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .info-table th {
+    background: var(--primary);
+    color: #fff;
+    padding: 0.55rem 0.7rem;
+    text-align: left;
+    font-weight: 600;
+  }
+  .info-table td {
+    padding: 0.5rem 0.7rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .info-table tr:nth-child(even) td { background: #faf8f4; }
+
+  /* ===== Divider ===== */
+  .divider {
+    border: none;
+    height: 2px;
+    background: repeating-linear-gradient(90deg, var(--border) 0, var(--border) 6px, transparent 6px, transparent 12px);
+    margin: 2.5rem 0;
+  }
+
+  /* ===== Footer ===== */
+  .footer {
+    text-align: center;
+    padding: 2rem 1rem;
+    font-size: 0.82rem;
+    color: #aaa;
+    border-top: 1px solid var(--border);
+    margin-top: 2rem;
+  }
+
+  @media (max-width: 600px) {
+    .main { padding: 1.2rem 0.8rem 3rem; }
+    .header h1 { font-size: 1.7rem; }
+    .ch-header h2 { font-size: 1.15rem; }
+    .nav-grid { grid-template-columns: repeat(2, 1fr); }
+    .visual { font-size: 0.95rem; }
+  }
+  @media print {
+    .nav-bar { display: none; }
+    .coll-body { display: block !important; }
+    .chapter { page-break-before: always; }
+  }
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+</head>
+<body>
+
+<div class="header">
+  <h1>因式分解技巧</h1>
+  <div class="subtitle">全书13章</div>
+</div>
+
+<!-- Navigation -->
+<div class="nav-bar">
+  <div class="nav-toggle" onclick="toggleNav()">
+    <span class="arrow">&#9654;</span> 点击展开章节目录
+  </div>
+  <div class="nav-grid" id="navGrid">
+    <a href="#ch0"><span class="nav-num">0</span>什么是因式分解</a>
+    <a href="#ch1"><span class="nav-num">1</span>提公因式</a>
+    <a href="#ch2"><span class="nav-num">2</span>应用公式</a>
+    <a href="#ch3"><span class="nav-num">3</span>分组分解</a>
+    <a href="#ch4"><span class="nav-num">4</span>拆项与添项</a>
+    <a href="#ch5"><span class="nav-num">5</span>十字相乘</a>
+    <a href="#ch6"><span class="nav-num">6</span>二元二次式</a>
+    <a href="#ch7"><span class="nav-num">7</span>综合运用</a>
+    <a href="#ch8"><span class="nav-num">8</span>一次因式</a>
+    <a href="#ch9"><span class="nav-num">9</span>待定系数法</a>
+    <a href="#ch10"><span class="nav-num">10</span>轮换与对称</a>
+    <a href="#ch11"><span class="nav-num">11</span>实数与复数</a>
+    <a href="#ch12"><span class="nav-num">12</span>既约多项式</a>
+    <a href="#ch13"><span class="nav-num">13</span>综合与应用</a>
+  </div>
+</div>
+
+<div class="main">
+
+<!-- ===== 引言 ===== -->
+<div class="intro-card">
+  <h2>写在前面：什么是"因式分解"？</h2>
+  <p>你一定会拆分数字吧？比如 <strong>12 = 3 &times; 4</strong>，把一个大数拆成几个小数相乘——这就是"分解因数"。</p>
+  <p>因式分解，就是把这个本领从<strong>数字</strong>升级到<strong>字母算式</strong>（多项式）。比如把 <em>x&sup2; &minus; 1</em> 拆成 <em>(x+1)(x&minus;1)</em>。</p>
+  <p>这本书一共有13个"魔法工具"，我们一个一个来学！</p>
+</div>
+
+<!-- ============================================================ -->
+<!-- Chapter 0 -->
+<!-- ============================================================ -->
+<section class="chapter" id="ch0">
+<div class="ch-header">
+  <div class="ch-icon" style="background: linear-gradient(135deg, #2e7d6f, #4db6a0);">0</div>
+  <div>
+    <h2>什么是因式分解</h2>
+    <div class="ch-sub">一切从这里开始</div>
+  </div>
+</div>
+
+<div class="analogy">
+  <p>想象你有一盒 12 块巧克力，你可以把它看成 <strong>3 &times; 4</strong> 或 <strong>2 &times; 6</strong>。不管怎么拆，总数不变。</p>
+  <p>因式分解就是对"字母算式"做同样的事——把一个复杂的大算式，拆成几个简单的小算式<strong>相乘</strong>的形式。</p>
+</div>
+
+<h3>为什么学因式分解？</h3>
+<p>因式分解可以让复杂的问题变简单。就像你算 <strong>99 &times; 37</strong> 时，如果发现 <strong>99 = 100 &minus; 1</strong>，就可以用 <strong>3700 &minus; 37 = 3663</strong> 快速算出来。因式分解就是帮你找到这种"巧妙拆法"。</p>
+
+<h3>两个重要规则</h3>
+<div class="tool-summary">
+  <div class="ts-title">规则一：拆到底</div>
+  <p>每个小算式都不能再拆了才算完成。就像 12 = 2 &times; 6 还没拆完（6 还能拆成 2 &times; 3），要写成 12 = 2 &times; 2 &times; 3 才对。</p>
+</div>
+<div class="tool-summary">
+  <div class="ts-title">规则二：乘回去验证</div>
+  <p>不确定拆得对不对？把几个小算式<strong>乘回去</strong>，看看是不是等于原来的大算式。这是最好的检验方法！</p>
+</div>
+</section>
+
+<hr class="divider">
+
+<!-- ============================================================ -->
+<!-- Chapter 1 -->
+<!-- ============================================================ -->
+<section class="chapter" id="ch1">
+<div class="ch-header">
+  <div class="ch-icon" style="background: linear-gradient(135deg, #e07a3a, #f0a060);">1</div>
+  <div>
+    <h2>提公因式</h2>
+    <div class="ch-sub">第一个工具：找出"大家都有"的部分</div>
+  </div>
+</div>
+
+<div class="analogy">
+  <p>你和 3 个好朋友每人都有 2 支铅笔。那一共有多少支？</p>
+  <p><strong>2 + 2 + 2 + 2 = 2 &times; 4 = 8</strong> 支。"每人都有 2 支"——这个"2"就是公因式，把它提出来就行了！</p>
+</div>
+
+<h3>怎么做？</h3>
+<ol class="steps">
+  <li><strong>找公因式</strong>——看看每一项里"大家都有的部分"是什么。</li>
+  <li><strong>提出来</strong>——把公因式写到括号外面。</li>
+  <li><strong>写剩下的</strong>——每一项除以公因式后剩下的，写到括号里面。</li>
+</ol>
+
+<div class="example">
+  <p>比如 \(6x + 9\)：</p>
+  <p>\(6x\) 里面有 \(3 \times 2x\)；\(9\) 里面有 \(3 \times 3\)。</p>
+  <p>"大家都有"的是 <strong>3</strong>，提出来：</p>
+  <div class="visual">
+    <span class="block">6x + 9</span>
+    <span class="eq">=</span>
+    <span class="block">3</span>
+    <span class="op">&times;</span>
+    <span class="block">2x + 3</span>
+  </div>
+</div>
+
+<h3>要注意的事</h3>
+<div class="caution">
+  <p><strong>一定要提干净！</strong>比如 \(4x^{2} + 8x\) 的公因式是 \(4x\)（不只是 4，也不只是 x），提完得到 \(4x(x + 2)\)。</p>
+</div>
+
+<div class="caution">
+  <p><strong>别忘了留 1！</strong>比如 \(5x + 5\)，提出 5 后，第二项剩的是 1，不是"空"：\(5(x + 1)\)。</p>
+</div>
+
+<div class="magic">
+  <p><strong>字母也能当公因式！</strong>如果算式里有 \(x(x+1) + 2(x+1)\)，你会发现"大家都有 \((x+1)\)"，所以：</p>
+  <p>\(x(x+1) + 2(x+1) = (x+1)(x+2)\)</p>
+  <p>把 \((x+1)\) 当成一个"整体"来提。</p>
+</div>
+</section>
+
+<hr class="divider">
+
+<!-- ============================================================ -->
+<!-- Chapter 2 -->
+<!-- ============================================================ -->
+<section class="chapter" id="ch2">
+<div class="ch-header">
+  <div class="ch-icon" style="background: linear-gradient(135deg, #3a7bbf, #5fa0db);">2</div>
+  <div>
+    <h2>应用公式</h2>
+    <div class="ch-sub">记住几个"万能拆法"</div>
+  </div>
+</div>
+
+<p>有些算式长得特别像固定的"模型"，只要认出来，就能直接拆。</p>
+
+<h3>模型一：平方差</h3>
+<div class="analogy">
+  <p>你有一个大正方形（边长 <em>a</em>），挖掉一个小正方形（边长 <em>b</em>），剩下的面积可以拼成一个长条——这就是"平方差"。</p>
+</div>
+<div class="formula">
+  \[
+a^{2} - b^{2} = (a + b)(a - b)
+\]
+</div>
+<div class="example">
+  <p>\(x^{2} - 9 = x^{2} - 3^{2} = (x + 3)(x - 3)\)</p>
+  <p>\(4x^{2} - 25 = (2x)^{2} - 5^{2} = (2x + 5)(2x - 5)\)</p>
+</div>
+<div class="caution">
+  <p><strong>加法不行！</strong>\(a^{2} + b^{2}\) 在实数范围内拆不了。只有"<strong>减</strong>"才能用平方差。</p>
+</div>
+
+<h3>模型二：完全平方</h3>
+<div class="formula">
+  \[
+a^{2} + 2ab + b^{2} = (a + b)^{2}
+
+    a^{2} - 2ab + b^{2} = (a - b)^{2}
+\]
+</div>
+<div class="example">
+  <p>\(x^{2} + 6x + 9 = x^{2} + 2&middot;x&middot;3 + 3^{2} = (x + 3)^{2}\)</p>
+  <p>看，首尾两项分别是 \(x\) 和 \(3\) 的平方，中间恰好是 \(2 \times x \times 3\)！</p>
+</div>
+
+<h3>模型三：立方和与立方差</h3>
+<div class="formula">
+  \[
+a^{3} + b^{3} = (a + b)(a^{2} - ab + b^{2})
+
+    a^{3} - b^{3} = (a - b)(a^{2} + ab + b^{2})
+\]
+</div>
+<p>看到"两个立方数相加或相减"，就用这个公式。注意中间项的符号和公式方向是<strong>反过来</strong>的。</p>
+
+<h3>模型四：完全立方</h3>
+<div class="formula">
+  \[
+a^{3} + 3a^{2}b + 3ab^{2} + b^{3} = (a + b)^{3}
+\]
+</div>
+<p>看到系数是 <strong>1, 3, 3, 1</strong>，就是完全立方的信号！</p>
+
+<div class="magic">
+  <p><strong>Sophie Germain 魔法公式：</strong></p>
+  <p>\(a&#8308; + 4b&#8308; = (a^{2} + 2b^{2} + 2ab)(a^{2} + 2b^{2} - 2ab)\)</p>
+  <p>用这个公式可以证明 \(21984 + 1\) 不是质数——它看起来像个质数，其实可以拆成两个数相乘！</p>
+</div>
+</section>
+
+<hr class="divider">
+
+<!-- ============================================================ -->
+<!-- Chapter 3 -->
+<!-- ============================================================ -->
+<section class="chapter" id="ch3">
+<div class="ch-header">
+  <div class="ch-icon" style="background: linear-gradient(135deg, #7b5ea7, #a184cc);">3</div>
+  <div>
+    <h2>分组分解</h2>
+    <div class="ch-sub">项数多的时候，先"分队"再各个击破</div>
+  </div>
+</div>
+
+<div class="analogy">
+  <p>你有 8 个同学要搬桌子，桌子太重搬不动。怎么办？分成两组，每组 4 人搬一张小桌子——问题就解决了！</p>
+  <p>分组分解就是这个道理：4 项以上的算式，先分成小组，每组内部先分解，再看组与组之间能不能继续合并。</p>
+</div>
+
+<h3>三步走</h3>
+<ol class="steps">
+  <li><strong>分组</strong>——把各项分成两组（或更多组）。</li>
+  <li><strong>组内分解</strong>——每组内部提公因式或套公式。</li>
+  <li><strong>组间合并</strong>——看看各组的结果有没有"新的公因式"，再提一次。</li>
+</ol>
+
+<div class="example">
+  <p>分解 \(ax + ay + bx + by\)：</p>
+  <p>分成两组：\((ax + ay)\) 和 \((bx + by)\)</p>
+  <p>组内提公因式：\(a(x+y)\) 和 \(b(x+y)\)</p>
+  <p>发现都有 \((x+y)\)，再提一次：</p>
+  <div class="visual">
+    <span class="block">a(x+y) + b(x+y)</span>
+    <span class="eq">=</span>
+    <span class="block">(a + b)(x + y)</span>
+  </div>
+</div>
+
+<h3>"加零"的技巧</h3>
+<div class="magic">
+  <p>有时候算式怎么分都分不动。这时可以<strong>凭空加上一对相反数</strong>（加起来等于零，不改变原式的值），来创造分组的机会：</p>
+  <p>\(x&#8308; + x^{2} + 1     = x&#8308; + \textbf{2x^{2}} + 1 \textbf{- x^{2}} \;\;&larr; 加了 +x^{2} 和 -x^{2}     = (x^{2} + 1)^{2} - x^{2} \;\;&larr; 完全平方！     = (x^{2} + x + 1)(x^{2} - x + 1) \;\;&larr; 平方差！\)</p>
+</div>
+</section>
+
+<hr class="divider">
+
+<!-- ============================================================ -->
+<!-- Chapter 4 -->
+<!-- ============================================================ -->
+<section class="chapter" id="ch4">
+<div class="ch-header">
+  <div class="ch-icon" style="background: linear-gradient(135deg, #c0392b, #e74c3c);">4</div>
+  <div>
+    <h2>拆项与添项</h2>
+    <div class="ch-sub">把一项拆成两项，或凭空添加"一对好朋友"</div>
+  </div>
+</div>
+
+<div class="analogy">
+  <p>你在拼拼图，发现差一块拼不上。这时你把一块大拼图<strong>拆成两小块</strong>，或者从旁边<strong>借一块</strong>（同时也要还一块），让图案完整——这就是拆项添项。</p>
+</div>
+
+<h3>拆开中间项</h3>
+<p>对于 \(x^{2} + 5x + 6\)，中间项 \(5x\) 可以拆成 \(2x + 3x\)：</p>
+<div class="example">
+  <p>\(x^{2} + 5x + 6\)</p>
+  <p>\(= x^{2} + 2x + 3x + 6\) &nbsp;&nbsp; &larr; 把 5x 拆成 2x + 3x</p>
+  <p>\(= x(x+2) + 3(x+2)\) &nbsp;&nbsp; &larr; 分组提公因式</p>
+  <p>\(= (x+3)(x+2)\)</p>
+</div>
+<p>拆的秘诀：找两个数，<strong>加起来等于 5</strong>（中间项系数），<strong>乘起来等于 6</strong>（常数项）。2 和 3 刚好满足！</p>
+
+<h3>无中生有（加零法）</h3>
+<div class="magic">
+  <p>\(x&#8308; + 4\) 看着根本没法拆？</p>
+  <p>加上 \(+4x^{2}\) 和 \(-4x^{2}\)（加起来是零，不改变原式）：</p>
+  <p>\(x&#8308; + 4x^{2} + 4 - 4x^{2}     = (x^{2} + 2)^{2} - (2x)^{2}     = (x^{2} + 2x + 2)(x^{2} - 2x + 2)\)</p>
+  <p>凭空变出了完全平方，再用平方差，搞定！</p>
+</div>
+
+<h3>配方法</h3>
+<p>配方法是一种通用的拆项策略：把算式的一部分凑成完全平方，然后用平方差公式。</p>
+<div class="tool-summary">
+  <div class="ts-title">配方三步曲</div>
+  <ol class="steps">
+    <li>选出一部分项，准备凑完全平方。</li>
+    <li>加上缺的项，同时减去同样的项（保持值不变）。</li>
+    <li>用 \(A^{2} - B^{2} = (A+B)(A-B)\) 完成分解。</li>
+  </ol>
+</div>
+</section>
+
+<hr class="divider">
+
+<!-- ============================================================ -->
+<!-- Chapter 5 -->
+<!-- ============================================================ -->
+<section class="chapter" id="ch5">
+<div class="ch-header">
+  <div class="ch-icon" style="background: linear-gradient(135deg, #16a085, #2ecc71);">5</div>
+  <div>
+    <h2>十字相乘</h2>
+    <div class="ch-sub">拆二次三项式的"超级武器"</div>
+  </div>
+</div>
+
+<p>十字相乘是第四章"拆开中间项"的系统化版本。对于 \(x^{2} + bx + c\) 这类算式，有一个快速的方法。</p>
+
+<h3>最简单的情形</h3>
+<div class="formula">
+  \[
+x^{2} + bx + c = (x + m)(x + n)
+\]
+  <p style="margin-top:0.3rem; font-size:0.88rem; text-align:center; color:#666;">
+    其中 \(m + n = b\)，\(m \times n = c\)
+  </p>
+</div>
+<p>翻译成大白话：<strong>找两个数，加起来是中间那个数，乘起来是最后那个数。</strong></p>
+
+<div class="example">
+  <p>\(x^{2} + 7x + 12\)：找两个数加起来是 7、乘起来是 12 &rarr; <strong>3 和 4</strong></p>
+  <p>所以 \(x^{2} + 7x + 12 = (x + 3)(x + 4)\)</p>
+</div>
+
+<div class="example">
+  <p>\(x^{2} - x - 12\)：找两个数加起来是 &minus;1、乘起来是 &minus;12 &rarr; <strong>3 和 &minus;4</strong></p>
+  <p>所以 \(x^{2} - x - 12 = (x + 3)(x - 4)\)</p>
+</div>
+
+<h3>首项系数不是 1 怎么办？</h3>
+<p>比如 \(6x^{2} + 7x + 2\)，需要把 6 和 2 都拆开，然后"交叉相乘"：</p>
+<div class="visual">
+  <span class="block">2x</span>
+  <span class="op">&times;</span>
+  <span class="block">3x</span>
+  <span class="eq">=</span>
+  <span class="block">6x&sup2;</span>
+</div>
+<div class="visual">
+  <span class="block">1</span>
+  <span class="op">&times;</span>
+  <span class="block">2</span>
+  <span class="eq">=</span>
+  <span class="block">2</span>
+</div>
+<p>交叉相乘再相加：\(2x \times 2 + 3x \times 1 = 4x + 3x = 7x\) &check; 正好等于中间项！</p>
+<p>所以 \(6x^{2} + 7x + 2 = (2x + 1)(3x + 2)\)</p>
+
+<div class="magic">
+  <p><strong>快捷判断：</strong>如果一个算式各项系数加起来等于零（比如 \(3x^{2} - 5x + 2\)，3 &minus; 5 + 2 = 0），那么 \((x - 1)\) 一定是它的因式！</p>
+</div>
+</section>
+
+<hr class="divider">
+
+<!-- ============================================================ -->
+<!-- Chapter 6 -->
+<!-- ============================================================ -->
+<section class="chapter" id="ch6">
+<div class="ch-header">
+  <div class="ch-icon" style="background: linear-gradient(135deg, #2c3e50, #4a6a8a);">6</div>
+  <div>
+    <h2>二元二次式的分解</h2>
+    <div class="ch-sub">两个字母、最高二次——十字相乘的升级版</div>
+  </div>
+</div>
+
+<p>之前的方法都是一个字母 \(x\) 的事。如果有两个字母呢？比如 \(x^{2} + 3xy + 2y^{2} + 2x + y - 3\)？</p>
+
+<h3>分步来</h3>
+<ol class="steps">
+  <li><strong>先不管一次项和常数</strong>，只看最高次的部分 \(x^{2} + 3xy + 2y^{2}\)，用十字相乘拆成 \((x + y)(x + 2y)\)。</li>
+  <li><strong>设分解形式</strong>为 \((x + y + a)(x + 2y + b)\)，展开后和原式比较系数，求出 \(a\) 和 \(b\)。</li>
+  <li>展开验证，确认分解正确。</li>
+</ol>
+
+<div class="tool-summary">
+  <div class="ts-title">能不能分解？</div>
+  <p>不是所有二元二次式都能分解。判断方法：把原式看成关于 \(x\) 的二次方程，算出判别式。如果判别式本身恰好是某个算式的完全平方，就能分解；否则就不行。</p>
+</div>
+</section>
+
+<hr class="divider">
+
+<!-- ============================================================ -->
+<!-- Chapter 7 -->
+<!-- ============================================================ -->
+<section class="chapter" id="ch7">
+<div class="ch-header">
+  <div class="ch-icon" style="background: linear-gradient(135deg, #8e44ad, #c39bd3);">7</div>
+  <div>
+    <h2>综合运用</h2>
+    <div class="ch-sub">把前面学到的工具组合起来</div>
+  </div>
+</div>
+
+<p>真实的问题不会只用一种方法。这一章教你四个"组合技"。</p>
+
+<h3>换元法——给复杂的东西起个名字</h3>
+<div class="analogy">
+  <p>假设你每天都要带"语文课本+数学课本+英语课本"去学校，说起来太长，你就说"书包"。换元就是给一个复杂的式子取个短名字。</p>
+</div>
+<div class="example">
+  <p>分解 \((x^{2}+x+1)(x^{2}+x+2) - 12\)</p>
+  <p>令 \(t = x^{2}+x\)，原式变成：</p>
+  <p>\((t+1)(t+2) - 12 = t^{2}+3t - 10 = (t+5)(t-2)\)</p>
+  <p>把 \(t\) 换回来：\((x^{2}+x+5)(x^{2}+x-2)\)</p>
+  <p>检查一下 \(x^{2}+x-2\) 还能不能拆？能！\(= (x+2)(x-1)\)</p>
+  <p>最终答案：\((x^{2}+x+5)(x+2)(x-1)\)</p>
+</div>
+
+<h3>选主元——挑一个字母当"主角"</h3>
+<p>多字母的算式，选一个字母当主角（按它的次数从高到低排列），把其他字母当"背景"。选对了主角，问题就简单很多。</p>
+
+<h3>先展开再重新拆</h3>
+<p>有时候原式已经是乘法形式，但里面还能进一步拆。这时先展开，再重新组合。</p>
+<div class="example">
+  <p>\((x+1)(x+2)(x+3)(x+4) + 1\)</p>
+  <p>把第1个和第4个配对、第2个和第3个配对：</p>
+  <p>\((x^{2}+5x+4)(x^{2}+5x+6) + 1\)</p>
+  <p>令 \(t = x^{2}+5x+5\)，变成 \((t-1)(t+1)+1 = t^{2} = (x^{2}+5x+5)^{2}\)</p>
+</div>
+
+<h3>因式定理试根</h3>
+<p>把 \(x = 1, -1, 2, -2, ...\) 一个一个代进去试。如果代入某个数后算式变成 0，那 \((x - 那个数)\) 就是一个因式！</p>
+</section>
+
+<hr class="divider">
+
+<!-- ============================================================ -->
+<!-- Chapter 8 -->
+<!-- ============================================================ -->
+<section class="chapter" id="ch8">
+<div class="ch-header">
+  <div class="ch-icon" style="background: linear-gradient(135deg, #d35400, #e67e22);">8</div>
+  <div>
+    <h2>多项式的一次因式</h2>
+    <div class="ch-sub">用"代入法"找因式，像侦探破案</div>
+  </div>
+</div>
+
+<div class="analogy">
+  <p>想象你是一个侦探，要找出"谁是嫌疑人"。你的方法是：把每个人叫来问话（代入不同的数），看谁的反应是"零"（即让算式等于零），那他就是"凶手"（因式）！</p>
+</div>
+
+<h3>余数定理</h3>
+<div class="formula">
+  \[
+\text{把} x = a \text{代入多项式} f(x)\text{，得到的值} f(a)
+
+    \text{就是} f(x) \text{除以} (x - a) \text{的余数。}
+\]
+</div>
+<p>特别地，如果 \(f(a) = 0\)，说明 \((x - a)\) 能<strong>整除</strong> \(f(x)\)，也就是说 \((x - a)\) 是 \(f(x)\) 的因式。这就叫<strong>因式定理</strong>。</p>
+
+<h3>有理根定理——缩小嫌疑人范围</h3>
+<p>不用一个一个试！有理根定理告诉你嫌疑人只可能在有限的人选中：</p>
+<div class="formula">
+  \[
+\text{如果} p/q \text{是多项式的根，}
+
+    \text{那么} p \text{整除最后一项（常数项），}q \text{整除第一项（最高次项系数）。}
+\]
+</div>
+<div class="example">
+  <p>\(2x^{3} - 3x^{2} - 3x + 2\)</p>
+  <p>常数项 = 2，因数：&plusmn;1, &plusmn;2</p>
+  <p>首项系数 = 2，因数：&plusmn;1, &plusmn;2</p>
+  <p>候选根：&plusmn;1, &plusmn;2, &plusmn;1/2</p>
+  <p>代入 x = &minus;1：2(&minus;1) &minus; 3(1) &minus; 3(&minus;1) + 2 = &minus;2 &minus; 3 + 3 + 2 = 0 &check;</p>
+  <p>所以 \((x + 1)\) 是因式！用除法除掉后继续处理。</p>
+</div>
+</section>
+
+<hr class="divider">
+
+<!-- ============================================================ -->
+<!-- Chapter 9 -->
+<!-- ============================================================ -->
+<section class="chapter" id="ch9">
+<div class="ch-header">
+  <div class="ch-icon" style="background: linear-gradient(135deg, #27ae60, #52d689);">9</div>
+  <div>
+    <h2>待定系数法</h2>
+    <div class="ch-sub">先猜长什么样，再算具体数字</div>
+  </div>
+</div>
+
+<div class="analogy">
+  <p>你看到一个被布盖住的物品，猜它是一张桌子（有4条腿和一个平面）。你先把"桌子"的框架画出来，然后掀开布量一量，填入具体的长宽高数字。</p>
+  <p>待定系数法就是这个思路：先猜分解后的"形状"，再算出里面的未知数字。</p>
+</div>
+
+<h3>怎么做？</h3>
+<div class="example">
+  <p>分解 \(x&#8308; + 2x^{3} - 7x^{2} - 8x + 12\)</p>
+  <p><strong>猜形状：</strong>假设它能拆成两个二次式：</p>
+  <p>\((x^{2} + ax + b)(x^{2} + cx + d)\)</p>
+  <p><strong>展开右边：</strong></p>
+  <p>\(x&#8308; + (a+c)x^{3} + (b+d+ac)x^{2} + (ad+bc)x + bd\)</p>
+  <p><strong>逐项对比系数：</strong></p>
+  <p>\(a+c = 2\)，\(b+d+ac = -7\)，\(ad+bc = -8\)，\(bd = 12\)</p>
+  <p>解这个方程组，就能找到 a, b, c, d 的具体值。</p>
+</div>
+
+<div class="caution">
+  <p>待定系数法的方程组通常很难解。在竞赛中，一般是其他方法都用不了的时候才用它。</p>
+</div>
+</section>
+
+<hr class="divider">
+
+<!-- ============================================================ -->
+<!-- Chapter 10 -->
+<!-- ============================================================ -->
+<section class="chapter" id="ch10">
+<div class="ch-header">
+  <div class="ch-icon" style="background: linear-gradient(135deg, #2980b9, #5dade2);">10</div>
+  <div>
+    <h2>轮换式与对称式</h2>
+    <div class="ch-sub">变量们"排排坐"的美妙规律</div>
+  </div>
+</div>
+
+<div class="analogy">
+  <p>想象三个人 a、b、c 围坐在圆桌旁。如果不管怎么轮流换座位（a坐b的位置，b坐c的位置，c坐a的位置），你看到的画面都一样——这就是"轮换对称"。</p>
+</div>
+
+<h3>两种类型</h3>
+<div class="tool-summary">
+  <div class="ts-title">对称式 vs 轮换式</div>
+  <p><strong>对称式：</strong>交换任意两个字母，式子不变。比如 \(a^{2} + b^{2} + ab\)，把 a 和 b 换一下还是它。</p>
+  <p><strong>轮换式：</strong>按 a&rarr;b&rarr;c&rarr;a 轮换，式子不变。比如 \(a^{2}b + b^{2}c + c^{2}a\)。</p>
+  <p>对称式一定是轮换式，但轮换式不一定是对称式。</p>
+</div>
+
+<h3>分解的秘诀</h3>
+<ol class="steps">
+  <li><strong>试一个因式：</strong>令某个字母 = 0（比如令 a = 0），看看式子是不是变成 0。如果是，说明含有 a 这个因式。</li>
+  <li><strong>自动推广：</strong>因为式子是对称的，如果 a 是因式，那 b 和 c 也一定是因式。一下就找到了三个因式！</li>
+  <li><strong>凑次数：</strong>算算已有的因式次数加起来是多少，和原式次数一比，就知道还差什么。</li>
+  <li><strong>定系数：</strong>比较某一项的系数，算出最后那个常数。</li>
+</ol>
+
+<h3>经典案例</h3>
+<div class="formula">
+  \[
+a^{3} + b^{3} + c^{3} - 3abc = (a + b + c)(a^{2} + b^{2} + c^{2} - ab - bc - ca)
+\]
+</div>
+<p>这是一个非常重要的公式。第二个括号还可以写成 \(\frac{1}{2}[(a-b)^{2} + (b-c)^{2} + (c-a)^{2}]\)，只有当 a = b = c 时才等于零。</p>
+</section>
+
+<hr class="divider">
+
+<!-- ============================================================ -->
+<!-- Chapter 11 -->
+<!-- ============================================================ -->
+<section class="chapter" id="ch11">
+<div class="ch-header">
+  <div class="ch-icon" style="background: linear-gradient(135deg, #1abc9c, #48d1a5);">11</div>
+  <div>
+    <h2>实数集与复数集内的分解</h2>
+    <div class="ch-sub">不同的"世界"里，拆法不一样</div>
+  </div>
+</div>
+
+<div class="analogy">
+  <p>同样一块蛋糕，在不同大小的聚会里切法不同：2个人切两半，4个人切四份，8个人切八份。因式分解也一样——在"有理数的世界""实数的世界""复数的世界"里，能拆到什么程度是不一样的。</p>
+</div>
+
+<h3>三个"世界"</h3>
+<table class="info-table">
+  <tr><th>世界</th><th>特点</th><th>拆到什么程度</th></tr>
+  <tr><td>有理数世界</td><td>只用分数和整数</td><td>有些式子拆不了</td></tr>
+  <tr><td>实数世界</td><td>可以用小数、根号</td><td>最复杂拆到二次</td></tr>
+  <tr><td>复数世界</td><td>可以用虚数 <em>i</em></td><td>全部能拆成一次式</td></tr>
+</table>
+
+<h3>代数基本定理</h3>
+<div class="formula">
+  \[
+n \text{次多项式在复数世界里}
+
+    \text{一定能拆成} n \text{个一次因式相乘。}
+\]
+</div>
+<p>这是一个非常深刻的定理——它保证了任何多项式最终都能被"彻底拆开"。</p>
+
+<h3>单位根</h3>
+<p>\(x&#8311; - 1 = 0\) 的 <em>n</em> 个解叫做"<strong>n 次单位根</strong>"，它们均匀分布在复平面上的单位圆上。</p>
+<div class="example">
+  <p>\(x^{3} - 1 = (x - 1)(x^{2} + x + 1)\)</p>
+  <p>其中 \(x^{2} + x + 1\) 在有理数里拆不了，但在复数里可以继续拆。</p>
+</div>
+
+<h3>共轭配对</h3>
+<div class="magic">
+  <p>如果一个实系数多项式有一个复数根 \(a + bi\)，那它的"镜像" \(a - bi\) 也一定是根。这两个根配对后变成一个实数二次式：</p>
+  <p>\((x - (a+bi))(x - (a-bi)) = x^{2} - 2ax + (a^{2}+b^{2})\)</p>
+</div>
+</section>
+
+<hr class="divider">
+
+<!-- ============================================================ -->
+<!-- Chapter 12 -->
+<!-- ============================================================ -->
+<section class="chapter" id="ch12">
+<div class="ch-header">
+  <div class="ch-icon" style="background: linear-gradient(135deg, #34495e, #5d7b94);">12</div>
+  <div>
+    <h2>既约多项式</h2>
+    <div class="ch-sub">哪些式子"拆不了"？怎么证明？</div>
+  </div>
+</div>
+
+<div class="analogy">
+  <p>在数字里，2、3、5、7 这些质数"拆不了"（除了 1 和它本身没有其他因数）。多项式里也有"拆不了"的家伙，叫做<strong>既约多项式</strong>（或者"不可约多项式"）。怎么判断一个多项式是不是既约的呢？</p>
+</div>
+
+<h3>艾森斯坦判别法</h3>
+<p>这是判断"拆不了"的最有名工具：</p>
+<div class="formula">
+  \[
+\text{如果能找到一个质数} p\text{，使得：}
+
+    &emsp;1. p \text{不整除最高次项系数}
+
+    &emsp;2. p \text{整除其余所有项的系数}
+
+    &emsp;3. p^{2} \text{不整除常数项}
+
+    \text{那么这个多项式在有理数世界里拆不了！}
+\]
+</div>
+<div class="example">
+  <p>\(x^{3} + 6x^{2} + 12x + 8\)</p>
+  <p>试试 p = 2：最高次项系数是 1，2 不整除 1 &check;</p>
+  <p>其余系数 6, 12, 8 都被 2 整除 &check;</p>
+  <p>常数项 8 被 4 (=2&sup2;) 整除 &cross; ——不满足条件 3！</p>
+  <p>所以不能直接用艾氏判别法（其实这个式子 = (x+2)&sup3;，是可约的）。</p>
+</div>
+
+<h3>模 2 法</h3>
+<p>把所有系数除以 2 看余数（只看奇偶），变成一个只有 0 和 1 的简单式子。如果在"0-1 世界"里拆不了，那原来在有理数世界也拆不了。</p>
+
+<h3>分圆多项式</h3>
+<p>\(x&#8311; - 1\) 在有理数世界里的"标准拆法"用到分圆多项式：</p>
+<div class="tool-summary">
+  <div class="ts-title">几个常见的分圆多项式（都是既约的）</div>
+  <p>\(\Phi1(x) = x - 1 &emsp;     \Phi2(x) = x + 1 &emsp;     \Phi3(x) = x^{2} + x + 1     \Phi4(x) = x^{2} + 1 &emsp;     \Phi6(x) = x^{2} - x + 1\)</p>
+  <p>如果 p 是质数：\(\Phip(x) = xp-1 + xp-2 + \cdots + x + 1\)</p>
+</div>
+</section>
+
+<!-- ===== 总结 ===== -->
+<hr class="divider">
+
+<section class="chapter" id="ch13">
+<div class="ch-header">
+  <div class="ch-icon" style="background: linear-gradient(135deg, #e07a3a, #f5b041);">13</div>
+  <div>
+    <h2>综合与应用：六字口诀</h2>
+    <div class="ch-sub">记住这六个字，遇到因式分解就不怕</div>
+  </div>
+</div>
+
+<div class="tool-summary">
+  <div class="ts-title" style="font-size:1.2rem; text-align:center; margin-bottom:1rem;">提 &rarr; 套 &rarr; 分 &rarr; 变 &rarr; 试 &rarr; 验</div>
+  <table class="info-table">
+    <tr><th>口诀</th><th>含义</th><th>对应工具</th></tr>
+    <tr><td><strong>提</strong></td><td>看看有没有公因式可以提出来</td><td>第1章 提公因式</td></tr>
+    <tr><td><strong>套</strong></td><td>看看能不能套用公式（平方差等）</td><td>第2章 应用公式</td></tr>
+    <tr><td><strong>分</strong></td><td>试试分组分解</td><td>第3章 分组分解</td></tr>
+    <tr><td><strong>变</strong></td><td>拆项、添项、换元、配方，改变样子</td><td>第4、5、7章</td></tr>
+    <tr><td><strong>试</strong></td><td>代入特殊值试根</td><td>第8章 因式定理</td></tr>
+    <tr><td><strong>验</strong></td><td>乘回去验证，检查是否拆到底</td><td>第0章 基本规则</td></tr>
+  </table>
+</div>
+
+<div class="intro-card" style="margin-top:1.5rem;">
+  <h2 style="color: var(--primary);">动手试试</h2>
+  <p>分解 \(x^4 + 4\)。</p>
+  <p><strong>思路</strong>：这个式子看起来很简单，没有公因式，也不是公式的样子。但我们可以"添项"——加上 \(4x^2\) 再减去 \(4x^2\)：</p>
+  \[
+  x^4 + 4 = x^4 + 4x^2 + 4 - 4x^2 = (x^2 + 2)^2 - (2x)^2 = (x^2 + 2x + 2)(x^2 - 2x + 2)
+  \]
+  <p>这就是"变"的精髓——添项之后，就变成平方差公式了！</p>
+</div>
+
+<div class="intro-card" style="margin-top:2rem; background: var(--warm-light); border-color: var(--warm);">
+  <h2 style="color: var(--warm);">写在最后</h2>
+  <p>因式分解没有"万能公式"，但有系统的思考方法。遇到一道题，按"提&rarr;套&rarr;分&rarr;变&rarr;试&rarr;验"的顺序走一遍，大部分问题都能解决。如果一条路走不通，换一种方法再试——灵活性才是数学最有趣的地方！</p>
+</div>
+</section>
+
+</div><!-- /.main -->
+
+<div class="footer">
+  因式分解技巧 · 小学生也能看懂的版本<br>
+  参考书目：单墫《数学奥林匹克小丛书 · 初中卷 · 因式分解技巧》
+</div>
+
+<script>
+function toggleNav() {
+  var grid = document.getElementById('navGrid');
+  var btn = document.querySelector('.nav-toggle');
+  grid.classList.toggle('show');
+  btn.classList.toggle('open');
+}
+
+document.querySelectorAll('.coll-header').forEach(function(h) {
+  h.addEventListener('click', function() {
+    var body = this.nextElementSibling;
+    body.classList.toggle('show');
+    this.classList.toggle('open');
+  });
+});
+</script>
+
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  renderMathInElement(document.body, {
+    delimiters: [
+      {left: "\\(", right: "\\)", display: false},
+      {left: "\\[", right: "\\]", display: true}
+    ],
+    throwOnError: false
+  });
+});
+</script>
+</body>
+</html>
