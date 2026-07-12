@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>从维度看代数：完全平方、立方与四次方的降维解析</title>
+  <style>
+    :root {
+      --paper: #f7f5f0;
+      --card: #fffdfa;
+      --ink: #333333;
+      --muted: #766f67;
+      --wood: #8c7a6b;
+      --wood-dark: #675447;
+      --line: #ded7ce;
+      --a: #b98463;
+      --ab: #d8ad77;
+      --b: #8fa58a;
+      --lavender: #a498b5;
+      --shadow: 0 14px 36px rgba(71, 55, 42, .08);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; background: var(--paper); color: var(--ink); font-family: Inter, "Noto Sans SC", "Microsoft YaHei", sans-serif; line-height: 1.75; }
+    button { font: inherit; }
+    .page { width: min(1080px, calc(100% - 36px)); margin: 0 auto; padding: 58px 0 72px; }
+    .hero { padding: 20px 4px 50px; max-width: 780px; }
+    .eyebrow { color: var(--wood); font-size: 13px; font-weight: 700; letter-spacing: .12em; margin: 0 0 13px; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { font-family: "Noto Serif SC", "Songti SC", serif; font-size: clamp(32px, 6vw, 58px); line-height: 1.22; letter-spacing: .04em; margin-bottom: 19px; font-weight: 700; }
+    .lead { color: var(--muted); max-width: 650px; font-size: 17px; margin-bottom: 0; }
+    .section { margin: 0 0 50px; }
+    .section-head { display: grid; grid-template-columns: 46px 1fr; gap: 17px; align-items: start; margin-bottom: 18px; }
+    .index { width: 40px; height: 40px; display: grid; place-items: center; border: 1px solid var(--wood); color: var(--wood-dark); border-radius: 50%; font-size: 14px; font-weight: 700; }
+    h2 { font-family: "Noto Serif SC", "Songti SC", serif; font-size: clamp(24px, 4vw, 32px); line-height: 1.35; letter-spacing: .03em; margin: 0 0 4px; }
+    .section-head p { color: var(--muted); margin: 0; font-size: 14px; }
+    .card { background: var(--card); border: 1px solid var(--line); border-radius: 8px; box-shadow: var(--shadow); padding: clamp(22px, 4vw, 38px); margin-bottom: 18px; }
+    .card h3 { font-size: 16px; letter-spacing: .05em; color: var(--wood-dark); margin-bottom: 12px; }
+    .formula { margin: 19px 0; padding: 18px 20px; border-left: 3px solid var(--wood); background: #f6f1ea; font-family: Georgia, "Times New Roman", serif; font-size: clamp(19px, 3vw, 26px); text-align: center; overflow-wrap: anywhere; }
+    .formula .a-term { color: #8d583c; } .formula .ab-term { color: #a06d2e; } .formula .b-term { color: #50724e; } .formula .fourth { color: #756082; }
+    .note { color: var(--muted); font-size: 14px; margin-bottom: 0; }
+    .note strong { color: var(--wood-dark); }
+    .demo-top { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 24px; }
+    .demo-top h3 { margin: 0; }
+    .control { appearance: none; border: 1px solid var(--wood); color: var(--wood-dark); background: transparent; border-radius: 4px; padding: 9px 16px; cursor: pointer; transition: background .25s, color .25s, transform .25s; }
+    .control:hover, .control:focus-visible { background: var(--wood-dark); color: #fff; outline: none; }
+    .control:active { transform: translateY(1px); }
+    .square-stage { display: grid; grid-template-columns: minmax(0, 1fr) minmax(220px, .63fr); gap: clamp(25px, 5vw, 58px); align-items: center; }
+    .square-wrap { display: grid; place-items: center; }
+    .square { width: min(100%, 405px); aspect-ratio: 1; display: grid; grid-template-columns: 2.2fr 1fr; grid-template-rows: 2.2fr 1fr; outline: 1px solid rgba(51, 51, 51, .2); background: var(--line); gap: 0; transition: gap .6s cubic-bezier(.2,.8,.2,1), padding .6s cubic-bezier(.2,.8,.2,1), transform .6s ease; }
+    .square.exploded { gap: 11px; padding: 10px; transform: rotate(-1deg); }
+    .piece { position: relative; display: grid; place-items: center; cursor: pointer; min-width: 0; transition: transform .35s ease, box-shadow .35s ease, filter .35s ease; }
+    .piece:hover, .piece:focus-visible { transform: scale(.97); filter: saturate(1.12); outline: 2px solid rgba(255,255,255,.82); outline-offset: -5px; }
+    .piece-a2 { background: var(--a); } .piece-ab { background: var(--ab); } .piece-b2 { background: var(--b); }
+    .piece .symbol { color: rgba(255,255,255,.96); font-family: Georgia, serif; font-size: clamp(20px, 5vw, 38px); text-shadow: 0 1px 1px rgba(0,0,0,.13); }
+    .piece .detail { position: absolute; inset: auto 7px 7px; background: rgba(255,253,250,.93); color: var(--ink); padding: 5px 7px; font-size: 12px; line-height: 1.35; text-align: center; opacity: 0; transform: translateY(5px); transition: opacity .25s, transform .25s; }
+    .piece.revealed .detail { opacity: 1; transform: translateY(0); }
+    .square-labels { display: grid; gap: 12px; }
+    .legend-row { display: grid; grid-template-columns: 14px 1fr; gap: 10px; align-items: center; font-size: 14px; color: var(--muted); }
+    .swatch { width: 14px; height: 14px; border-radius: 2px; } .swatch.a { background: var(--a); } .swatch.ab { background: var(--ab); } .swatch.b { background: var(--b); }
+    .dimension-line { border-top: 1px solid var(--wood); color: var(--wood-dark); font-size: 13px; text-align: center; width: min(100%, 405px); margin-top: 12px; }
+    .dimension-line span { position: relative; top: -13px; padding: 0 9px; background: var(--card); }
+    .cube-layout { display: grid; grid-template-columns: minmax(260px, 1fr) minmax(245px, .85fr); gap: 35px; align-items: center; }
+    .cube-scene { min-height: 315px; display: grid; place-items: center; perspective: 800px; }
+    .cube { width: 180px; height: 180px; position: relative; transform-style: preserve-3d; transform: rotateX(-24deg) rotateY(39deg); transition: transform .55s ease; }
+    .cuboid { position: absolute; left: 50%; top: 50%; width: 0; height: 0; transform-style: preserve-3d; transform: translate3d(var(--x), var(--y), var(--z)); }
+    .block-face { position: absolute; display: grid; place-items: center; border: 1px solid rgba(255,255,255,.62); backface-visibility: visible; }
+    .block-front, .block-back { width: var(--w); height: var(--h); left: calc(var(--w) / -2); top: calc(var(--h) / -2); background: var(--front); }
+    .block-front { transform: translateZ(calc(var(--d) / 2)); } .block-back { transform: rotateY(180deg) translateZ(calc(var(--d) / 2)); }
+    .block-right, .block-left { width: var(--d); height: var(--h); left: calc(var(--d) / -2); top: calc(var(--h) / -2); background: var(--side); }
+    .block-right { transform: rotateY(90deg) translateZ(calc(var(--w) / 2)); } .block-left { transform: rotateY(-90deg) translateZ(calc(var(--w) / 2)); }
+    .block-top, .block-bottom { width: var(--w); height: var(--d); left: calc(var(--w) / -2); top: calc(var(--d) / -2); background: var(--top); }
+    .block-top { transform: rotateX(90deg) translateZ(calc(var(--h) / 2)); } .block-bottom { transform: rotateX(-90deg) translateZ(calc(var(--h) / 2)); }
+    .cuboid.a3 { --front: #a66e52; --top: #c18b6b; --side: #7e4d37; }
+    .cuboid.a2b { --front: #c79261; --top: #deb284; --side: #997047; }
+    .cuboid.ab2 { --front: #b4a46d; --top: #d0c187; --side: #887b4d; }
+    .cuboid.b3 { --front: #718c6f; --top: #9db198; --side: #526d51; }
+    .cube-caption { color: var(--muted); font-size: 13px; text-align: center; margin-top: 20px; }
+    .cube-controls { display: flex; justify-content: center; gap: 7px; margin-top: 14px; }
+    .cube-rotate { width: 34px; height: 34px; padding: 0; border: 1px solid var(--line); border-radius: 4px; background: #fffdfa; color: var(--wood-dark); font-size: 18px; line-height: 1; cursor: pointer; transition: background .2s ease, color .2s ease, transform .2s ease; }
+    .cube-rotate:hover, .cube-rotate:focus-visible { background: var(--wood-dark); color: #fff; outline: none; }
+    .cube-rotate:active { transform: translateY(1px); }
+    .cube-copy p { color: var(--muted); font-size: 14px; }
+    .term-list { list-style: none; margin: 18px 0 0; padding: 0; display: grid; gap: 9px; }
+    .term-list li { display: grid; grid-template-columns: 13px 1fr; align-items: center; gap: 10px; font-size: 14px; }
+    .term-list b { color: var(--ink); }
+    .insight { margin-top: 19px; padding: 14px 16px; border: 1px solid #d8c9bc; background: #fbf7f0; color: #61574d; font-size: 14px; }
+    .power-steps { display: grid; gap: 13px; margin: 20px 0 0; }
+    .power-step { display: grid; grid-template-columns: 34px 1fr; gap: 13px; align-items: start; }
+    .power-step .dot { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; color: var(--wood-dark); border: 1px solid var(--wood); font-size: 12px; font-weight: 700; }
+    .pascal-wrap { display: grid; grid-template-columns: minmax(0, 1fr) minmax(245px, .68fr); align-items: center; gap: 36px; }
+    .pascal { display: grid; gap: 7px; justify-items: center; padding: 16px 0; }
+    .pascal-row { display: flex; justify-content: center; gap: 7px; }
+    .pascal-cell { width: 37px; height: 32px; border: 1px solid var(--line); background: #fcfaf6; display: grid; place-items: center; font-size: 14px; color: var(--muted); }
+    .pascal-row.highlight .pascal-cell { border-color: var(--lavender); background: #eee9f2; color: #5b4e67; font-weight: 700; }
+    .pascal-copy { color: var(--muted); font-size: 14px; }
+    .pascal-copy strong { color: #62546d; }
+    footer { color: var(--muted); text-align: center; font-size: 13px; padding-top: 12px; }
+    @media (max-width: 720px) { .page { width: min(100% - 24px, 1080px); padding-top: 34px; } .card { padding: 22px 18px; } .square-stage, .cube-layout, .pascal-wrap { grid-template-columns: 1fr; } .square-labels { grid-template-columns: repeat(3, 1fr); } .legend-row { grid-template-columns: 12px 1fr; } .cube-scene { min-height: 275px; } }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="hero">
+      <p class="eyebrow">ALGEBRA THROUGH DIMENSIONS</p>
+      <h1>从维度看代数</h1>
+      <p class="lead">完全平方从面积中长出，完全立方从体积中长出。到了四次方，眼睛退场，规律接手。</p>
+    </header>
+
+    <section class="section" aria-labelledby="square-title">
+      <div class="section-head"><div class="index">01</div><div><h2 id="square-title">完全平方和 (a+b)<sup>2</sup></h2><p>二维面积的拼图</p></div></div>
+      <article class="card">
+        <h3>先让乘法变成面积</h3>
+        <p>边长为 <strong>a+b</strong> 的大正方形，面积既可以整体计算，也可以按切开的四块分别计算。</p>
+        <div class="formula">(a+b)(a+b) = <span class="a-term">a<sup>2</sup></span> + <span class="ab-term">2ab</span> + <span class="b-term">b<sup>2</sup></span></div>
+        <p class="note"><strong>不变性分析：</strong>无论拼图是否拆开，外框边长仍是 a+b，整体面积始终不变；变化的是我们观察面积的方式。</p>
+      </article>
+      <article class="card">
+        <div class="demo-top"><h3>面积拼图</h3><button class="control" id="squareToggle" type="button" aria-pressed="false">拆解为四块</button></div>
+        <div class="square-stage">
+          <div class="square-wrap">
+            <div class="square" id="square" aria-label="完全平方面积拼图">
+              <button class="piece piece-a2" type="button" data-term="a²"><span class="symbol">a<sup>2</sup></span><span class="detail">a × a = a<sup>2</sup></span></button>
+              <button class="piece piece-ab" type="button" data-term="ab"><span class="symbol">ab</span><span class="detail">a × b = ab</span></button>
+              <button class="piece piece-ab" type="button" data-term="ab"><span class="symbol">ab</span><span class="detail">b × a = ab</span></button>
+              <button class="piece piece-b2" type="button" data-term="b²"><span class="symbol">b<sup>2</sup></span><span class="detail">b × b = b<sup>2</sup></span></button>
+            </div>
+            <div class="dimension-line"><span>边长 a+b</span></div>
+          </div>
+          <div class="square-labels" aria-label="色块说明"><div class="legend-row"><i class="swatch a"></i><span>a<sup>2</sup>：一个 a × a 的正方形</span></div><div class="legend-row"><i class="swatch ab"></i><span>2ab：两块面积相同的长方形</span></div><div class="legend-row"><i class="swatch b"></i><span>b<sup>2</sup>：一个 b × b 的正方形</span></div></div>
+        </div>
+        <p class="note" id="squareStatus">提示：点击任意色块，查看它所代表的代数项。</p>
+      </article>
+    </section>
+
+    <section class="section" aria-labelledby="cube-title">
+      <div class="section-head"><div class="index">02</div><div><h2 id="cube-title">完全立方和 (a+b)<sup>3</sup></h2><p>三维体积的解构</p></div></div>
+      <article class="card">
+        <h3>把二维结果再乘一次 (a+b)</h3>
+        <div class="formula">(a+b)<sup>2</sup>(a+b) = <span class="a-term">a<sup>3</sup></span> + <span class="ab-term">3a<sup>2</sup>b</span> + <span class="ab-term">3ab<sup>2</sup></span> + <span class="b-term">b<sup>3</sup></span></div>
+        <p class="note"><strong>不变性分析：</strong>切割后八个体块的形状不同，但它们的体积之和始终等于边长为 a+b 的大立方体。</p>
+      </article>
+      <article class="card">
+        <div class="cube-layout">
+            <div><div class="cube-scene"><div class="cube" id="cubeModel" aria-label="由八个真实体块拼成的立方体"><div class="cuboid a3" style="--w:120px;--h:120px;--d:120px;--x:-30px;--y:-30px;--z:-30px"><div class="block-face block-front"></div><div class="block-face block-back"></div><div class="block-face block-right"></div><div class="block-face block-left"></div><div class="block-face block-top"></div><div class="block-face block-bottom"></div></div><div class="cuboid a2b" style="--w:60px;--h:120px;--d:120px;--x:60px;--y:-30px;--z:-30px"><div class="block-face block-front"></div><div class="block-face block-back"></div><div class="block-face block-right"></div><div class="block-face block-left"></div><div class="block-face block-top"></div><div class="block-face block-bottom"></div></div><div class="cuboid a2b" style="--w:120px;--h:60px;--d:120px;--x:-30px;--y:60px;--z:-30px"><div class="block-face block-front"></div><div class="block-face block-back"></div><div class="block-face block-right"></div><div class="block-face block-left"></div><div class="block-face block-top"></div><div class="block-face block-bottom"></div></div><div class="cuboid a2b" style="--w:120px;--h:120px;--d:60px;--x:-30px;--y:-30px;--z:60px"><div class="block-face block-front"></div><div class="block-face block-back"></div><div class="block-face block-right"></div><div class="block-face block-left"></div><div class="block-face block-top"></div><div class="block-face block-bottom"></div></div><div class="cuboid ab2" style="--w:60px;--h:60px;--d:120px;--x:60px;--y:60px;--z:-30px"><div class="block-face block-front"></div><div class="block-face block-back"></div><div class="block-face block-right"></div><div class="block-face block-left"></div><div class="block-face block-top"></div><div class="block-face block-bottom"></div></div><div class="cuboid ab2" style="--w:60px;--h:120px;--d:60px;--x:60px;--y:-30px;--z:60px"><div class="block-face block-front"></div><div class="block-face block-back"></div><div class="block-face block-right"></div><div class="block-face block-left"></div><div class="block-face block-top"></div><div class="block-face block-bottom"></div></div><div class="cuboid ab2" style="--w:120px;--h:60px;--d:60px;--x:-30px;--y:60px;--z:60px"><div class="block-face block-front"></div><div class="block-face block-back"></div><div class="block-face block-right"></div><div class="block-face block-left"></div><div class="block-face block-top"></div><div class="block-face block-bottom"></div></div><div class="cuboid b3" style="--w:60px;--h:60px;--d:60px;--x:60px;--y:60px;--z:60px"><div class="block-face block-front"></div><div class="block-face block-back"></div><div class="block-face block-right"></div><div class="block-face block-left"></div><div class="block-face block-top"></div><div class="block-face block-bottom"></div></div></div></div><p class="cube-caption">三个方向都按 a : b = 2 : 1 切分，八个体块在旋转时始终保持正确的邻接关系。</p><div class="cube-controls" aria-label="立方体旋转控制"><button class="cube-rotate" type="button" data-rotate="left" aria-label="向左旋转" title="向左旋转">&#8592;</button><button class="cube-rotate" type="button" data-rotate="up" aria-label="向上旋转" title="向上旋转">&#8593;</button><button class="cube-rotate" type="button" data-rotate="down" aria-label="向下旋转" title="向下旋转">&#8595;</button><button class="cube-rotate" type="button" data-rotate="right" aria-label="向右旋转" title="向右旋转">&#8594;</button><button class="cube-rotate" type="button" data-rotate="reset" aria-label="复位视角" title="复位视角">&#8634;</button></div><p class="note" id="cubeViewStatus" aria-live="polite">使用方向按钮查看不同方向的实际切分。</p></div>
+            <div class="cube-copy"><h3>体块的分类</h3><p>每一类体块的数量，来自“哪一个方向选 b”的不同方式。</p><ul class="term-list"><li><i class="swatch" style="background:#a66e52"></i><span><b>1 个 a<sup>3</sup></b>：三个方向都取 a。</span></li><li><i class="swatch" style="background:#c79261"></i><span><b>3 个 a<sup>2</sup>b</b>：恰有一个方向取 b。</span></li><li><i class="swatch" style="background:#b4a46d"></i><span><b>3 个 ab<sup>2</sup></b>：恰有两个方向取 b。</span></li><li><i class="swatch" style="background:#718c6f"></i><span><b>1 个 b<sup>3</sup></b>：三个方向都取 b。</span></li></ul></div>
+        </div>
+      </article>
+    </section>
+
+    <section class="section" aria-labelledby="fourth-title">
+      <div class="section-head"><div class="index">03</div><div><h2 id="fourth-title">四次方推导 (a+b)<sup>4</sup></h2><p>从几何退回规律，跨越维度</p></div></div>
+      <article class="card">
+        <h3>当空间无法直观绘制</h3><p>四维体积不适合用肉眼直接拼装。此时并非失去直觉，而是把前两次观察到的结构压缩成一个更可靠的工具：<strong>系数规律</strong>。</p>
+        <div class="power-steps"><div class="power-step"><div class="dot">1</div><div>把三次方展开式乘以 (a+b)：<div class="formula">(a+b)<sup>3</sup>(a+b)</div></div></div><div class="power-step"><div class="dot">2</div><div>相同字母次数的项合并：<div class="formula"><span class="fourth">a<sup>4</sup></span> + <span class="fourth">4a<sup>3</sup>b</span> + <span class="fourth">6a<sup>2</sup>b<sup>2</sup></span> + <span class="fourth">4ab<sup>3</sup></span> + <span class="fourth">b<sup>4</sup></span></div></div></div></div>
+        <p class="note"><strong>不变性分析：</strong>维度改变了表达方式，却没有改变二项式展开的组合本质。系数只记录：在四次相乘中，分别有多少种方式选到 b。</p>
+      </article>
+      <article class="card">
+        <div class="pascal-wrap"><div class="pascal" aria-label="杨辉三角前五行"><div class="pascal-row"><span class="pascal-cell">1</span></div><div class="pascal-row"><span class="pascal-cell">1</span><span class="pascal-cell">1</span></div><div class="pascal-row"><span class="pascal-cell">1</span><span class="pascal-cell">2</span><span class="pascal-cell">1</span></div><div class="pascal-row"><span class="pascal-cell">1</span><span class="pascal-cell">3</span><span class="pascal-cell">3</span><span class="pascal-cell">1</span></div><div class="pascal-row highlight"><span class="pascal-cell">1</span><span class="pascal-cell">4</span><span class="pascal-cell">6</span><span class="pascal-cell">4</span><span class="pascal-cell">1</span></div></div><div class="pascal-copy"><h3>杨辉三角告诉我们什么？</h3><p>每一行是下一次二项式展开的系数。高亮行 <strong>1，4，6，4，1</strong> 正好对应 (a+b)<sup>4</sup>。</p><p>二维看面积，三维看体积；到了四维及以上，杨辉三角承担起“看见结构”的工作。</p></div></div>
+      </article>
+    </section>
+    <footer>从可见的拼图，走向可推演的规律。</footer>
+  </main>
+  <script>
+    (function () {
+      'use strict';
+      var square = document.getElementById('square');
+      var squareToggle = document.getElementById('squareToggle');
+      var squareStatus = document.getElementById('squareStatus');
+      squareToggle.addEventListener('click', function () {
+        var expanded = square.classList.toggle('exploded');
+        squareToggle.textContent = expanded ? '组合回整体' : '拆解为四块';
+        squareToggle.setAttribute('aria-pressed', String(expanded));
+        squareStatus.textContent = expanded ? '已拆解：四块面积相加，仍等于整个正方形的面积。' : '已组合：外框面积仍为 (a+b)²。';
+      });
+      var pieces = document.querySelectorAll('.piece');
+      pieces.forEach(function (piece) {
+        piece.addEventListener('click', function () {
+          piece.classList.toggle('revealed');
+          squareStatus.textContent = '当前查看：' + piece.dataset.term + '。再点一次可收起说明。';
+        });
+      });
+      var cubeModel = document.getElementById('cubeModel');
+      var cubeViewStatus = document.getElementById('cubeViewStatus');
+      var cubeRotation = { x: -24, y: 39 };
+      function updateCubeRotation(message) {
+        cubeModel.style.transform = 'rotateX(' + cubeRotation.x + 'deg) rotateY(' + cubeRotation.y + 'deg)';
+        cubeViewStatus.textContent = message;
+      }
+      document.querySelectorAll('.cube-rotate').forEach(function (button) {
+        button.addEventListener('click', function () {
+          var direction = button.dataset.rotate;
+          if (direction === 'left') cubeRotation.y -= 20;
+          if (direction === 'right') cubeRotation.y += 20;
+          if (direction === 'up') cubeRotation.x += 15;
+          if (direction === 'down') cubeRotation.x -= 15;
+          if (direction === 'reset') { cubeRotation.x = -24; cubeRotation.y = 39; }
+          var messages = { left: '视角已向左旋转。', right: '视角已向右旋转。', up: '视角已向上旋转。', down: '视角已向下旋转。', reset: '视角已复位。' };
+          updateCubeRotation(messages[direction]);
+        });
+      });
+    }());
+  </script>
+</body>
+</html>

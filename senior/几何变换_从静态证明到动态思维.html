@@ -1,0 +1,1132 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>几何变换：从静态证明到动态思维</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}],throwOnError:false});"></script>
+<style>
+:root {
+  --primary: #1a3a5c;
+  --primary-light: #2563a8;
+  --accent: #dc2626;
+  --accent-orange: #d97706;
+  --bg-page: #f8f9fe;
+  --bg-card: #ffffff;
+  --bg-formula: #f0f4ff;
+  --border-light: #e0e7f0;
+  --border-blue: #dbeafe;
+  --text-primary: #1a3a5c;
+  --text-secondary: #6b7280;
+  --text-accent: #dc2626;
+  --success: #059669;
+  --warning: #d97706;
+  --error: #dc2626;
+  --transform-color: #7c3aed;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  overflow-x: hidden;
+  font-family: "PingFang SC", "Microsoft YaHei", "Noto Serif SC", "Source Han Serif SC", Georgia, serif;
+  background: var(--bg-page);
+  color: var(--text-primary);
+  line-height: 1.85;
+  font-size: 16px;
+}
+
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 40px 24px 80px;
+}
+
+/* Cover */
+.cover {
+  background: var(--bg-card);
+  border-radius: 18px;
+  padding: 56px 40px 44px;
+  margin-bottom: 40px;
+  border: 1px solid var(--border-light);
+  box-shadow: 0 4px 16px rgba(26,58,92,0.08);
+  text-align: center;
+  overflow: visible;
+}
+.cover-badge {
+  display: inline-block;
+  background: var(--primary);
+  color: #fff;
+  font-size: 13px;
+  padding: 5px 18px;
+  border-radius: 20px;
+  letter-spacing: 2px;
+  margin-bottom: 20px;
+}
+.cover h1 { font-size: 34px; color: var(--primary); margin-bottom: 10px; font-weight: 800; letter-spacing: 2px; }
+.cover .subtitle { font-size: 16px; color: var(--text-secondary); margin-bottom: 4px; }
+.cover .tagline { font-size: 14px; color: var(--accent); margin-top: 8px; font-style: italic; }
+.cover .tags { margin-top: 22px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+.cover .tag {
+  background: var(--bg-formula);
+  border: 1px solid var(--border-blue);
+  border-radius: 20px;
+  padding: 6px 16px;
+  font-size: 13px;
+  color: var(--primary-light);
+}
+
+/* Cards */
+.card {
+  background: var(--bg-card);
+  border-radius: 14px;
+  padding: 28px 32px;
+  margin-bottom: 20px;
+  border: 1px solid var(--border-light);
+  box-shadow: 0 2px 8px rgba(26,58,92,0.06);
+  overflow: visible;
+}
+
+.section { margin-bottom: 48px; }
+.section-head { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
+.section-num {
+  width: 42px; height: 42px;
+  background: linear-gradient(135deg, #1a3a5c, #2563a8);
+  color: #fff; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; font-weight: 800; flex-shrink: 0;
+}
+h2 { font-size: 22px; color: var(--primary); margin: 0; }
+h3 { font-size: 18px; color: var(--primary); margin: 20px 0 10px; }
+h4 { font-size: 15px; color: var(--primary-light); margin: 14px 0 8px; }
+p { margin-bottom: 10px; font-size: 15px; }
+
+/* Formula box */
+.formula-box {
+  background: var(--bg-formula);
+  border-radius: 10px;
+  padding: 18px 24px;
+  margin: 16px 0;
+  text-align: center;
+  font-size: 17px;
+  border: 1px solid var(--border-blue);
+  overflow: visible;
+}
+.formula-box.hl-red {
+  border-color: #dc2626; border-width: 2px; background: #fef2f2;
+}
+.formula-box.hl-green {
+  border-color: #059669; border-width: 2px; background: #ecfdf5;
+}
+.formula-box.hl-purple {
+  border-color: #7c3aed; border-width: 2px; background: #f5f3ff;
+}
+
+/* Callout */
+.callout {
+  border-radius: 10px;
+  padding: 16px 22px;
+  margin: 20px 0;
+  font-size: 14px;
+  line-height: 1.7;
+  overflow: visible;
+}
+.callout.blue { background: #eff6ff; border-left: 5px solid #2563a8; color: #1e40af; }
+.callout.green { background: #ecfdf5; border-left: 5px solid #059669; color: #064e3b; }
+.callout.orange { background: #fffbea; border-left: 5px solid #d97706; color: #92400e; }
+.callout.red { background: #fef2f2; border-left: 5px solid #dc2626; color: #991b1b; }
+.callout.purple { background: #f5f3ff; border-left: 5px solid #7c3aed; color: #5b21b6; }
+.callout-label { font-weight: 700; margin-bottom: 6px; font-size: 15px; }
+
+/* Knowledge tree */
+.knowledge-tree { display: flex; flex-direction: column; align-items: center; gap: 14px; margin: 24px 0; }
+.tree-root {
+  background: var(--bg-formula);
+  border: 2px solid var(--success);
+  border-radius: 12px;
+  padding: 11px 22px;
+  font-weight: 800;
+  font-size: 16px;
+  color: var(--success);
+}
+.tree-layers { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; width: 100%; }
+.tree-layer {
+  flex: 1; min-width: 200px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+}
+.tree-layer-title { font-weight: 800; font-size: 15px; margin-bottom: 10px; }
+.tree-layer.l1 .tree-layer-title { color: var(--primary); }
+.tree-layer.l2 .tree-layer-title { color: var(--accent); }
+.tree-layer.l3 .tree-layer-title { color: var(--transform-color); }
+.tree-leaf {
+  display: inline-block;
+  background: #fff;
+  border: 1px solid var(--border-blue);
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 13px;
+  color: var(--text-primary);
+  margin: 3px;
+}
+.tree-arrow { text-align: center; font-size: 22px; color: var(--text-secondary); margin: 4px 0; }
+
+/* Step list */
+.step-list { margin: 12px 0; }
+.step-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 12px;
+  font-size: 14px;
+  line-height: 1.7;
+}
+.step-num {
+  width: 28px; height: 28px;
+  background: var(--primary-light);
+  color: #fff;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 700; flex-shrink: 0;
+}
+
+/* Method table */
+.method-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  margin: 12px 0;
+}
+.method-table th {
+  background: var(--primary);
+  color: #fff;
+  padding: 10px 8px;
+  text-align: center;
+  font-weight: 700;
+}
+.method-table td {
+  padding: 10px 8px;
+  text-align: left;
+  border-bottom: 1px solid var(--border-light);
+  background: #fff;
+  font-size: 14px;
+}
+.method-table tr:nth-child(even) td { background: var(--bg-page); }
+.table-wrap { width: 100%; overflow-x: auto; margin: 12px 0; }
+.table-wrap .method-table { min-width: 600px; }
+
+/* Demo container */
+.demo-container {
+  background: #fff;
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  padding: 20px;
+  margin: 20px 0;
+  text-align: center;
+  overflow: visible;
+}
+.demo-title { font-size: 15px; font-weight: 700; color: var(--primary); margin-bottom: 12px; }
+.demo-svg {
+  max-width: 100%;
+  height: auto;
+  border: 1px solid #e8e8e8;
+  border-radius: 6px;
+  background: #fcfcfa;
+}
+.demo-controls {
+  margin: 14px 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  align-items: center;
+}
+.demo-controls label.btn-label {
+  font-size: 14px;
+  cursor: pointer;
+  padding: 6px 16px;
+  border: 1.5px solid var(--border-light);
+  border-radius: 20px;
+  transition: all 0.2s;
+  color: var(--text-secondary);
+}
+.demo-controls input[type="radio"]:checked + label.btn-label {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+}
+.demo-controls input[type="radio"] { display: none; }
+.demo-controls input[type="range"] {
+  width: 200px;
+  vertical-align: middle;
+  accent-color: var(--primary-light);
+}
+.ctrl-group {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+.ctrl-group.active { display: flex; }
+.ctrl-group label { font-size: 13px; color: var(--text-secondary); }
+.demo-info {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin: 10px 0 4px;
+  line-height: 1.6;
+}
+.demo-info .invariant { color: var(--success); font-weight: 600; }
+.demo-info .changed { color: var(--accent); font-weight: 600; }
+.demo-value {
+  display: inline-block;
+  background: var(--bg-formula);
+  border: 1px solid var(--border-blue);
+  border-radius: 6px;
+  padding: 2px 10px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--primary);
+  margin: 0 4px;
+}
+
+/* Matrix display */
+.matrix-display {
+  font-family: "Courier New", monospace;
+  font-size: 15px;
+  color: var(--primary);
+  margin: 8px 0;
+}
+.matrix-bracket {
+  font-size: 28px;
+  vertical-align: middle;
+  color: var(--transform-color);
+  font-weight: 700;
+}
+
+/* Memory card */
+.memory-card {
+  background: linear-gradient(135deg, #fef3c7, #fffbeb);
+  border: 2px solid #fcd34d;
+  border-radius: 14px;
+  padding: 24px;
+  margin: 16px 0;
+  overflow: visible;
+}
+.mem-title { font-size: 18px; font-weight: 800; color: #d97706; margin-bottom: 10px; }
+.mem-body { font-size: 14px; line-height: 2; }
+.mem-body p { margin-bottom: 8px; }
+
+/* Comparison box */
+.compare-box {
+  display: flex;
+  gap: 16px;
+  margin: 16px 0;
+  flex-wrap: wrap;
+}
+.compare-side {
+  flex: 1; min-width: 280px;
+  border-radius: 10px;
+  padding: 18px 20px;
+  font-size: 14px;
+  line-height: 1.7;
+}
+.compare-side.tradition {
+  background: #fff5f5;
+  border: 1.5px solid #fca5a5;
+}
+.compare-side.dynamic {
+  background: #f0fdf4;
+  border: 1.5px solid #86efac;
+}
+.compare-side h4 { margin-bottom: 8px; font-size: 15px; }
+.compare-side.tradition h4 { color: #991b1b; }
+.compare-side.dynamic h4 { color: #064e3b; }
+
+/* Footer */
+.footer {
+  text-align: center;
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border-light);
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- ════════ 封面 ════════ -->
+<div class="cover">
+  <div class="cover-badge">数学教研专题</div>
+  <h1>几何变换</h1>
+  <p class="subtitle">从静态证明到动态思维</p>
+  <p class="tagline">用"运动与不变"统一几何认知</p>
+  <div class="tags">
+    <span class="tag">平移 · 旋转 · 翻折 · 位似</span>
+    <span class="tag">全等 · 相似 · 圆 · 共线共点</span>
+    <span class="tag">射影 · 反演 · 线性代数</span>
+  </div>
+</div>
+
+<!-- ════════ 知识图谱 ════════ -->
+<div class="card">
+  <div class="section-head">
+    <div class="section-num">谱</div>
+    <h2>知识图谱：三层架构</h2>
+  </div>
+  <p>几何变换的全部内容可以归纳为三个层级。下层是工具，中层是应用，上层是视野——层层递进，一脉相承。</p>
+  <div class="knowledge-tree">
+    <div class="tree-root">几何变换</div>
+    <div class="tree-arrow">↓</div>
+    <div class="tree-layers">
+      <div class="tree-layer l1">
+        <div class="tree-layer-title">基础工具层</div>
+        <div>
+          <span class="tree-leaf">平移</span>
+          <span class="tree-leaf">旋转</span>
+          <span class="tree-leaf">翻折（轴对称）</span>
+          <span class="tree-leaf">位似</span>
+        </div>
+        <p style="font-size:12px;color:var(--text-secondary);margin-top:8px;">四大基本变换及其不变性</p>
+      </div>
+      <div class="tree-layer l2">
+        <div class="tree-layer-title">核心应用层</div>
+        <div>
+          <span class="tree-leaf">全等三角形</span>
+          <span class="tree-leaf">相似三角形</span>
+          <span class="tree-leaf">圆的性质</span>
+          <span class="tree-leaf">共线与共点</span>
+        </div>
+        <p style="font-size:12px;color:var(--text-secondary);margin-top:8px;">用变换统一传统几何各分支</p>
+      </div>
+      <div class="tree-layer l3">
+        <div class="tree-layer-title">高阶视野层</div>
+        <div>
+          <span class="tree-leaf">射影几何</span>
+          <span class="tree-leaf">反演变换</span>
+          <span class="tree-leaf">线性代数</span>
+        </div>
+        <p style="font-size:12px;color:var(--text-secondary);margin-top:8px;">变换视角的延伸与代数化</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════ 第一章：视角之变 ════════ -->
+<div class="section">
+  <div class="section-head">
+    <div class="section-num">一</div>
+    <h2>视角之变：静态证明 vs 动态思维</h2>
+  </div>
+  <div class="card">
+    <p>同一道几何题，可以有截然不同的两种理解方式。</p>
+    <div class="compare-box">
+      <div class="compare-side tradition">
+        <h4>国内传统：静态视角</h4>
+        <p>把几何图形看作<strong>固定的图纸</strong>。全等就是"三边相等、三角相等"，用 SSS、SAS、ASA <strong>验证</strong>；相似就是"对应角相等、对应边成比例"，用 AA、SAS <strong>判定</strong>。圆是一堆独立定理的集合，共线共点靠默写 Menelaus、Ceva 公式。每学一个主题就多背一套判定定理，知识结构<strong>分块割裂</strong>。</p>
+      </div>
+      <div class="compare-side dynamic">
+        <h4>国际路线：动态视角</h4>
+        <p>把几何图形看作<strong>可以运动的对象</strong>。全等就是"一个三角形经过平移、旋转、翻折后与另一个<strong>重合</strong>"；相似就是"先位似缩放，再刚体运动，二者<strong>重合</strong>"。圆是旋转对称的自然产物，共线共点是变换不变性的体现。用变换这根主线，将所有几何分支<strong>统一起来</strong>。</p>
+      </div>
+    </div>
+    <div class="callout purple">
+      <div class="callout-label">核心隐喻：动中求不变</div>
+      变换的本质是"运动"，但运动中总有某些东西"不变"。平移保长度，旋转保角度，翻折保面积，位似保平行——<strong>正是这些不变性，定义了几何关系的本质</strong>。静态视角问"是什么"，动态视角问"怎么来的"。
+    </div>
+  </div>
+</div>
+
+<!-- ════════ 第二章：基础工具层 ════════ -->
+<div class="section">
+  <div class="section-head">
+    <div class="section-num">二</div>
+    <h2>基础工具层：四大变换</h2>
+  </div>
+
+  <!-- 2.0 交互工坊 -->
+  <div class="card">
+    <h3>变换工坊：动手体验</h3>
+    <p>选择一种变换，拖动滑块，观察三角形如何运动，以及什么性质保持不变。</p>
+    <div class="demo-container">
+      <div class="demo-title">变换工坊</div>
+      <svg class="demo-svg" id="studioSvg" viewBox="0 0 400 320" style="max-width:480px;">
+        <!-- Grid -->
+        <defs>
+          <pattern id="studioGrid" width="20" height="20" patternUnits="userSpaceOnUse">
+            <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#e8e8e8" stroke-width="0.5"/>
+          </pattern>
+        </defs>
+        <rect width="400" height="320" fill="url(#studioGrid)"/>
+        <!-- Axes -->
+        <line x1="0" y1="160" x2="400" y2="160" stroke="#d0d0d0" stroke-width="1"/>
+        <line x1="200" y1="0" x2="200" y2="320" stroke="#d0d0d0" stroke-width="1"/>
+        <!-- Center marker -->
+        <circle id="studioCenter" cx="200" cy="160" r="3" fill="#d97706" style="display:none;"/>
+        <!-- Mirror axis -->
+        <line id="mirrorAxis" x1="0" y1="160" x2="400" y2="160" stroke="#dc2626" stroke-width="1.5" stroke-dasharray="5,3" style="display:none;"/>
+        <!-- Original triangle (ghost) -->
+        <polygon id="origTri" points="120,240 180,80 260,240" fill="rgba(100,150,200,0.12)" stroke="#6496c8" stroke-width="1.5" stroke-dasharray="4,3"/>
+        <text x="113" y="255" font-size="12" fill="#6496c8" font-family="serif">A</text>
+        <text x="173" y="75" font-size="12" fill="#6496c8" font-family="serif">B</text>
+        <text x="253" y="255" font-size="12" fill="#6496c8" font-family="serif">C</text>
+        <!-- Transformed triangle -->
+        <polygon id="transTri" points="120,240 180,80 260,240" fill="rgba(124,58,237,0.15)" stroke="#7c3aed" stroke-width="2.5"/>
+        <text id="labelAp" x="113" y="255" font-size="12" fill="#7c3aed" font-family="serif">A'</text>
+        <text id="labelBp" x="173" y="75" font-size="12" fill="#7c3aed" font-family="serif">B'</text>
+        <text id="labelCp" x="253" y="255" font-size="12" fill="#7c3aed" font-family="serif">C'</text>
+      </svg>
+      <div class="demo-controls">
+        <input type="radio" name="transType" id="t-translate" checked onchange="studioSwitch('translate')">
+        <label class="btn-label" for="t-translate">平移</label>
+        <input type="radio" name="transType" id="t-rotate" onchange="studioSwitch('rotate')">
+        <label class="btn-label" for="t-rotate">旋转</label>
+        <input type="radio" name="transType" id="t-reflect" onchange="studioSwitch('reflect')">
+        <label class="btn-label" for="t-reflect">翻折</label>
+        <input type="radio" name="transType" id="t-homothety" onchange="studioSwitch('homothety')">
+        <label class="btn-label" for="t-homothety">位似</label>
+      </div>
+      <div class="demo-controls">
+        <div class="ctrl-group active" id="ctrl-translate">
+          <label>水平偏移:</label>
+          <input type="range" id="sliderTx" min="-100" max="100" value="0" oninput="studioUpdate()">
+          <span class="demo-value" id="valTx">0</span>
+          <label>竖直偏移:</label>
+          <input type="range" id="sliderTy" min="-80" max="80" value="0" oninput="studioUpdate()">
+          <span class="demo-value" id="valTy">0</span>
+        </div>
+        <div class="ctrl-group" id="ctrl-rotate">
+          <label>旋转角度:</label>
+          <input type="range" id="sliderAngle" min="0" max="360" value="0" oninput="studioUpdate()">
+          <span class="demo-value" id="valAngle">0°</span>
+        </div>
+        <div class="ctrl-group" id="ctrl-reflect">
+          <label>对称轴:</label>
+          <select id="axisSelect" onchange="studioUpdate()" style="padding:4px 8px;border-radius:6px;border:1px solid var(--border-light);font-size:14px;">
+            <option value="h">水平线</option>
+            <option value="v">竖直线</option>
+            <option value="d">斜线（45°）</option>
+          </select>
+        </div>
+        <div class="ctrl-group" id="ctrl-homothety">
+          <label>缩放倍数 k:</label>
+          <input type="range" id="sliderK" min="-25" max="25" value="10" oninput="studioUpdate()">
+          <span class="demo-value" id="valK">1.0</span>
+        </div>
+      </div>
+      <div class="demo-info" id="studioInfo">
+        <span class="invariant">保持不变：</span>长度、角度、面积、方向　<span class="changed">发生变化：</span>位置
+      </div>
+    </div>
+  </div>
+
+  <!-- 2.1 平移 -->
+  <div class="card">
+    <h3>2.1 平移变换</h3>
+    <p><strong>定义：</strong>平面内所有点沿同一方向移动相同距离。设平移向量为 $\vec{v}=(a,b)$，则点 $P(x,y)$ 的像为 $P'(x+a,\, y+b)$。</p>
+    <div class="formula-box">
+      $P(x,y) \;\longmapsto\; P'(x+a,\; y+b)$
+    </div>
+    <div class="callout green">
+      <div class="callout-label">不变性分析</div>
+      <span class="invariant" style="color:#059669;font-weight:600;">保持不变：</span>任意两点间距离、角度、面积、平行关系、方向（保定向）<br>
+      <span style="color:#dc2626;font-weight:600;">发生变化：</span>位置（整体平移）
+    </div>
+    <p><strong>关键理解：</strong>平移是最朴素的变换——"整体搬家"。它不改变图形的任何几何性质，只改变位置。平移的复合仍是平移，平移向量按向量加法合成。</p>
+  </div>
+
+  <!-- 2.2 旋转 -->
+  <div class="card">
+    <h3>2.2 旋转变换</h3>
+    <p><strong>定义：</strong>以点 $O$ 为中心，将所有点绕 $O$ 旋转同一角度 $\theta$。点 $P$ 的像 $P'$ 满足 $OP=OP'$，且 $\angle POP'=\theta$。</p>
+    <div class="formula-box">
+      绕原点旋转 $\theta$ 角：$P(x,y) \longmapsto P'(x\cos\theta - y\sin\theta,\; x\sin\theta + y\cos\theta)$
+    </div>
+    <div class="callout green">
+      <div class="callout-label">不变性分析</div>
+      <span style="color:#059669;font-weight:600;">保持不变：</span>到旋转中心的距离、任意两点间距离、角度、面积、方向（保定向）<br>
+      <span style="color:#dc2626;font-weight:600;">发生变化：</span>位置（绕中心旋转）<br>
+      <strong>唯一不动点：</strong>旋转中心 $O$（$O$ 的像就是 $O$ 自身）
+    </div>
+    <p><strong>关键理解：</strong>旋转的精髓在于"绕定点运动"。旋转中心是不动点，其余所有点在以中心为圆心的圆弧上运动。两次旋转的复合仍为旋转（特殊情况下退化为平移）。</p>
+    <div class="callout purple">
+      <div class="callout-label">圆的本质</div>
+      圆可以定义为：一个点在旋转变换下绕中心运动的<strong>轨道</strong>。到中心距离相等的所有点构成一条圆弧——圆就是"等距点集"。
+    </div>
+  </div>
+
+  <!-- 2.3 翻折 -->
+  <div class="card">
+    <h3>2.3 轴对称（翻折）</h3>
+    <p><strong>定义：</strong>给定直线 $l$（对称轴），对平面上每个点 $P$，作 $P$ 关于 $l$ 的对称点 $P'$，使 $l$ 为线段 $PP'$ 的垂直平分线。</p>
+    <div class="formula-box">
+      以 $x$ 轴为对称轴：$P(x,y) \longmapsto P'(x,\, -y)$　　以 $y$ 轴：$P(x,y) \longmapsto P'(-x,\, y)$
+    </div>
+    <div class="callout green">
+      <div class="callout-label">不变性分析</div>
+      <span style="color:#059669;font-weight:600;">保持不变：</span>任意两点间距离、角度大小、面积<br>
+      <span style="color:#dc2626;font-weight:600;">发生变化：</span>方向（<strong>反向</strong>——左手系变右手系）<br>
+      <strong>不动点：</strong>对称轴上的所有点（轴上的点映射到自身）
+    </div>
+    <p><strong>关键理解：</strong>翻折是唯一改变方向的等距变换。它是"镜像"操作——就像照镜子，左右互换。两次关于同一轴的翻折复合为恒等变换；两次关于不同轴的翻折复合为旋转（两轴相交）或平移（两轴平行）。</p>
+    <div class="callout orange">
+      <div class="callout-label">易错点</div>
+      翻折<strong>保长度、保角度大小</strong>，但<strong>不保方向</strong>（定向反转）。因此翻折属于等距变换（刚体变换），但不属于"正运动"（保定向的变换）。全等判定中，SSS、SAS 允许翻折，但"运动重合"的直观理解需注意方向问题。
+    </div>
+  </div>
+
+  <!-- 2.4 位似 -->
+  <div class="card">
+    <h3>2.4 位似变换</h3>
+    <p><strong>定义：</strong>以点 $O$ 为位似中心，常数 $k$ 为位似比，将点 $P$ 映射到射线 $OP$ 上的点 $P'$，使 $\overrightarrow{OP'}=k\,\overrightarrow{OP}$。</p>
+    <div class="formula-box">
+      $P(x,y) \;\longmapsto\; P'\bigl(kx,\; ky\bigr)$　（以原点为位似中心）
+    </div>
+    <div class="callout green">
+      <div class="callout-label">不变性分析</div>
+      <span style="color:#059669;font-weight:600;">保持不变：</span>角度、平行关系、线段比（所有长度同乘 $|k|$）<br>
+      <span style="color:#dc2626;font-weight:600;">发生变化：</span>长度（$\times|k|$）、面积（$\times k^2$）<br>
+      <strong>不动点：</strong>位似中心 $O$
+    </div>
+    <p><strong>关键理解：</strong>位似是"按比例缩放"。当 $|k|\gt 1$ 时放大，$|k|\lt 1$ 时缩小，$k\lt 0$ 时先缩放再关于中心翻折180°。位似的核心价值是——它将"相似"从静态的比例关系变成了动态的变换操作。</p>
+    <div class="callout purple">
+      <div class="callout-label">相似的本质</div>
+      两个图形相似 $\iff$ 存在位似变换加刚体运动的复合，将一个映射到另一个。相似比 $=$ 位似比 $|k|$。
+    </div>
+  </div>
+
+  <!-- 小结：四大变换对比 -->
+  <div class="card">
+    <h3>四大变换对比总结</h3>
+    <div class="table-wrap">
+      <table class="method-table">
+        <tr><th>变换</th><th>自由度</th><th>保长度？</th><th>保方向？</th><th>不动点</th><th>几何本质</th></tr>
+        <tr><td>平移</td><td>2（向量）</td><td>✓</td><td>✓</td><td>无</td><td>整体搬家</td></tr>
+        <tr><td>旋转</td><td>3（中心+角）</td><td>✓</td><td>✓</td><td>中心</td><td>绕定点旋转</td></tr>
+        <tr><td>翻折</td><td>2（轴）</td><td>✓</td><td>✗（反向）</td><td>轴上所有点</td><td>镜像翻转</td></tr>
+        <tr><td>位似</td><td>3（中心+比）</td><td>✗（×$|k|$）</td><td>$k\gt 0$ 时 ✓</td><td>中心</td><td>按比缩放</td></tr>
+      </table>
+    </div>
+    <div class="callout blue">
+      <div class="callout-label">刚体变换（等距变换）</div>
+      平移、旋转、翻折统称<strong>刚体变换</strong>（或等距变换），它们保持任意两点间距离不变。刚体变换 + 位似变换 = <strong>相似变换</strong>。这个层级关系是整个变换几何的基石。
+    </div>
+  </div>
+</div>
+
+<!-- ════════ 第三章：核心应用层 ════════ -->
+<div class="section">
+  <div class="section-head">
+    <div class="section-num">三</div>
+    <h2>核心应用层：变换统一几何</h2>
+  </div>
+  <p>传统课程把全等、相似、圆、共线共点当作四个独立主题分别教学。变换视角下，它们都是四大基本变换的不同侧面——同一个原理在不同情境下的表现。</p>
+
+  <!-- 3.1 全等 = 刚体变换 -->
+  <div class="card">
+    <h3>3.1 全等三角形 = 刚体变换的合成</h3>
+    <div class="compare-box">
+      <div class="compare-side tradition">
+        <h4>传统静态视角</h4>
+        <p>已知 $AB=DE$，$BC=EF$，$CA=FD$，由 SSS 判定 $\triangle ABC \cong \triangle DEF$。证明过程是<strong>逻辑验证</strong>：检查条件 → 套用定理 → 得出结论。</p>
+      </div>
+      <div class="compare-side dynamic">
+        <h4>变换动态视角</h4>
+        <p>SSS 成立 $\iff$ 存在刚体变换（平移 + 旋转 + 至多一次翻折的复合），将 $\triangle ABC$ <strong>精确映射</strong>到 $\triangle DEF$。证明过程是<strong>构造运动</strong>：平移对齐一个顶点 → 旋转对齐第二个顶点 → 第三个顶点自动重合。</p>
+      </div>
+    </div>
+    <div class="step-list">
+      <div class="step-item"><div class="step-num">1</div><div><strong>平移：</strong>将 $A$ 移到 $D$ 的位置，使两三角形共享顶点 $D$（即 $A \to D$）。</div></div>
+      <div class="step-item"><div class="step-num">2</div><div><strong>旋转：</strong>绕 $D$ 旋转 $\triangle ABC$，使边 $AB$ 落在射线 $DE$ 上。因为 $AB=DE$，$B$ 恰好落到 $E$。</div></div>
+      <div class="step-item"><div class="step-num">3</div><div><strong>验证：</strong>此时 $C$ 与 $F$ 在直线 $DE$ 的同侧或异侧。若同侧，$C$ 已与 $F$ 重合（因为 $CA=FD$ 且 $CB=FE$ 确定了唯一位置）；若异侧，再关于直线 $DE$ 翻折一次即重合。</div></div>
+    </div>
+    <div class="callout green">
+      <div class="callout-label">洞察</div>
+      SSS、SAS、ASA 本质上都在回答同一个问题：<strong>需要多少信息，才能唯一确定一个刚体变换？</strong>三条边、两边一夹角、两角一夹边——各自提供了"锁定变换"的充分条件。判定定理不是公理，而是变换唯一性的等价表述。
+    </div>
+  </div>
+
+  <!-- 3.2 相似 = 位似 + 刚体 -->
+  <div class="card">
+    <h3>3.2 相似三角形 = 位似 + 刚体</h3>
+    <div class="compare-box">
+      <div class="compare-side tradition">
+        <h4>传统静态视角</h4>
+        <p>对应角相等、对应边成比例 $\Rightarrow$ 相似。用 AA、SAS 判定。相似比是两组边的比值。</p>
+      </div>
+      <div class="compare-side dynamic">
+        <h4>变换动态视角</h4>
+        <p>两个三角形相似 $\iff$ 存在<strong>位似变换 + 刚体运动的复合</strong>，将一个映射到另一个。相似比 $=$ 位似比 $|k|$。</p>
+      </div>
+    </div>
+    <div class="step-list">
+      <div class="step-item"><div class="step-num">1</div><div><strong>位似缩放：</strong>以适当中心、适当比例 $k$ 对 $\triangle ABC$ 做位似变换，使其边长与 $\triangle DEF$ 一致（$|k| = \frac{DE}{AB}$）。缩放后得到 $\triangle A'B'C'$，满足 $A'B'=DE$，$B'C'=EF$，$C'A'=FD$。</div></div>
+      <div class="step-item"><div class="step-num">2</div><div><strong>刚体对齐：</strong>此时 $\triangle A'B'C' \cong \triangle DEF$（SSS），再用刚体变换使其重合。</div></div>
+      <div class="step-item"><div class="step-num">3</div><div><strong>结论：</strong>位似 + 刚体 = 相似变换。一切相似定理（AA、SAS）都是这个构造的等价条件。</div></div>
+    </div>
+    <div class="callout purple">
+      <div class="callout-label">位似是相似的引擎</div>
+      位似变换保角度、保平行比——这正是相似的定义。去掉位似的缩放部分（$|k|=1$），相似就退化为全等。全等是相似的特例，就像正方形是矩形的特例。
+    </div>
+  </div>
+
+  <!-- 3.3 圆 = 旋转对称 -->
+  <div class="card">
+    <h3>3.3 圆 = 旋转对称的产物</h3>
+    <p>传统课程把圆当作独立研究对象，记忆大量定理：圆周角定理、弦切角定理、切割线定理、相交弦定理……变换视角下，圆的许多性质是旋转对称性的直接推论。</p>
+    <h4>圆周角定理：旋转不变性</h4>
+    <p>圆周角定理：同弧所对的圆周角相等，且等于圆心角的一半。在变换视角下，圆周上任意一点 $P$ 可以通过绕圆心 $O$ 的旋转变换到达圆周上另一点 $P'$——旋转保角，因此 $\angle APB = \angle AP'B$（同一弧所对的圆周角恒等）。</p>
+
+    <!-- 交互演示：圆周角定理 -->
+    <div class="demo-container">
+      <div class="demo-title">圆周角定理演示</div>
+      <svg class="demo-svg" id="circleSvg" viewBox="0 0 320 320" style="max-width:360px;">
+        <!-- Circle -->
+        <circle cx="160" cy="160" r="80" fill="none" stroke="#1a3a5c" stroke-width="2"/>
+        <!-- Center -->
+        <circle cx="160" cy="160" r="3" fill="#1a3a5c"/>
+        <text x="166" y="156" font-size="11" fill="#1a3a5c">O</text>
+        <!-- Fixed points A and B on circle -->
+        <!-- A at angle 0°: (240, 160), B at angle 120°: (120, 229.3) -->
+        <circle id="pointA" cx="240" cy="160" r="5" fill="#dc2626"/>
+        <text x="248" y="156" font-size="12" fill="#dc2626" font-family="serif">A</text>
+        <circle id="pointB" cx="120" cy="229" r="5" fill="#dc2626"/>
+        <text x="100" y="244" font-size="12" fill="#dc2626" font-family="serif">B</text>
+        <!-- Arc AB (highlighted) -->
+        <path d="M 240 160 A 80 80 0 0 1 120 229" fill="none" stroke="#d97706" stroke-width="3" opacity="0.5"/>
+        <!-- Moving point P on circle (initial: angle 240° → (120, 91)) -->
+        <circle id="pointP" cx="120" cy="91" r="5" fill="#059669"/>
+        <text id="labelP" x="100" y="82" font-size="12" fill="#059669" font-family="serif">P</text>
+        <!-- Lines PA and PB -->
+        <line id="linePA" x1="120" y1="91" x2="240" y2="160" stroke="#059669" stroke-width="1.5" stroke-dasharray="4,2"/>
+        <line id="linePB" x1="120" y1="91" x2="120" y2="229" stroke="#059669" stroke-width="1.5" stroke-dasharray="4,2"/>
+        <!-- Central angle lines -->
+        <line x1="160" y1="160" x2="240" y2="160" stroke="#dc2626" stroke-width="1" stroke-dasharray="2,2" opacity="0.4"/>
+        <line x1="160" y1="160" x2="120" y2="229" stroke="#dc2626" stroke-width="1" stroke-dasharray="2,2" opacity="0.4"/>
+      </svg>
+      <div class="demo-controls">
+        <label>移动 P 点：</label>
+        <input type="range" id="pSlider" min="125" max="355" value="240" oninput="updateCircleDemo()">
+        <span class="demo-value" id="pAngle">240°</span>
+      </div>
+      <div class="demo-info">
+        圆周角 ∠APB = <span class="demo-value" id="inscribedAngle">60.0°</span>（恒定不变）<br>
+        对应圆心角 ∠AOB = <span class="demo-value">120°</span>　|　圆周角 = 圆心角 ÷ 2
+      </div>
+    </div>
+
+    <div class="callout purple">
+      <div class="callout-label">圆的变换本质</div>
+      圆是<strong>旋转对称群</strong>的轨道——圆上任意一点可以通过绕圆心的旋转到达任意另一点。圆周角恒等，正是因为旋转保角。切线可以视为割线在两点趋于重合时的极限——割线定理的连续极限即切线性质。这些看似不同的定理，根源都是旋转不变性。
+    </div>
+  </div>
+
+  <!-- 3.4 共线共点 = 不变性 -->
+  <div class="card">
+    <h3>3.4 共线与共点 = 变换不变性</h3>
+    <p>Menelaus 定理、Ceva 定理是传统几何中最令学生头疼的内容——公式长、情形多、证明繁琐。变换视角提供了一条全新路径：<strong>用变换将一般情形化为特殊情形</strong>。</p>
+    <h4>策略：仿射变换化简</h4>
+    <div class="step-list">
+      <div class="step-item"><div class="step-num">1</div><div><strong>认识不变量：</strong>仿射变换（平移 + 旋转 + 翻折 + 沿坐标轴的拉伸）保共线性、保平行性、保线段比。</div></div>
+      <div class="step-item"><div class="step-num">2</div><div><strong>化简：</strong>对任意三角形 $\triangle ABC$ 及其边上的点，总可以通过仿射变换将 $\triangle ABC$ 变成正三角形或直角三角形，而共线关系和线段比不变。</div></div>
+      <div class="step-item"><div class="step-num">3</div><div><strong>特殊情形验证：</strong>在正三角形中，对称性使得 Menelaus 和 Ceva 的验证变成简单的对称论证——无需复杂计算。</div></div>
+      <div class="step-item"><div class="step-num">4</div><div><strong>逆变换：</strong>由于仿射变换保不变量，特殊情形下成立的关系在一般情形同样成立。</div></div>
+    </div>
+    <div class="callout green">
+      <div class="callout-label">变换降维法</div>
+      这是一种通用策略：遇到复杂图形时，先寻找一个变换将其化简为标准图形（正三角形、等腰、直角等），在标准图形中验证结论，再由不变性推广回一般情形。<strong>"把难的变成简单的，在简单的里面验证"</strong>——这是变换思维的核心方法论。
+    </div>
+  </div>
+</div>
+
+<!-- ════════ 第四章：高阶视野层 ════════ -->
+<div class="section">
+  <div class="section-head">
+    <div class="section-num">四</div>
+    <h2>高阶视野层：变换的延伸</h2>
+  </div>
+
+  <!-- 4.1 射影几何 -->
+  <div class="card">
+    <h3>4.1 射影几何：中心投影的不变性</h3>
+    <p>从一点 $O$ 出发，将平面 $\alpha$ 上的图形投影到另一平面 $\beta$ 上——这叫<strong>中心投影</strong>。中心投影不再保持长度和角度，但保持一个深刻的不变量：<strong>共线性和交比</strong>。</p>
+    <div class="formula-box hl-purple">
+      交比不变：$(A,B;C,D) = \frac{AC/CB}{AD/DB}$ 在射影变换下保持不变
+    </div>
+    <p>射影几何的核心发现：平行线在"无穷远处"相交。通过引入<strong>无穷远点</strong>，任意两条直线都相交——这极大简化了几何推理。射影平面上的对偶性：点 ↔ 直线，"三点共线" ↔ "三线共点"——同一套定理可以从两个角度解读。</p>
+    <div class="callout purple">
+      <div class="callout-label">降维意义</div>
+      射影几何告诉我们：当你愿意放弃"长度"和"角度"这些度量信息时，剩余的结构（共线、共点、交比）更加普适、更加深刻。这是"不变性"思维的最高境界——<strong>放弃得越多，看到的本质越深</strong>。
+    </div>
+  </div>
+
+  <!-- 4.2 反演 -->
+  <div class="card">
+    <h3>4.2 反演变换：圆与直线的互换</h3>
+    <p>以圆心 $O$、半径 $r$ 的圆为反演圆，点 $P$ 的反演像 $P'$ 在射线 $OP$ 上，满足 $OP \cdot OP' = r^2$。</p>
+    <div class="formula-box hl-purple">
+      $OP \cdot OP' = r^2$　　即 $P' = O + \frac{r^2}{|OP|^2}\,\overrightarrow{OP}$
+    </div>
+    <div class="callout green">
+      <div class="callout-label">反演的不变性</div>
+      <strong>保角（共形）：</strong>反演保持任意两条曲线的夹角——这是最令人惊叹的性质之一。<br>
+      <strong>圆 ↔ 直线：</strong>过反演中心的圆变为不过中心的直线，不过中心的圆仍为圆。<br>
+      <strong>不动元素：</strong>反演圆上的点映射到自身。
+    </div>
+    <p>反演的威力在于"化圆为线"：许多涉及圆的难题，反演后变成直线的简单问题。这是"变换降维法"在高阶竞赛中的典型应用。</p>
+  </div>
+
+  <!-- 4.3 线性代数 -->
+  <div class="card">
+    <h3>4.3 线性代数：变换的代数化</h3>
+    <p>线性代数的本质是<strong>矩阵即变换</strong>。一个 $2 \times 2$ 矩阵
+    $$A = \begin{pmatrix} a & b \\ c & d \end{pmatrix}$$
+    就代表平面的一个线性变换：$(x,y) \mapsto (ax+by,\; cx+dy)$。</p>
+
+    <!-- 交互演示：矩阵变换 -->
+    <div class="demo-container">
+      <div class="demo-title">矩阵变换演示</div>
+      <svg class="demo-svg" id="matrixSvg" viewBox="0 0 400 300" style="max-width:480px;">
+        <!-- Grid -->
+        <defs>
+          <pattern id="matrixGrid" width="20" height="20" patternUnits="userSpaceOnUse">
+            <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#e8e8e8" stroke-width="0.5"/>
+          </pattern>
+        </defs>
+        <rect width="400" height="300" fill="url(#matrixGrid)"/>
+        <!-- Axes -->
+        <line x1="0" y1="150" x2="400" y2="150" stroke="#d0d0d0" stroke-width="1"/>
+        <line x1="200" y1="0" x2="200" y2="300" stroke="#d0d0d0" stroke-width="1"/>
+        <!-- Original unit square (centered at 200,150, side 60) -->
+        <polygon points="170,120 230,120 230,180 170,180" fill="rgba(100,150,200,0.12)" stroke="#6496c8" stroke-width="1.5" stroke-dasharray="4,3"/>
+        <!-- Original basis vectors -->
+        <line x1="200" y1="150" x2="260" y2="150" stroke="#2563a8" stroke-width="2" marker-end="url(#arrowBlue)"/>
+        <line x1="200" y1="150" x2="200" y2="210" stroke="#2563a8" stroke-width="2" marker-end="url(#arrowBlue)"/>
+        <text x="264" y="148" font-size="12" fill="#2563a8" font-family="serif">e₁</text>
+        <text x="206" y="222" font-size="12" fill="#2563a8" font-family="serif">e₂</text>
+        <!-- Transformed parallelogram -->
+        <polygon id="transSquare" points="170,120 230,120 230,180 170,180" fill="rgba(124,58,237,0.15)" stroke="#7c3aed" stroke-width="2.5"/>
+        <!-- Transformed basis vectors -->
+        <line id="transE1" x1="200" y1="150" x2="260" y2="150" stroke="#7c3aed" stroke-width="2.5" marker-end="url(#arrowPurple)"/>
+        <line id="transE2" x1="200" y1="150" x2="200" y2="210" stroke="#7c3aed" stroke-width="2.5" marker-end="url(#arrowPurple)"/>
+        <text id="transE1Label" x="264" y="148" font-size="12" fill="#7c3aed" font-family="serif" style="display:none">e₁'</text>
+        <text id="transE2Label" x="206" y="222" font-size="12" fill="#7c3aed" font-family="serif" style="display:none">e₂'</text>
+        <!-- Arrow markers -->
+        <defs>
+          <marker id="arrowBlue" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+            <path d="M0,0 L8,4 L0,8 Z" fill="#2563a8"/>
+          </marker>
+          <marker id="arrowPurple" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+            <path d="M0,0 L8,4 L0,8 Z" fill="#7c3aed"/>
+          </marker>
+        </defs>
+      </svg>
+      <div class="demo-controls">
+        <button class="btn-label" onclick="matrixPreset('identity')" style="cursor:pointer;padding:6px 16px;border:1.5px solid var(--border-light);border-radius:20px;background:#fff;font-size:14px;">恒等</button>
+        <button class="btn-label" onclick="matrixPreset('rotation')" style="cursor:pointer;padding:6px 16px;border:1.5px solid var(--border-light);border-radius:20px;background:#fff;font-size:14px;">旋转 30°</button>
+        <button class="btn-label" onclick="matrixPreset('reflection')" style="cursor:pointer;padding:6px 16px;border:1.5px solid var(--border-light);border-radius:20px;background:#fff;font-size:14px;">反射</button>
+        <button class="btn-label" onclick="matrixPreset('scaling')" style="cursor:pointer;padding:6px 16px;border:1.5px solid var(--border-light);border-radius:20px;background:#fff;font-size:14px;">缩放 1.5×</button>
+        <button class="btn-label" onclick="matrixPreset('shear')" style="cursor:pointer;padding:6px 16px;border:1.5px solid var(--border-light);border-radius:20px;background:#fff;font-size:14px;">剪切</button>
+      </div>
+      <div class="matrix-display">
+        <span class="matrix-bracket">[</span>
+        <span id="matrixContent">1.00&nbsp;&nbsp;0.00<br>0.00&nbsp;&nbsp;1.00</span>
+        <span class="matrix-bracket">]</span>
+      </div>
+      <div class="demo-info">
+        行列式 det = <span class="demo-value" id="detDisplay">1.000</span>　
+        <span id="detInfo">（面积 ×|det|，方向不变）</span>
+      </div>
+    </div>
+
+    <div class="callout purple">
+      <div class="callout-label">三个关键概念</div>
+      <strong>行列式 = 面积缩放因子：</strong>$\det(A) = ad - bc$。$|\det|$ 是变换后图形面积的倍数。$\det \gt 0$ 保方向，$\det \lt 0$ 反方向，$\det = 0$ 压缩为线（奇异）。<br>
+      <strong>特征值 = 不变方向：</strong>特征向量 $A\vec{v} = \lambda\vec{v}$ 表示该方向只缩放不旋转——变换的"主轴"。<br>
+      <strong>矩阵乘法 = 变换复合：</strong>先变换 $A$ 再变换 $B$，等价于乘积矩阵 $BA$。矩阵乘法不可交换 $\Leftrightarrow$ 变换的顺序影响结果。
+    </div>
+    <div class="callout blue">
+      <div class="callout-label">几何与代数的桥梁</div>
+      线性代数将几何变换翻译成了代数语言。旋转矩阵 $$\begin{pmatrix}\cos\theta & -\sin\theta \\ \sin\theta & \cos\theta\end{pmatrix}$$、反射矩阵 $$\begin{pmatrix}1 & 0 \\ 0 & -1\end{pmatrix}$$、缩放矩阵 $$\begin{pmatrix}k & 0 \\ 0 & k\end{pmatrix}$$——每个矩阵都是一个几何操作。反过来，每个矩阵都可以从几何上理解。<strong>矩阵不是数字表格，而是变换的坐标</strong>。
+    </div>
+  </div>
+</div>
+
+<!-- ════════ 第五章：中外对比 ════════ -->
+<div class="section">
+  <div class="section-head">
+    <div class="section-num">五</div>
+    <h2>中外教学对比</h2>
+  </div>
+  <div class="card">
+    <div class="table-wrap">
+      <table class="method-table">
+        <tr><th>维度</th><th>国内传统教学</th><th>国际变换驱动</th></tr>
+        <tr><td>核心思想</td><td>静态验证：满足条件 → 全等</td><td>动态构造：运动重合 → 全等</td></tr>
+        <tr><td>全等三角形</td><td>SSS / SAS / ASA 判定定理</td><td>刚体变换（平移+旋转+翻折）的合成</td></tr>
+        <tr><td>相似三角形</td><td>AA / SAS 判定定理</td><td>位似变换 + 刚体运动</td></tr>
+        <tr><td>圆</td><td>大量独立定理分别记忆</td><td>旋转对称性的自然推论</td></tr>
+        <tr><td>共线共点</td><td>Menelaus / Ceva 公式背诵</td><td>仿射不变性 + 特殊化方法</td></tr>
+        <tr><td>证明方式</td><td>逻辑链条：条件 → 定理 → 结论</td><td>构造运动：找变换 → 验不变性</td></tr>
+        <tr><td>知识结构</td><td>分块割裂，各主题独立</td><td>统一连贯，变换为主线</td></tr>
+        <tr><td>与代数联系</td><td>较弱（计算为主）</td><td>自然过渡到矩阵与线性代数</td></tr>
+      </table>
+    </div>
+    <div class="callout orange">
+      <div class="callout-label">反思与融合</div>
+      国内教学的优势在于训练逻辑严密性和计算熟练度；国际路线的优势在于提供统一视角和直觉理解。两者并非互斥——理想的教学应当<strong>先用变换建立直觉，再用判定定理训练效率</strong>。理解"为什么"之后，记忆"是什么"就不再痛苦。
+    </div>
+  </div>
+</div>
+
+<!-- ════════ 第六章：总结与记忆 ════════ -->
+<div class="section">
+  <div class="section-head">
+    <div class="section-num">六</div>
+    <h2>总结与记忆口诀</h2>
+  </div>
+  <div class="card">
+    <div class="memory-card">
+      <div class="mem-title">几何变换记忆口诀</div>
+      <div class="mem-body">
+        <p><strong>动中求静是几何，变换不变两相合。</strong></p>
+        <p>平移旋转和翻折，刚体运动保全等。位似缩放加刚体，相似自然迎刃解。</p>
+        <p>圆生旋转对称中，共线共点不变通。射影反演高阶法，矩阵代数桥相通。</p>
+        <p><strong>判定定理非公理，变换唯一是本宗。</strong></p>
+      </div>
+    </div>
+    <div class="callout green">
+      <div class="callout-label">一句话总结</div>
+      几何变换的本质是"运动且保持某种不变性"。四大变换（平移、旋转、翻折、位似）是基础工具，它们的复合生成全等与相似，它们的对称性解释圆的性质，它们的不变量推导共线共点定理，它们的代数化就是矩阵与线性代数。<strong>一条主线，贯通始终。</strong>
+    </div>
+    <h3>三层知识链</h3>
+    <div class="step-list">
+      <div class="step-item"><div class="step-num">1</div><div><strong>基础工具：</strong>平移（保距离，无不动点）→ 旋转（保距离，一个不动点）→ 翻折（保距离，反向，轴上不动）→ 位似（保比例，缩放）。前三者合称刚体变换，加上位似得相似变换。</div></div>
+      <div class="step-item"><div class="step-num">2</div><div><strong>核心应用：</strong>全等 $=$ 刚体变换可重合；相似 $=$ 位似 $+$ 刚体可重合；圆 $=$ 旋转对称轨道；共线共点 $=$ 仿射不变性 $+$ 特殊化降维。</div></div>
+      <div class="step-item"><div class="step-num">3</div><div><strong>高阶视野：</strong>射影（放弃度量，保交比）→ 反演（圆线互换，保角）→ 线性代数（矩阵 $=$ 变换，行列式 $=$ 面积比，特征值 $=$ 不变方向）。</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  <p>几何变换讲义 · 从静态证明到动态思维 · 用"运动与不变"统一几何认知</p>
+</div>
+
+</div>
+
+<script>
+// ════════ 变换工坊 ════════
+var studioOrigPoints = [[120,240],[180,80],[260,240]];
+var studioCenter = [200, 160];
+var studioType = 'translate';
+
+function studioSwitch(type) {
+  studioType = type;
+  // Show/hide control groups
+  var groups = document.querySelectorAll('.ctrl-group');
+  for (var i = 0; i < groups.length; i++) {
+    groups[i].classList.remove('active');
+  }
+  document.getElementById('ctrl-' + type).classList.add('active');
+  // Show/hide center marker and mirror axis
+  document.getElementById('studioCenter').style.display = (type === 'rotate' || type === 'homothety') ? 'block' : 'none';
+  document.getElementById('mirrorAxis').style.display = (type === 'reflect') ? 'block' : 'none';
+  studioUpdate();
+}
+
+function studioUpdate() {
+  var pts = studioOrigPoints.map(function(p) { return [p[0], p[1]]; });
+  var infoText = '';
+
+  if (studioType === 'translate') {
+    var dx = parseInt(document.getElementById('sliderTx').value);
+    var dy = parseInt(document.getElementById('sliderTy').value);
+    document.getElementById('valTx').textContent = dx;
+    document.getElementById('valTy').textContent = dy;
+    pts = pts.map(function(p) { return [p[0]+dx, p[1]+dy]; });
+    infoText = '<span class="invariant">保持不变：</span>长度、角度、面积、方向　<span class="changed">发生变化：</span>位置';
+  } else if (studioType === 'rotate') {
+    var angle = parseInt(document.getElementById('sliderAngle').value);
+    document.getElementById('valAngle').textContent = angle + '°';
+    var rad = angle * Math.PI / 180;
+    var cx = studioCenter[0], cy = studioCenter[1];
+    pts = pts.map(function(p) {
+      var dx = p[0]-cx, dy = p[1]-cy;
+      return [cx + dx*Math.cos(rad) - dy*Math.sin(rad), cy + dx*Math.sin(rad) + dy*Math.cos(rad)];
+    });
+    infoText = '<span class="invariant">保持不变：</span>长度、角度、面积、方向　<span class="changed">发生变化：</span>位置（绕中心旋转）';
+  } else if (studioType === 'reflect') {
+    var axis = document.getElementById('axisSelect').value;
+    var cx = studioCenter[0], cy = studioCenter[1];
+    var axisLine = document.getElementById('mirrorAxis');
+    if (axis === 'h') {
+      pts = pts.map(function(p) { return [p[0], 2*cy - p[1]]; });
+      axisLine.setAttribute('x1', 0); axisLine.setAttribute('y1', cy);
+      axisLine.setAttribute('x2', 400); axisLine.setAttribute('y2', cy);
+    } else if (axis === 'v') {
+      pts = pts.map(function(p) { return [2*cx - p[0], p[1]]; });
+      axisLine.setAttribute('x1', cx); axisLine.setAttribute('y1', 0);
+      axisLine.setAttribute('x2', cx); axisLine.setAttribute('y2', 320);
+    } else {
+      pts = pts.map(function(p) { return [(p[1]-cy)+cx, (p[0]-cx)+cy]; });
+      axisLine.setAttribute('x1', 40); axisLine.setAttribute('y1', 0);
+      axisLine.setAttribute('x2', 360); axisLine.setAttribute('y2', 320);
+    }
+    infoText = '<span class="invariant">保持不变：</span>长度、角度大小、面积　<span class="changed">发生变化：</span>方向（反向）';
+  } else if (studioType === 'homothety') {
+    var kVal = parseInt(document.getElementById('sliderK').value) / 10;
+    document.getElementById('valK').textContent = kVal.toFixed(1);
+    var cx = studioCenter[0], cy = studioCenter[1];
+    pts = pts.map(function(p) { return [cx + kVal*(p[0]-cx), cy + kVal*(p[1]-cy)]; });
+    var areaK = (kVal*kVal).toFixed(2);
+    infoText = '<span class="invariant">保持不变：</span>角度、平行关系、线段比　<span class="changed">发生变化：</span>长度(×' + Math.abs(kVal).toFixed(1) + ')、面积(×' + areaK + ')';
+  }
+
+  var ptsStr = pts.map(function(p) { return p[0].toFixed(1) + ',' + p[1].toFixed(1); }).join(' ');
+  document.getElementById('transTri').setAttribute('points', ptsStr);
+
+  // Update labels
+  document.getElementById('labelAp').setAttribute('x', pts[0][0]-7);
+  document.getElementById('labelAp').setAttribute('y', pts[0][1]+15);
+  document.getElementById('labelBp').setAttribute('x', pts[1][0]-7);
+  document.getElementById('labelBp').setAttribute('y', pts[1][1]-5);
+  document.getElementById('labelCp').setAttribute('x', pts[2][0]-7);
+  document.getElementById('labelCp').setAttribute('y', pts[2][1]+15);
+
+  document.getElementById('studioInfo').innerHTML = infoText;
+}
+
+// ════════ 圆周角定理演示 ════════
+var circleData = {
+  cx: 160, cy: 160, r: 80,
+  aAngle: 0,
+  bAngle: 120
+};
+
+function circlePoint(angle) {
+  var rad = angle * Math.PI / 180;
+  return [circleData.cx + circleData.r * Math.cos(rad), circleData.cy + circleData.r * Math.sin(rad)];
+}
+
+function angleAtP(pAngle) {
+  var A = circlePoint(circleData.aAngle);
+  var B = circlePoint(circleData.bAngle);
+  var P = circlePoint(pAngle);
+  var vAx = A[0]-P[0], vAy = A[1]-P[1];
+  var vBx = B[0]-P[0], vBy = B[1]-P[1];
+  var dot = vAx*vBx + vAy*vBy;
+  var magA = Math.sqrt(vAx*vAx + vAy*vAy);
+  var magB = Math.sqrt(vBx*vBx + vBy*vBy);
+  var cosVal = dot / (magA * magB);
+  if (cosVal > 1) cosVal = 1;
+  if (cosVal < -1) cosVal = -1;
+  return Math.acos(cosVal) * 180 / Math.PI;
+}
+
+function updateCircleDemo() {
+  var pAngle = parseInt(document.getElementById('pSlider').value);
+  document.getElementById('pAngle').textContent = pAngle + '°';
+
+  var P = circlePoint(pAngle);
+  document.getElementById('pointP').setAttribute('cx', P[0].toFixed(1));
+  document.getElementById('pointP').setAttribute('cy', P[1].toFixed(1));
+  document.getElementById('labelP').setAttribute('x', (P[0]-20).toFixed(1));
+  document.getElementById('labelP').setAttribute('y', (P[1]-9).toFixed(1));
+
+  var A = circlePoint(circleData.aAngle);
+  var B = circlePoint(circleData.bAngle);
+
+  document.getElementById('linePA').setAttribute('x1', P[0].toFixed(1));
+  document.getElementById('linePA').setAttribute('y1', P[1].toFixed(1));
+  document.getElementById('linePA').setAttribute('x2', A[0].toFixed(1));
+  document.getElementById('linePA').setAttribute('y2', A[1].toFixed(1));
+
+  document.getElementById('linePB').setAttribute('x1', P[0].toFixed(1));
+  document.getElementById('linePB').setAttribute('y1', P[1].toFixed(1));
+  document.getElementById('linePB').setAttribute('x2', B[0].toFixed(1));
+  document.getElementById('linePB').setAttribute('y2', B[1].toFixed(1));
+
+  var inscribed = angleAtP(pAngle);
+  document.getElementById('inscribedAngle').textContent = inscribed.toFixed(1) + '°';
+}
+
+// ════════ 矩阵变换演示 ════════
+var matData = {
+  cx: 200, cy: 150, half: 30,
+  // Square corners relative to center: [(-30,-30),(30,-30),(30,30),(-30,30)]
+  // In SVG coords (y-down): bottom-left (-30,30), bottom-right (30,30), top-right (30,-30), top-left (-30,-30)
+  square: [[-30,-30],[30,-30],[30,30],[-30,30]]
+};
+
+var matrixPresets = {
+  identity: { a:1, b:0, c:0, d:1, name:'恒等' },
+  rotation: { a:0.866, b:-0.5, c:0.5, d:0.866, name:'旋转 30°' },
+  reflection: { a:1, b:0, c:0, d:-1, name:'反射(x轴)' },
+  scaling: { a:1.5, b:0, c:0, d:1.5, name:'缩放 1.5×' },
+  shear: { a:1, b:0.7, c:0, d:1, name:'剪切' }
+};
+
+function matrixPreset(name) {
+  var m = matrixPresets[name];
+  if (!m) return;
+
+  // Transform square corners
+  var pts = matData.square.map(function(p) {
+    return [
+      m.a * p[0] + m.b * p[1] + matData.cx,
+      m.c * p[0] + m.d * p[1] + matData.cy
+    ];
+  });
+  var ptsStr = pts.map(function(p) { return p[0].toFixed(1) + ',' + p[1].toFixed(1); }).join(' ');
+  document.getElementById('transSquare').setAttribute('points', ptsStr);
+
+  // Transform basis vectors: e1=(1,0)->(a,c), e2=(0,1)->(b,d)
+  var e1end = [m.a * matData.half + matData.cx, m.c * matData.half + matData.cy];
+  var e2end = [m.b * matData.half + matData.cx, m.d * matData.half + matData.cy];
+  document.getElementById('transE1').setAttribute('x2', e1end[0].toFixed(1));
+  document.getElementById('transE1').setAttribute('y2', e1end[1].toFixed(1));
+  document.getElementById('transE2').setAttribute('x2', e2end[0].toFixed(1));
+  document.getElementById('transE2').setAttribute('y2', e2end[1].toFixed(1));
+
+  // Update labels
+  document.getElementById('transE1Label').setAttribute('x', (e1end[0]+4).toFixed(1));
+  document.getElementById('transE1Label').setAttribute('y', (e1end[1]-2).toFixed(1));
+  document.getElementById('transE1Label').style.display = (name === 'identity') ? 'none' : 'block';
+  document.getElementById('transE2Label').setAttribute('x', (e2end[0]+4).toFixed(1));
+  document.getElementById('transE2Label').setAttribute('y', (e2end[1]+12).toFixed(1));
+  document.getElementById('transE2Label').style.display = (name === 'identity') ? 'none' : 'block';
+
+  // Display matrix
+  document.getElementById('matrixContent').innerHTML =
+    m.a.toFixed(2) + '&nbsp;&nbsp;' + m.b.toFixed(2) + '<br>' +
+    m.c.toFixed(2) + '&nbsp;&nbsp;' + m.d.toFixed(2);
+
+  // Determinant
+  var det = m.a * m.d - m.b * m.c;
+  document.getElementById('detDisplay').textContent = det.toFixed(3);
+  var detInfo = document.getElementById('detInfo');
+  if (det > 0.001) {
+    detInfo.innerHTML = '（面积 ×' + det.toFixed(2) + '，方向不变）';
+  } else if (det < -0.001) {
+    detInfo.innerHTML = '（面积 ×' + Math.abs(det).toFixed(2) + '，方向反转）';
+  } else {
+    detInfo.innerHTML = '（压缩为线，奇异）';
+  }
+}
+
+// Initialize demos on load
+document.addEventListener('DOMContentLoaded', function() {
+  studioUpdate();
+  updateCircleDemo();
+  matrixPreset('identity');
+});
+</script>
+</body>
+</html>

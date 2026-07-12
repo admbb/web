@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第34讲 合理转化，对应计数</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]});"></script>
+<style>
+:root {
+  --primary: #1a3a5c;
+  --primary-light: #2563a8;
+  --accent: #dc2626;
+  --accent-orange: #d97706;
+  --bg-page: #f8f9fe;
+  --bg-card: #ffffff;
+  --bg-formula: #f0f4ff;
+  --border-light: #e0e7f0;
+  --border-blue: #dbeafe;
+  --text-primary: #1a3a5c;
+  --text-secondary: #6b7280;
+  --text-accent: #dc2626;
+  --success: #059669;
+  --warning: #d97706;
+  --error: #dc2626;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  overflow-x: hidden;
+  font-family: "PingFang SC", "Microsoft YaHei", "Noto Serif SC", "Source Han Serif SC", Georgia, serif;
+  background: var(--bg-page);
+  color: var(--text-primary);
+  line-height: 1.85;
+  font-size: 16px;
+}
+
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 40px 24px 80px;
+}
+
+.cover {
+  background: var(--bg-card);
+  border-radius: 18px;
+  padding: 60px 40px 50px;
+  margin-bottom: 40px;
+  border: 1px solid var(--border-light);
+  box-shadow: 0 4px 16px rgba(26,58,92,0.08);
+  text-align: center;
+  overflow: visible;
+}
+.cover-badge {
+  display: inline-block;
+  background: var(--primary);
+  color: #fff;
+  font-size: 13px;
+  padding: 5px 18px;
+  border-radius: 20px;
+  letter-spacing: 2px;
+  margin-bottom: 24px;
+}
+.cover h1 { font-size: 32px; color: var(--primary); margin-bottom: 12px; font-weight: 800; letter-spacing: 2px; }
+.cover .subtitle { font-size: 15px; color: var(--text-secondary); margin-bottom: 6px; }
+.cover .tags { margin-top: 24px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+.cover .tag {
+  background: var(--bg-formula);
+  border: 1px solid var(--border-blue);
+  border-radius: 20px;
+  padding: 6px 16px;
+  font-size: 13px;
+  color: var(--primary-light);
+}
+
+.concept-image {
+  margin: -18px 0 42px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border-light);
+  background: #fff;
+  box-shadow: 0 2px 10px rgba(26,58,92,0.06);
+}
+.concept-image img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.concept-image figcaption {
+  padding: 10px 16px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-secondary);
+  background: #fff;
+}
+.generated-diagram {
+  margin: 16px auto;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border-blue);
+  background: #fff;
+  max-width: 760px;
+}
+.generated-diagram img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.generated-diagram figcaption {
+  padding: 8px 12px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-secondary);
+  background: #fff;
+}
+
+.card {
+  background: var(--bg-card);
+  border-radius: 8px;
+  padding: 28px 32px;
+  margin-bottom: 20px;
+  border: 1px solid var(--border-light);
+  box-shadow: 0 2px 8px rgba(26,58,92,0.06);
+  overflow: visible;
+}
+
+.section { margin-bottom: 48px; }
+.section-head { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
+.section-num {
+  width: 42px; height: 42px;
+  background: linear-gradient(135deg, #1a3a5c, #2563a8);
+  color: #fff; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; font-weight: 800; flex-shrink: 0;
+}
+h2 { font-size: 22px; color: var(--primary); margin: 0; }
+h3 { font-size: 18px; color: var(--primary); margin: 20px 0 10px; }
+h4 { font-size: 15px; color: var(--primary-light); margin: 14px 0 8px; }
+p { margin-bottom: 10px; font-size: 15px; }
+
+.formula-box {
+  background: var(--bg-formula);
+  border-radius: 10px;
+  padding: 18px 24px;
+  margin: 16px 0;
+  text-align: center;
+  font-size: 17px;
+  border: 1px solid var(--border-blue);
+  overflow: visible;
+}
+.formula-box.hl-red {
+  border-color: #dc2626;
+  border-width: 2px;
+  background: #fef2f2;
+}
+.formula-box.hl-green {
+  border-color: #059669;
+  border-width: 2px;
+  background: #ecfdf5;
+}
+
+.example-box {
+  background: #f8f9fe;
+  border-left: 5px solid #1a3a5c;
+  border-radius: 0 8px 8px 0;
+  padding: 20px 24px;
+  margin: 20px 0;
+  overflow: visible;
+}
+.example-num { font-size: 17px; font-weight: 800; color: #1a3a5c; margin-bottom: 10px; }
+.example-problem { font-size: 15px; margin-bottom: 14px; color: #1a3a5c; }
+.example-solution { font-size: 14px; line-height: 1.9; color: #6b7280; margin-bottom: 12px; }
+.example-note {
+  background: #fffbea;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-size: 13px;
+  color: #92400e;
+  border: 1px solid #fde68a;
+}
+
+.callout {
+  border-radius: 10px;
+  padding: 16px 22px;
+  margin: 20px 0;
+  font-size: 14px;
+  line-height: 1.7;
+  overflow: visible;
+}
+.callout.blue { background: #eff6ff; border-left: 5px solid #2563a8; color: #1e40af; }
+.callout.green { background: #ecfdf5; border-left: 5px solid #059669; color: #064e3b; }
+.callout.orange { background: #fffbea; border-left: 5px solid #d97706; color: #92400e; }
+.callout.red { background: #fef2f2; border-left: 5px solid #dc2626; color: #991b1b; }
+.callout-label { font-weight: 700; margin-bottom: 6px; font-size: 15px; }
+
+.memory-card {
+  background: linear-gradient(135deg, #fef3c7, #fffbeb);
+  border: 2px solid #fcd34d;
+  border-radius: 14px;
+  padding: 24px;
+  margin: 16px 0;
+  overflow: visible;
+}
+.mem-icon { font-size: 28px; margin-bottom: 8px; }
+.mem-title { font-size: 18px; font-weight: 800; color: #d97706; margin-bottom: 10px; }
+.mem-body { font-size: 14px; line-height: 1.9; }
+
+.knowledge-tree { display: flex; flex-direction: column; align-items: center; gap: 14px; margin: 24px 0; }
+.tree-root {
+  background: var(--bg-formula);
+  border: 2px solid var(--success);
+  border-radius: 12px;
+  padding: 11px 22px;
+  font-weight: 800;
+  font-size: 16px;
+  color: var(--success);
+}
+.tree-branch-title { font-weight: 700; color: var(--primary); margin: 8px 0 4px; }
+.tree-row { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+.tree-leaf {
+  background: #fff;
+  border: 1px solid var(--border-blue);
+  border-radius: 8px;
+  padding: 7px 14px;
+  font-size: 13px;
+  color: var(--text-primary);
+}
+
+.step-list { margin: 12px 0; }
+.step-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 12px;
+  font-size: 14px;
+  line-height: 1.7;
+}
+.step-num {
+  width: 28px; height: 28px;
+  background: var(--primary-light);
+  color: #fff;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 700; flex-shrink: 0;
+}
+
+.method-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  margin: 12px 0;
+}
+.method-table th {
+  background: var(--primary);
+  color: #fff;
+  padding: 10px 8px;
+  text-align: center;
+  font-weight: 700;
+}
+.method-table td {
+  padding: 10px 8px;
+  text-align: center;
+  border-bottom: 1px solid var(--border-light);
+  background: #fff;
+}
+.method-table tr:nth-child(even) td { background: var(--bg-page); }
+.table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  margin: 12px 0;
+}
+.table-wrap .method-table { min-width: 620px; }
+.mini-proof {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin: 14px 0;
+}
+.proof-step {
+  background: #fff;
+  border: 1px solid var(--border-blue);
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 13px;
+  line-height: 1.65;
+}
+.proof-step strong { color: var(--primary); }
+
+@media (max-width: 700px) {
+  .container { padding: 20px 12px 60px; }
+  .card { padding: 18px 16px; }
+  .cover { padding: 40px 20px; }
+  .cover h1 { font-size: 24px; }
+  .concept-image { margin: -10px 0 32px; }
+  .concept-image figcaption { padding: 8px 10px; }
+  .generated-diagram figcaption { padding: 7px 9px; }
+  .section-head { align-items: flex-start; gap: 10px; }
+  .section-num { width: 36px; height: 36px; font-size: 18px; border-radius: 8px; }
+  h2 { font-size: 20px; line-height: 1.35; }
+  h3 { font-size: 17px; line-height: 1.45; }
+  .formula-box { padding: 14px 10px; font-size: 15px; overflow-x: auto; }
+  .example-box { padding: 16px 14px; }
+  .mini-proof { grid-template-columns: 1fr; }
+  .ball { width: 30px; height: 30px; }
+  .gap-mark { width: 18px; height: 30px; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- ===== 封面 ===== -->
+<div class="cover">
+  <div class="cover-badge">小学数学竞赛 · 第34讲</div>
+  <h1>合理转化，对应计数</h1>
+  <div class="subtitle">把"难数"变成"好数"——一对一映射的魔力</div>
+  <div class="subtitle">教材页码：P.504 – P.516</div>
+  <div class="tags">
+    <span class="tag">隔板法</span>
+    <span class="tag">打包法</span>
+    <span class="tag">补数转化</span>
+    <span class="tag">分类对应</span>
+    <span class="tag">几何计数</span>
+  </div>
+</div>
+
+<figure class="concept-image">
+  <img src="assets/correspondence-counting-concept.png" alt="杂乱对象通过一一对应转化为有序分组的概念图" loading="eager">
+  <figcaption>把杂乱的对象转成有序的结构：对应计数的第一感觉。</figcaption>
+</figure>
+
+<!-- ==================== 1. 知识树 ==================== -->
+<div class="section">
+  <div class="section-head"><div class="section-num">1</div><h2>知识树一览</h2></div>
+  <div class="card">
+    <div class="knowledge-tree">
+      <div class="tree-root">合理转化，对应计数</div>
+      <div class="tree-branch-title">四大核心方法</div>
+      <div class="tree-row">
+        <div class="tree-leaf">隔板法（物→数）</div>
+        <div class="tree-leaf">打包法（捆绑约束）</div>
+        <div class="tree-leaf">补数转化（$d_i \to 9-d_i$）</div>
+        <div class="tree-leaf">分类对应（几何计数）</div>
+      </div>
+      <div class="tree-branch-title">典型题型</div>
+      <div class="tree-row">
+        <div class="tree-leaf">数字和问题</div>
+        <div class="tree-leaf">不定方程解计数</div>
+        <div class="tree-leaf">球排列与不相邻</div>
+        <div class="tree-leaf">三角网格平行四边形</div>
+        <div class="tree-leaf">长方体计数</div>
+        <div class="tree-leaf">凸多边形三角形计数</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== 2. 内容综述 ==================== -->
+<div class="section">
+  <div class="section-head"><div class="section-num">2</div><h2>内容综述</h2></div>
+  <div class="card">
+    <p><strong>什么是对应计数？</strong>面对一个复杂的计数问题，直接数太乱、太多、容易遗漏。聪明的做法是：把它<strong>转化</strong>成另一个等价但更简单的问题——只要新旧问题之间存在<strong>一一对应</strong>（每个旧方案恰好对应一个新方案，不多不少），数新问题就等于数旧问题。</p>
+
+    <p><strong>核心理念：</strong>"物 → 数"。把排列物体的任务，转化为排列数字（编码）的任务。例如，5 个球排一行，可以用数字 $1, 1, 2, 2, 2, 3, 3, 3, 3$ 来编码——红色球记 1、蓝色球记 2、黄色球记 3。球的排列问题就变成了数字的排列问题，约束条件也随之翻译。</p>
+
+    <div class="callout green">
+      <div class="callout-label">一对一的关键</div>
+      <p>对应计数的核心是<strong>证明一一对应</strong>。不能多对一（两个旧方案对应同一个新方案，会少数），也不能一对多（一个旧方案对应多个新方案，会多数）。转化后必须验证：每个旧方案恰好对应一个新方案，反之亦然。</p>
+    </div>
+
+    <p><strong>教学建议：</strong>本讲建议 $2 \sim 3$ 课时。重点不是背公式，而是理解"为什么可以这么转化"——转化后多了什么、少了什么、为什么一一对应。</p>
+  </div>
+</div>
+
+<!-- ==================== 3. 隔板法 ==================== -->
+<div class="section">
+  <div class="section-head"><div class="section-num">3</div><h2>核心方法一：隔板法</h2></div>
+  <div class="card">
+    <p><strong>适用场景：</strong>把 $n$ 个<strong>相同</strong>的物品分给 $k$ 个不同的组，每组至少分到若干个。用 $k-1$ 块"隔板"插入 $n$ 个物品之间的间隙，隔板的不同插法对应不同的分配方案。</p>
+
+    <h3>基本模型</h3>
+    <p>将 $n$ 个"1"排成一排，插入 $k-1$ 块隔板，分成 $k$ 段。每段对应一个组的数量。</p>
+    <figure class="generated-diagram">
+      <img src="assets/stars-bars-basic.png" alt="隔板法示意图：相同物品被隔板分成四段" loading="eager">
+      <figcaption>3 块隔板把 8 个"1"分成 4 段 → 对应 4 个数字的组成</figcaption>
+    </figure>
+
+    <div class="callout blue">
+      <div class="callout-label">隔板法公式速查</div>
+      <p><strong>正整数解</strong>（每组 $\geq 1$）：$x_1 + x_2 + \cdots + x_k = n$ 的正整数解个数为 $C_{n-1}^{k-1}$。</p>
+      <p><strong>自然数解</strong>（每组 $\geq 0$）：$x_1 + x_2 + \cdots + x_k = n$ 的自然数解个数为 $C_{n+k-1}^{k-1}$。</p>
+      <p><strong>有下界</strong>（每组 $\geq m_i$）：令 $y_i = x_i - m_i$，转化为自然数解问题。</p>
+    </div>
+
+    <h3>例题 1：四位数的数字和为 11</h3>
+    <div class="example-box">
+      <div class="example-num">例题 1（教材例 2-1）⭐⭐</div>
+      <div class="example-problem">数字和为 11 的四位数共有多少个？</div>
+      <div class="example-solution">
+        <p><strong>分析：</strong>四位数的四个数字 $d_1 d_2 d_3 d_4$ 满足 $d_1 + d_2 + d_3 + d_4 = 11$，其中 $1 \leq d_1 \leq 9$，$0 \leq d_2,d_3,d_4 \leq 9$。</p>
+        <p><strong>先处理首位：</strong>令 $e_1=d_1-1$，则 $e_1+d_2+d_3+d_4=10$。如果暂时不管上界，非负整数解有 $C_{10+4-1}^{4-1}=C_{13}^{3}=286$ 个。</p>
+
+        <figure class="generated-diagram">
+          <img src="assets/stars-bars-fixed-leading.png" alt="固定首位后的隔板法示意图" loading="eager">
+          <figcaption>固定千位至少 1 后，剩下 10 个"1"分给 4 个位置 → 先得 $C_{13}^3$</figcaption>
+        </figure>
+
+        <p><strong>再排除越界：</strong>这里不能忽略数字上界。因为 $e_1$ 最大只能为 8（对应 $d_1 \leq 9$），而 $d_2,d_3,d_4$ 最大只能为 9。</p>
+        <div class="mini-proof">
+          <div class="proof-step"><strong>千位越界</strong><br>$e_1 \geq 9$。令 $e_1'=e_1-9$，则 $e_1'+d_2+d_3+d_4=1$，共有 $C_4^3=4$ 种。</div>
+          <div class="proof-step"><strong>其他位越界</strong><br>$d_2,d_3,d_4$ 中某一位等于 10 时，其他三项都为 0。共有 $3$ 种。</div>
+          <div class="proof-step"><strong>无重叠</strong><br>总和只有 10，不可能同时出现两个越界位，所以直接相减。</div>
+        </div>
+
+        <div class="formula-box hl-green">
+          $C_{13}^3 - C_4^3 - 3 = 286 - 4 - 3 = 279$
+        </div>
+        <p><strong>答案：279 个。</strong></p>
+      </div>
+      <div class="example-note"><strong>评注：</strong>原问题先转化为非负整数解，再处理数字上界。千位非零用 $e_1=d_1-1$ 消掉下界；数字不能超过 9 则用补集排除。这样每一步的对应关系都清楚，不会把非法"数字"混进答案。</div>
+    </div>
+
+    <h3>例题 2：不定方程的自然数解</h3>
+    <div class="example-box">
+      <div class="example-num">例题 2（教材例 3-2）⭐⭐</div>
+      <div class="example-problem">求 $x + y + z = 15$ 且 $z \geq 3$ 的自然数解的个数。</div>
+      <div class="example-solution">
+        <p><strong>分析：</strong>有下界约束 $z \geq 3$。令 $z' = z - 3 \geq 0$，则方程变为 $x + y + z' = 12$，其中 $x, y, z' \geq 0$，是自然数解问题。</p>
+        <p>用隔板法：12 个"1" + 2 块隔板 = 14 个位置选 2 个放隔板。</p>
+        <div class="formula-box hl-green">
+          $C_{12+2}^{2} = C_{14}^{2} = \dfrac{14 \times 13}{2} = 91$
+        </div>
+        <p><strong>答案：91 个。</strong></p>
+      </div>
+      <div class="example-note"><strong>评注：</strong>有下界 $z \geq m$ 时，做变量替换 $z' = z - m$ 即可消去下界，转化为标准的自然数解问题。正整数解（$\geq 1$）和自然数解（$\geq 0$）的区别在于：正整数解用 $C_{n-1}^{k-1}$，自然数解用 $C_{n+k-1}^{k-1}$。记忆口诀："正整数减一，自然数加一"。</div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== 4. 打包法 ==================== -->
+<div class="section">
+  <div class="section-head"><div class="section-num">4</div><h2>核心方法二：打包法</h2></div>
+  <div class="card">
+    <p><strong>适用场景：</strong>选取的数之间有<strong>差值约束</strong>（如 $a - b > 1$、$b - c > 2$ 等），直接选难以计数。把每个选中的数"打包"——连同它后面应跳过的数一起看作一个整体——转化为无约束的选取问题。</p>
+
+    <h3>例题 3：带差值约束的选取</h3>
+    <div class="example-box">
+      <div class="example-num">例题 3（教材例 3-1）⭐⭐⭐</div>
+      <div class="example-problem">从 $16, 15, 14, \ldots, 1$ 中选 4 个数 $a, b, c, d$（$a > b > c > d$），使得 $a - b > 1$，$b - c > 2$，$c - d > 3$。有多少种选法？</div>
+      <div class="example-solution">
+        <p><strong>分析：</strong>约束意味着相邻选数之间至少要跳过若干个数。用打包法：</p>
+        <p>$a - b > 1$ → $a$ 和 $b$ 之间至少跳过 1 个数，把 $a$ 和它后面跳过的 1 个数"打包"在一起。</p>
+        <p>$b - c > 2$ → $b$ 和 $c$ 之间至少跳过 2 个数，把 $b$ 和它后面跳过的 2 个数"打包"。</p>
+        <p>$c - d > 3$ → $c$ 和 $d$ 之间至少跳过 3 个数，把 $c$ 和它后面跳过的 3 个数"打包"。</p>
+
+        <p>打包后：$a$ 占 $1+1=2$ 格，$b$ 占 $1+2=3$ 格，$c$ 占 $1+3=4$ 格，$d$ 占 1 格。总共占用 $2+3+4+1=10$ 格。</p>
+        <p>原来有 16 个数，打包后等效于从 $16 - 6 = 10$ 个位置中选 4 个位置放 $a, b, c, d$（因为打包"吃掉"了 $1+2+3=6$ 个额外位置）。</p>
+
+        <div class="formula-box hl-green">
+          $C_{10}^{4} = \dfrac{10 \times 9 \times 8 \times 7}{4 \times 3 \times 2 \times 1} = 210$
+        </div>
+        <p><strong>答案：210 种。</strong></p>
+      </div>
+      <div class="example-note"><strong>评注：</strong>打包法的精髓是"把约束变成体积"。每个差值约束 $x_i - x_{i+1} > m$ 让 $x_i$ 额外占用 $m$ 个位置。约束越严格，打包越大，等效总数越小，选取方式越少。打包后变成了无约束的普通组合问题，是一一对应的。</div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== 5. 补数转化 ==================== -->
+<div class="section">
+  <div class="section-head"><div class="section-num">5</div><h2>核心方法三：补数转化</h2></div>
+  <div class="card">
+    <p><strong>适用场景：</strong>数字和很大（接近最大值）时，直接用隔板法需要排除大量越界情况。此时令 $d_i' = 9 - d_i$，把"大和"问题转化为"小和"问题。</p>
+
+    <div class="callout blue">
+      <div class="callout-label">补数转化的原理</div>
+      <p>四位数 $d_1 d_2 d_3 d_4$ 的数字和为 $S$。令 $d_i' = 9 - d_i$，则 $d_1' + d_2' + d_3' + d_4' = 36 - S$。当 $S$ 很大时，$36 - S$ 很小，问题变简单。而且 $d_1 \geq 1 \Leftrightarrow d_1' \leq 8$，$d_i \leq 9 \Leftrightarrow d_i' \geq 0$，约束自动满足。</p>
+    </div>
+
+    <h3>例题 4：四位数的数字和为 30</h3>
+    <div class="example-box">
+      <div class="example-num">例题 4（教材例 2-3）⭐⭐⭐</div>
+      <div class="example-problem">数字和为 30 的四位数共有多少个？</div>
+      <div class="example-solution">
+        <p><strong>分析：</strong>直接做 $d_1+d_2+d_3+d_4=30$，$d_1 \geq 1$，$d_i \leq 9$，隔板法要排除大量越界。用补数转化。</p>
+        <p>令 $d_i' = 9 - d_i$，则 $d_1'+d_2'+d_3'+d_4' = 36-30 = 6$。其中 $d_i' \geq 0$，且 $d_1 \geq 1 \Rightarrow d_1' \leq 8$（自动满足，因为 $d_1' \leq 6$）。</p>
+
+        <figure class="generated-diagram">
+          <img src="assets/digit-complement-transform.png" alt="数字补数转化示意图" loading="eager">
+          <figcaption>$d_1+d_2+d_3+d_4 = 30 \longleftrightarrow d_1'+d_2'+d_3'+d_4' = 6$</figcaption>
+        </figure>
+
+        <p>现在只需数 $d_1'+d_2'+d_3'+d_4' = 6$ 的自然数解个数。</p>
+        <div class="formula-box hl-green">
+          $C_{6+3}^{3} = C_{9}^{3} = \dfrac{9 \times 8 \times 7}{3 \times 2 \times 1} = 84$
+        </div>
+        <p><strong>答案：84 个。</strong></p>
+      </div>
+      <div class="example-note"><strong>评注：</strong>补数转化是"大化小"的经典手法。数字和越大，补数和越小，计算越轻松。每个 $d_i \leftrightarrow d_i' = 9-d_i$ 是一一对应，所以两个问题的解数相同。</div>
+    </div>
+
+    <h3>例题 5：数字和不大于 10</h3>
+    <div class="example-box">
+      <div class="example-num">例题 5（教材例 2-2）⭐⭐⭐⭐</div>
+      <div class="example-problem">数字和不大于 10 的四位数共有多少个？</div>
+      <div class="example-solution">
+        <p><strong>分析：</strong>"数字和 $\leq 10$" 不方便直接数（要枚举 $S=1,2,\ldots,10$ 再求和）。巧妙转化：在四位数后面"虚增"一个第五位 $d_5$，使得 $d_1+d_2+d_3+d_4+d_5 = 10$。</p>
+        <p>这样，"数字和 $\leq 10$" 就变成了"五位数数字和 $= 10$"的五位数个数。每个四位数 $\to$ 添加一个补足位 $d_5 = 10 - S$（$d_5 \geq 0$），构成五位数 $d_1 d_2 d_3 d_4 d_5$（首位 $d_1 \geq 1$）。</p>
+        <p>用隔板法：10 个"1"，首位固定一个"1"（$d_1 \geq 1$），剩 9 个"1"+4 块隔板 = 13 个位置选 4。</p>
+        <div class="formula-box hl-green">
+          $C_{13}^{4} - 1 = 715 - 1 = 714$
+        </div>
+        <p>减 1 是因为存在 1 种不合法方案：$d_1 = 10$，$d_2 = d_3 = d_4 = d_5 = 0$。此时 $d_1 = 10$ 不是合法数字（数字只能 $0 \sim 9$），对应的"四位数"首位为 10，不合法。其余 714 种方案中 $d_1 \leq 9$ 全部合法。</p>
+        <p><strong>答案：714 个。</strong></p>
+      </div>
+      <div class="example-note"><strong>评注：</strong>这里用到一个重要的组合恒等式：$C_r^r + C_{r+1}^r + \cdots + C_{r+m}^r = C_{r+m+1}^{r+1}$。即 $\sum_{k=1}^{10} C_{k+2}^{3} = C_{13}^4$。"虚增一位"的方法把"$\leq$"变成了"$=$"，大大简化了计算。</div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== 6. 分类对应（几何计数）==================== -->
+<div class="section">
+  <div class="section-head"><div class="section-num">6</div><h2>核心方法四：分类对应（几何计数）</h2></div>
+  <div class="card">
+    <p><strong>适用场景：</strong>几何图形的计数问题——平行四边形、三角形、长方体等。核心思路是建立"图形 $\leftrightarrow$ 选点"的一一对应，把数图形变成数组合。</p>
+
+    <h3>例题 6：三角网格中的平行四边形</h3>
+    <div class="example-box">
+      <div class="example-num">例题 6（教材例 4-1）⭐⭐⭐</div>
+      <div class="example-problem">在 $n$ 层三角形格形图中，共有多少个平行四边形？</div>
+      <div class="example-solution">
+        <p><strong>分析：</strong>三角网格中有 3 组平行线（左斜、右斜、水平）。每个平行四边形由<strong>两组平行线</strong>确定——从 3 组中选 2 组，再从每组中选 2 条线。</p>
+        <figure class="generated-diagram">
+          <img src="assets/triangle-grid-parallelogram.png" alt="三角网格中选两组平行线形成平行四边形的示意图" loading="eager">
+          <figcaption>示意取 n = 5：同一三角网格内，水平线选 2 条、一个斜方向选 2 条，围成的橙色区域是合法平行四边形。</figcaption>
+        </figure>
+        <p>对于 $n$ 层三角形，每组有 $n+1$ 条线。从 3 组中选 2 组（共 $C_3^2 = 3$ 种），再从每组的 $n+1$ 条线中选 2 条：</p>
+        <div class="formula-box hl-green">
+          $3 \times C_{n+1}^{2} \times C_{n+1}^{2} = 3 \times \left[\dfrac{(n+1) \cdot n}{2}\right]^2$
+        </div>
+        <p>以 $n = 6$ 为例：$3 \times C_7^2 \times C_7^2 = 3 \times 21 \times 21 = 3 \times 441 = 1323$。</p>
+        <p>教材中的解法分三步：选 2 组方向线 → 每组选 2 条 → 对应唯一平行四边形。也可以用"对角线法"——每个平行四边形有 2 条对角线，4 个端点唯一确定。</p>
+      </div>
+      <div class="example-note"><strong>评注：</strong>两种方法等价。"选 2 组平行线 + 每组选 2 条"和"选 2 条对角线"都建立了平行四边形与组合的一一对应。$n$ 层时，三角形有 $n+1$ 排交点，选择方式为 $C_{n+1}^2 \times C_{n+1}^2 \times 3$。</div>
+    </div>
+
+    <h3>例题 7：长方体的计数</h3>
+    <div class="example-box">
+      <div class="example-num">例题 7（教材例 4-3）⭐⭐⭐</div>
+      <div class="example-problem">一个 $5 \times 4 \times 3$ 的长方体由 $1 \text{cm}^3$ 的小正方体组成。其中包含多少个长方体（不含单位正方体）？</div>
+      <div class="example-solution">
+        <p><strong>分析：</strong>每个长方体由长、宽、高三个方向各选两条平行线确定。$a \times b \times c$ 的网格中，长方向有 $a+1$ 条线，宽方向有 $b+1$ 条线，高方向有 $c+1$ 条线。</p>
+        <figure class="generated-diagram">
+          <img src="assets/cuboid-grid-selection.png" alt="长方体网格中选出一个小长方体的示意图" loading="eager">
+          <figcaption>线框表示 5 x 4 x 3 的同一套网格；中间的彩色小块表示被选出的一个长方体。</figcaption>
+        </figure>
+        <p><strong>总长方体数</strong>（含单位正方体）：</p>
+        <div class="formula-box">
+          $C_{a+1}^{2} \times C_{b+1}^{2} \times C_{c+1}^{2} = C_6^2 \times C_5^2 \times C_4^2 = 15 \times 10 \times 6 = 900$
+        </div>
+        <p><strong>正方体数</strong>：边长 1、2、3 的正方体。</p>
+        <p>边长 1：$5 \times 4 \times 3 = 60$；边长 2：$4 \times 3 \times 2 = 24$；边长 3：$3 \times 2 \times 1 = 6$。共 $60+24+6=90$。</p>
+        <p><strong>非正方体的长方体</strong>：$900 - 90 = 810$。</p>
+        <p><strong>答案：810 个。</strong></p>
+      </div>
+      <div class="example-note"><strong>评注：</strong>通用公式：$a \times b \times c$ 网格中，长方体总数 = $C_{a+1}^2 \cdot C_{b+1}^2 \cdot C_{c+1}^2$。正方体数 = $\sum_{k=1}^{\min(a,b,c)} (a-k+1)(b-k+1)(c-k+1)$。非正方体长方体 = 总数 $-$ 正方体数。</div>
+    </div>
+
+    <h3>例题 8：凸多边形中的三角形</h3>
+    <div class="example-box">
+      <div class="example-num">例题 8（教材例 5-1）⭐⭐⭐⭐⭐</div>
+      <div class="example-problem">一个凸多边形最多有 20 条对角线，且任意三条对角线不在内部交于同一点。这个多边形中共有多少个三角形？</div>
+      <div class="example-solution">
+        <p><strong>第一步：确定多边形。</strong>$\dfrac{n(n-3)}{2} = 20 \Rightarrow n(n-3)=40 \Rightarrow n=8$（八边形）。</p>
+
+        <p><strong>第二步：分类对应。</strong>三角形由 3 个顶点确定，但顶点可以是原八边形的顶点，也可以是对角线在内部的交点。按顶点来源分类：</p>
+
+        <div class="table-wrap"><table class="method-table">
+          <tr><th>类型</th><th>顶点构成</th><th>计数</th></tr>
+          <tr><td>①</td><td>3 个原顶点</td><td>$C_8^3 = 56$</td></tr>
+          <tr><td>②</td><td>2 个原顶点 + 1 个内交点</td><td>每个内交点由 4 个顶点的 2 条对角线确定 → $4 \times C_8^4$</td></tr>
+          <tr><td>③</td><td>1 个原顶点 + 2 个内交点</td><td>$5 \times C_8^5$</td></tr>
+          <tr><td>④</td><td>3 个内交点</td><td>$C_8^6$</td></tr>
+        </table></div>
+
+        <p>解释：1 个内交点需要 2 条对角线交叉，即需要 4 个顶点。2 个内交点需要 5 个顶点。3 个内交点需要 6 个顶点。</p>
+
+        <div class="formula-box hl-green">
+          $C_8^3 + 4C_8^4 + 5C_8^5 + C_8^6 = 56 + 280 + 280 + 28 = 644$
+        </div>
+        <p><strong>答案：644 个。</strong></p>
+      </div>
+      <div class="example-note"><strong>评注：</strong>关键洞察：每个三角形由若干个原顶点"决定"，内交点又由原顶点产生。把三角形按"需要多少个原顶点"分类，$k$ 个原顶点对应 $C_8^k$，再乘以每组的三角形数，即可一一对应计数。</div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== 7. 综合例题 ==================== -->
+<div class="section">
+  <div class="section-head"><div class="section-num">7</div><h2>综合例题精讲</h2></div>
+
+  <div class="card">
+    <h3>例题 9：球的不相邻排列</h3>
+    <div class="example-box">
+      <div class="example-num">例题 9（教材例 1）⭐⭐⭐</div>
+      <div class="example-problem">将 2 个相同的红球、3 个相同的蓝球、4 个相同的黄球排成一排，要求黄球互不相邻。有多少种排法？</div>
+      <div class="example-solution">
+        <p><strong>分析：</strong>"物→数"转化：红球记 1，蓝球记 2，黄球记 3。约束"黄球不相邻"变为"数字 3 不相邻"。</p>
+        <p><strong>第一步：排红球和蓝球。</strong>5 个球（2 红 + 3 蓝）排一排，共 $C_5^2 = 10$ 种（选 2 个位置放红球）。</p>
+        <p><strong>第二步：插空法放黄球。</strong>5 个球排好后形成 6 个间隙（含两端），选 4 个放黄球：$C_6^4 = 15$。</p>
+        <figure class="generated-diagram">
+          <img src="assets/gap-method-balls.png" alt="插空法示意图：非黄球形成六个间隙" loading="eager">
+          <figcaption>5 个球形成 6 个间隙，选 4 个放黄球，保证不相邻</figcaption>
+        </figure>
+        <div class="formula-box hl-green">
+          $C_5^2 \times C_6^4 = 10 \times 15 = 150$
+        </div>
+        <p><strong>答案：150 种。</strong></p>
+      </div>
+      <div class="example-note"><strong>评注：</strong>这是"对应计数"最典型的例子。原问题是球排列，转化为数字 $1,1,2,2,2,3,3,3,3$ 的排列，约束"黄球不相邻"变为"3 不相邻"。用插空法：先排非黄球，再在间隙中插入黄球。每一步都是一一对应的。</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>例题 10：奇偶交替选取</h3>
+    <div class="example-box">
+      <div class="example-num">例题 10（教材例 6-2）⭐⭐⭐⭐</div>
+      <div class="example-problem">从 $1, 2, \ldots, 15$ 中选 5 个数 $a < b < c < d < e$，使得奇偶交替排列（奇、偶、奇、偶、奇）。有多少种选法？</div>
+      <div class="example-solution">
+        <p><strong>分析：</strong>题目已经指定排列为（奇、偶、奇、偶、奇），所以只需数这一种模式：$a,c,e$ 为奇数，$b,d$ 为偶数。</p>
+        <p><strong>把偶数转成奇数：</strong>令 $b'=b-1$，$d'=d-1$。因为 $b,d$ 是偶数，$b',d'$ 都是奇数，且都在 $\{1,3,5,7,9,11,13\}$ 中。</p>
+        <p>把奇数按从小到大编号：$1,3,5,\ldots,15$ 分别记作 $1,2,\ldots,8$。设 $a,b',c,d',e$ 的编号依次为 $x_1,x_2,x_3,x_4,x_5$。</p>
+        <div class="formula-box">
+          $a<b<c<d<e \quad \Longleftrightarrow \quad x_1 \leq x_2 < x_3 \leq x_4 < x_5$
+        </div>
+        <p>其中两个"小于等于"来自 $a<b$ 与 $c<d$：例如 $a=1,b=2$ 时，转成 $a=1,b'=1$，编号可以相等。</p>
+        <p><strong>消掉弱不等号：</strong>令</p>
+        <div class="formula-box">
+          $y_1=x_1,\quad y_2=x_2+1,\quad y_3=x_3+1,\quad y_4=x_4+2,\quad y_5=x_5+2$
+        </div>
+        <p>于是 $1 \leq y_1<y_2<y_3<y_4<y_5 \leq 10$。反过来，从 $1$ 到 $10$ 中任取 5 个递增数，也能唯一还原出一组 $a,b,c,d,e$。</p>
+        <div class="formula-box hl-green">
+          $C_{10}^{5} = 252$
+        </div>
+        <p><strong>答案：252 种。</strong></p>
+      </div>
+      <div class="example-note"><strong>评注：</strong>本题只保留题干指定的"奇偶奇偶奇"。若题目改成"奇偶交替即可"，才需要再另算"偶奇偶奇偶"并相加；这里不混入另一种模式。</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>例题 11：由 1 和 2 组成的多位数</h3>
+    <div class="example-box">
+      <div class="example-num">例题 11（教材例 5-2）⭐⭐⭐⭐⭐</div>
+      <div class="example-problem">由数字 1 和 2 组成、数字和为 20 的多位数中，2 不相邻且 1 不连续出现超过 2 次。共有多少个？</div>
+      <div class="example-solution">
+        <p><strong>分析：</strong>"1 不连续超过 2 次"→ 把连续的"11"看作一个整体（包）。于是元素变为：单个"1"、包"11"、"2"。</p>
+        <p><strong>约束</strong>：2 不相邻 → 2 之间至少有一个 1 或 11。1 和 11 不能拼接出"111"（即"1"和"11"不能相邻，否则变成 3 个连续 1）。</p>
+
+        <p><strong>按 2 的个数分类：</strong></p>
+
+        <p><strong>情况一：7 个 2。</strong>需 6 个"1"放在 2 之间，每个间隙放 1 个：$21212121212$。只有 1 种。</p>
+
+        <p><strong>情况二：6 个 2 + 8 个 1。</strong>8 个 1 分成若干组（每组 1 个或 2 个），插入 2 之间的 5 个间隙和两端。分组方式：</p>
+        <ul style="font-size:14px;margin-left:20px;">
+          <li>分成 7 组（1 个二元素 + 6 个一元素）：$C_7^1 = 7$</li>
+          <li>分成 6 组（2 个二元素 + 4 个一元素）：$2 \times C_6^2 = 30$（注意位置对称性）</li>
+          <li>分成 5 组（3 个二元素 + 2 个一元素）：$C_5^3 = 10$</li>
+        </ul>
+        <p>小计：$7 + 30 + 10 = 47$ 种。</p>
+
+        <p><strong>情况三：5 个 2 + 10 个 1。</strong>5 个 2 形成 6 个间隙（4 个内部必须非空），每组放 1 个或 2 个"1"，分组方式：</p>
+        <ul style="font-size:14px;margin-left:20px;">
+          <li>6 组全填满（4 个二元素"11" + 2 个一元素"1" = 10）：选哪 2 个位置放"1" → $C_6^2 = 15$</li>
+          <li>5 组填满（5 个二元素"11" = 10，1 个空位）：空位必须是两端 → $2$ 种</li>
+        </ul>
+        <p>小计：$15 + 2 = 17$ 种。</p>
+
+        <p>为什么不含 4 个 2 或更少？4 个 2 时需要 12 个 1，但 5 个间隙每组最多放 2 个"1"，总共最多 $5 \times 2 = 10 < 12$，不可能。8 个 2 时需要 4 个 1，但 7 个内部间隙各需至少 1 个"1"，至少要 7 个，也不够。所以仅 $k = 5, 6, 7$ 有解。</p>
+
+        <div class="formula-box hl-green">
+          $1 + 47 + 17 = 65$
+        </div>
+        <p><strong>答案：65 个。</strong></p>
+      </div>
+      <div class="example-note"><strong>评注：</strong>这道题综合运用了打包法（"11"打包）和分类对应（按 2 的个数分类）。关键约束"1 不超过 2 次连续"转化为"1 和 11 不能相邻"，这是对应计数中最精妙的转化之一。</div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== 8. 习题精选 ==================== -->
+<div class="section">
+  <div class="section-head"><div class="section-num">8</div><h2>习题精选</h2></div>
+  <div class="card">
+    <div class="table-wrap"><table class="method-table">
+      <tr><th>编号</th><th>题型</th><th>方法提示</th><th>难度</th></tr>
+      <tr><td>1</td><td>2 红 2 黄 3 蓝球排列</td><td>不全相同时元素排列 + 隔板</td><td>⭐⭐</td></tr>
+      <tr><td>2</td><td>4 鸡蛋 2 鸭蛋，鸭蛋不相邻</td><td>插空法</td><td>⭐⭐</td></tr>
+      <tr><td>3</td><td>3 个羽毛球各 3 球，抽取顺序</td><td>对应排列 + 约束</td><td>⭐⭐⭐</td></tr>
+      <tr><td>4</td><td>足球 6:4，甲始终领先</td><td>Catalan 数 $C_4 = 14$</td><td>⭐⭐⭐</td></tr>
+      <tr><td>5</td><td>$x+y+z+t=15$ 正整数解</td><td>隔板法 $C_{14}^3 = 364$</td><td>⭐⭐</td></tr>
+      <tr><td>6</td><td>$x+y+z+2t=20$ 自然数解</td><td>分类讨论 $t$ 的奇偶</td><td>⭐⭐⭐</td></tr>
+      <tr><td>7</td><td>数字和为 20 的四位数</td><td>补数转化 $36-20=16$</td><td>⭐⭐⭐</td></tr>
+      <tr><td>8</td><td>八进制四位数，数字和 $\leq 20$</td><td>虚增一位 + 隔板</td><td>⭐⭐⭐⭐</td></tr>
+      <tr><td>9</td><td>10 人排队，插入 3 人有间距</td><td>打包法</td><td>⭐⭐⭐⭐</td></tr>
+      <tr><td>10</td><td>从 {6,7,8,15} 取数和为 100 或 106</td><td>补数转化 + 对应</td><td>⭐⭐⭐⭐⭐</td></tr>
+    </table></div>
+  </div>
+</div>
+
+<!-- ==================== 9. 常见易错点 ==================== -->
+<div class="section">
+  <div class="section-head"><div class="section-num">9</div><h2>常见易错点</h2></div>
+  <div class="callout red"><div class="callout-label">易错 1</div><p><strong>忘记验证一一对应。</strong>转化后必须验证：旧问题的每个方案恰好对应新问题的一个方案，不多不少。如果存在"多对一"或"一对多"，计数结果就错了。</p></div>
+  <div class="callout red"><div class="callout-label">易错 2</div><p><strong>隔板法的正整数解与自然数解混淆。</strong>$x_1+\cdots+x_k=n$：正整数解（每组 $\geq 1$）用 $C_{n-1}^{k-1}$；自然数解（每组 $\geq 0$）用 $C_{n+k-1}^{k-1}$。口诀："正整数减一，自然数加一"——指公式中 $n$ 分别减 1 或加 $k-1$。</p></div>
+  <div class="callout red"><div class="callout-label">易错 3</div><p><strong>补数转化时忘记首位约束。</strong>$d_i' = 9 - d_i$ 后，$d_1 \geq 1$ 变成 $d_1' \leq 8$。通常自动满足（因为补数和很小），但必须验证。如果不满足，需要单独处理。</p></div>
+  <div class="callout red"><div class="callout-label">易错 4</div><p><strong>几何计数时重复或遗漏。</strong>三角形分类必须覆盖所有可能的顶点组合，不能重复计算同一三角形。用"需要几个原顶点"来分类，确保不重不漏。</p></div>
+  <div class="callout red"><div class="callout-label">易错 5</div><p><strong>打包法中"吃掉"的位置算错。</strong>$a - b > m$ 意味着 $a$ 和 $b$ 之间至少跳过 $m$ 个数。打包时 $a$ 额外占用 $m$ 个位置，不是 $m-1$ 个。</p></div>
+</div>
+
+<!-- ==================== 10. 记忆方法 ==================== -->
+<div class="section">
+  <div class="section-head"><div class="section-num">10</div><h2>记忆方法</h2></div>
+  <div class="memory-card">
+    <div class="mem-icon">🧠</div>
+    <div class="mem-title">四大方法口诀</div>
+    <div class="mem-body">
+      <p><strong>隔板法</strong>：$n$ 个 1 排一排，$k-1$ 块板插间隙。正整数 $C_{n-1}^{k-1}$，自然数 $C_{n+k-1}^{k-1}$。</p>
+      <p><strong>打包法</strong>：差值约束变体积，$a-b>m$ → $a$ 多占 $m$ 格。打包后无约束，直接组合数。</p>
+      <p><strong>补数转化</strong>：大和变小和，$d_i' = 9-d_i$。$S \to 36-S$，大化小真好算。</p>
+      <p><strong>分类对应</strong>：数图形 → 数组合。平行四边形 = 选 2 组线 × 各选 2 条；三角形 = 按原顶点个数分类。</p>
+    </div>
+  </div>
+  <div class="memory-card">
+    <div class="mem-icon">🔑</div>
+    <div class="mem-title">关键组合恒等式</div>
+    <div class="mem-body">
+      <p>$C_r^r + C_{r+1}^r + C_{r+2}^r + \cdots + C_{r+m}^r = C_{r+m+1}^{r+1}$</p>
+      <p>用途："数字和 $\leq S$" → "数字和 $= S+1$"（虚增一位），把求和变成单点。</p>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== 11. 总结 ==================== -->
+<div class="section">
+  <div class="section-head"><div class="section-num">11</div><h2>总结</h2></div>
+  <div class="card">
+    <p><strong>对应计数的本质</strong>是"换一个等价的角度来数"。面对复杂问题，不要硬数——寻找一个一一对应的、更简单的等价问题。四大方法各有侧重：隔板法处理"相同物分配"，打包法处理"差值约束"，补数转化处理"大和变小和"，分类对应处理"几何计数"。</p>
+    <div class="callout green">
+      <div class="callout-label">解题流程</div>
+      <p>第一步：识别题型——是分配问题？差值约束？数字和？几何计数？</p>
+      <p>第二步：选择转化方法——隔板 / 打包 / 补数 / 分类。</p>
+      <p>第三步：验证一一对应——每个旧方案恰好对应一个新方案。</p>
+      <p>第四步：在新问题中计算——通常归结为组合数 $C_n^k$。</p>
+      <p>第五步：处理边界——首项非零、数字不超过 9、下界约束等。</p>
+    </div>
+  </div>
+</div>
+
+</div>
+</body>
+</html>
+

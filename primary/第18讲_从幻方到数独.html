@@ -1,0 +1,1103 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第18讲 从幻方到数独</title>
+<style>
+:root {
+  --primary: #1a3a5c;
+  --primary-light: #2563a8;
+  --accent: #dc2626;
+  --accent-orange: #d97706;
+  --bg-page: #f8f9fe;
+  --bg-card: #ffffff;
+  --bg-formula: #f0f4ff;
+  --border-light: #e0e7f0;
+  --border-blue: #dbeafe;
+  --text-primary: #1a3a5c;
+  --text-secondary: #6b7280;
+  --text-accent: #dc2626;
+  --success: #059669;
+  --warning: #d97706;
+  --error: #dc2626;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  overflow-x: hidden;
+  font-family: "PingFang SC", "Microsoft YaHei", "Noto Serif SC", "Source Han Serif SC", Georgia, serif;
+  background: var(--bg-page);
+  color: var(--text-primary);
+  line-height: 1.85;
+  font-size: 16px;
+}
+
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 40px 24px 80px;
+}
+
+.cover {
+  background: var(--bg-card);
+  border-radius: 18px;
+  padding: 60px 40px 50px;
+  margin-bottom: 40px;
+  border: 1px solid var(--border-light);
+  box-shadow: 0 4px 16px rgba(26,58,92,0.08);
+  text-align: center;
+  overflow: visible;
+}
+.cover-badge {
+  display: inline-block;
+  background: var(--primary);
+  color: #fff;
+  font-size: 13px;
+  padding: 5px 18px;
+  border-radius: 20px;
+  letter-spacing: 2px;
+  margin-bottom: 24px;
+}
+.cover h1 { font-size: 32px; color: var(--primary); margin-bottom: 12px; font-weight: 800; letter-spacing: 2px; }
+.cover .subtitle { font-size: 15px; color: var(--text-secondary); margin-bottom: 6px; }
+.cover .tags { margin-top: 24px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+.cover .tag {
+  background: var(--bg-formula);
+  border: 1px solid var(--border-blue);
+  border-radius: 20px;
+  padding: 6px 16px;
+  font-size: 13px;
+  color: var(--primary-light);
+}
+
+.card {
+  background: var(--bg-card);
+  border-radius: 14px;
+  padding: 28px 32px;
+  margin-bottom: 20px;
+  border: 1px solid var(--border-light);
+  box-shadow: 0 2px 8px rgba(26,58,92,0.06);
+  overflow: visible;
+}
+
+.section { margin-bottom: 48px; }
+.section-head { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
+.section-num {
+  width: 42px; height: 42px;
+  background: linear-gradient(135deg, #1a3a5c, #2563a8);
+  color: #fff; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; font-weight: 800; flex-shrink: 0;
+}
+h2 { font-size: 22px; color: var(--primary); margin: 0; }
+h3 { font-size: 18px; color: var(--primary); margin: 20px 0 10px; }
+h4 { font-size: 15px; color: var(--primary-light); margin: 14px 0 8px; }
+p { margin-bottom: 10px; font-size: 15px; }
+
+.formula-box {
+  background: var(--bg-formula);
+  border-radius: 10px;
+  padding: 18px 24px;
+  margin: 16px 0;
+  text-align: center;
+  font-size: 17px;
+  border: 1px solid var(--border-blue);
+  overflow: visible;
+}
+.formula-box.hl-red {
+  border-color: #dc2626;
+  border-width: 2px;
+  background: #fef2f2;
+}
+.formula-box.hl-green {
+  border-color: #059669;
+  border-width: 2px;
+  background: #ecfdf5;
+}
+
+.example-box {
+  background: #f8f9fe;
+  border-left: 5px solid #1a3a5c;
+  border-radius: 0 12px 12px 0;
+  padding: 20px 24px;
+  margin: 20px 0;
+  overflow: visible;
+}
+.example-num { font-size: 17px; font-weight: 800; color: #1a3a5c; margin-bottom: 10px; }
+.example-problem { font-size: 15px; margin-bottom: 14px; color: #1a3a5c; }
+.example-solution { font-size: 14px; line-height: 1.9; color: #6b7280; margin-bottom: 12px; }
+.example-note {
+  background: #fffbea;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-size: 13px;
+  color: #92400e;
+  border: 1px solid #fde68a;
+}
+
+.callout {
+  border-radius: 10px;
+  padding: 16px 22px;
+  margin: 20px 0;
+  font-size: 14px;
+  line-height: 1.7;
+  overflow: visible;
+}
+.callout.blue { background: #eff6ff; border-left: 5px solid #2563a8; color: #1e40af; }
+.callout.green { background: #ecfdf5; border-left: 5px solid #059669; color: #064e3b; }
+.callout.orange { background: #fffbea; border-left: 5px solid #d97706; color: #92400e; }
+.callout.red { background: #fef2f2; border-left: 5px solid #dc2626; color: #991b1b; }
+.callout-label { font-weight: 700; margin-bottom: 6px; font-size: 15px; }
+
+.memory-card {
+  background: linear-gradient(135deg, #fef3c7, #fffbeb);
+  border: 2px solid #fcd34d;
+  border-radius: 14px;
+  padding: 24px;
+  margin: 16px 0;
+  overflow: visible;
+}
+.mem-icon { font-size: 28px; margin-bottom: 8px; }
+.mem-title { font-size: 18px; font-weight: 800; color: #d97706; margin-bottom: 10px; }
+.mem-body { font-size: 14px; line-height: 1.9; }
+
+.knowledge-tree { display: flex; flex-direction: column; align-items: center; gap: 14px; margin: 24px 0; }
+.tree-root {
+  background: var(--bg-formula);
+  border: 2px solid var(--success);
+  border-radius: 12px;
+  padding: 11px 22px;
+  font-weight: 800;
+  font-size: 16px;
+  color: var(--success);
+}
+.tree-branch-title { font-weight: 700; color: var(--primary); margin: 8px 0 4px; }
+.tree-row { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+.tree-leaf {
+  background: #fff;
+  border: 1px solid var(--border-blue);
+  border-radius: 8px;
+  padding: 7px 14px;
+  font-size: 13px;
+  color: var(--text-primary);
+}
+
+.expand-block { margin: 20px 0; }
+.expand-title { font-weight: 800; font-size: 16px; color: var(--primary); margin-bottom: 10px; }
+.expand-general { text-align: center; margin-bottom: 12px; }
+.expand-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+.expand-item { background: var(--bg-formula); border: 1px solid var(--border-blue); border-radius: 10px; padding: 14px; }
+.expand-label { font-size: 13px; color: var(--primary-light); margin-bottom: 6px; }
+.expand-formula { text-align: center; }
+
+/* Magic square CSS grid */
+.magic-grid {
+  display: inline-grid;
+  grid-template-columns: repeat(3, 56px);
+  grid-template-rows: repeat(3, 56px);
+  gap: 0;
+  border: 2px solid var(--primary);
+  border-radius: 6px;
+  overflow: hidden;
+  margin: 10px 0;
+}
+.magic-grid .cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: 700;
+  border: 1px solid var(--border-light);
+  background: #fff;
+}
+.magic-grid .cell.center { background: #fffbeb; color: var(--accent); }
+.magic-grid .cell.hl { background: #fef2f2; color: var(--accent); }
+.magic-grid .cell.edge-hl { background: #e8f5e9; color: var(--success); }
+.magic-grid .cell.corner-hl { background: #e3f2fd; color: var(--primary-light); }
+
+/* 6x6 Sudoku CSS grid */
+.sudoku6-grid {
+  display: inline-grid;
+  grid-template-columns: repeat(6, 48px);
+  grid-template-rows: repeat(6, 48px);
+  border: 2.5px solid var(--primary);
+  border-radius: 4px;
+  overflow: hidden;
+  margin: 10px 0;
+}
+.sudoku6-grid .s6-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  font-weight: 600;
+  border: 0.5px solid #c5cdd8;
+  background: #fff;
+}
+.sudoku6-grid .s6-cell.given { color: var(--primary); font-weight: 800; font-size: 17px; }
+.sudoku6-grid .s6-cell.deduced { color: var(--accent); font-weight: 800; font-size: 17px; }
+.sudoku6-grid .s6-cell.r3 { border-right: 2px solid var(--primary); }
+.sudoku6-grid .s6-cell.b2 { border-bottom: 2px solid var(--primary); }
+
+/* 9x9 Sudoku */
+.sudoku-grid {
+  display: inline-grid;
+  grid-template-columns: repeat(9, 40px);
+  grid-template-rows: repeat(9, 40px);
+  border: 2.5px solid var(--primary);
+  border-radius: 4px;
+  overflow: hidden;
+  margin: 10px 0;
+}
+.sudoku-grid .s-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 600;
+  border: 0.5px solid #c5cdd8;
+  background: #fff;
+}
+.sudoku-grid .s-cell.given { color: var(--primary); font-weight: 800; font-size: 16px; }
+.sudoku-grid .s-cell.deduced { color: var(--accent); font-weight: 800; font-size: 16px; }
+.sudoku-grid .s-cell.cand { color: #9ca3af; font-size: 11px; font-weight: 400; }
+.sudoku-grid .s-cell.mark { background: #fffbeb; }
+.sudoku-grid .s-cell.r3 { border-right: 2px solid var(--primary); }
+.sudoku-grid .s-cell.b3 { border-bottom: 2px solid var(--primary); }
+
+.method-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  margin: 12px 0;
+}
+.method-table th {
+  background: var(--primary);
+  color: #fff;
+  padding: 10px 8px;
+  text-align: center;
+  font-weight: 700;
+}
+.method-table td {
+  padding: 10px 8px;
+  text-align: center;
+  border-bottom: 1px solid var(--border-light);
+  background: #fff;
+}
+.method-table tr:nth-child(even) td { background: var(--bg-page); }
+
+.step-list { margin: 12px 0; }
+.step-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 12px;
+  font-size: 14px;
+  line-height: 1.7;
+}
+.step-num {
+  background: var(--primary-light);
+  color: #fff;
+  min-width: 28px;
+  height: 28px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.canvas-wrap { text-align: center; margin: 20px 0; overflow: visible; }
+.canvas-wrap canvas {
+  display: block;
+  margin: 0 auto;
+  border-radius: 10px;
+  border: 1px solid var(--border-light);
+}
+
+.summary-list { margin: 8px 0; }
+.summary-item {
+  padding: 8px 0;
+  font-size: 14px;
+  line-height: 1.7;
+  border-bottom: 1px dashed var(--border-light);
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+.summary-num { color: var(--primary-light); font-weight: 800; font-size: 15px; flex-shrink: 0; }
+
+/* Proof block */
+.proof-block {
+  background: #fafbff;
+  border-left: 4px solid var(--primary-light);
+  border-radius: 0 10px 10px 0;
+  padding: 16px 20px;
+  margin: 14px 0;
+  font-size: 14px;
+  line-height: 1.9;
+  overflow: visible;
+}
+.proof-label { font-weight: 700; color: var(--primary-light); margin-bottom: 6px; font-size: 14px; }
+
+/* Step diagram row */
+.step-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  align-items: flex-start;
+  justify-content: center;
+  margin: 12px 0;
+}
+.step-card {
+  text-align: center;
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: 10px;
+  padding: 10px 14px;
+  overflow: visible;
+}
+.step-card .step-label {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+}
+
+/* Poem breakdown */
+.poem-breakdown {
+  margin: 16px 0;
+}
+.poem-line {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 12px;
+  font-size: 14px;
+  line-height: 1.7;
+}
+.poem-verse {
+  background: var(--bg-formula);
+  border: 1px solid var(--border-blue);
+  border-radius: 8px;
+  padding: 7px 14px;
+  font-weight: 700;
+  color: var(--primary);
+  min-width: 180px;
+  text-align: center;
+  flex-shrink: 0;
+}
+.poem-meaning { color: var(--text-secondary); }
+
+@media (max-width: 700px) {
+  .container { padding: 20px 12px 60px; }
+  .cover { padding: 36px 20px 32px; }
+  .cover h1 { font-size: 24px; }
+  .card { padding: 18px 16px; }
+  .sudoku-grid { grid-template-columns: repeat(9, 28px); grid-template-rows: repeat(9, 28px); }
+  .sudoku-grid .s-cell { font-size: 10px; }
+  .sudoku-grid .s-cell.given, .sudoku-grid .s-cell.deduced { font-size: 12px; }
+  .sudoku6-grid { grid-template-columns: repeat(6, 38px); grid-template-rows: repeat(6, 38px); }
+  .sudoku6-grid .s6-cell { font-size: 12px; }
+  .sudoku6-grid .s6-cell.given, .sudoku6-grid .s6-cell.deduced { font-size: 14px; }
+  .magic-grid { grid-template-columns: repeat(3, 44px); grid-template-rows: repeat(3, 44px); }
+  .magic-grid .cell { font-size: 16px; }
+  .step-row { gap: 8px; }
+  .poem-verse { min-width: 120px; font-size: 12px; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- ==================== COVER ==================== -->
+<div class="cover">
+  <div class="cover-badge">第 18 讲</div>
+  <h1>从幻方到数独</h1>
+  <div class="subtitle">—— 数字的魔法排列</div>
+  <div class="tags">
+    <span class="tag">幻方</span>
+    <span class="tag">数独</span>
+    <span class="tag">逻辑推理</span>
+    <span class="tag">小学思维拓展</span>
+  </div>
+</div>
+
+<!-- ==================== 1 ==================== -->
+<div class="section">
+  <div class="section-head"><div class="section-num">1</div><h2>知识树总览</h2></div>
+  <div class="knowledge-tree">
+    <div class="tree-root">数字填充游戏</div>
+    <div class="tree-row">
+      <div class="tree-leaf">幻方（三阶/五阶/七阶）</div>
+      <div class="tree-leaf">数阵（拉丁方）</div>
+      <div class="tree-leaf">数独（六宫/九宫）</div>
+      <div class="tree-leaf">聪明格（运算谜题）</div>
+    </div>
+    <div class="tree-branch-title">核心工具</div>
+    <div class="tree-row">
+      <div class="tree-leaf">中心数定理</div>
+      <div class="tree-leaf">拉弓法</div>
+      <div class="tree-leaf">罗伯法</div>
+      <div class="tree-leaf">排除法</div>
+      <div class="tree-leaf">三行三列法</div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== 2 ==================== -->
+<div class="section">
+  <div class="section-head"><div class="section-num">2</div><h2>直觉引入 —— 从洛书讲起</h2></div>
+  <div class="card">
+    <p>相传大禹治水时，洛河浮出一只神龟，龟背上刻着奇特的点数图案：用点数代表数字，无论横着数、竖着数、还是斜着数，三个数的总和都等于 <strong>15</strong>。</p>
+    <p>这便是世界上最古老的幻方——<strong>洛书</strong>。</p>
+    <div style="text-align:center;margin:16px 0;">
+      <div class="magic-grid">
+        <div class="cell corner-hl">4</div><div class="cell edge-hl">9</div><div class="cell corner-hl">2</div>
+        <div class="cell edge-hl">3</div><div class="cell center">5</div><div class="cell edge-hl">7</div>
+        <div class="cell corner-hl">8</div><div class="cell edge-hl">1</div><div class="cell corner-hl">6</div>
+      </div>
+    </div>
+    <p style="text-align:center;font-size:13px;color:var(--text-secondary);">横：4+9+2=15，3+5+7=15，8+1+6=15 &nbsp;|&nbsp; 竖：4+3+8=15，9+5+1=15，2+7+6=15<br>斜：4+5+6=15，2+5+8=15</p>
+  </div>
+  <div class="callout blue">
+    <div class="callout-label">什么是幻方？</div>
+    <p>在一个 $n \times n$ 的方格中填入数字，使得<strong>每一行、每一列、两条主对角线</strong>上的数字之和都相等。这个相等的和叫<strong>幻和</strong>（记作 $S$）。$n = 3$ 就叫三阶幻方。</p>
+  </div>
+</div>
+
+<!-- ==================== 3. 三阶幻方的核心性质（含完整证明） ==================== -->
+<div class="section">
+  <div class="section-head"><div class="section-num">3</div><h2>三阶幻方的核心性质 —— 证明与推导</h2></div>
+
+  <div class="card">
+    <p>把三阶幻方九个格子用字母标记，设幻和为 $S$：</p>
+    <div style="text-align:center;margin:12px 0;">
+      <div class="magic-grid">
+        <div class="cell">$a$</div><div class="cell">$b$</div><div class="cell">$c$</div>
+        <div class="cell">$d$</div><div class="cell center">$e$</div><div class="cell">$f$</div>
+        <div class="cell">$g$</div><div class="cell">$h$</div><div class="cell">$i$</div>
+      </div>
+    </div>
+    <p style="text-align:center;font-size:13px;color:var(--text-secondary);">约定：$e$ 为正中心，$a,c,g,i$ 为四角，$b,d,f,h$ 为四边中点。</p>
+
+    <!-- ===== 性质一 ===== -->
+    <h3>性质一：中心数定理</h3>
+    <div class="formula-box hl-red">
+      $$S = 3e$$
+    </div>
+    <div style="margin-top:10px;font-size:13px;color:#2563a8;">
+      <strong>简记：</strong>$ S = 3e $（"幻和是中心的三倍"）
+    </div>
+
+    <div class="proof-block">
+      <div class="proof-label">完整证明</div>
+      <p><strong>第 1 步：三行之和。</strong>每一行的三个数之和都等于幻和 $S$：</p>
+      <p style="text-align:center;">$(a+b+c) + (d+e+f) + (g+h+i) = 3S$</p>
+      <p>记九个数之和为 $T = a+b+c+d+e+f+g+h+i$，则 $T = 3S$ …… ①</p>
+      <p><strong>第 2 步：过中心的四条线。</strong>中间行、中间列、两条对角线都经过中心 $e$：</p>
+      <p style="text-align:center;">$(d+e+f) + (b+e+h) + (a+e+i) + (c+e+g) = 4S$</p>
+      <p>展开左边：这四条线合起来，每个字母恰好出现一次（$a,b,c,d,f,g,h,i$ 各 1 次），只有中心 $e$ 出现了 4 次。</p>
+      <p style="text-align:center;">$(a+b+c+d+f+g+h+i) + 4e = 4S$</p>
+      <p>而 $T = a+b+c+d+e+f+g+h+i$，所以 $a+b+c+d+f+g+h+i = T - e$。代入：</p>
+      <p style="text-align:center;">$(T - e) + 4e = 4S$，即 $T + 3e = 4S$ …… ②</p>
+      <p><strong>第 3 步：联立。</strong>将 ① $T = 3S$ 代入 ②：</p>
+      <p style="text-align:center;">$3S + 3e = 4S \;\Rightarrow\; S = 3e$</p>
+      <p style="color:var(--success);">证毕。这个定理告诉我们：<strong>只要知道中心数，幻和就自动确定了</strong>。</p>
+    </div>
+
+    <!-- ===== 性质二 ===== -->
+    <h3>性质二：对位和相等</h3>
+    <div class="formula-box hl-green">
+      $$a + i = b + h = c + g = d + f = 2e$$
+    </div>
+    <div style="margin-top:10px;font-size:13px;color:#2563a8;">
+      <strong>简记：</strong>$ a + i = 2e $（"关于中心对称的两数之和等于中心的两倍"）
+    </div>
+
+    <div class="proof-block">
+      <div class="proof-label">完整证明</div>
+      <p>以 $a$ 和 $i$ 这对为例（其他三对证法完全相同）。</p>
+      <p>考虑中间行 $d + e + f = S$。由性质一 $S = 3e$，所以：</p>
+      <p style="text-align:center;">$d + e + f = 3e \;\Rightarrow\; d + f = 2e$</p>
+      <p>同样的方法：由中间列 $b + e + h = 3e$，得 $b + h = 2e$。</p>
+      <p>由从左上到右下的对角线 $a + e + i = 3e$，得 $a + i = 2e$。</p>
+      <p>由从右上到左下的对角线 $c + e + g = 3e$，得 $c + g = 2e$。</p>
+      <p style="color:var(--success);">证毕。<strong>四个对位对的和全都等于 $2e$</strong>。这意味着：只要知道一个角上的数，对角线上对面的数就等于 $2e$ 减去它。</p>
+    </div>
+
+    <!-- ===== 性质三 ===== -->
+    <h3>性质三：拉弓法</h3>
+    <p>每个顶角的数，等于它"拉弓"方向两个边中点的平均数。"拉弓"的意象是：以角为弓的握点，两边的中点为弓弦的两端，弦长（两数之和）等于角上数的两倍。</p>
+    <div class="formula-box">
+      $$2a = f + h,\quad 2c = d + h,\quad 2g = b + f,\quad 2i = b + d$$
+    </div>
+    <div style="margin-top:10px;font-size:13px;color:#2563a8;">
+      <strong>简记：</strong>$ 2a = f + h $（"拉弓——角上数的两倍等于弓弦两端的和"）
+    </div>
+
+    <div class="proof-block">
+      <div class="proof-label">完整证明（以 $2a = f + h$ 为例）</div>
+      <p>考虑两条线：对角 $a+e+i = S$，以及第一列 $a+d+g = S$。两者相加：</p>
+      <p style="text-align:center;">$(a+e+i) + (a+d+g) = 2S$</p>
+      <p>另一方面，中间行 $d+e+f = S$，第三行 $g+h+i = S$。两者相加：</p>
+      <p style="text-align:center;">$(d+e+f) + (g+h+i) = 2S$</p>
+      <p>两个 $2S$ 相等，所以：</p>
+      <p style="text-align:center;">$a+e+i + a+d+g = d+e+f + g+h+i$</p>
+      <p>消去公共项 $d$, $e$, $g$, $i$（左右两边都出现），得到：</p>
+      <p style="text-align:center;">$a + a = f + h \;\Rightarrow\; 2a = f + h$</p>
+      <p style="color:var(--success);">证毕。另外三个公式（$2c=d+h$, $2g=b+f$, $2i=b+d$）的推导完全对称。</p>
+    </div>
+
+    <div class="callout orange">
+      <div class="callout-label">拉弓法图示</div>
+      <p>以左上角 $a$ 为例：$a$ 是弓的握点（顶点），往右边拉弓：弓弦的两端是 $f$（中间行右）和 $h$（第三行中）。数学关系是 $f + h = 2a$。四种拉弓方向覆盖全部四个角。</p>
+    </div>
+  </div>
+
+  <!-- 展开对照表 -->
+  <div class="expand-block">
+    <div class="expand-title">对位和展开表（以标准洛书 1~9 为例，$e=5$，$S=15$）</div>
+    <div class="expand-grid">
+      <div class="expand-item"><div class="expand-label">对位 $a+i$</div><div class="expand-formula">$4+6=10=2\times5$</div></div>
+      <div class="expand-item"><div class="expand-label">对位 $b+h$</div><div class="expand-formula">$9+1=10=2\times5$</div></div>
+      <div class="expand-item"><div class="expand-label">对位 $c+g$</div><div class="expand-formula">$2+8=10=2\times5$</div></div>
+      <div class="expand-item"><div class="expand-label">对位 $d+f$</div><div class="expand-formula">$3+7=10=2\times5$</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== 4. 构造方法（口诀法+罗伯法详解） ==================== -->
+<div class="section">
+  <div class="section-head"><div class="section-num">4</div><h2>三阶幻方的两种构造方法</h2></div>
+
+  <div class="card">
+    <p>三阶幻方最经典的填法是使用 <strong>1 ~ 9</strong> 这九个连续自然数。此时幻和 $S = \frac{1+2+\cdots+9}{3} = 15$，中心数 $e = 5$。下面介绍两种构造方法。</p>
+  </div>
+
+  <!-- ===== 口诀法 ===== -->
+  <h3>方法一：口诀法</h3>
+  <div class="card">
+    <p><strong>口诀法</strong>是中国古代流传下来的记忆方法，用一首朗朗上口的歌诀，把每个数字应该放在哪个位置直观地描述出来。它不需要计算，只要<strong>按照歌诀的方位指示逐个数填</strong>即可。</p>
+
+    <div class="memory-card">
+      <div class="mem-icon">🔢</div>
+      <div class="mem-title">洛书填数口诀</div>
+      <div class="mem-body">
+        <p style="font-size:16px;line-height:2.2;">
+          脚踩一方大地，头顶九重云天。<br>
+          五子居住中宫，二四就在两肩。<br>
+          六八跑到下边，腰间它是七三。<br>
+          不管怎么翻转，规律总是不变。
+        </p>
+      </div>
+    </div>
+
+    <h4>口诀逐行解读</h4>
+    <div class="poem-breakdown">
+      <div class="poem-line">
+        <div class="poem-verse">脚踩一方大地</div>
+        <div class="poem-meaning"><strong>1</strong> 在最下面一行的中间位置（"脚踩大地"=最底部）。填入第 3 行第 2 列 → 格子 $h$。</div>
+      </div>
+      <div class="poem-line">
+        <div class="poem-verse">头顶九重云天</div>
+        <div class="poem-meaning"><strong>9</strong> 在最上面一行的中间位置（"头顶云天"=最顶部）。填入第 1 行第 2 列 → 格子 $b$。</div>
+      </div>
+      <div class="poem-line">
+        <div class="poem-verse">五子居住中宫</div>
+        <div class="poem-meaning"><strong>5</strong> 住在正中心（"中宫"=中央位置）。填入第 2 行第 2 列 → 格子 $e$。</div>
+      </div>
+      <div class="poem-line">
+        <div class="poem-verse">二四就在两肩</div>
+        <div class="poem-meaning"><strong>2</strong> 和 <strong>4</strong> 在最上面一行的左右两侧（"两肩"=顶行两角）。2 在左上角 $a$，4 在右上角 $c$（或互换后旋转）。</div>
+      </div>
+      <div class="poem-line">
+        <div class="poem-verse">六八跑到下边</div>
+        <div class="poem-meaning"><strong>6</strong> 和 <strong>8</strong> 在最下面一行的左右两侧（"下边"=底行两角）。8 在左下角 $g$，6 在右下角 $i$。</div>
+      </div>
+      <div class="poem-line">
+        <div class="poem-verse">腰间它是七三</div>
+        <div class="poem-meaning"><strong>7</strong> 和 <strong>3</strong> 在中间一行的左右两侧（"腰间"=中行两边）。3 在左边 $d$，7 在右边 $f$。</div>
+      </div>
+    </div>
+
+    <p><strong>举例：</strong>按照口诀逐行填入，得到的就是标准洛书幻方。读者也可以改变"两肩"的左右（2 和 4 对调），或改变"下边"的左右（6 和 8 对调），得到旋转或翻转后的变体——口诀最后一句"不管怎么翻转，规律总是不变"正是指这一点。</p>
+  </div>
+
+  <!-- ===== 罗伯法 ===== -->
+  <h3>方法二：罗伯法（五步构造）</h3>
+  <div class="card">
+    <p><strong>罗伯法</strong>（又称"萝卜法"）是一种<strong>适用于所有奇数阶幻方</strong>的通用构造方法。它不是靠记忆位置，而是靠一套<strong>机械的操作步骤</strong>来生成幻方。对于三阶幻方，只需五步。</p>
+
+    <div class="step-list">
+      <div class="step-item">
+        <div class="step-num">1</div>
+        <div><strong>依次写数</strong>——将 1~9 按从左到右、从上到下的自然顺序填入 $3 \times 3$ 方格。此时每行每列的和并不相等（第 1 行 $1+2+3=6$，第 2 行 $4+5+6=15$，第 3 行 $7+8+9=24$），还不是幻方。</div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">2</div>
+        <div><strong>对角互换</strong>——把四个角的数字沿对角线方向对调：左上角 1 与右下角 9 交换（$1 \leftrightarrow 9$），右上角 3 与左下角 7 交换（$3 \leftrightarrow 7$）。这一步让两条对角线上的和开始"平衡"。</div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">3</div>
+        <div><strong>四维挺出</strong>——把四条边中间的数（2, 4, 6, 8）往外"挺出"一格。具体来说：顶边 2 向上移到格子外（到原来第 0 行），底边 8 向下移（到第 4 行），左边 4 向左移（到第 0 列），右边 6 向右移（到第 4 列）。</div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">4</div>
+        <div><strong>旋转适度</strong>——将挺出的四个数，沿顺时针或逆时针方向旋转 90° 后，填入相应的空位。"挺出"让它们暂时移出方格，"旋转"再把它们带到正确的新位置。</div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">5</div>
+        <div><strong>回宫居住</strong>——旋转后的四个数各自归位，整个 $3 \times 3$ 方格填满，得到的就是标准洛书幻方。</div>
+      </div>
+    </div>
+
+    <h4>五步图解</h4>
+    <div class="canvas-wrap">
+      <canvas id="luoboCanvas" width="920" height="340"></canvas>
+    </div>
+    <p style="text-align:center;font-size:13px;color:var(--text-secondary);margin-top:8px;">五步演变过程：依次写数 → 对角互换 → 四维挺出 → 旋转适度 → 回宫居住</p>
+
+    <div class="callout green">
+      <div class="callout-label">罗伯法的适用范围</div>
+      <p>罗伯法不仅适用于三阶幻方，对<strong>任意奇数阶</strong>（五阶、七阶、九阶……）幻方都通用。原理完全相同：先按自然顺序写数，然后通过"挺出"和"旋转"调整位置，使每行每列每对角线之和全部相等。</p>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== 5. 从幻方到数独（两种解法详解） ==================== -->
+<div class="section">
+  <div class="section-head"><div class="section-num">5</div><h2>从幻方到数独</h2></div>
+
+  <div class="card">
+    <p><strong>幻方的本质</strong>：行、列、对角线的<strong>和相等</strong>——"求和相等"的数字排列游戏。</p>
+    <p><strong>数独的本质</strong>：每行、每列、每个宫中<strong>数字不重复</strong>——"唯一出现"的数字排列游戏。</p>
+    <p>两者共同的思路是：在有限约束下，用逻辑推理填满整个方格。下面我们重点学习<strong>六宫数独</strong>（$6 \times 6$）的两种核心解法。</p>
+  </div>
+
+  <h3>数独基本规则</h3>
+  <div class="callout green">
+    <div class="callout-label">六宫数独规则（$6 \times 6$）</div>
+    <p>在 $6 \times 6$ 的方格中填入 $1 \sim 6$，使得：① <strong>每一行</strong>包含 1~6 各一次；② <strong>每一列</strong>包含 1~6 各一次；③ <strong>每个 $2 \times 3$ 粗线宫</strong>（共 6 个）包含 1~6 各一次。</p>
+  </div>
+
+  <!-- ===== 解法一：排除补缺法 ===== -->
+  <h3>解法一：排除补缺法</h3>
+  <div class="card">
+    <p><strong>核心思想：</strong>六宫数独最核心的技巧。从出现次数最多的数字入手，利用<strong>行、列、宫</strong>已有的该数字排除不可能的空格。当某个数字在某行（或某列、某宫）中<strong>只剩一个空位可选</strong>时，立即填入——这就叫"补缺"。排除与补缺交替进行，逐步填满全盘。</p>
+
+    <h4>示例：六宫数独——排除补缺实战</h4>
+    <p>看下面的六宫数独（取自教材图 18-49）。我们以出现次数最多的数字 <strong>6</strong> 为例，演示排除补缺的完整推理过程。</p>
+    <div style="text-align:center;margin:12px 0;">
+      <div class="sudoku6-grid" id="sudoku6-demo">
+        <!-- Row 1 -->
+        <div class="s6-cell given">4</div><div class="s6-cell given">3</div><div class="s6-cell r3"></div><div class="s6-cell"></div><div class="s6-cell"></div><div class="s6-cell given">2</div>
+        <!-- Row 2 b2 (宫界：第 2 行底部——分隔第 1~2 行与第 3~4 行) -->
+        <div class="s6-cell b2"></div><div class="s6-cell b2"></div><div class="s6-cell b2 r3"></div><div class="s6-cell b2 given">6</div><div class="s6-cell b2 given">3</div><div class="s6-cell b2"></div>
+        <!-- Row 3 -->
+        <div class="s6-cell"></div><div class="s6-cell"></div><div class="s6-cell r3"></div><div class="s6-cell"></div><div class="s6-cell given">5</div><div class="s6-cell"></div>
+        <!-- Row 4 b2 (宫界：第 4 行底部——分隔第 3~4 行与第 5~6 行) -->
+        <div class="s6-cell b2"></div><div class="s6-cell b2"></div><div class="s6-cell b2 r3 given">1</div><div class="s6-cell b2"></div><div class="s6-cell b2 given">6</div><div class="s6-cell b2"></div>
+        <!-- Row 5 -->
+        <div class="s6-cell given">3</div><div class="s6-cell given">6</div><div class="s6-cell r3"></div><div class="s6-cell"></div><div class="s6-cell"></div><div class="s6-cell"></div>
+        <!-- Row 6 -->
+        <div class="s6-cell given">2</div><div class="s6-cell"></div><div class="s6-cell r3"></div><div class="s6-cell"></div><div class="s6-cell"></div><div class="s6-cell"></div>
+      </div>
+    </div>
+
+    <div class="step-list">
+      <div class="step-item">
+        <div class="step-num">1</div>
+        <div><strong>统计频率，锁定目标。</strong>观察全盘：数字 <strong>6</strong> 已出现 3 次——第 <strong>2</strong> 行第 <strong>4</strong> 列、第 <strong>4</strong> 行第 <strong>5</strong> 列、第 <strong>5</strong> 行第 <strong>2</strong> 列。数字 <strong>3</strong> 也出现 3 次。高频数字候选范围窄，更容易"补缺"。我们从 <strong>6</strong> 开刀。</div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">2</div>
+        <div><strong>第 1 行的 6 —— 一击命中。</strong>第 1 行已有 4、3、2，缺少（1、5、6）。看列：第 4 列有 6（第 2 行），排除；第 5 列有 6（第 4 行），排除。只剩第 3 列空着——<strong>补缺！第 1 行、第 3 列 = 6</strong>。</div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">3</div>
+        <div><strong>第 6 行的 6 —— 宫列双重围剿。</strong>第 6 行已有 2，缺少（1、3、4、5、6）。列向排除：第 2 列有 6 → 排除，第 4 列有 6 → 排除，第 5 列有 6 → 排除，第 3 列刚被第 1 行填入 6 → 也排除。剩第 1 列和第 6 列。关键一步——<strong>宫约束出手</strong>：第 1 列的第 6 行属于<strong>左下 $2 \times 3$ 宫</strong>（第 5~6 行 × 第 1~3 列）。这个宫里第 5 行第 2 列已经有 6 了，宫内不能重复，第 1 列彻底封死！于是 <strong>第 6 行、第 6 列 = 6</strong>，痛快拿下。</div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">4</div>
+        <div><strong>第 3 行的 6 —— 全盘收官。</strong>6 已占 5 席，只缺第 3 行。第 3 行已有 5（第 5 列）。列向扫荡：第 2 列有 6 → 排除；第 3 列有 6 → 排除；第 4 列有 6 → 排除；第 6 列有 6 → 排除。第 1 列毫发无伤——<strong>第 3 行、第 1 列 = 6</strong>。六个 6，全部击破！</div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">5</div>
+        <div><strong>滚动推进，逐个击破。</strong>每填入一个数，立刻刷新行、列、宫的"已用列表"。6 排完后，下一个目标：数字 3（也已出现 3 次），同样的套路继续推。已知的越多，候选越少，速度越快。全盘终将被我们逐个瓦解。</div>
+      </div>
+    </div>
+
+    <div class="callout orange">
+      <div class="callout-label">排除补缺法口诀</div>
+      <p><strong>"先数高频再排除，只剩一位就补缺。"</strong>意思是：拿到题目先统计每个数字已出现几次，从出现最多的数字开始做。对每个数字，在它尚未出现的行（或列、宫）中，把已被其他位置占掉的列（或行、宫）统统排除，如果排除后只剩一个空位——那就是它了，果断填入。填完后数字又多了一个已知位置，帮下一个数字的排除创造条件。</p>
+    </div>
+  </div>
+
+  <!-- ===== 解法二：错位相同法 ===== -->
+  <h3>解法二：错位相同法</h3>
+  <div class="card">
+    <p><strong>核心思想：</strong>当同一数字在<strong>不同行（或不同列）</strong>的<strong>错开位置</strong>上出现时，利用这种"错位"关系可以推断该数字在其他行（列）中的位置。这个方法常和排除补缺法配合使用，解决那些无法直接排除补缺的棘手空格。</p>
+
+    <h4>示例：错位相同法的应用</h4>
+    <p>仍以上面的六宫数独为例。在确定全部 6 的位置后，棋盘如下（新填入的 6 用粗体标出）：</p>
+    <div style="text-align:center;margin:12px 0;">
+      <div class="sudoku6-grid">
+        <!-- Row 1 -->
+        <div class="s6-cell given">4</div><div class="s6-cell given">3</div><div class="s6-cell r3" style="font-weight:bold;color:var(--primary);">6</div><div class="s6-cell"></div><div class="s6-cell"></div><div class="s6-cell given">2</div>
+        <!-- Row 2 b2 -->
+        <div class="s6-cell b2"></div><div class="s6-cell b2"></div><div class="s6-cell b2 r3"></div><div class="s6-cell b2 given">6</div><div class="s6-cell b2 given">3</div><div class="s6-cell b2"></div>
+        <!-- Row 3 -->
+        <div class="s6-cell" style="font-weight:bold;color:var(--primary);">6</div><div class="s6-cell"></div><div class="s6-cell r3"></div><div class="s6-cell"></div><div class="s6-cell given">5</div><div class="s6-cell"></div>
+        <!-- Row 4 b2 -->
+        <div class="s6-cell b2"></div><div class="s6-cell b2"></div><div class="s6-cell b2 r3 given">1</div><div class="s6-cell b2"></div><div class="s6-cell b2 given">6</div><div class="s6-cell b2"></div>
+        <!-- Row 5 -->
+        <div class="s6-cell given">3</div><div class="s6-cell given">6</div><div class="s6-cell r3"></div><div class="s6-cell"></div><div class="s6-cell"></div><div class="s6-cell"></div>
+        <!-- Row 6 -->
+        <div class="s6-cell given">2</div><div class="s6-cell"></div><div class="s6-cell r3"></div><div class="s6-cell"></div><div class="s6-cell"></div><div class="s6-cell" style="font-weight:bold;color:var(--primary);">6</div>
+      </div>
+    </div>
+
+    <div class="step-list">
+      <div class="step-item">
+        <div class="step-num">1</div>
+        <div><strong>观察 6 的"错位"分布。</strong>注意数字 6 在前三行中的位置：第 1 行在第 3 列，第 2 行在第 4 列，第 3 行在第 1 列——三行的 6 全部错开，互不共列。这意味着在前三行中，第 1、3、4 列都已被 6 占据。同理观察后三行中 6 的分布规律，也能发现类似的错位模式。</div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">2</div>
+        <div><strong>利用错位关系推断其他数字。</strong>错位相同法的精髓在于：如果数字 $x$ 在第 $i$ 行和第 $j$ 行中占据了错开的列，那么在其他行中，$x$ 就不能再占用这些列——从而缩小候选范围。例如，已知第 1 行和第 2 行的 3 分别在第 2 列和第 5 列（错位），那么第 6 行的 3 就不能在第 1、2、5 列，只能在剩下的列中寻找。</div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">3</div>
+        <div><strong>错位相同法与排除补缺法配合。</strong>在实际解题中，两种方法交替使用：先用排除补缺法搞定高频数字（如 6、3），每填入一个数字就更新棋盘状态；遇到排除补缺走不通时，切换为错位相同法，观察已填数字的错位模式，推断剩余空格。两种方法相辅相成，是六宫数独最核心的解题思路。</div>
+      </div>
+    </div>
+
+    <div class="callout blue">
+      <div class="callout-label">错位相同法小结</div>
+      <p>当同一数字在多行（多列）中以<strong>错开的列（行）</strong>出现时，可以通过"哪些列（行）已被占用"来反推剩余行（列）中该数字的可选位置。其本质是：<strong>已占用的列（行）就是其他行（列）的禁区</strong>，禁得越多，定位越准。</p>
+    </div>
+  </div>
+
+  <div class="callout orange">
+    <div class="callout-label">六宫数独解题优先策略</div>
+    <p>第一步：统计各数字出现频率，<strong>从最多的开始</strong>，用排除补缺法逐个击破。第二步：高频数字排完后，对于中期瓶颈，<strong>切换到错位相同法</strong>，利用已填数字的位置模式交叉定位。第三步：当传统方法走不通时，在某个空格列出候选数（通常 2~3 个），逐一尝试排除——这就是"试填法"。</p>
+  </div>
+</div>
+
+<!-- ==================== 6. 例题精讲 ==================== -->
+<div class="section">
+  <div class="section-head"><div class="section-num">6</div><h2>例题精讲</h2></div>
+
+  <div class="example-box">
+    <div class="example-num">例 1 &nbsp; ⭐⭐（易）</div>
+    <div class="example-problem">在三阶幻方中，中心数是 $8$。请问幻和 $S$ 是多少？如果左上角 $a = 6$，右下角 $i$ 是多少？</div>
+    <div class="example-solution">
+      <p><strong>解：</strong>由中心数定理 $S = 3e$，$S = 3 \times 8 = 24$。由对位和性质 $a + i = 2e$，即 $6 + i = 16$，所以 $i = 10$。</p>
+    </div>
+    <div class="example-note">💡 <strong>小结：</strong>三阶幻方的两个核心公式——$S = 3e$ 和 $a + i = 2e$，是解决幻方填空问题的"万能钥匙"。</div>
+  </div>
+
+  <div class="example-box">
+    <div class="example-num">例 2 &nbsp; ⭐⭐⭐（中）</div>
+    <div class="example-problem">在下图三阶幻方中填入适当的数，使每行、每列、每条对角线上三个数的和都相等。已知 $e = 5$，$f = 1$，$g = 2$，$i = 9$。</div>
+    <div style="text-align:center;margin:10px 0;">
+      <div class="magic-grid">
+        <div class="cell"></div><div class="cell"></div><div class="cell"></div>
+        <div class="cell"></div><div class="cell center">5</div><div class="cell hl">1</div>
+        <div class="cell hl">2</div><div class="cell"></div><div class="cell hl">9</div>
+      </div>
+    </div>
+    <div class="example-solution">
+      <p><strong>解：</strong>$S = 3e = 15$。</p>
+      <p>由 $c + e + g = S$，即 $c + 5 + 2 = 15$，得 $c = 8$。</p>
+      <p>由 $a + e + i = S$，即 $a + 5 + 9 = 15$，得 $a = 1$。</p>
+      <p>由 $d + e + f = S$，即 $d + 5 + 1 = 15$，得 $d = 9$。</p>
+      <p>由 $g + h + i = S$，即 $2 + h + 9 = 15$，得 $h = 4$。</p>
+      <p>由 $a + b + c = S$，即 $1 + b + 8 = 15$，得 $b = 6$。</p>
+      <p>验证全部 8 条线，均等于 15 ✓。注意：$d = 9$ 与 $i = 9$ 不同位置，在此题中 9 出现了两次——幻方<strong>不要求数字不重复</strong>！</p>
+      <div style="text-align:center;margin:8px 0;">
+        <div class="magic-grid">
+          <div class="cell">1</div><div class="cell">6</div><div class="cell">8</div>
+          <div class="cell">9</div><div class="cell center">5</div><div class="cell hl">1</div>
+          <div class="cell hl">2</div><div class="cell">4</div><div class="cell hl">9</div>
+        </div>
+      </div>
+    </div>
+    <div class="example-note">💡 <strong>小结：</strong>优先使用 $S = 3e$ 定幻和，再用过中心的三条线逐一定出对角位置的数。幻方中的数字<strong>不一定要求互不相同</strong>。</div>
+  </div>
+
+  <div class="example-box">
+    <div class="example-num">例 3 &nbsp; ⭐⭐⭐（中）</div>
+    <div class="example-problem">用 1~9 构造一个三阶幻方，幻和为 15。请用罗伯法完成全部五步。</div>
+    <div class="example-solution">
+      <p><strong>解（罗伯法五步完整过程）：</strong></p>
+      <p><strong>第 1 步——依次写数：</strong></p>
+      <div style="text-align:center;"><div class="magic-grid"><div class="cell">1</div><div class="cell">2</div><div class="cell">3</div><div class="cell">4</div><div class="cell">5</div><div class="cell">6</div><div class="cell">7</div><div class="cell">8</div><div class="cell">9</div></div></div>
+      <p><strong>第 2 步——对角互换</strong>（$1 \leftrightarrow 9$，$3 \leftrightarrow 7$）：</p>
+      <div style="text-align:center;"><div class="magic-grid"><div class="cell">9</div><div class="cell">2</div><div class="cell">7</div><div class="cell">4</div><div class="cell">5</div><div class="cell">6</div><div class="cell">3</div><div class="cell">8</div><div class="cell">1</div></div></div>
+      <p><strong>第 3~5 步——四维挺出、旋转、回宫</strong>，得到标准洛书幻方。验证全部 8 条线的和均等于 15 ✓</p>
+    </div>
+    <div class="example-note">💡 <strong>小结：</strong>罗伯法适用于<strong>所有奇数阶</strong>幻方。记忆链：依次写 → 对角换 → 挺出 → 旋转 → 回宫。</div>
+  </div>
+
+  <div class="example-box">
+    <div class="example-num">例 4 &nbsp; ⭐⭐⭐⭐（难）</div>
+    <div class="example-problem">填入 1, 2, 4, 5, 10, 20, 25, 50, 100，使每行、每列、每条对角线上三个数的<strong>乘积</strong>都相等。求任意一行三个数之和的最小值。</div>
+    <div class="example-solution">
+      <p><strong>解：</strong>质因数只有 2 和 5。$1 = 2^0 \cdot 5^0$，$2 = 2^1 \cdot 5^0$，$4 = 2^2 \cdot 5^0$，$5 = 2^0 \cdot 5^1$，$10 = 2^1 \cdot 5^1$，$20 = 2^2 \cdot 5^1$，$25 = 2^0 \cdot 5^2$，$50 = 2^1 \cdot 5^2$，$100 = 2^2 \cdot 5^2$。</p>
+      <p>"乘积相等"化为"指数之和相等"——2 的指数 $\{0,1,2\}$ 和 5 的指数 $\{0,1,2\}$ 各自排成两个独立的三阶幻方。按 $(2^{\text{指数}}, 5^{\text{指数}})$ 配对排列，最小值一行的和为 $5 + 10 + 20 = 35$。</p>
+    </div>
+    <div class="example-note">💡 <strong>小结：</strong>"积相等"问题用<strong>质因数分解</strong>化为"指数和相等"，是化乘为加的核心技巧。</div>
+  </div>
+</div>
+
+<!-- ==================== 7. 易错点 ==================== -->
+<div class="section">
+  <div class="section-head"><div class="section-num">7</div><h2>常见易错点</h2></div>
+  <div class="callout red"><div class="callout-label">易错 1</div><p>幻方中的数字<strong>不一定非要用连续自然数</strong>。幻方只要求行、列、对角线和相等，对数字是否重复、是否连续没有要求（除非题目特别说明）。</p></div>
+  <div class="callout red"><div class="callout-label">易错 2</div><p>幻方只要求<strong>两条主对角线</strong>的和相等，不要把其他方向的斜线也算进去。</p></div>
+  <div class="callout red"><div class="callout-label">易错 3</div><p>中心数定理 $S = 3e$ 只适用于<strong>三阶</strong>幻方。四阶及以上不适用。</p></div>
+  <div class="callout red"><div class="callout-label">易错 4</div><p>六宫数独中每个宫是 <strong>$2 \times 3$（或 $3 \times 2$）的粗线区域</strong>，每宫刚好 6 格填 1~6。数字跨宫可以重复，但同一行、同一列、同一宫内绝不能重复。不要和九宫数独（$3 \times 3$ 宫，每宫 9 格填 1~9）混淆。</p></div>
+</div>
+
+<!-- ==================== 8. 记忆方法 ==================== -->
+<div class="section">
+  <div class="section-head"><div class="section-num">8</div><h2>记忆方法</h2></div>
+  <div class="memory-card">
+    <div class="mem-icon">🧠</div>
+    <div class="mem-title">三阶幻方核心公式</div>
+    <div class="mem-body"><p><strong>"中心乘三得幻和，对位相加等中心两倍"</strong>——$S = 3e$，$a + i = 2e$。</p></div>
+  </div>
+  <div class="memory-card">
+    <div class="mem-icon">🎯</div>
+    <div class="mem-title">拉弓法</div>
+    <div class="mem-body"><p><strong>"角上数加倍，去找弓弦两头友"</strong>——$f + h = 2a$，$d + h = 2c$，$b + f = 2g$，$b + d = 2i$。</p></div>
+  </div>
+  <div class="memory-card">
+    <div class="mem-icon">🔍</div>
+    <div class="mem-title">数独解题口诀</div>
+    <div class="mem-body"><p><strong>"先找多数再找少数，横看竖看宫也看，排除完毕答案现。"</strong>先用排除法填高频数字，再用三行三列法交叉定位低频数字。</p></div>
+  </div>
+</div>
+
+<!-- ==================== 9. 互动演示 ==================== -->
+<div class="section">
+  <div class="section-head"><div class="section-num">9</div><h2>互动演示 —— 拖动数字验证幻方</h2></div>
+  <div class="card">
+    <p style="margin-bottom:16px;">点击下方数字，再点击幻方格子填入。试试拼出一个幻和为 15 的三阶幻方！</p>
+    <div class="canvas-wrap"><canvas id="magicCanvas" width="460" height="500"></canvas></div>
+    <p style="text-align:center;font-size:13px;color:var(--text-secondary);margin-top:8px;">提示：点击格子选中，再点击下方数字填入。双击格子清空。</p>
+    <p id="magicFeedback" style="text-align:center;font-size:15px;font-weight:700;color:var(--success);margin-top:8px;"></p>
+  </div>
+</div>
+
+<!-- ==================== 10. 总结 ==================== -->
+<div class="section">
+  <div class="section-head"><div class="section-num">10</div><h2>本讲总结</h2></div>
+  <div class="card">
+    <div class="summary-list">
+      <div class="summary-item"><span class="summary-num">1</span><span><strong>幻方三大性质</strong>——中心数定理 $S = 3e$、对位和 $a+i = 2e$、拉弓法 $2a = f+h$，每条都有完整的代数证明。</span></div>
+      <div class="summary-item"><span class="summary-num">2</span><span><strong>口诀法</strong>——用"脚踩大地、头顶云天、五居中宫、二四两肩、六八下边、腰间七三"直接定位 1~9。</span></div>
+      <div class="summary-item"><span class="summary-num">3</span><span><strong>罗伯法</strong>——五步机械操作：依次写数→对角互换→四维挺出→旋转适度→回宫居住。适用于所有奇数阶幻方。</span></div>
+      <div class="summary-item"><span class="summary-num">4</span><span><strong>数独两大解法</strong>——排除法（横看竖看宫也看）、三行三列法（利用三行一组交叉定位），一快一准，配合使用。</span></div>
+      <div class="summary-item"><span class="summary-num">5</span><span>从幻方到数独，共同思想是<strong>在约束条件下用逻辑推理填满方格</strong>。口诀记忆胜过死记硬背。</span></div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<!-- MathJax 3 -->
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$','$']],
+    displayMath: [['$$','$$']],
+    processEscapes: true
+  },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre'] },
+  chtml: { displayAlign: 'center', displayIndent: '0' }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+
+<!-- Canvas: 罗伯法五步图解 -->
+<script>
+(function(){
+  var c = document.getElementById('luoboCanvas');
+  if (!c) return;
+  var ctx = c.getContext('2d');
+  var W = c.width, H = c.height;
+  ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+
+  // Five step states
+  var steps = [
+    {label:'① 依次写数',     grid:[[1,2,3],[4,5,6],[7,8,9]], hl:[]},
+    {label:'② 对角互换',     grid:[[9,2,7],[4,5,6],[3,8,1]], hl:[[0,0],[0,2],[2,0],[2,2]]},
+    {label:'③ 四维挺出',     grid:[[9,0,7],[0,5,0],[3,0,1]], hl:[]},
+    {label:'④ 旋转适度',     grid:[[9,0,7],[4,5,6],[3,0,1]], hl:[[1,0],[1,2],[0,1],[2,1]]},
+    {label:'⑤ 回宫居住',     grid:[[4,9,2],[3,5,7],[8,1,6]], hl:[]}
+  ];
+
+  var cs = 44, gap = 36, startX = 44, startY = 54;
+
+  ctx.fillStyle = '#fafbff';
+  ctx.fillRect(0, 0, W, H);
+
+  ctx.fillStyle = '#1a3a5c';
+  ctx.font = 'bold 15px "PingFang SC","Microsoft YaHei",sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('罗伯法五步构造图解', W/2, 26);
+
+  for (var s = 0; s < steps.length; s++) {
+    var ox = startX + s * (cs * 3 + gap);
+    var oy = startY;
+    var st = steps[s];
+
+    // Draw grid
+    for (var r = 0; r < 3; r++) {
+      for (var cl = 0; cl < 3; cl++) {
+        var x = ox + cl * cs, y = oy + r * cs;
+        var isHL = false;
+        for (var h = 0; h < st.hl.length; h++) {
+          if (st.hl[h][0] === r && st.hl[h][1] === cl) { isHL = true; break; }
+        }
+
+        ctx.fillStyle = isHL ? '#fef2f2' : '#ffffff';
+        ctx.fillRect(x, y, cs, cs);
+        ctx.strokeStyle = '#c5cdd8';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(x, y, cs, cs);
+
+        if (st.grid[r][cl] !== 0 && st.grid[r][cl] !== null) {
+          ctx.fillStyle = isHL ? '#dc2626' : '#1a3a5c';
+          ctx.font = 'bold 18px "PingFang SC","Microsoft YaHei",sans-serif';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(st.grid[r][cl], x + cs/2, y + cs/2);
+        }
+      }
+    }
+    // Outer border
+    ctx.strokeStyle = '#1a3a5c';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(ox, oy, cs * 3, cs * 3);
+
+    // Label
+    ctx.fillStyle = '#6b7280';
+    ctx.font = '12px "PingFang SC","Microsoft YaHei",sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(st.label, ox + cs * 1.5, oy + cs * 3 + 16);
+
+    // Arrow between steps
+    if (s < steps.length - 1) {
+      var ax = ox + cs * 3 + 6, ay = oy + cs * 1.5;
+      ctx.strokeStyle = '#2563a8';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(ax, ay);
+      ctx.lineTo(ax + gap - 14, ay);
+      ctx.stroke();
+      // Arrowhead
+      ctx.beginPath();
+      ctx.moveTo(ax + gap - 8, ay - 5);
+      ctx.lineTo(ax + gap - 2, ay);
+      ctx.lineTo(ax + gap - 8, ay + 5);
+      ctx.fillStyle = '#2563a8';
+      ctx.fill();
+    }
+  }
+})();
+</script>
+
+<!-- Canvas: 互动幻方 -->
+<script>
+(function(){
+  var canvas = document.getElementById('magicCanvas');
+  if (!canvas) return;
+  var ctx = canvas.getContext('2d');
+  var W = canvas.width, H = canvas.height;
+  ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+
+  var grid = [[null,null,null],[null,null,null],[null,null,null]];
+  var selR = -1, selC = -1;
+  var numbers = [1,2,3,4,5,6,7,8,9];
+  var gL = 110, gT = 80, cs = 72;
+  var nX = 70, nY = 340, ns = 34, ng = 6;
+
+  function crc(r,c){ return {x:gL+c*cs, y:gT+r*cs, w:cs, h:cs}; }
+  function nrc(i){ var pr=5, row=Math.floor(i/pr), col=i%pr; return {x:nX+col*(ns+ng), y:nY+row*(ns+ng+4), w:ns, h:ns}; }
+
+  function drawGrid(){
+    for (var r=0; r<3; r++) for (var c=0; c<3; c++) {
+      var rc=crc(r,c);
+      ctx.fillStyle = (r===selR&&c===selC) ? '#dbeafe' : (r===1&&c===1) ? '#fffbeb' : '#ffffff';
+      ctx.fillRect(rc.x,rc.y,rc.w,rc.h);
+      ctx.strokeStyle='#c5cdd8'; ctx.lineWidth=1; ctx.strokeRect(rc.x,rc.y,rc.w,rc.h);
+      if (grid[r][c]!==null) {
+        ctx.fillStyle=(r===1&&c===1)?'#dc2626':'#1a3a5c';
+        ctx.font='bold 24px "PingFang SC","Microsoft YaHei",sans-serif';
+        ctx.textAlign='center'; ctx.textBaseline='middle';
+        ctx.fillText(grid[r][c], rc.x+rc.w/2, rc.y+rc.h/2);
+      }
+    }
+    ctx.strokeStyle='#1a3a5c'; ctx.lineWidth=2.5; ctx.strokeRect(gL,gT,cs*3,cs*3);
+    ctx.font='13px "PingFang SC","Microsoft YaHei",sans-serif'; ctx.textAlign='center';
+    for (var r=0; r<3; r++) { var s=0,ok=true; for (var c=0;c<3;c++){if(grid[r][c]===null){ok=false;break;}s+=grid[r][c];} if(ok){ctx.fillStyle=s===15?'#059669':'#dc2626';ctx.fillText('= '+s,gL+cs*3+28,gT+r*cs+cs/2);} }
+    for (var c=0; c<3; c++) { var s=0,ok=true; for (var r=0;r<3;r++){if(grid[r][c]===null){ok=false;break;}s+=grid[r][c];} if(ok){ctx.fillStyle=s===15?'#059669':'#dc2626';ctx.fillText('= '+s,gL+c*cs+cs/2,gT+cs*3+20);} }
+  }
+
+  function drawNums(){
+    for (var i=0;i<numbers.length;i++){
+      var rc=nrc(i), used=false;
+      for (var r=0;r<3;r++) for (var cc=0;cc<3;cc++) if(grid[r][cc]===numbers[i]) used=true;
+      ctx.fillStyle=used?'#e5e7eb':'#f0f4ff'; ctx.strokeStyle=used?'#d1d5db':'#2563a8'; ctx.lineWidth=1.5;
+      var rx=rc.x,ry=rc.y,rw=rc.w,rh=rc.h,rad=8;
+      ctx.beginPath(); ctx.moveTo(rx+rad,ry); ctx.lineTo(rx+rw-rad,ry); ctx.arcTo(rx+rw,ry,rx+rw,ry+rad,rad); ctx.lineTo(rx+rw,ry+rh-rad); ctx.arcTo(rx+rw,ry+rh,rx+rw-rad,ry+rh,rad); ctx.lineTo(rx+rad,ry+rh); ctx.arcTo(rx,ry+rh,rx,ry+rh-rad,rad); ctx.lineTo(rx,ry+rad); ctx.arcTo(rx,ry,rx+rad,ry,rad); ctx.closePath();
+      ctx.fill(); ctx.stroke();
+      ctx.fillStyle=used?'#9ca3af':'#1a3a5c'; ctx.font='bold 16px "PingFang SC","Microsoft YaHei",sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.fillText(numbers[i],rx+rw/2,ry+rh/2);
+    }
+  }
+
+  function checkComplete(){
+    for (var r=0;r<3;r++) for (var c=0;c<3;c++) if(grid[r][c]===null) return;
+    for (var r=0;r<3;r++) if(grid[r][0]+grid[r][1]+grid[r][2]!==15) return;
+    for (var c=0;c<3;c++) if(grid[0][c]+grid[1][c]+grid[2][c]!==15) return;
+    if(grid[0][0]+grid[1][1]+grid[2][2]!==15) return;
+    if(grid[0][2]+grid[1][1]+grid[2][0]!==15) return;
+    document.getElementById('magicFeedback').textContent='太棒了！你成功构造了一个三阶幻方！';
+    document.getElementById('magicFeedback').style.color='#059669';
+  }
+
+  function render(){
+    ctx.clearRect(0,0,W,H); ctx.fillStyle='#fafbff'; ctx.fillRect(0,0,W,H);
+    ctx.fillStyle='#1a3a5c'; ctx.font='bold 16px "PingFang SC","Microsoft YaHei",sans-serif'; ctx.textAlign='center';
+    ctx.fillText('三阶幻方（目标幻和 = 15）',W/2,36);
+    ctx.fillStyle='#6b7280'; ctx.font='13px "PingFang SC","Microsoft YaHei",sans-serif';
+    ctx.fillText('可用数字（点击选择，再点击格子填入）：',W/2,320);
+    drawGrid(); drawNums();
+  }
+
+  canvas.addEventListener('click',function(e){
+    var rect=canvas.getBoundingClientRect(), mx=e.clientX-rect.left, my=e.clientY-rect.top, cg=false;
+    for (var r=0;r<3;r++) for (var cc=0;cc<3;cc++) { var rc=crc(r,cc); if(mx>=rc.x&&mx<=rc.x+rc.w&&my>=rc.y&&my<=rc.y+rc.h){ if(selR>=0&&selC>=0&&grid[selR][selC]!==null){ var v=grid[selR][selC]; grid[selR][selC]=null; grid[r][cc]=v; selR=-1;selC=-1; }else{selR=r;selC=cc;} cg=true; break; } if(cg)break; }
+    if(!cg){ for (var i=0;i<numbers.length;i++){ var nr=nrc(i); if(mx>=nr.x&&mx<=nr.x+nr.w&&my>=nr.y&&my<=nr.y+nr.h){ var u=false; for (var r=0;r<3;r++) for (var cc=0;cc<3;cc++) if(grid[r][cc]===numbers[i]) u=true; if(!u&&selR>=0&&selC>=0){grid[selR][selC]=numbers[i];selR=-1;selC=-1;} break; } } }
+    document.getElementById('magicFeedback').textContent=''; checkComplete(); render();
+  });
+
+  canvas.addEventListener('dblclick',function(e){
+    var rect=canvas.getBoundingClientRect(), mx=e.clientX-rect.left, my=e.clientY-rect.top;
+    for (var r=0;r<3;r++) for (var cc=0;cc<3;cc++) { var rc=crc(r,cc); if(mx>=rc.x&&mx<=rc.x+rc.w&&my>=rc.y&&my<=rc.y+rc.h){ grid[r][cc]=null; selR=-1;selC=-1; document.getElementById('magicFeedback').textContent=''; render(); return; } }
+  });
+
+  render();
+})();
+</script>
+
+</body>
+</html>
