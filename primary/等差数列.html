@@ -3,814 +3,435 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>等差数列基础讲解</title>
+<title>等差数列与等比数列 | 互动讲义</title>
 <style>
-/* ============================================================
-   CSS 变量（配色方案）
-   ============================================================ */
 :root {
   --primary: #1a3a5c;
   --primary-light: #2563a8;
-  --accent: #dc2626;
-  --accent-orange: #d97706;
-  --bg-page: #f8f9fe;
+  --accent: #dc6b24;
+  --accent-soft: #fff2e8;
+  --blue-soft: #eaf3ff;
+  --green: #087f5b;
+  --green-soft: #e6f6f0;
+  --purple: #7652a8;
+  --purple-soft: #f2ecfb;
+  --bg-page: #f7f9fc;
   --bg-card: #ffffff;
-  --bg-formula: #f0f4ff;
-  --border-light: #e0e7f0;
-  --border-blue: #dbeafe;
-  --text-primary: #1a3a5c;
-  --text-secondary: #6b7280;
-  --text-accent: #dc2626;
-  --success: #059669;
-  --warning: #d97706;
+  --border: #dce5ef;
+  --text: #203448;
+  --muted: #617286;
+  --shadow: 0 10px 24px rgba(25, 58, 92, .08);
 }
 
-/* ============================================================
-   全局样式
-   ============================================================ */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
+* { box-sizing: border-box; }
+html, body { margin: 0; overflow-x: hidden; }
 body {
-  font-family: "PingFang SC", "Microsoft YaHei", "Hiragino Sans GB", sans-serif;
+  min-width: 320px;
+  font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
   background: var(--bg-page);
-  color: var(--text-primary);
-  line-height: 1.8;
-  overflow-x: hidden;
+  color: var(--text);
+  line-height: 1.75;
 }
 
-.container {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 40px 24px;
-}
+.container { max-width: 960px; margin: 0 auto; padding: 32px 20px 64px; }
+.hero { text-align: center; padding: 18px 0 30px; }
+.eyebrow { color: var(--accent); font-weight: 800; letter-spacing: 1px; font-size: 14px; }
+h1 { color: var(--primary); margin: 8px 0 10px; font-size: clamp(28px, 5vw, 42px); line-height: 1.25; }
+.subtitle { max-width: 640px; margin: 0 auto; color: var(--muted); font-size: 17px; }
 
-/* ============================================================
-   标题区域
-   ============================================================ */
-.header {
-  text-align: center;
-  margin-bottom: 48px;
-  padding-bottom: 24px;
-  border-bottom: 2px solid var(--border-light);
-}
+.route { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 24px; }
+.route-item { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 13px 10px; font-weight: 700; color: var(--primary); }
+.route-item span { display: block; color: var(--muted); font-size: 13px; font-weight: 400; margin-top: 3px; }
 
-.header h1 {
-  font-size: 32px;
-  font-weight: 800;
-  color: var(--primary);
-  letter-spacing: 2px;
-  margin-bottom: 8px;
-}
+.lesson-section { margin-top: 38px; }
+.section-heading { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+.section-number { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 50%; background: var(--primary); color: white; font-weight: 800; flex: 0 0 auto; }
+h2 { margin: 0; color: var(--primary); font-size: clamp(22px, 3.6vw, 29px); line-height: 1.35; }
+h3 { margin: 0 0 10px; color: var(--primary); font-size: 19px; }
 
-.header .subtitle {
-  font-size: 16px;
-  color: var(--text-secondary);
-}
+.card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: clamp(18px, 3vw, 28px); box-shadow: 0 6px 16px rgba(25, 58, 92, .055); margin-top: 16px; }
+.lead { font-size: 17px; margin: 0; }
+.tip { margin-top: 15px; border-left: 4px solid var(--accent); background: var(--accent-soft); padding: 12px 14px; border-radius: 0 6px 6px 0; }
+.rule-strip { margin: 16px 0 0; padding: 10px 13px; color: #1a5b48; background: var(--green-soft); border-left: 4px solid var(--green); border-radius: 0 6px 6px 0; }
+.worked-example { margin-top: 20px; padding: 16px 18px; background: #f6faff; border-top: 2px solid #9bc5ec; }
+.worked-example h3 { color: var(--primary-light); font-size: 17px; margin-bottom: 5px; }
+.worked-example p { margin: 5px 0; }
+.example-steps { display: grid; gap: 6px; margin-top: 10px; color: #39556f; }
+.example-steps .math { color: var(--primary); font-size: 18px; }
+.boundary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px; }
+.boundary-grid > div { min-height: 92px; padding: 14px; border-radius: 6px; display: grid; align-content: center; gap: 3px; }
+.boundary-grid > div:first-child { background: var(--accent-soft); border-left: 4px solid var(--accent); }
+.boundary-grid > div:last-child { background: var(--green-soft); border-left: 4px solid var(--green); }
+.boundary-grid strong { color: var(--primary); font-size: 15px; }
+.boundary-grid > div > .fraction { justify-self: start; color: var(--primary); font-family: Georgia, "Times New Roman", serif; font-size: 25px; font-weight: 800; }
+.boundary-grid .math { color: var(--primary); font-size: 15px; }
+.boundary-grid small { color: var(--muted); }
+.term { color: var(--primary-light); text-decoration: underline dotted; text-underline-offset: 4px; cursor: help; font-weight: 800; }
 
-/* ============================================================
-   章节标题
-   ============================================================ */
-.section {
-  margin-bottom: 48px;
-}
+.sequence-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 18px 0; }
+.term-chip { min-width: 44px; text-align: center; padding: 7px 10px; border-radius: 6px; background: var(--blue-soft); border: 1px solid #c8dff8; color: var(--primary); font-weight: 800; }
+.arrow { color: var(--muted); font-weight: bold; }
+.compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 16px; }
+.mini-card { border: 1px solid var(--border); border-radius: 7px; padding: 15px; }
+.mini-card h3 { font-size: 17px; }
+.mini-card p { margin: 0; color: var(--muted); }
 
-.section-head {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  margin-bottom: 20px;
-}
+.formula { background: #f3f7fc; border: 1px solid #d8e6f3; border-radius: 7px; padding: 14px 16px; text-align: center; font-family: Georgia, "Times New Roman", "Microsoft YaHei", serif; font-size: clamp(18px, 3.4vw, 23px); color: var(--primary); margin: 15px 0; overflow-wrap: anywhere; }
+.formula strong { color: var(--accent); }
+.formula-reading { font-family: "PingFang SC", "Microsoft YaHei", sans-serif; font-weight: 700; }
+.formula-note { color: var(--muted); font-size: 14px; text-align: center; margin: -8px 0 8px; }
+.math { display: inline-flex; align-items: center; gap: .16em; font-family: Georgia, "Times New Roman", serif; white-space: nowrap; }
+.math sub, .math sup { font-size: .66em; line-height: 0; }
+.fraction { display: inline-grid; grid-template-rows: auto auto; vertical-align: middle; text-align: center; line-height: 1.05; margin: 0 .12em; min-width: 1.7em; }
+.fraction .numerator { border-bottom: 1.5px solid currentColor; padding: 0 .28em .12em; }
+.fraction .denominator { padding: .12em .28em 0; }
 
-.section-num {
-  width: 42px;
-  height: 42px;
-  background: linear-gradient(135deg, #1a3a5c, #2563a8);
-  color: #fff;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 20px;
-  font-weight: 800;
-  flex-shrink: 0;
-}
+.step-layout { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; align-items: stretch; }
+.derivation-panel { min-height: 420px; display: flex; flex-direction: column; border: 1px dashed #b8cce0; background: #fbfdff; border-radius: 7px; padding: 18px; }
+#geometricSteps { min-height: 470px; }
+.step-label { color: var(--accent); font-weight: 800; font-size: 14px; }
+.derivation-panel h3 { margin-top: 4px; }
+.derivation-panel p { margin: 8px 0; }
+.vertical-work { flex-grow: 1; margin: 14px 0 4px; padding: 16px clamp(12px, 3vw, 28px); background: #fff; border: 1px solid #cfdae7; border-radius: 6px; overflow-x: auto; }
+.work-line { min-height: 37px; display: flex; align-items: center; justify-content: flex-end; gap: .4em; padding: 4px 10px; color: #304c66; font-family: Georgia, "Times New Roman", serif; font-size: clamp(16px, 3vw, 20px); white-space: nowrap; transition: background .2s ease, color .2s ease; }
+.work-line.is-current { background: var(--accent-soft); color: #a54812; border-radius: 4px; font-weight: 700; }
+.work-rule { width: min(100%, 510px); border-top: 2px solid currentColor; margin: 3px 0; }
+.work-line.rule-result { display: grid; justify-items: end; gap: 5px; }
+.math-cancel { color: #7a8c9b; text-decoration: line-through; text-decoration-thickness: 1.5px; }
+.aligned-sum { width: min(100%, 620px); display: grid; grid-template-columns: 3.8em repeat(7, minmax(2.15em, 1fr)); align-items: center; text-align: center; font-family: Georgia, "Times New Roman", serif; }
+.sum-label { justify-self: end; padding-right: .45em; font-weight: 700; }
+.sum-cell { min-height: 30px; display: grid; place-items: center; border-radius: 3px; }
+.sum-cell.cancelled { color: #7a8c9b; text-decoration: line-through; text-decoration-thickness: 1.5px; background: #f1f4f7; }
+.sum-cell.endpoint { color: #a54812; font-weight: 800; background: var(--accent-soft); }
+.aligned-equation { max-width: 620px; margin-left: auto; padding: 8px 10px; text-align: right; font-family: Georgia, "Times New Roman", serif; font-size: clamp(14px, 2.5vw, 18px); white-space: normal; }
+.work-conclusion { color: var(--accent); font-weight: 800; }
+.derivation-actions { display: grid; grid-template-columns: 180px minmax(0, 1fr); gap: 14px; align-items: start; }
+.visual-stage { min-height: 130px; display: grid; place-items: center; background: var(--blue-soft); border-radius: 7px; padding: 14px; }
+.pair-stack { display: grid; gap: 7px; width: min(100%, 185px); }
+.pair-row { display: flex; gap: 4px; justify-content: center; }
+.dot { width: 22px; height: 22px; border-radius: 4px; background: var(--primary-light); }
+.dot.reverse { background: var(--accent); }
 
-.section-head h2 {
-  font-size: 22px;
-  color: var(--primary);
-  margin: 0;
-}
+button { font: inherit; }
+.step-button, .quiz-option { cursor: pointer; border-radius: 6px; transition: transform .18s ease, background .18s ease, box-shadow .18s ease; }
+.step-button { width: 100%; padding: 11px 12px; color: white; background: var(--primary); border: 1px solid var(--primary); font-weight: 800; }
+.step-button:hover { background: var(--primary-light); transform: translateY(-1px); box-shadow: 0 4px 10px rgba(26, 58, 92, .18); }
+.step-button:focus-visible, .quiz-option:focus-visible { outline: 3px solid #f1b98b; outline-offset: 2px; }
+.step-count { color: var(--muted); text-align: center; font-size: 13px; margin-top: 8px; }
 
-/* ============================================================
-   卡片
-   ============================================================ */
-.card {
-  background: var(--bg-card);
-  border-radius: 14px;
-  padding: 28px 32px;
-  margin-bottom: 20px;
-  border: 1px solid var(--border-light);
-  box-shadow: 0 2px 8px rgba(26, 58, 92, 0.06);
-  overflow: visible;
-}
+.growth-visual { display: flex; align-items: end; gap: 5px; height: 138px; }
+.growth-block { background: var(--purple); color: white; display: grid; place-items: center; font-weight: 800; border-radius: 5px 5px 0 0; min-width: 26px; }
+.growth-block:nth-child(1) { height: 24px; }.growth-block:nth-child(2) { height: 32px; }.growth-block:nth-child(3) { height: 43px; }.growth-block:nth-child(4) { height: 58px; }.growth-block:nth-child(5) { height: 80px; }.growth-block:nth-child(6) { height: 110px; }
 
-/* ============================================================
-   公式框
-   ============================================================ */
-.formula-box {
-  background: var(--bg-formula);
-  border-radius: 10px;
-  padding: 18px 24px;
-  margin: 16px 0;
-  text-align: center;
-  font-size: 17px;
-  border: 1px solid var(--border-blue);
-  overflow: visible;
-}
+.area-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(230px, 360px); gap: 24px; align-items: center; }
+.area-diagram { width: 100%; max-width: 330px; justify-self: center; }
+.area-diagram svg { display: block; width: 100%; height: auto; }
+.area-piece { opacity: .12; transition: opacity .35s ease; }
+.area-piece.visible { opacity: 1; }
+.area-outline { fill: none; stroke: var(--primary); stroke-width: 3; }
+.area-key { list-style: none; padding: 0; margin: 14px 0; display: grid; gap: 8px; }
+.area-key li { display: flex; align-items: center; gap: 8px; color: var(--muted); }
+.swatch { width: 17px; height: 17px; border-radius: 3px; display: inline-block; flex: 0 0 auto; }
+.area-status { min-height: 55px; background: var(--green-soft); border-left: 4px solid var(--green); padding: 10px 12px; border-radius: 0 6px 6px 0; color: #175d47; }
 
-.formula-box.hl-red {
-  border-color: #dc2626;
-  border-width: 2px;
-  background: #fef2f2;
-}
+.quiz { background: #fffdf9; border: 1px solid #f2d6b8; }
+.quiz-options { display: grid; gap: 9px; margin-top: 14px; }
+.quiz-option { text-align: left; color: var(--text); background: white; border: 1px solid var(--border); padding: 10px 12px; }
+.quiz-option:hover { background: var(--blue-soft); border-color: #aac9e6; }
+.quiz-option.is-correct { background: var(--green-soft); border-color: var(--green); color: #175d47; font-weight: 700; }
+.quiz-option.is-wrong { background: #fdf2ed; border-color: #e6a78b; color: #b34a18; }
+.feedback { min-height: 32px; margin: 12px 0 0; font-weight: 700; }
+.feedback.correct { color: var(--green); }.feedback.wrong { color: #b34a18; }
 
-.formula-box.hl-orange {
-  border-color: #d97706;
-  border-width: 2px;
-  background: #fffbea;
-}
+.summary-table { width: 100%; border-collapse: collapse; overflow: hidden; border-radius: 7px; border-style: hidden; box-shadow: 0 0 0 1px var(--border); }
+.summary-table th, .summary-table td { padding: 12px; text-align: left; border: 1px solid var(--border); vertical-align: top; }
+.summary-table th { color: var(--primary); background: var(--blue-soft); }
+.summary-table th:first-child, .summary-table td:first-child { width: 22%; font-weight: 700; color: var(--primary); }
+.footer-note { color: var(--muted); text-align: center; margin: 34px 0 0; font-size: 14px; }
 
-.formula-note {
-  margin-top: 10px;
-  font-size: 13px;
-  color: #2563a8;
-}
-
-/* ============================================================
-   例题框
-   ============================================================ */
-.example-box {
-  background: #f8f9fe;
-  border-left: 5px solid #1a3a5c;
-  border-radius: 0 12px 12px 0;
-  padding: 20px 24px;
-  margin: 20px 0;
-  overflow: visible;
-}
-
-.example-num {
-  font-size: 17px;
-  font-weight: 800;
-  color: #1a3a5c;
-  margin-bottom: 10px;
-}
-
-.example-problem {
-  font-size: 15px;
-  margin-bottom: 14px;
-  color: #1a3a5c;
-}
-
-.example-solution {
-  font-size: 14px;
-  line-height: 1.9;
-  color: #6b7280;
-  margin-bottom: 12px;
-}
-
-.example-note {
-  background: #fffbea;
-  border-radius: 8px;
-  padding: 10px 16px;
-  font-size: 13px;
-  color: #92400e;
-  border: 1px solid #fde68a;
-}
-
-/* ============================================================
-   Callout 提示框
-   ============================================================ */
-.callout {
-  border-radius: 10px;
-  padding: 16px 22px;
-  margin: 20px 0;
-  font-size: 14px;
-  line-height: 1.7;
-  overflow: visible;
-}
-
-.callout.blue {
-  background: #eff6ff;
-  border-left: 5px solid #2563a8;
-  color: #1e40af;
-}
-
-.callout.green {
-  background: #ecfdf5;
-  border-left: 5px solid #059669;
-  color: #064e3b;
-}
-
-.callout.orange {
-  background: #fffbea;
-  border-left: 5px solid #d97706;
-  color: #92400e;
-}
-
-.callout-label {
-  font-weight: 700;
-  margin-bottom: 6px;
-  font-size: 15px;
-}
-
-/* ============================================================
-   植树问题示意图
-   ============================================================ */
-.tree-demo {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 24px;
-  background: #f8f9fe;
-  border-radius: 10px;
-  margin: 16px 0;
-  flex-wrap: wrap;
-  overflow: visible;
-}
-
-.tree-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  animation: fadeIn 0.5s ease;
-}
-
-.tree-icon {
-  font-size: 36px;
-  line-height: 1;
-}
-
-.tree-label {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--text-primary);
-  margin-top: 4px;
-  background: white;
-  padding: 2px 8px;
-  border-radius: 6px;
-  border: 1.5px solid var(--border-light);
-}
-
-.gap-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 0 4px;
-}
-
-.gap-icon {
-  font-size: 24px;
-  color: var(--accent-orange);
-}
-
-.gap-label {
-  font-size: 11px;
-  color: var(--text-secondary);
-  margin-top: 2px;
-}
-
-/* ============================================================
-   互动演示区
-   ============================================================ */
-.interactive-area {
-  background: var(--bg-card);
-  border-radius: 14px;
-  padding: 28px 32px;
-  margin: 20px 0;
-  border: 1px solid var(--border-light);
-  box-shadow: 0 2px 8px rgba(26, 58, 92, 0.06);
-  overflow: visible;
-}
-
-.input-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-  margin-bottom: 20px;
-  align-items: flex-end;
-}
-
-.input-group {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.input-group label {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--text-primary);
-}
-
-.input-group input,
-.input-group select {
-  height: 42px;
-  font-size: 16px;
-  padding: 0 12px;
-  border: 2px solid var(--border-light);
-  border-radius: 8px;
-  font-family: inherit;
-  outline: none;
-  transition: border-color 0.2s;
-}
-
-.input-group input:focus,
-.input-group select:focus {
-  border-color: var(--primary-light);
-}
-
-.input-group input {
-  width: 100px;
-  text-align: center;
-}
-
-.input-group select {
-  min-width: 120px;
-}
-
-.btn-generate {
-  padding: 10px 28px;
-  font-size: 16px;
-  font-weight: 700;
-  color: #fff;
-  background: var(--primary);
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-family: inherit;
-  transition: background 0.2s;
-}
-
-.btn-generate:hover {
-  background: var(--primary-light);
-}
-
-/* 演示结果区域 */
-.demo-result {
-  min-height: 80px;
-  padding: 20px;
-  background: #f8f9fe;
-  border-radius: 10px;
-  margin: 20px 0;
-  overflow: visible;
-}
-
-.result-text {
-  margin-top: 16px;
-  padding: 16px 20px;
-  background: var(--bg-formula);
-  border-radius: 10px;
-  border-left: 4px solid var(--primary-light);
-  font-size: 15px;
-  line-height: 2;
-  display: none;
-}
-
-.result-text.show {
-  display: block;
-  animation: fadeIn 0.5s ease;
-}
-
-/* ============================================================
-   动画
-   ============================================================ */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes bounceIn {
-  0% {
-    opacity: 0;
-    transform: scale(0.5);
-  }
-  60% {
-    opacity: 1;
-    transform: scale(1.1);
-  }
-  100% {
-    transform: scale(1);
-  }
-}
-
-/* ============================================================
-   响应式
-   ============================================================ */
-@media (max-width: 700px) {
-  .container {
-    padding: 20px 16px;
-  }
-  
-  .header h1 {
-    font-size: 24px;
-  }
-  
-  .card {
-    padding: 20px 18px;
-  }
-  
-  .section-head h2 {
-    font-size: 18px;
-  }
-  
-  .input-row {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  
-  .input-group input,
-  .input-group select {
-    width: 100%;
-  }
+@media (max-width: 650px) {
+  .container { padding: 24px 14px 48px; }
+  .route, .compare-grid, .step-layout, .area-layout, .derivation-actions, .boundary-grid { grid-template-columns: 1fr; }
+  .visual-stage { min-height: 135px; }
+  .summary-table { font-size: 13px; }
+  .summary-table th, .summary-table td { padding: 9px; }
+  .aligned-sum { grid-template-columns: 3.2em repeat(7, minmax(2em, 1fr)); font-size: 14px; }
+  .derivation-panel { min-height: 440px; }
+  #geometricSteps { min-height: 540px; }
 }
 </style>
 </head>
 <body>
-<div class="container">
-  <!-- ============================================================
-       标题
-       ============================================================ -->
-  <div class="header">
-    <h1>等差数列基础讲解</h1>
-    <p class="subtitle">小学中高年级 · 等差数列专项</p>
-  </div>
-
-  <!-- ============================================================
-       第一关：什么是等差数列
-       ============================================================ -->
-  <div class="section">
-    <div class="section-head">
-      <div class="section-num">1</div>
-      <h2>什么是等差数列</h2>
+<main class="container">
+  <header class="hero">
+    <div class="eyebrow">互动数学讲义</div>
+    <h1>等差数列与等比数列</h1>
+    <p class="subtitle">看清“每次加多少”和“每次变成几倍”，用两个巧办法算长长的一串数。</p>
+    <div class="route" aria-label="学习路线">
+      <div class="route-item">等差数列<span>每次多同样多</span></div>
+      <div class="route-item">等比数列<span>每次乘同样多</span></div>
+      <div class="route-item">面积法<span>把分数和画出来</span></div>
     </div>
+  </header>
 
+  <section class="lesson-section" id="arithmetic">
+    <div class="section-heading"><div class="section-number">1</div><h2>等差数列：每次多同样多</h2></div>
     <div class="card">
-      <p>等差数列是指从第2项起，每一项与它的前一项的差都等于同一个常数的数列。</p>
-      
-      <div class="callout blue" style="margin-top: 16px;">
-        <div class="callout-label">📖 定义</div>
-        如果一个数列从第二项开始，每一项减去前一项的结果都相同，这个数列就是等差数列。<br>
-        这个相同的结果叫做<strong>公差</strong>，通常用字母 <strong>d</strong> 表示。
+      <p class="lead">看数列：<span class="term" title="从前一个数到后一个数，每次都加 3。">2，5，8，11，14，…</span>。相邻两个数相减，结果总是 3。这样的数列叫<strong>等差数列</strong>。</p>
+      <div class="sequence-row" aria-label="等差数列示例"><span class="term-chip">2</span><span class="arrow">+3 →</span><span class="term-chip">5</span><span class="arrow">+3 →</span><span class="term-chip">8</span><span class="arrow">+3 →</span><span class="term-chip">11</span></div>
+      <div class="compare-grid">
+        <div class="mini-card"><h3>记住两个名字</h3><p><strong>首项</strong>：第一个数，记作 a<sub>1</sub>。<br><strong>公差</strong>：每次加的同一个数，记作 d。</p></div>
+        <div class="mini-card"><h3>往后走几步</h3><p>第 n 项 = 首项 + 走了 (n−1) 步 × 公差。<br>不是 n 步，因为第一项还没有走。</p></div>
       </div>
-
-      <p style="margin-top: 16px; font-weight: 700;">举例：</p>
-      <ul style="margin: 8px 0 0 20px; font-size: 15px; line-height: 2;">
-        <li>数列 2, 5, 8, 11, 14 是等差数列，公差 d = 3</li>
-        <li>数列 10, 7, 4, 1, -2 是等差数列，公差 d = -3</li>
-        <li>数列 1, 1, 1, 1 是等差数列，公差 d = 0</li>
-      </ul>
-    </div>
-  </div>
-
-  <!-- ============================================================
-       第二关：植树问题引入
-       ============================================================ -->
-  <div class="section">
-    <div class="section-head">
-      <div class="section-num">2</div>
-      <h2>植树问题：理解"项数"与"间隔"</h2>
-    </div>
-
-    <div class="card">
-      <p>用"植树问题"可以帮助理解等差数列中的"项数"概念。</p>
-
-      <div class="callout green" style="margin-top: 16px;">
-        <div class="callout-label">🌳 核心类比</div>
-        • 树 = 数列中的每一项<br>
-        • 树与树之间的间隔 = 公差<br>
-        • 间隔数 = 树的数量 - 1
-      </div>
-
-      <p style="margin-top: 16px;">下图展示了一个公差为 3 的等差数列（3, 6, 9, 12）：</p>
-
-      <!-- 植树示意图 -->
-      <div class="tree-demo" id="treeDemo1"></div>
-
-      <div class="callout orange" style="margin-top: 16px;">
-        <div class="callout-label">💡 关键理解</div>
-        4 棵树只有 <strong>3 个间隔</strong>，所以第4项 = 第1项 + <strong>3 个</strong>公差。<br>
-        一般地，第 n 项 = 第1项 + <strong>(n - 1) 个</strong>公差。
-      </div>
-    </div>
-  </div>
-
-  <!-- ============================================================
-       第三关：核心公式
-       ============================================================ -->
-  <div class="section">
-    <div class="section-head">
-      <div class="section-num">3</div>
-      <h2>核心公式</h2>
-    </div>
-
-    <div class="card">
-      <h3 style="font-size: 17px; color: var(--primary); margin-bottom: 12px;">公式一：第 n 项公式</h3>
-      <div class="formula-box">
-        第 n 项 = 第1项 + (项数 - 1) × 公差
-      </div>
-      <div class="formula-note">
-        简记：第一项不动，后面每项都加了"(项数-1)次公差"
-      </div>
-
-      <div class="callout blue" style="margin-top: 16px;">
-        <div class="callout-label">📝 推导过程</div>
-        设第1项为 a₁，公差为 d<br>
-        第2项 = a₁ + d = a₁ + (2-1)d<br>
-        第3项 = a₁ + 2d = a₁ + (3-1)d<br>
-        ...<br>
-        第n项 = a₁ + (n-1)d
-      </div>
-    </div>
-
-    <div class="card">
-      <h3 style="font-size: 17px; color: var(--primary); margin-bottom: 12px;">公式二：求和公式</h3>
-      <div class="formula-box">
-        总和 = (第1项 + 最后一项) × 项数 ÷ 2
-      </div>
-      <div class="formula-note">
-        简记：首尾配对，乘以项数，再除以2
-      </div>
-
-      <div class="callout orange" style="margin-top: 16px;">
-        <div class="callout-label">💡 为什么除以2？</div>
-        把数列正着写一遍，再倒着写一遍，对应位置相加：<br>
-        1 + 2 + 3 + ... + n<br>
-        n + (n-1) + ... + 1<br>
-        每一对的和都是 (1+n)，一共有 n 对，所以总和 = (1+n) × n ÷ 2
-      </div>
-    </div>
-  </div>
-
-  <!-- ============================================================
-       第四关：互动演示
-       ============================================================ -->
-  <div class="section">
-    <div class="section-head">
-      <div class="section-num">4</div>
-      <h2>互动演示</h2>
-    </div>
-
-    <div class="interactive-area">
-      <p style="margin-bottom: 16px; font-size: 15px;">输入参数，生成等差数列可视化图形。</p>
-
-      <div class="input-row">
-        <div class="input-group">
-          <label>第1项</label>
-          <input type="number" id="inputFirst" value="1">
-        </div>
-        <div class="input-group">
-          <label>公差</label>
-          <input type="number" id="inputDiff" value="3">
-        </div>
-        <div class="input-group">
-          <label>项数（1-10）</label>
-          <input type="number" id="inputCount" min="1" max="10" value="5">
-        </div>
-        <div class="input-group">
-          <label>间隔图标</label>
-          <select id="inputIcon">
-            <option value="👣">👣 脚印</option>
-            <option value="🐸">🐸 青蛙</option>
-            <option value="🐾">🐾 爪印</option>
-            <option value="🚀">🚀 火箭</option>
-          </select>
+      <div class="formula formula-reading">第 n 项 = 首项 + (n − 1) × 公差</div>
+      <p class="formula-note">初中符号写法：<span class="math">a<sub>n</sub> = a<sub>1</sub> + (n − 1)d</span></p>
+      <div class="rule-strip"><strong>先判断：</strong>相邻两项相减，差相同，就是等差数列。</div>
+      <p class="formula-note">生活里也常见：例如存钱计划中，每天都比昨天多存 3 元。</p>
+      <div class="tip"><strong>小提醒：</strong>等差数列的“差”可以是正数、负数，也可以是 0；只要每次加的是同一个数就行。</div>
+      <div class="worked-example">
+        <h3>例题：求第 20 项</h3>
+        <p>等差数列 5，8，11，… 的第 20 项是多少？</p>
+        <div class="example-steps">
+          <div>第 1 步：a<sub>1</sub> = 5，d = 3，n = 20。</div>
+          <div>第 2 步：代入通项公式。</div>
+          <div class="math">a<sub>20</sub> = 5 + (20 − 1) × 3 = <strong>62</strong></div>
         </div>
       </div>
-
-      <button class="btn-generate" id="btnGenerate">生成演示</button>
-
-      <!-- 演示区域 -->
-      <div class="demo-result" id="demoResult">
-        <p style="color: var(--text-secondary); text-align: center; padding: 20px;">
-          输入参数后点击"生成演示"
-        </p>
-      </div>
-
-      <!-- 计算结果 -->
-      <div class="result-text" id="resultText"></div>
-    </div>
-  </div>
-
-  <!-- ============================================================
-       第五关：典型例题
-       ============================================================ -->
-  <div class="section">
-    <div class="section-head">
-      <div class="section-num">5</div>
-      <h2>典型例题</h2>
     </div>
 
-    <div class="example-box">
-      <div class="example-num">例题 1　⭐⭐（容易）</div>
-      <div class="example-problem">
-        等差数列：3, 7, 11, 15, ...<br>
-        问：公差是多少？第10项是多少？
-      </div>
-      <div class="example-solution">
-        <strong>解：</strong><br>
-        公差 = 7 - 3 = <strong>4</strong><br>
-        第10项 = 第1项 + (10 - 1) × 公差<br>
-        = 3 + 9 × 4<br>
-        = 3 + 36<br>
-        = <strong>39</strong><br>
-        答：公差是 4，第10项是 39。
-      </div>
-      <div class="example-note">
-        💡 小结：先求公差（后项减前项），再用第n项公式计算。
-      </div>
-    </div>
-
-    <div class="example-box">
-      <div class="example-num">例题 2　⭐⭐⭐（中等）</div>
-      <div class="example-problem">
-        等差数列的第1项是 5，第10项是 32。<br>
-        问：公差是多少？
-      </div>
-      <div class="example-solution">
-        <strong>解：</strong><br>
-        方法一：用第n项公式<br>
-        第10项 = 第1项 + (10 - 1) × 公差<br>
-        32 = 5 + 9 × 公差<br>
-        9 × 公差 = 32 - 5 = 27<br>
-        公差 = 27 ÷ 9 = <strong>3</strong><br><br>
-        方法二：用间隔数理解<br>
-        第1项到第10项，中间有 9 个间隔<br>
-        总共增加了 32 - 5 = 27<br>
-        所以公差 = 27 ÷ 9 = <strong>3</strong><br>
-        答：公差是 3。
-      </div>
-      <div class="example-note">
-        💡 小结：已知两项求公差，用"总增加量 ÷ 间隔数"。
-      </div>
-    </div>
-
-    <div class="example-box">
-      <div class="example-num">例题 3　⭐⭐⭐⭐（较难）</div>
-      <div class="example-problem">
-        等差数列：2, 5, 8, 11, ..., 第20项。<br>
-        问：这个数列前20项的和是多少？
-      </div>
-      <div class="example-solution">
-        <strong>解：</strong><br>
-        第1项 = 2，公差 = 3<br>
-        第20项 = 2 + (20 - 1) × 3<br>
-        = 2 + 57<br>
-        = <strong>59</strong><br><br>
-        总和 = (第1项 + 第20项) × 项数 ÷ 2<br>
-        = (2 + 59) × 20 ÷ 2<br>
-        = 61 × 10<br>
-        = <strong>610</strong><br>
-        答：前20项的和是 610。
-      </div>
-      <div class="example-note">
-        💡 小结：求和前先求最后一项，再用求和公式。
-      </div>
-    </div>
-  </div>
-
-  <!-- ============================================================
-       总结
-       ============================================================ -->
-  <div class="section">
-    <div class="section-head">
-      <div class="section-num">6</div>
-      <h2>要点总结</h2>
-    </div>
     <div class="card">
-      <ol style="margin: 0 0 0 20px; font-size: 15px; line-height: 2.2;">
-        <li>等差数列：从第二项起，每一项与前一项的差都相等</li>
-        <li>公差 d = 后项 - 前项</li>
-        <li>第 n 项 = 第1项 + (n - 1) × 公差</li>
-        <li>总和 = (第1项 + 最后一项) × 项数 ÷ 2</li>
-        <li>项数 = (最后一项 - 第一项) ÷ 公差 + 1</li>
-      </ol>
+      <h3>倒序相加法：两头配成一样多</h3>
+      <p>求 1 + 2 + 3 + … + 10 的和，一项一项慢慢加当然可以。但高斯发现：把它倒过来再写一遍，答案一下就整齐了。</p>
+      <div class="step-layout">
+        <div class="derivation-panel" id="arithmeticSteps" data-step="0" aria-live="polite"></div>
+        <div class="derivation-actions">
+          <div><button class="step-button" id="nextArithmetic" type="button">看下一步</button><div class="step-count" id="arithmeticCount">第 1 / 4 步</div></div>
+          <div class="visual-stage" id="arithmeticVisual" aria-hidden="true"></div>
+        </div>
+      </div>
+      <div class="formula formula-reading">前 n 项的和 = (首项 + 末项) × 项数 ÷ 2</div>
+      <p class="formula-note">初中符号写法：S<sub>n</sub> = <span class="fraction"><span class="numerator">n(a<sub>1</sub> + a<sub>n</sub>)</span><span class="denominator">2</span></span>；也可写成 S<sub>n</sub> = <span class="fraction"><span class="numerator">n[2a<sub>1</sub> + (n−1)d]</span><span class="denominator">2</span></span></p>
     </div>
-  </div>
-</div>
+
+    <div class="card quiz">
+      <h3>试一试</h3><p>数列 7，10，13，16，… 的公差是多少？</p>
+      <div class="quiz-options">
+        <button class="quiz-option" type="button" data-feedback="arithmeticFeedback" data-answer="wrong" data-correct="" data-wrong="再看相邻两个数：10 − 7 = 3，不是 7。">7</button>
+        <button class="quiz-option" type="button" data-feedback="arithmeticFeedback" data-answer="correct" data-correct="答对了。每次都加 3，所以公差是 3。" data-wrong="">3</button>
+        <button class="quiz-option" type="button" data-feedback="arithmeticFeedback" data-answer="wrong" data-correct="" data-wrong="16 是其中一项，不是每次增加的量。">16</button>
+      </div><p class="feedback" id="arithmeticFeedback" aria-live="polite"></p>
+    </div>
+  </section>
+
+  <section class="lesson-section" id="geometric">
+    <div class="section-heading"><div class="section-number">2</div><h2>等比数列：每次变成同样的倍数</h2></div>
+    <div class="card">
+      <p class="lead">看数列：<span class="term" title="每一个数都是前一个数的 2 倍。">1，2，4，8，16，…</span>。相邻两个数相除，结果总是 2。这样的数列叫<strong>等比数列</strong>。</p>
+      <div class="sequence-row" aria-label="等比数列示例"><span class="term-chip">1</span><span class="arrow">×2 →</span><span class="term-chip">2</span><span class="arrow">×2 →</span><span class="term-chip">4</span><span class="arrow">×2 →</span><span class="term-chip">8</span></div>
+      <div class="compare-grid">
+        <div class="mini-card"><h3>也有两个名字</h3><p><strong>首项</strong>：第一个数，还是 a<sub>1</sub>。<br><strong>公比</strong>：每次乘的同一个数，记作 q。</p></div>
+        <div class="mini-card"><h3>每走一步就乘一次</h3><p>第 n 项 = 首项 × 公比的 (n−1) 次方。<br>第一项还没乘，所以指数是 0。</p></div>
+      </div>
+      <div class="formula formula-reading">第 n 项 = 首项 × 公比的 (n − 1) 次方</div>
+      <p class="formula-note">读作：第 n 项等于首项乘“公比的 (n−1) 次方”。初中符号写法：<span class="math">a<sub>n</sub> = a<sub>1</sub> × q<sup>n−1</sup></span></p>
+      <div class="rule-strip"><strong>先判断：</strong>相邻两项相除，比相同，就是等比数列；除数不能是 0。</div>
+      <p class="formula-note">生活里也常见：细胞分裂时，1 个变 2 个，2 个变 4 个。</p>
+      <div class="tip"><strong>和等差数列不同：</strong>等比数列看的是“除法”。例如 8 ÷ 4 = 2，所以这里的公比是 2。</div>
+      <div class="worked-example">
+        <h3>例题：求前 5 项的和</h3>
+        <p>等比数列 3，6，12，… 的前 5 项和是多少？</p>
+        <div class="example-steps">
+          <div>第 1 步：a<sub>1</sub> = 3，q = 2，n = 5。</div>
+          <div>第 2 步：代入求和公式。</div>
+          <div class="math">S<sub>5</sub> = <span class="fraction"><span class="numerator">3(2<sup>5</sup> − 1)</span><span class="denominator">2 − 1</span></span> = <strong>93</strong></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>错位相加法：让大部分项自己消失</h3>
+      <p>现在算 1 + 2 + 4 + 8 + 16 + 32。我们把原来的和整体乘 2，再和原来的式子相减。两排对齐时，中间的项刚好会消掉。</p>
+      <div class="step-layout">
+        <div class="derivation-panel" id="geometricSteps" data-step="0" aria-live="polite"></div>
+        <div class="derivation-actions">
+          <div><button class="step-button" id="nextGeometric" type="button">看下一步</button><div class="step-count" id="geometricCount">第 1 / 4 步</div></div>
+          <div class="visual-stage"><div class="growth-visual" id="geometricVisual" aria-hidden="true"><div class="growth-block">1</div><div class="growth-block">2</div><div class="growth-block">4</div><div class="growth-block">8</div><div class="growth-block">16</div><div class="growth-block">32</div></div></div>
+        </div>
+      </div>
+      <div class="formula formula-reading">前 n 项的和 = 首项 × (公比的“项数”次方 − 1) ÷ (公比 − 1)</div>
+      <p class="formula-note">初中符号写法：S<sub>n</sub> = <span class="fraction"><span class="numerator">a<sub>1</sub>(q<sup>n</sup> − 1)</span><span class="denominator">q − 1</span></span>。这里 q 不等于 1。</p>
+    </div>
+
+    <div class="card quiz">
+      <h3>试一试</h3><p>数列 3，6，12，24，… 的公比是多少？</p>
+      <div class="quiz-options">
+        <button class="quiz-option" type="button" data-feedback="geometricFeedback" data-answer="wrong" data-correct="" data-wrong="相邻两项要用除法：6 ÷ 3，不是 6 − 3。">3</button>
+        <button class="quiz-option" type="button" data-feedback="geometricFeedback" data-answer="correct" data-correct="答对了。6 ÷ 3 = 2，12 ÷ 6 也等于 2。" data-wrong="">2</button>
+        <button class="quiz-option" type="button" data-feedback="geometricFeedback" data-answer="wrong" data-correct="" data-wrong="24 是其中一项，不是每次乘的倍数。">24</button>
+      </div><p class="feedback" id="geometricFeedback" aria-live="polite"></p>
+    </div>
+  </section>
+
+  <section class="lesson-section" id="area">
+    <div class="section-heading"><div class="section-number">3</div><h2>图形面积法：把分数和“看见”</h2></div>
+    <div class="card">
+      <p class="lead">有时等比数列的项越来越小，例如：1/2，1/4，1/8，1/16，…。它们加起来会是多少？我们把一个正方形当成 1，用不同颜色的面积来表示每一项。</p>
+      <div class="area-layout">
+        <div class="area-diagram" id="areaDiagram" data-step="0" aria-label="分数面积图"></div>
+        <div>
+          <h3>每一步都在补空白</h3>
+          <ul class="area-key">
+            <li><span class="swatch" style="background:#2563a8"></span>第 1 块：1/2</li>
+            <li><span class="swatch" style="background:#dc6b24"></span>第 2 块：1/4</li>
+            <li><span class="swatch" style="background:#087f5b"></span>第 3 块：1/8</li>
+            <li><span class="swatch" style="background:#7652a8"></span>第 4 块：1/16</li>
+          </ul>
+          <div class="area-status" id="areaStatus" aria-live="polite"></div>
+          <div style="margin-top: 12px"><button class="step-button" id="nextArea" type="button">填入下一块</button></div>
+          <div class="step-count" id="areaCount">已显示 0 / 4 块</div>
+        </div>
+      </div>
+      <div class="formula"><span class="math"><span class="fraction"><span class="numerator">1</span><span class="denominator">2</span></span> + <span class="fraction"><span class="numerator">1</span><span class="denominator">4</span></span> + <span class="fraction"><span class="numerator">1</span><span class="denominator">8</span></span> + <span class="fraction"><span class="numerator">1</span><span class="denominator">16</span></span> = <strong><span class="fraction"><span class="numerator">15</span><span class="denominator">16</span></span></strong></span></div>
+      <div class="boundary-grid">
+        <div><strong>有限四项</strong><span class="fraction"><span class="numerator">15</span><span class="denominator">16</span></span><small>还剩：<span class="math">1 − <span class="fraction"><span class="numerator">15</span><span class="denominator">16</span></span> = <span class="fraction"><span class="numerator">1</span><span class="denominator">16</span></span></span> 空白。</small></div>
+        <div><strong>无限相加</strong><span>1</span><small>继续加下去，空白无限缩小，和等于整个正方形。</small></div>
+      </div>
+      <div class="tip"><strong>很重要：</strong>前面四块只加到 15/16，还没有填满。只有当公比满足 −1 &lt; q &lt; 1 时，项才会越变越小，我们才能计算无限多项的总和；若 q &gt; 1，项会越来越大，不存在有限的总和。</div>
+    </div>
+  </section>
+
+  <section class="lesson-section" id="summary">
+    <div class="section-heading"><div class="section-number">✓</div><h2>一眼分清楚</h2></div>
+    <div class="card" style="padding: 0; overflow-x: auto">
+      <table class="summary-table">
+        <thead><tr><th>比较什么？</th><th>等差数列</th><th>等比数列</th></tr></thead>
+        <tbody>
+          <tr><td>相邻两项</td><td>相减，差相同</td><td>相除，比相同</td></tr>
+          <tr><td>关键量</td><td>公差 d</td><td>公比 q</td></tr>
+          <tr><td>长串求和</td><td>倒序相加，两头配对</td><td>错位相加，中间消掉</td></tr>
+          <tr><td>容易弄错</td><td>第 n 项是走了 n−1 步</td><td>公比用“除”，不是用“减”</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card quiz">
+      <h3>综合判断</h3><p>数列 2，6，18，54，… 要先判断它是不是等比数列，最合适的做法是什么？</p>
+      <div class="quiz-options">
+        <button class="quiz-option" type="button" data-feedback="summaryFeedback" data-answer="wrong" data-correct="" data-wrong="相减得到 4、12、36，不相同；这不能证明它是等比数列。">看相邻两项相减</button>
+        <button class="quiz-option" type="button" data-feedback="summaryFeedback" data-answer="correct" data-correct="答对了。6 ÷ 2、18 ÷ 6、54 ÷ 18 都等于 3，所以它是等比数列，公比是 3。" data-wrong="">看相邻两项相除</button>
+        <button class="quiz-option" type="button" data-feedback="summaryFeedback" data-answer="wrong" data-correct="" data-wrong="看第一项不能判断数列规律，要比较相邻两项。">只看第一项</button>
+      </div><p class="feedback" id="summaryFeedback" aria-live="polite"></p>
+    </div>
+  </section>
+  <p class="footer-note">先找规律，再选方法。数学并不是背公式，而是找到让数字变整齐的办法。</p>
+</main>
 
 <script>
-/* ============================================================
-   JavaScript 代码
-   ============================================================ */
+var arithmeticFrames = [
+  { title: '第 1 步：先写原来的和', text: '先给这一串数的和起一个名字：S。', lines: ['<span class="math">S = 1 + 2 + 3 + ··· + 10</span>'] },
+  { title: '第 2 步：同一个和倒着写', text: '数没有变，只是从 10 往回排。现在每一列都能配成一对。', lines: ['<span class="math">S = 1 + 2 + 3 + ··· + 10</span>', '<span class="math">S = 10 + 9 + 8 + ··· + 1</span>'] },
+  { title: '第 3 步：上下相加', text: '每一列都是 11，一共 10 列，所以得到 10 个 11。', lines: ['<span class="math">S = 1 + 2 + 3 + ··· + 10</span>', '<span class="math">S = 10 + 9 + 8 + ··· + 1</span>', '<span class="work-rule"></span><span class="math">2S = 11 + 11 + ··· + 11 = 10 × 11</span>'] },
+  { title: '第 4 步：把两个 S 还原成一个 S', text: '刚才是 2S，所以两边都除以 2。', lines: ['<span class="math">S = 1 + 2 + 3 + ··· + 10</span>', '<span class="math">S = 10 + 9 + 8 + ··· + 1</span>', '<span class="work-rule"></span><span class="math">2S = 10 × 11</span>', '<span class="math work-conclusion">S = <span class="fraction"><span class="numerator">10 × 11</span><span class="denominator">2</span></span> = 55</span>'] }
+];
+var geometricFrames = [
+  { title: '第 1 步：先写原来的和', text: '先把这一串数的和记作 S。', lines: ['<span class="math">S = 1 + 2 + 4 + 8 + 16 + 32</span>'] },
+  { title: '第 2 步：整体乘 2，故意错开一位', text: '每一项乘 2。第二行从第 2 列开始，因此相同的数上下严格对齐。', lines: ['<div class="aligned-sum"><span class="sum-label">S =</span><span class="sum-cell">1</span><span class="sum-cell">2</span><span class="sum-cell">4</span><span class="sum-cell">8</span><span class="sum-cell">16</span><span class="sum-cell">32</span></div>', '<div class="aligned-sum"><span class="sum-label">2S =</span><span class="sum-cell"></span><span class="sum-cell">2</span><span class="sum-cell">4</span><span class="sum-cell">8</span><span class="sum-cell">16</span><span class="sum-cell">32</span><span class="sum-cell">64</span></div>'] },
+  { title: '第 3 步：明确地用第二行减第一行', text: '先看等号左边：2S − S 正好剩下 S。再看右边：中间同列的五项抵消。', lines: ['<div class="aligned-sum"><span class="sum-label">S =</span><span class="sum-cell">1</span><span class="sum-cell">2</span><span class="sum-cell">4</span><span class="sum-cell">8</span><span class="sum-cell">16</span><span class="sum-cell">32</span></div>', '<div class="aligned-sum"><span class="sum-label">2S =</span><span class="sum-cell"></span><span class="sum-cell">2</span><span class="sum-cell">4</span><span class="sum-cell">8</span><span class="sum-cell">16</span><span class="sum-cell">32</span><span class="sum-cell">64</span></div>', '<span class="work-rule"></span><div class="aligned-equation">2S − S = (2 + 4 + 8 + 16 + 32 + 64) − (1 + 2 + 4 + 8 + 16 + 32)</div><div class="aligned-sum"><span class="sum-label">S =</span><span class="sum-cell endpoint">−1</span><span class="sum-cell cancelled">2</span><span class="sum-cell cancelled">4</span><span class="sum-cell cancelled">8</span><span class="sum-cell cancelled">16</span><span class="sum-cell cancelled">32</span><span class="sum-cell endpoint">+64</span></div>'] },
+  { title: '第 4 步：留下两端的数', text: '五个中间项都抵消，只剩下 +64 和 −1。这里的 64 是第 6 项 32 再乘一次 2；用容易读懂的话说：<strong>64 = 首项 × 公比的项数次方 = 1 × 2<sup>6</sup></strong>。', lines: ['<div class="aligned-sum"><span class="sum-label">S =</span><span class="sum-cell">1</span><span class="sum-cell">2</span><span class="sum-cell">4</span><span class="sum-cell">8</span><span class="sum-cell">16</span><span class="sum-cell">32</span></div>', '<div class="aligned-sum"><span class="sum-label">2S =</span><span class="sum-cell"></span><span class="sum-cell">2</span><span class="sum-cell">4</span><span class="sum-cell">8</span><span class="sum-cell">16</span><span class="sum-cell">32</span><span class="sum-cell">64</span></div>', '<span class="work-rule"></span><span class="math">S = 64 − 1</span>', '<span class="math work-conclusion">S = 64 − 1 = 63</span>'] }
+];
+var arithmeticStep = 0;
+var geometricStep = 0;
+var areaStep = 0;
 
-/**
- * 页面加载时初始化
- */
-window.addEventListener('DOMContentLoaded', function() {
-  // 初始化植树问题示意图
-  initTreeDemo();
-  
-  // 绑定生成按钮事件
-  document.getElementById('btnGenerate').addEventListener('click', generateDemo);
-  
-  // 回车键触发
-  var inputs = ['inputFirst', 'inputDiff', 'inputCount'];
-  inputs.forEach(function(id) {
-    document.getElementById(id).addEventListener('keypress', function(e) {
-      if (e.key === 'Enter') generateDemo();
-    });
+function renderArithmeticVisual(step) {
+  var rows = step < 2 ? 4 : 5;
+  var html = '<div class="pair-stack">';
+  for (var row = 1; row <= rows; row += 1) {
+    html += '<div class="pair-row">';
+    for (var left = 0; left < row; left += 1) html += '<span class="dot"></span>';
+    if (step >= 2) html += '<span style="width: 8px"></span>';
+    for (var right = 0; right < (step >= 2 ? 11 - row : 0); right += 1) html += '<span class="dot reverse"></span>';
+    html += '</div>';
+  }
+  html += '</div>';
+  document.getElementById('arithmeticVisual').innerHTML = html;
+}
+
+function renderVerticalWork(lines, currentStep) {
+  return '<div class="vertical-work">' + lines.map(function (line, index) {
+    var className = 'work-line' + (index === currentStep ? ' is-current' : '') + (line.indexOf('work-rule') !== -1 ? ' rule-result' : '');
+    return '<div class="' + className + '">' + line + '</div>';
+  }).join('') + '</div>';
+}
+
+function renderArithmeticStep() {
+  var frame = arithmeticFrames[arithmeticStep];
+  document.getElementById('arithmeticSteps').dataset.step = String(arithmeticStep);
+  document.getElementById('arithmeticSteps').innerHTML = '<div class="step-label">倒序相加法</div><h3>' + frame.title + '</h3><p>' + frame.text + '</p>' + renderVerticalWork(frame.lines, frame.lines.length - 1);
+  document.getElementById('arithmeticCount').textContent = '第 ' + (arithmeticStep + 1) + ' / ' + arithmeticFrames.length + ' 步';
+  document.getElementById('nextArithmetic').textContent = arithmeticStep === arithmeticFrames.length - 1 ? '从头再看' : '看下一步';
+  renderArithmeticVisual(arithmeticStep);
+}
+
+function renderGeometricStep() {
+  var frame = geometricFrames[geometricStep];
+  document.getElementById('geometricSteps').dataset.step = String(geometricStep);
+  document.getElementById('geometricSteps').innerHTML = '<div class="step-label">错位相加法</div><h3>' + frame.title + '</h3><p>' + frame.text + '</p>' + renderVerticalWork(frame.lines, frame.lines.length - 1);
+  document.getElementById('geometricCount').textContent = '第 ' + (geometricStep + 1) + ' / ' + geometricFrames.length + ' 步';
+  document.getElementById('nextGeometric').textContent = geometricStep === geometricFrames.length - 1 ? '从头再看' : '看下一步';
+}
+
+function renderAreaStep() {
+  var pieces = [
+    '<g class="area-piece" data-piece="1"><rect x="10" y="10" width="150" height="300" fill="#2563a8" /><text x="85" y="160" fill="#ffffff" font-size="24" font-weight="bold" text-anchor="middle" dominant-baseline="middle">1/2</text></g>',
+    '<g class="area-piece" data-piece="2"><rect x="160" y="10" width="150" height="150" fill="#dc6b24" /><text x="235" y="85" fill="#ffffff" font-size="20" font-weight="bold" text-anchor="middle" dominant-baseline="middle">1/4</text></g>',
+    '<g class="area-piece" data-piece="3"><rect x="160" y="160" width="75" height="150" fill="#087f5b" /><text x="197.5" y="235" fill="#ffffff" font-size="16" font-weight="bold" text-anchor="middle" dominant-baseline="middle">1/8</text></g>',
+    '<g class="area-piece" data-piece="4"><rect x="235" y="160" width="75" height="75" fill="#7652a8" /><text x="272.5" y="197.5" fill="#ffffff" font-size="13" font-weight="bold" text-anchor="middle" dominant-baseline="middle">1/16</text></g>'
+  ];
+  document.getElementById('areaDiagram').dataset.step = String(areaStep);
+  document.getElementById('areaDiagram').innerHTML = '<svg viewBox="0 0 320 320" role="img" aria-label="分数逐步填入正方形">' + pieces.join('') + '<rect class="area-outline" x="10" y="10" width="300" height="300" /></svg>';
+  var visiblePieces = document.querySelectorAll('#areaDiagram .area-piece');
+  for (var index = 0; index < visiblePieces.length; index += 1) {
+    if (index < areaStep) visiblePieces[index].classList.add('visible');
+  }
+  var status = ['还没有填色。整个正方形代表 1。', '现在有 1/2，正好填了左半边。', '现在有 1/2 + 1/4 = 3/4。', '现在有 1/2 + 1/4 + 1/8 = 7/8。', '四块都填完：1/2 + 1/4 + 1/8 + 1/16 = 15/16。'];
+  document.getElementById('areaStatus').textContent = status[areaStep];
+  document.getElementById('areaCount').textContent = '已显示 ' + areaStep + ' / 4 块';
+  document.getElementById('nextArea').textContent = areaStep === 4 ? '从第一块开始' : '填入下一块';
+}
+
+function answerQuiz(button) {
+  var feedback = document.getElementById(button.dataset.feedback);
+  var isCorrect = button.dataset.answer === 'correct';
+  var options = button.parentElement.querySelectorAll('.quiz-option');
+  options.forEach(function (btn) {
+    btn.classList.remove('is-correct', 'is-wrong');
+    btn.setAttribute('aria-pressed', 'false');
   });
+  button.classList.add(isCorrect ? 'is-correct' : 'is-wrong');
+  button.setAttribute('aria-pressed', 'true');
+  feedback.textContent = isCorrect ? button.dataset.correct : button.dataset.wrong;
+  feedback.className = 'feedback ' + (isCorrect ? 'correct' : 'wrong');
+}
+
+document.getElementById('nextArithmetic').addEventListener('click', function () {
+  arithmeticStep = arithmeticStep === arithmeticFrames.length - 1 ? 0 : arithmeticStep + 1;
+  renderArithmeticStep();
+});
+document.getElementById('nextGeometric').addEventListener('click', function () {
+  geometricStep = geometricStep === geometricFrames.length - 1 ? 0 : geometricStep + 1;
+  renderGeometricStep();
+});
+document.getElementById('nextArea').addEventListener('click', function () {
+  areaStep = areaStep === 4 ? 0 : areaStep + 1;
+  renderAreaStep();
+});
+document.querySelectorAll('.quiz-option').forEach(function (button) {
+  button.addEventListener('click', function () { answerQuiz(button); });
 });
 
-/**
- * 初始化植树问题示意图（3, 6, 9, 12）
- */
-function initTreeDemo() {
-  var demo = document.getElementById('treeDemo1');
-  var numbers = [3, 6, 9, 12];
-  var gapIcon = '👣';
-  var gapSize = 3;
-  
-  for (var i = 0; i < numbers.length; i++) {
-    // 创建树
-    var treeItem = document.createElement('div');
-    treeItem.className = 'tree-item';
-    treeItem.innerHTML = '<span class="tree-icon">🌲</span><span class="tree-label">' + numbers[i] + '</span>';
-    demo.appendChild(treeItem);
-    
-    // 如果不是最后一项，创建间隔
-    if (i < numbers.length - 1) {
-      var gapItem = document.createElement('div');
-      gapItem.className = 'gap-item';
-      gapItem.innerHTML = '<span class="gap-icon">' + gapIcon + '</span><span class="gap-label">+' + gapSize + '</span>';
-      demo.appendChild(gapItem);
-    }
-  }
-}
-
-/**
- * 生成互动演示
- */
-function generateDemo() {
-  // 读取输入
-  var first = parseInt(document.getElementById('inputFirst').value);
-  var diff = parseInt(document.getElementById('inputDiff').value);
-  var count = parseInt(document.getElementById('inputCount').value);
-  var icon = document.getElementById('inputIcon').value;
-  
-  // 验证输入
-  if (isNaN(first) || isNaN(diff) || isNaN(count) || count < 1 || count > 10) {
-    alert('请输入有效参数（项数 1-10）');
-    return;
-  }
-  
-  // 清空演示区域
-  var demoResult = document.getElementById('demoResult');
-  demoResult.innerHTML = '';
-  
-  // 生成树和间隔
-  for (var i = 0; i < count; i++) {
-    var currentNum = first + i * diff;
-    
-    // 创建树
-    var treeItem = document.createElement('div');
-    treeItem.className = 'tree-item';
-    treeItem.style.animation = 'bounceIn 0.5s ease ' + (i * 0.2) + 's backwards';
-    treeItem.innerHTML = '<span class="tree-icon">🌲</span><span class="tree-label">' + currentNum + '</span>';
-    demoResult.appendChild(treeItem);
-    
-    // 如果不是最后一项，创建间隔
-    if (i < count - 1) {
-      var gapItem = document.createElement('div');
-      gapItem.className = 'gap-item';
-      gapItem.style.animation = 'bounceIn 0.5s ease ' + (i * 0.2 + 0.1) + 's backwards';
-      gapItem.innerHTML = '<span class="gap-icon">' + icon + '</span><span class="gap-label">+' + diff + '</span>';
-      demoResult.appendChild(gapItem);
-    }
-  }
-  
-  // 显示计算结果
-  var lastNum = first + (count - 1) * diff;
-  var sum = (first + lastNum) * count / 2;
-  
-  var resultText = document.getElementById('resultText');
-  resultText.innerHTML = '<strong>计算结果：</strong><br>' +
-    '第1项 = ' + first + '，公差 = ' + diff + '，项数 = ' + count + '<br>' +
-    '最后一项 = ' + first + ' + (' + count + ' - 1) × ' + diff + ' = <strong>' + lastNum + '</strong><br>' +
-    '总和 = (' + first + ' + ' + lastNum + ') × ' + count + ' ÷ 2 = <strong>' + sum + '</strong>';
-  resultText.classList.add('show');
-}
+renderArithmeticStep();
+renderGeometricStep();
+renderAreaStep();
 </script>
 </body>
 </html>
