@@ -1,0 +1,1026 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>余弦定理的十种证明</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false},{left:'\\(',right:'\\)',display:false},{left:'\\[',right:'\\]',display:true}],throwOnError:false});"></script>
+  <style>
+    :root {
+      --primary:#17324d; --primary-soft:#2563a8; --accent:#c2410c;
+      --ink:var(--primary); --muted:#5f6f7f; --line:#cbd8e6;
+      --blue:var(--primary-soft); --orange:var(--accent); --paper:#fff;
+      --wash:#f5f7fa; --formula-bg:#edf3f7; --tip-bg:#fbf6f1;
+      --content-max:1080px; --shadow:0 5px 16px rgba(23,50,77,.045);
+    }
+    * { box-sizing:border-box; }
+    html, body { overflow-x:hidden; }
+    body { margin:0; color:var(--ink); background:#fff; font:16px/1.75 system-ui,"Microsoft YaHei",sans-serif; }
+    header, main { width:min(var(--content-max), calc(100% - 40px)); max-width:var(--content-max); margin:auto; overflow:visible; }
+    header { padding:24px 0 18px; border-bottom:1px solid var(--line); }
+    .hero { display:grid; grid-template-columns:minmax(0,1fr) minmax(220px,320px); gap:28px; align-items:center; padding:0; border:0; border-radius:0; background:#fff; box-shadow:none; }
+    .hero-kicker { margin:0 0 6px; color:var(--accent); font-weight:800; letter-spacing:.12em; }
+    .hero-copy > p:last-child { margin-bottom:0; }
+    .hero-figure { margin:0; }
+    .hero-figure img { display:block; width:100%; height:auto; aspect-ratio:1693 / 929; object-fit:contain; border-radius:3px; box-shadow:none; }
+    .learning-goals { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; padding:0; margin:20px 0 0; list-style:none; }
+    .learning-goals li { padding:7px 10px; border-radius:3px; background:var(--formula-bg); font-size:.9rem; }
+    h1 { margin:0 0 8px; font:700 clamp(2rem,4vw,2.8rem)/1.2 Georgia,"Times New Roman","Microsoft YaHei",serif; }
+    h2 { margin:0; font-size:1.55rem; }
+    h3 { margin:18px 0 6px; font-size:1.05rem; }
+    nav { display:flex; flex-wrap:wrap; gap:8px; margin-top:20px; }
+    nav span, .meta { border:1px solid var(--line); border-radius:999px; padding:4px 12px; background:#fff; color:var(--muted); }
+    section { scroll-margin-top:24px; margin:0 0 24px; padding:24px; border:1px solid var(--line); border-radius:5px; background:var(--paper); box-shadow:none; overflow:visible; }
+    section[id^="proof-"] { position:relative; margin:0; padding:34px 0 38px 54px; border:0; border-top:1px solid var(--line); border-radius:0; }
+    section[id^="proof-"]::before { position:absolute; top:29px; left:0; width:38px; color:var(--accent); font:700 1.05rem/1 Georgia,"Times New Roman",serif; text-align:center; content:attr(data-proof-number); }
+    .proof-head { display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:space-between; }
+    .proof-idea, .proof-verdict { padding:14px 16px; border-left:4px solid var(--orange); border-radius:0 10px 10px 0; background:var(--tip-bg); }
+    .proof-verdict { border-color:var(--blue); background:var(--formula-bg); }
+    .proof-diagram { margin:18px auto; max-width:620px; }
+    .proof-layout--split .proof-body { display:grid; grid-template-columns:minmax(280px,.88fr) minmax(0,1.12fr); column-gap:28px; align-items:start; }
+    .proof-layout--split .proof-idea, .proof-layout--split .proof-verdict { grid-column:1 / -1; }
+    .proof-layout--split .proof-diagram { grid-column:1; width:100%; margin:20px 0 0; }
+    .proof-layout--split .proof-steps { grid-column:2; min-width:0; }
+    .proof-layout--stacked .proof-diagram { max-width:680px; }
+    svg { display:block; width:100%; height:auto; border:1px solid var(--line); border-radius:4px; background:#fbfdff; }
+    .edge { fill:none; stroke:#17324d; stroke-width:4; stroke-linecap:round; stroke-linejoin:round; }
+    .helper { fill:none; stroke:#d97706; stroke-width:2.5; stroke-dasharray:8 7; }
+    .circle-line { fill:none; stroke:#5b7fa3; stroke-width:2.5; }
+    .point { fill:#c2410c; }
+    .point-label { fill:#17324d; font-size:18px; font-weight:700; }
+    .diagram-note { fill:#5f6f7f; font-size:14px; }
+    foreignObject.math-label { overflow:visible; font-size:14px; color:#17324d; line-height:1; }
+    foreignObject.math-label .katex { font-size:1em; white-space:nowrap; }
+    foreignObject.ml-green { color:#059669; }
+    foreignObject.ml-blue { color:#2563a8; }
+    foreignObject.ml-orange { color:#c2410c; }
+    foreignObject.ml-muted { color:#5f6f7f; }
+    .formula { overflow-x:auto; overflow-y:hidden; margin:12px 0; padding:12px 16px; border-left:3px solid #8da8be; border-radius:0 4px 4px 0; background:var(--formula-bg); }
+    .warning { padding:12px 16px; border:1px solid #f2b8b5; border-radius:10px; background:#fff3f2; color:#8b1e18; }
+    button, input { font:inherit; }
+    button { min-height:44px; cursor:pointer; font-weight:650; }
+    button:focus-visible, a:focus-visible, input:focus-visible { outline:3px solid rgba(37,99,168,.45); outline-offset:3px; }
+    .lecture-tools, .filter-bar, .preset-row { display:flex; flex-wrap:wrap; gap:8px; margin:12px 0; }
+    .lecture-tools button, .filter-bar button, .preset-row button, .proof-toggle { padding:8px 14px; border:1px solid var(--line); border-radius:9px; background:#fff; color:var(--ink); }
+    [aria-pressed="true"] { border-color:var(--blue) !important; background:#eff6ff !important; }
+    #lecture-nav { position:fixed; z-index:20; top:18px; left:max(8px,calc(50% - 720px)); display:grid !important; width:160px; max-height:calc(100vh - 36px); margin:0; padding:14px; gap:2px; overflow:auto; border:1px solid var(--line); border-radius:16px; background:rgba(255,255,255,.97); box-shadow:var(--shadow); }
+    #lecture-nav a { display:block; min-height:38px; padding:6px 9px; border-radius:8px; color:var(--ink); text-decoration:none; }
+    #lecture-nav a:hover { background:var(--formula-bg); color:var(--blue); }
+    #lecture-nav a[aria-current="location"] { background:var(--formula-bg); color:var(--blue); font-weight:750; }
+    #lecture-nav .nav-group { margin:8px 9px 2px; color:var(--muted); font-size:.75rem; font-weight:800; letter-spacing:.08em; }
+    #reading-progress { position:fixed; z-index:60; top:0; left:0; width:100%; height:3px; background:transparent; pointer-events:none; }
+    #reading-progress-value { width:100%; height:100%; background:var(--accent); transform:scaleX(0); transform-origin:left center; }
+    #back-to-top { position:fixed; z-index:40; right:20px; bottom:20px; min-width:44px; padding:8px 12px; border:1px solid var(--line); border-radius:999px; background:#fff; color:var(--ink); box-shadow:var(--shadow); }
+    #back-to-top[hidden] { display:none; }
+    #toc-toggle { display:none; }
+    #triangle-canvas { display:block; width:100%; height:auto; border:1px solid var(--line); border-radius:12px; background:#fbfdff; touch-action:none; }
+    .experiment-grid { display:grid; grid-template-columns:minmax(0,2fr) minmax(220px,1fr); gap:20px; align-items:start; }
+    .experiment-controls label { display:block; }
+    #angle-slider { width:100%; }
+    .value-panel { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px 12px; margin:16px 0 0; }
+    .value-panel div { padding:10px; border:1px solid #dbe8f4; background:var(--formula-bg); border-radius:8px; }
+    .value-panel output { display:block; font-variant-numeric:tabular-nums; font-weight:700; }
+    .equation-values { grid-column:1 / -1; }
+    body.presentation-active header > :not(.lecture-tools), body.presentation-active #experiment { display:none; }
+    .wrap-table { overflow-x:auto; }
+    table { width:100%; border-collapse:collapse; font-size:.94rem; }
+    th, td { padding:10px 12px; border:1px solid var(--line); text-align:left; vertical-align:top; }
+    th { background:var(--formula-bg); }
+    .lesson-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; }
+    .lesson-grid > article { padding:18px; border:1px solid var(--line); border-radius:12px; background:#fbfdff; }
+    .lesson-grid h3 { margin-top:0; }
+    .closing-summary { border-top:5px solid var(--blue); }
+    .route-guide { margin:8px 0 28px; padding:18px 22px; border:1px solid var(--line); border-left:4px solid var(--accent); border-radius:2px; background:#fafbfd; }
+    .route-guide h2 { margin-bottom:6px; font-size:1.25rem; }
+    .route-guide p { margin:6px 0; color:var(--muted); }
+
+    /* Knowledge tree */
+    .knowledge-tree { display:flex; flex-direction:column; align-items:center; gap:12px; margin:24px 0; padding:20px; background:var(--wash); border-radius:12px; border:1px solid var(--line); }
+    .tree-root { background:var(--primary); color:#fff; border-radius:12px; padding:12px 24px; font-weight:800; font-size:17px; letter-spacing:1px; }
+    .tree-connector { width:2px; height:16px; background:var(--line); }
+    .tree-branch { display:flex; flex-direction:column; align-items:center; gap:6px; width:100%; }
+    .tree-branch-label { font-weight:700; color:var(--primary-soft); font-size:14px; letter-spacing:1px; padding:4px 16px; background:#fff; border:1px solid var(--line); border-radius:20px; }
+    .tree-row { display:flex; gap:8px; flex-wrap:wrap; justify-content:center; }
+    .tree-leaf { background:#fff; border:1px solid var(--line); border-radius:8px; padding:7px 14px; font-size:13px; color:var(--ink); transition:all .2s; }
+    .tree-leaf:hover { border-color:var(--blue); background:#eff6ff; }
+    .tree-leaf .leaf-num { color:var(--accent); font-weight:700; margin-right:4px; }
+
+    /* Formula box */
+    .formula-box { background:var(--formula-bg); border-radius:10px; padding:16px 24px; margin:16px 0; text-align:center; font-size:17px; border:1px solid #dbe8f4; overflow:visible; }
+    .formula-box.hl-red { border-color:#dc2626; border-width:2px; background:#fef2f2; }
+    .formula-box.hl-blue { border-color:var(--blue); border-width:2px; background:#eff6ff; }
+
+    /* Callout */
+    .callout { border-radius:10px; padding:14px 20px; margin:16px 0; font-size:14px; line-height:1.7; overflow:visible; }
+    .callout.blue { background:#eff6ff; border-left:4px solid var(--blue); color:#1e40af; }
+    .callout.green { background:#ecfdf5; border-left:4px solid #059669; color:#064e3b; }
+    .callout.orange { background:#fffbea; border-left:4px solid #d97706; color:#92400e; }
+    .callout.red { background:#fef2f2; border-left:4px solid #dc2626; color:#991b1b; }
+    .callout-label { font-weight:700; margin-bottom:4px; font-size:15px; }
+
+    /* Memory card */
+    .memory-card { background:linear-gradient(135deg,#fef3c7,#fffbeb); border:2px solid #fcd34d; border-radius:14px; padding:22px; margin:20px 0; overflow:visible; }
+    .mem-title { font-size:18px; font-weight:800; color:#d97706; margin-bottom:10px; }
+    .mem-body { font-size:14px; line-height:1.9; }
+
+    /* Proof insight - inline callout for each proof */
+    .proof-insight { padding:12px 16px; border-radius:8px; margin:12px 0; background:#f0fdf4; border:1px solid #bbf7d0; font-size:14px; overflow:visible; }
+    .proof-insight strong { color:#059669; }
+
+    /* Enhanced cover */
+    .cover-badge { display:inline-block; background:var(--accent); color:#fff; font-size:13px; padding:5px 18px; border-radius:20px; letter-spacing:2px; margin-bottom:16px; font-weight:700; }
+    .cover-tags { display:flex; gap:10px; flex-wrap:wrap; margin-top:20px; }
+    .cover-tag { background:var(--formula-bg); border:1px solid #dbe8f4; border-radius:20px; padding:6px 16px; font-size:13px; color:var(--blue); }
+
+    /* Branch separator */
+    .branch-sep { display:flex; align-items:center; gap:12px; margin:28px 0 18px; padding:0 4px; }
+    .branch-sep-line { flex:1; height:2px; background:var(--line); }
+    .branch-sep-label { font-size:14px; font-weight:700; color:var(--blue); padding:4px 16px; background:var(--formula-bg); border-radius:16px; }
+
+    @media (max-width:1439px) and (min-width:761px) {
+      header, main { width:calc(100% - 230px); max-width:960px; margin-left:210px; margin-right:20px; }
+      #lecture-nav { left:12px; width:180px; }
+    }
+
+    @media (max-width:899px) {
+      .proof-layout--split .proof-body { display:block; }
+      .proof-layout--split .proof-diagram { width:auto; margin:18px auto; }
+    }
+
+    @media (max-width: 760px) {
+      body { background:var(--wash); }
+      header, main { width:min(100% - 20px,var(--content-max)); margin:auto; }
+      header { padding:10px 0 18px; }
+      .hero { grid-template-columns:1fr; gap:20px; padding:22px 18px; border-radius:0 0 18px 18px; }
+      .hero-copy { order:1; }
+      .hero-figure { order:2; }
+      .learning-goals, .experiment-grid, .lesson-grid { grid-template-columns:1fr; }
+      h1 { font-size:clamp(2rem,10vw,2.7rem); line-height:1.2; }
+      section { padding:20px 16px; border-radius:4px; }
+      section[id^="proof-"] { padding:30px 0 34px; }
+      section[id^="proof-"]::before { position:static; display:block; width:auto; margin-bottom:8px; text-align:left; }
+      .proof-head { align-items:flex-start; }
+      .proof-head h2 { width:100%; }
+      .formula { padding:10px 8px; }
+      .lecture-tools { position:sticky; z-index:30; top:0; padding:8px 0; background:rgba(244,247,251,.96); }
+      #toc-toggle { display:inline-flex; align-items:center; }
+      #lecture-nav, #lecture-nav[hidden] { position:static; display:none !important; width:100%; max-height:none; margin:8px 0 0; border-radius:12px; box-shadow:none; }
+      #lecture-nav:not([hidden]) { display:grid !important; grid-template-columns:repeat(2,minmax(0,1fr)); }
+      #lecture-nav a { min-height:44px; padding:8px 10px; }
+      #lecture-nav .nav-group { grid-column:1 / -1; }
+      #back-to-top { right:12px; bottom:12px; }
+      .filter-bar { gap:6px; }
+      .filter-bar button, .preset-row button { flex:1 1 130px; }
+      .experiment-grid, .proof-body, .proof-diagram, svg, #triangle-canvas { min-width:0; max-width:100%; }
+      .value-panel { grid-template-columns:1fr 1fr; }
+      .meta { white-space:normal; }
+    }
+
+    @media print {
+      @page { size:A4; margin:14mm; }
+      html, body { overflow:visible !important; background:#fff !important; }
+      body { color:#172b3d; font-size:10.5pt; line-height:1.55; }
+      header, main { width:100%; max-width:none; margin:0; overflow:visible !important; }
+      header { padding:0 0 8mm; }
+      .hero { display:block; padding:0 0 6mm; border:0; box-shadow:none; }
+      .hero-figure, #lecture-nav, .lecture-tools, .filter-bar, #reading-progress, #back-to-top, button,
+      #angle-slider, .preset-row, .no-print { display:none !important; }
+      section { display:block !important; margin:0 0 7mm; padding:5mm; border-color:#9fb2c5; box-shadow:none; overflow:visible !important; }
+      section[id^="proof-"] { break-inside:auto; page-break-inside:auto; }
+      .proof-body[hidden], .proof-steps, .proof-steps[hidden] { display:block !important; overflow:visible !important; }
+      #triangle-canvas, .readout-grid, .canvas-caption, .proof-diagram, svg, .formula { break-inside:avoid; page-break-inside:avoid; overflow:visible !important; }
+      .proof-diagram { max-width:145mm; }
+      .formula { background:#eef5fb !important; print-color-adjust:exact; -webkit-print-color-adjust:exact; }
+      a { color:inherit; text-decoration:none; }
+      h1, h2, h3 { break-after:avoid; page-break-after:avoid; }
+    }
+  </style>
+</head>
+<body class="academic-layout">
+  <div id="reading-progress" role="progressbar" aria-label="阅读进度" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div id="reading-progress-value"></div></div>
+  <header id="page-top" tabindex="-1">
+    <div class="hero" style="grid-template-columns:1fr;">
+      <div class="hero-copy" style="text-align:center;">
+        <p class="cover-badge">高中数学 · 专题讲座</p>
+        <h1>余弦定理的十种证明</h1>
+        <p>在非退化三角形中统一记 \(AB=c,\; AC=b,\; BC=a,\; 0&lt;A&lt;\pi\)。我们的统一目标是：</p>
+        <div class="formula-box hl-red" style="margin:20px auto;max-width:520px;">
+          \[\boxed{\;a^2=b^2+c^2-2bc\cos A\;}\]
+        </div>
+        <div class="cover-tags" style="justify-content:center;">
+          <span class="cover-tag">解析几何</span>
+          <span class="cover-tag">一题多解</span>
+          <span class="cover-tag">数形结合</span>
+          <span class="cover-tag">向量方法</span>
+          <span class="cover-tag">圆几何</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 知识树 -->
+    <div class="knowledge-tree">
+      <div class="tree-root">余弦定理十证</div>
+      <div class="tree-connector"></div>
+      <div class="tree-branch">
+        <div class="tree-branch-label">一、直观几何</div>
+        <div class="tree-row">
+          <div class="tree-leaf"><span class="leaf-num">01</span>分量投影</div>
+          <div class="tree-leaf"><span class="leaf-num">02</span>作高勾股</div>
+          <div class="tree-leaf"><span class="leaf-num">03</span>面积重组</div>
+        </div>
+      </div>
+      <div class="tree-connector"></div>
+      <div class="tree-branch">
+        <div class="tree-branch-label">二、代数工具</div>
+        <div class="tree-row">
+          <div class="tree-leaf"><span class="leaf-num">04</span>坐标法</div>
+          <div class="tree-leaf"><span class="leaf-num">05</span>向量数量积</div>
+          <div class="tree-leaf"><span class="leaf-num">06</span>复数模长</div>
+        </div>
+      </div>
+      <div class="tree-connector"></div>
+      <div class="tree-branch">
+        <div class="tree-branch-label">三、三角工具</div>
+        <div class="tree-row">
+          <div class="tree-leaf"><span class="leaf-num">07</span>正弦定理</div>
+        </div>
+      </div>
+      <div class="tree-connector"></div>
+      <div class="tree-branch">
+        <div class="tree-branch-label">四、圆与古典几何</div>
+        <div class="tree-row">
+          <div class="tree-leaf"><span class="leaf-num">08</span>外接圆弦长</div>
+          <div class="tree-leaf"><span class="leaf-num">09</span>圆幂</div>
+          <div class="tree-leaf"><span class="leaf-num">10</span>托勒密</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="lecture-tools">
+      <button id="toc-toggle" type="button" aria-expanded="false" aria-controls="lecture-nav">目录</button>
+      <button id="expand-all" type="button" aria-pressed="false">展开全部证明</button>
+      <button id="presentation-mode" type="button" aria-pressed="false">演示模式</button>
+    </div>
+    <nav id="lecture-nav" aria-label="证明目录" hidden>
+      <a href="#experiment">动态实验</a>
+      <div class="nav-group" data-nav-group="直观几何">直观几何</div>
+      <a href="#proof-1" data-nav-group="直观几何">方法一</a><a href="#proof-2" data-nav-group="直观几何">方法二</a><a href="#proof-3" data-nav-group="直观几何">方法三</a>
+      <div class="nav-group" data-nav-group="代数工具">代数工具</div>
+      <a href="#proof-4" data-nav-group="代数工具">方法四</a><a href="#proof-5" data-nav-group="代数工具">方法五</a><a href="#proof-6" data-nav-group="代数工具">方法六</a>
+      <div class="nav-group" data-nav-group="三角工具">三角工具</div>
+      <a href="#proof-7" data-nav-group="三角工具">方法七</a>
+      <div class="nav-group" data-nav-group="圆与古典几何">圆与古典几何</div>
+      <a href="#proof-8" data-nav-group="圆与古典几何">方法八</a><a href="#proof-9" data-nav-group="圆与古典几何">方法九</a><a href="#proof-10" data-nav-group="圆与古典几何">方法十</a>
+    </nav>
+    <nav class="filter-bar" aria-label="证明分类">
+      <button type="button" data-filter="全部" aria-pressed="true">全部</button>
+      <button type="button" data-filter="直观几何" aria-pressed="false">直观几何</button>
+      <button type="button" data-filter="代数工具" aria-pressed="false">代数工具</button>
+      <button type="button" data-filter="三角工具" aria-pressed="false">三角工具</button>
+      <button type="button" data-filter="圆与古典几何" aria-pressed="false">圆与古典几何</button>
+    </nav>
+  </header>
+  <main>
+    <section id="experiment" aria-labelledby="experiment-title">
+      <h2 id="experiment-title">动态余弦实验</h2>
+      <p>拖动顶点 C 或调整角度，观察投影与余弦定理两边如何同步变化。</p>
+      <div class="experiment-grid">
+        <canvas id="triangle-canvas" width="760" height="420" role="img" aria-label="可拖动的余弦定理三角形 ABC 动态图" aria-describedby="canvas-description">动态三角形：A、B 为固定底边端点，C 可拖动；图中同时标出垂足 D 和 AC 在 AB 上的投影。</canvas>
+        <div class="experiment-controls">
+          <p id="canvas-description" class="canvas-caption">图示三角形 ABC、从 C 到直线 AB 的垂线及垂足 D；拖动 C 会改变角 A。</p>
+          <label for="angle-slider">角 A：<output id="angle-output" for="angle-slider">45°</output></label>
+          <input id="angle-slider" type="range" min="20" max="150" step="1" value="45">
+          <div class="preset-row" aria-label="角度预设">
+            <button type="button" data-angle="45" aria-pressed="true">45°</button>
+            <button type="button" data-angle="90" aria-pressed="false">90°</button>
+            <button type="button" data-angle="120" aria-pressed="false">120°</button>
+          </div>
+          <div class="value-panel readout-grid" aria-live="polite">
+            <div>a<output id="value-a">—</output></div><div>b<output id="value-b">5.0000</output></div>
+            <div>c<output id="value-c">7.0000</output></div><div>cos A<output id="value-cos">—</output></div>
+            <div class="equation-values">左边 a²<output id="value-lhs">—</output></div>
+            <div class="equation-values">右边 b²+c²−2bc cos A<output id="value-rhs">—</output></div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <aside class="route-guide" aria-labelledby="route-guide-title">
+      <h2 id="route-guide-title">符号约定与证明路线</h2>
+      <p>四类路线依次为直观几何、代数工具、三角工具、圆与古典几何，可按所需前置知识选择阅读。</p>
+      <p>涉及直线分点时采用有向长度；正弦定理、圆幂与托勒密定理均作为各自方法的独立前置，不参与余弦定理的循环论证。</p>
+    </aside>
+    <div class="branch-sep"><div class="branch-sep-line"></div><div class="branch-sep-label">第一篇 · 直观几何</div><div class="branch-sep-line"></div></div>
+    <section id="proof-1" class="proof-layout--split" data-proof-number="01">
+      <div class="proof-head"><h2>方法一　分量投影法</h2><span class="meta">前置：正交分量、三角函数｜难度：★</span></div>
+      <div class="proof-idea"><strong>核心想法：</strong>把 \(\overrightarrow{BC}\) 拆成互相垂直的水平、竖直分量，再用长度平方等于分量平方和。</div>
+      <div class="proof-diagram"><svg viewBox="0 0 520 320" role="img" aria-label="分量投影图">
+        <path class="edge" d="M70 250 L440 250 L225 65 Z"/>
+        <path class="helper" d="M225 65 L225 250"/>
+        <path class="helper" d="M215 240 h10 v10"/>
+        <path d="M105 250 A35 35 0 0 0 90 225" fill="none" stroke="#c2410c" stroke-width="2"/>
+        <text x="110" y="232" fill="#c2410c" font-size="14" font-weight="700" font-style="italic">A</text>
+        <text x="248" y="42" text-anchor="middle" fill="#17324d" font-size="17" font-weight="700" font-style="italic">a</text>
+        <text x="128" y="150" fill="#2563a8" font-size="17" font-weight="700" font-style="italic">b</text>
+        <text x="255" y="272" text-anchor="middle" fill="#5f6f7f" font-size="15" font-style="italic">c</text>
+        <foreignObject class="math-label ml-green" x="100" y="228" width="90" height="28"><div xmlns="http://www.w3.org/1999/xhtml">\(b\cos A\)</div></foreignObject>
+        <foreignObject class="math-label ml-green" x="225" y="148" width="90" height="28"><div xmlns="http://www.w3.org/1999/xhtml">\(b\sin A\)</div></foreignObject>
+        <circle class="point" cx="70" cy="250" r="5"/><circle class="point" cx="440" cy="250" r="5"/><circle class="point" cx="225" cy="65" r="5"/>
+        <text class="point-label" x="50" y="276">A</text><text class="point-label" x="447" y="276">B</text><text class="point-label" x="213" y="48">C</text>
+      </svg></div>
+      <div class="proof-steps"><h3>完整公式步骤</h3>
+        <p>取沿 \(AB\) 的单位向量 \(\mathbf e_x\)，以及垂直于它且指向 \(C\) 所在半平面的 \(\mathbf e_y\)，则</p>
+        <div class="formula">\[\overrightarrow{AB}=c\mathbf e_x,\qquad \overrightarrow{AC}=b\cos A\,\mathbf e_x+b\sin A\,\mathbf e_y.\]</div>
+        <div class="formula">\[\begin{aligned}\overrightarrow{BC}&=\overrightarrow{AC}-\overrightarrow{AB}\\&=(b\cos A-c)\mathbf e_x+b\sin A\,\mathbf e_y,\\a^2&=(b\cos A-c)^2+(b\sin A)^2\\&=b^2\cos^2A-2bc\cos A+c^2+b^2\sin^2A\\&=b^2+c^2-2bc\cos A.\end{aligned}\]</div>
+        <p><strong>关键一句：</strong>钝角时 \(b\cos A&lt;0\)，有向分量自动带符号，所以同一推导覆盖所有 \(0&lt;A&lt;\pi\)。</p>
+      </div><div class="proof-verdict"><strong>方法评价：</strong>直观、统一，最能看清余弦项就是水平投影造成的修正。</div>
+    </section>
+
+    <section id="proof-2" class="proof-layout--split" data-proof-number="02">
+      <div class="proof-head"><h2>方法二　作高与勾股定理</h2><span class="meta">前置：勾股定理、有向长度｜难度：★</span></div>
+      <div class="proof-idea"><strong>核心想法：</strong>从 \(C\) 向直线 \(AB\) 作高，把未知边 \(a\) 放进直角三角形。</div>
+      <div class="proof-diagram"><svg viewBox="0 0 520 320" role="img" aria-label="作高与勾股定理图">
+        <path class="edge" d="M70 250 L440 250 L225 65 Z"/>
+        <path class="helper" d="M225 65 L225 250"/>
+        <path class="helper" d="M215 240 h10 v10"/>
+        <path d="M105 250 A35 35 0 0 0 90 225" fill="none" stroke="#c2410c" stroke-width="2"/>
+        <text x="110" y="232" fill="#c2410c" font-size="14" font-weight="700" font-style="italic">A</text>
+        <text x="248" y="42" text-anchor="middle" fill="#17324d" font-size="17" font-weight="700" font-style="italic">a</text>
+        <text x="128" y="150" fill="#2563a8" font-size="17" font-weight="700" font-style="italic">b</text>
+        <foreignObject class="math-label ml-muted" x="130" y="258" width="60" height="24"><div xmlns="http://www.w3.org/1999/xhtml">\(x\)</div></foreignObject>
+        <foreignObject class="math-label ml-muted" x="305" y="258" width="80" height="24"><div xmlns="http://www.w3.org/1999/xhtml">\(c-x\)</div></foreignObject>
+        <circle class="point" cx="70" cy="250" r="5"/><circle class="point" cx="440" cy="250" r="5"/><circle class="point" cx="225" cy="65" r="5"/><circle class="point" cx="225" cy="250" r="4"/>
+        <text class="point-label" x="50" y="276">A</text><text class="point-label" x="447" y="276">B</text><text class="point-label" x="213" y="48">C</text><text class="point-label" x="215" y="278">D</text>
+      </svg></div>
+      <div class="proof-steps"><h3>完整公式步骤</h3>
+        <p>规定直线 \(AB\) 上从 \(A\) 指向 \(B\) 为正方向，令有向长度 \(x=\overline{AD}\)。无论垂足在边上还是延长线上，均有</p>
+        <div class="formula">\[x=b\cos A,\qquad CD=b\sin A,\qquad \overline{DB}=c-x.\]</div>
+        <p>长度平方不受方向影响，在直角三角形 \(BDC\) 中：</p>
+        <div class="formula">\[\begin{aligned}a^2&=(c-x)^2+CD^2\\&=(c-b\cos A)^2+b^2\sin^2A\\&=c^2-2bc\cos A+b^2(\cos^2A+\sin^2A)\\&=b^2+c^2-2bc\cos A.\end{aligned}\]</div>
+        <p><strong>关键一句：</strong>有向长度允许 \(x\) 为负；真正代入勾股定理的是 \((c-x)^2\)，所以没有“负长度”。</p>
+      </div><div class="proof-verdict"><strong>方法评价：</strong>最贴近初等几何；若未学有向线段，需分垂足在边内、两侧延长线三种位置讲解。</div>
+    </section>
+
+    <section id="proof-3" class="proof-layout--stacked" data-proof-number="03">
+      <div class="proof-head"><h2>方法三　面积重组法</h2><span class="meta">前置：面积、平方差、有向面积｜难度：★★</span></div>
+      <div class="proof-idea"><strong>核心想法：</strong>比较边长为 \(a\)、\(b\) 的两个正方形面积，公共的“高方向面积”抵消，剩下投影矩形。</div>
+      <div class="proof-diagram"><svg viewBox="0 0 520 320" role="img" aria-label="边 AC、BC 上的正方形与两个投影矩形">
+        <path class="helper square-b" d="M190 220 L250 140 L170 80 L110 160 Z"/>
+        <path class="helper square-a" d="M350 220 L250 140 L330 40 L430 120 Z"/>
+        <path class="edge" d="M190 220 L350 220 L250 140 Z"/><path class="helper" d="M250 140 L250 220"/><path class="helper" d="M240 210 h10 v10"/>
+        <rect class="helper projection-rect" x="90" y="250" width="160" height="60"/><rect class="helper projection-rect" x="270" y="250" width="160" height="60"/>
+        <circle class="point" cx="190" cy="220" r="5"/><circle class="point" cx="350" cy="220" r="5"/><circle class="point" cx="250" cy="140" r="5"/><circle class="point" cx="250" cy="220" r="4"/>
+        <text class="point-label" x="171" y="241">A</text><text class="point-label" x="358" y="241">B</text><text class="point-label" x="238" y="125">C</text><text class="point-label" x="242" y="242">D</text>
+        <foreignObject class="math-label ml-blue" x="100" y="110" width="80" height="28"><div xmlns="http://www.w3.org/1999/xhtml">\(S_b=b^2\)</div></foreignObject>
+        <foreignObject class="math-label ml-blue" x="320" y="88" width="80" height="28"><div xmlns="http://www.w3.org/1999/xhtml">\(S_a=a^2\)</div></foreignObject>
+        <foreignObject class="math-label ml-muted" x="140" y="268" width="60" height="24"><div xmlns="http://www.w3.org/1999/xhtml">\(c \cdot x\)</div></foreignObject>
+        <foreignObject class="math-label ml-muted" x="310" y="268" width="60" height="24"><div xmlns="http://www.w3.org/1999/xhtml">\(c \cdot x\)</div></foreignObject>
+        <foreignObject class="math-label ml-muted" x="200" y="204" width="30" height="22"><div xmlns="http://www.w3.org/1999/xhtml">\(x\)</div></foreignObject>
+      </svg></div>
+      <div class="proof-steps"><h3>完整公式步骤</h3>
+        <p>过 \(C\) 作 \(CD\perp AB\) 所在直线，垂足为 \(D\)。规定直线 \(AB\) 上从 \(A\) 指向 \(B\) 为正方向，令有向投影 \(x=\overline{AD}=b\cos A\)。分别在 \(AC\)、\(BC\) 外侧作正方形 \(S_b\)、\(S_a\)，面积为 \(b^2\)、\(a^2\)；图下方两个 \(c\times x\) 矩形表示余弦修正项的两份有向投影面积。</p>
+        <div class="formula">\[b^2=x^2+CD^2,\qquad a^2=(c-x)^2+CD^2.\]</div>
+        <p>相减时公共面积 \(CD^2\) 抵消，并把平方差完整展开：</p>
+        <div class="formula">\[\begin{aligned}a^2-b^2&=(c-x)^2-x^2\\&=[(c-x)-x][(c-x)+x]\\&=(c-2x)c=c^2-2cx\\&=c^2-2bc\cos A.\end{aligned}\]</div>
+        <p>因此 \(a^2=b^2+c^2-2bc\cos A\)。钝角时 \(x&lt;0\)，矩形 \(c\times x\) 表示有向面积；负号表示应加回对应面积。</p>
+        <p><strong>关键一句：</strong>修正项 \(2bc\cos A\) 是两个同面积投影矩形 \(c\times(b\cos A)\) 的总有向面积。</p>
+      </div><div class="proof-verdict"><strong>方法评价：</strong>与作高法共用构造，却把计算斜边改造成面积之差，突出平方差结构。</div>
+    </section>
+
+    <div class="branch-sep"><div class="branch-sep-line"></div><div class="branch-sep-label">第二篇 · 代数工具</div><div class="branch-sep-line"></div></div>
+    <section id="proof-4" class="proof-layout--split" data-proof-number="04">
+      <div class="proof-head"><h2>方法四　坐标法</h2><span class="meta">前置：坐标、距离公式｜难度：★</span></div>
+      <div class="proof-idea"><strong>核心想法：</strong>把一个顶点放在原点、一边放在横轴上，第三点坐标由 \(b\) 和 \(A\) 直接写出。</div>
+      <div class="proof-diagram"><svg viewBox="0 0 520 320" role="img" aria-label="坐标法图">
+        <path class="helper" d="M45 260 H480 M70 285 V35"/><path class="edge" d="M70 260 L440 260 L225 70 Z"/><path class="helper" d="M225 70 V260"/>
+        <circle class="point" cx="70" cy="260" r="5"/><circle class="point" cx="440" cy="260" r="5"/><circle class="point" cx="225" cy="70" r="5"/>
+        <text class="point-label" x="48" y="282">A</text><text class="point-label" x="445" y="282">B</text><text class="point-label" x="211" y="52">C</text>
+        <foreignObject class="math-label" x="230" y="82" width="160" height="28"><div xmlns="http://www.w3.org/1999/xhtml">\((b\cos A,\; b\sin A)\)</div></foreignObject>
+      </svg></div>
+      <div class="proof-steps"><h3>完整公式步骤</h3>
+        <div class="formula">\[A=(0,0),\qquad B=(c,0),\qquad C=(b\cos A,b\sin A).\]</div>
+        <p>由两点距离公式：</p>
+        <div class="formula">\[\begin{aligned}a^2=BC^2&=(b\cos A-c)^2+(b\sin A-0)^2\\&=b^2\cos^2A-2bc\cos A+c^2+b^2\sin^2A\\&=b^2+c^2-2bc\cos A.\end{aligned}\]</div>
+        <p><strong>关键一句：</strong>坐标选取吸收了全部几何位置关系，余下只是距离公式。</p>
+      </div><div class="proof-verdict"><strong>方法评价：</strong>步骤短、可机械复核；代价是几何直觉被坐标计算遮住了一部分。</div>
+    </section>
+
+    <section id="proof-5" class="proof-layout--split" data-proof-number="05">
+      <div class="proof-head"><h2>方法五　向量数量积法</h2><span class="meta">前置：向量减法、数量积｜难度：★</span></div>
+      <div class="proof-idea"><strong>核心想法：</strong>边 \(BC\) 是两个同起点向量之差，差向量的平方展开自然产生交叉项。</div>
+      <div class="proof-diagram"><svg viewBox="0 0 520 320" role="img" aria-label="向量数量积图">
+        <defs><marker id="arrow5" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0 0 L6 3 L0 6 Z" fill="#17324d"/></marker></defs>
+        <path class="edge" marker-end="url(#arrow5)" d="M75 250 L438 250"/><path class="edge" marker-end="url(#arrow5)" d="M75 250 L225 65"/><path class="helper" marker-end="url(#arrow5)" d="M438 250 L225 65"/>
+        <circle class="point" cx="75" cy="250" r="5"/><circle class="point" cx="438" cy="250" r="5"/><circle class="point" cx="225" cy="65" r="5"/>
+        <text class="point-label" x="55" y="276">A</text><text class="point-label" x="446" y="276">B</text><text class="point-label" x="213" y="47">C</text>
+        <foreignObject class="math-label" x="270" y="130" width="120" height="28"><div xmlns="http://www.w3.org/1999/xhtml">\(\vec{c}-\vec{b}\)</div></foreignObject>
+      </svg></div>
+      <div class="proof-steps"><h3>完整公式步骤</h3>
+        <p class="warning"><strong>独立性提示：</strong>这里使用的数量积夹角公式应先由坐标定义等独立方式建立；若用余弦定理反过来定义或证明该公式，会构成循环论证。</p>
+        <div class="formula">\[\begin{aligned}a^2&=\overrightarrow{BC}\cdot\overrightarrow{BC}\\&=(\overrightarrow{AC}-\overrightarrow{AB})\cdot(\overrightarrow{AC}-\overrightarrow{AB})\\&=\overrightarrow{AC}\cdot\overrightarrow{AC}+\overrightarrow{AB}\cdot\overrightarrow{AB}-2\overrightarrow{AC}\cdot\overrightarrow{AB}\\&=b^2+c^2-2|\overrightarrow{AC}|\,|\overrightarrow{AB}|\cos A\\&=b^2+c^2-2bc\cos A.\end{aligned}\]</div>
+        <p><strong>关键一句：</strong>余弦项正是数量积展开中的交叉项。</p>
+      </div><div class="proof-verdict"><strong>方法评价：</strong>最凝练，揭示余弦定理就是向量平方公式 \(|\mathbf u-\mathbf v|^2\) 的几何版本。</div>
+    </section>
+
+    <section id="proof-6" class="proof-layout--split" data-proof-number="06">
+      <div class="proof-head"><h2>方法六　复数模长法</h2><span class="meta">前置：复平面、共轭、模｜难度：★★</span></div>
+      <div class="proof-idea"><strong>核心想法：</strong>用复数表示两个顶点；边长 \(a\) 是两复数之差的模。</div>
+      <div class="proof-diagram"><svg viewBox="0 0 520 320" role="img" aria-label="复数模长图">
+        <path class="helper" d="M45 260 H480 M75 285 V35"/><path class="edge" d="M75 260 L440 260 L225 70 Z"/><path class="helper" d="M225 70 V260"/>
+        <circle class="point" cx="75" cy="260" r="5"/><circle class="point" cx="440" cy="260" r="5"/><circle class="point" cx="225" cy="70" r="5"/>
+        <text class="point-label" x="54" y="282">A</text><text class="point-label" x="445" y="282">B</text><text class="point-label" x="213" y="52">C</text>
+        <foreignObject class="math-label" x="240" y="36" width="200" height="28"><div xmlns="http://www.w3.org/1999/xhtml">\(z_C=b(\cos A+i\sin A)\)</div></foreignObject>
+        <foreignObject class="math-label ml-muted" x="380" y="268" width="60" height="24"><div xmlns="http://www.w3.org/1999/xhtml">\(z_B=c\)</div></foreignObject>
+      </svg></div>
+      <div class="proof-steps"><h3>完整公式步骤</h3>
+        <p>在复平面令 \(z_A=0\)、\(z_B=c\)、\(z_C=b(\cos A+i\sin A)\)。于是 \(a=|z_C-z_B|\)。利用 \(|z|^2=z\overline z\)：</p>
+        <div class="formula">\[\begin{aligned}a^2&=[b(\cos A+i\sin A)-c][b(\cos A-i\sin A)-c]\\&=b^2(\cos^2A+\sin^2A)\\&\quad-bc[(\cos A+i\sin A)+(\cos A-i\sin A)]+c^2\\&=b^2-2bc\cos A+c^2.\end{aligned}\]</div>
+        <p><strong>关键一句：</strong>一对共轭因子相乘，虚部相消，留下的实部交叉项就是 \(-2bc\cos A\)。</p>
+      </div><div class="proof-verdict"><strong>方法评价：</strong>把二维旋转与长度计算压缩进复数乘法，优雅但前置知识较多。</div>
+    </section>
+
+    <div class="branch-sep"><div class="branch-sep-line"></div><div class="branch-sep-label">第三篇 · 三角工具</div><div class="branch-sep-line"></div></div>
+    <section id="proof-7" class="proof-layout--stacked" data-proof-number="07">
+      <div class="proof-head"><h2>方法七　正弦定理与恒等变换</h2><span class="meta">前置：独立证明的正弦定理、和角公式｜难度：★★</span></div>
+      <div class="proof-idea"><strong>核心想法：</strong>先由正弦定理得到关于 \(a\sin B\) 和 \(a\cos B\) 的两式，再平方相加。</div>
+      <div class="proof-diagram"><svg viewBox="0 0 520 320" role="img" aria-label="正弦定理图">
+        <path class="edge" d="M70 250 L440 250 L225 65 Z"/><path class="helper" d="M103 250 A34 34 0 0 1 91 224 M408 250 A32 32 0 0 0 420 226"/>
+        <circle class="point" cx="70" cy="250" r="5"/><circle class="point" cx="440" cy="250" r="5"/><circle class="point" cx="225" cy="65" r="5"/>
+        <text class="point-label" x="50" y="276">A</text><text class="point-label" x="447" y="276">B</text><text class="point-label" x="213" y="48">C</text>
+        <foreignObject class="math-label ml-orange" x="86" y="210" width="24" height="22"><div xmlns="http://www.w3.org/1999/xhtml">\(A\)</div></foreignObject>
+        <foreignObject class="math-label ml-orange" x="396" y="210" width="24" height="22"><div xmlns="http://www.w3.org/1999/xhtml">\(B\)</div></foreignObject>
+        <foreignObject class="math-label" x="316" y="132" width="20" height="22"><div xmlns="http://www.w3.org/1999/xhtml">\(a\)</div></foreignObject>
+        <foreignObject class="math-label ml-blue" x="126" y="132" width="20" height="22"><div xmlns="http://www.w3.org/1999/xhtml">\(b\)</div></foreignObject>
+        <foreignObject class="math-label ml-muted" x="244" y="268" width="20" height="22"><div xmlns="http://www.w3.org/1999/xhtml">\(c\)</div></foreignObject>
+      </svg></div>
+      <div class="proof-steps"><h3>完整公式步骤</h3>
+        <p class="warning"><strong>独立性提示：</strong>此处的正弦定理必须先由圆周角等独立方法证明；若先用余弦定理证明正弦定理，再回来使用本法，会构成循环论证。</p>
+        <p>由正弦定理 \(a/\sin A=b/\sin B=c/\sin C\)，先得</p>
+        <div class="formula">\[a\sin B=b\sin A.\tag{1}\]</div>
+        <p>又因 \(C=\pi-(A+B)\)，故 \(\sin C=\sin(A+B)\)，从 \(c/\sin C=a/\sin A\) 得</p>
+        <div class="formula">\[\begin{aligned}c\sin A&=a\sin(A+B)\\&=a\sin A\cos B+a\cos A\sin B\\&=a\sin A\cos B+b\sin A\cos A.\end{aligned}\]</div>
+        <p>非退化三角形中 \(\sin A&gt;0\)，同除以 \(\sin A\)：</p>
+        <div class="formula">\[a\cos B=c-b\cos A.\tag{2}\]</div>
+        <p>将 (1)、(2) 分别平方后相加，不跳过平方展开：</p>
+        <div class="formula">\[\begin{aligned}a^2(\sin^2B+\cos^2B)&=b^2\sin^2A+(c-b\cos A)^2\\a^2&=b^2\sin^2A+c^2-2bc\cos A+b^2\cos^2A\\&=b^2+c^2-2bc\cos A.\end{aligned}\]</div>
+        <p><strong>关键一句：</strong>把 \(a\) 在角 \(B\) 下的“正弦分量”和“余弦分量”拼成 \(a^2\)。</p>
+      </div><div class="proof-verdict"><strong>方法评价：</strong>展示三角恒等变换的力量，但必须交代正弦定理的独立前置。</div>
+    </section>
+
+    <div class="branch-sep"><div class="branch-sep-line"></div><div class="branch-sep-label">第四篇 · 圆与古典几何</div><div class="branch-sep-line"></div></div>
+    <section id="proof-8" class="proof-layout--stacked" data-proof-number="08">
+      <div class="proof-head"><h2>方法八　外接圆与弦长法</h2><span class="meta">前置：扩充正弦定理、和角公式｜难度：★★★</span></div>
+      <div class="proof-idea"><strong>核心想法：</strong>把三边都看成外接圆上的弦，用 \(2R\sin\) 统一表示，再严格验证关键恒等式。</div>
+      <div class="proof-diagram"><svg viewBox="0 0 520 320" role="img" aria-label="外接圆与弦长图">
+        <circle class="circle-line" cx="260" cy="160" r="125"/><path class="edge" d="M145 209 L260 35 L375 209 Z"/><path class="helper" d="M260 160 L145 209 M260 160 L375 209"/>
+        <circle class="point" cx="145" cy="209" r="5"/><circle class="point" cx="260" cy="35" r="5"/><circle class="point" cx="375" cy="209" r="5"/>
+        <text class="point-label" x="124" y="228">A</text><text class="point-label" x="250" y="25">B</text><text class="point-label" x="382" y="228">C</text>
+        <foreignObject class="math-label ml-blue" x="264" y="142" width="24" height="22"><div xmlns="http://www.w3.org/1999/xhtml">\(R\)</div></foreignObject>
+      </svg></div>
+      <div class="proof-steps"><h3>完整公式步骤</h3>
+        <p>由弦长公式（扩充正弦定理，需有独立的圆周角证明）：</p>
+        <div class="formula">\[a=2R\sin A,\qquad b=2R\sin B,\qquad c=2R\sin C.\]</div>
+        <div class="formula">\[b^2+c^2-2bc\cos A=4R^2[\sin^2B+\sin^2C-2\sin B\sin C\cos A].\]</div>
+        <p>因 \(A=\pi-(B+C)\)，所以 \(\cos A=-\cos(B+C)\)。记中括号为 \(E\)，则正号不能写错：</p>
+        <div class="formula">\[\begin{aligned}E&=\sin^2B+\sin^2C+2\sin B\sin C\cos(B+C)\\&=\sin^2B+\sin^2C+2\sin B\sin C(\cos B\cos C-\sin B\sin C)\\&=\sin^2B(1-\sin^2C)+\sin^2C(1-\sin^2B)+2\sin B\sin C\cos B\cos C\\&=\sin^2B\cos^2C+\cos^2B\sin^2C+2\sin B\cos C\cos B\sin C\\&=(\sin B\cos C+\cos B\sin C)^2\\&=\sin^2(B+C)=\sin^2A.\end{aligned}\]</div>
+        <p>因此 \(b^2+c^2-2bc\cos A=4R^2\sin^2A=(2R\sin A)^2=a^2\)。</p>
+        <p><strong>关键一句：</strong>关键恒等式是一个完整平方，交叉项必须为正。</p>
+      </div><div class="proof-verdict"><strong>方法评价：</strong>连接圆几何与三角恒等式；计算较长，但能纠正常见符号错误。</div>
+    </section>
+
+    <section id="proof-9" class="proof-layout--stacked" data-proof-number="09">
+      <div class="proof-head"><h2>方法九　圆幂法</h2><span class="meta">前置：点幂、有向线段、弦中点｜难度：★★★</span></div>
+      <div class="proof-idea"><strong>核心想法：</strong>以 \(C\) 为圆心、\(CA=b\) 为半径作圆，从点 \(B\) 的两种点幂表达式得到同一个量。</div>
+      <div class="proof-diagram"><svg viewBox="0 0 520 320" role="img" aria-label="圆幂法图">
+        <circle class="circle-line" cx="250" cy="150" r="120"/><path class="edge" d="M170.63 240 L450 240 L250 150 Z"/><path class="helper" d="M35 240 H490 M250 150 V240"/>
+        <circle class="point" cx="170.63" cy="240" r="5"/><circle class="point" cx="450" cy="240" r="5"/><circle class="point" cx="250" cy="150" r="5"/><circle class="point" cx="329.37" cy="240" r="5"/>
+        <text class="point-label" x="152" y="268">A</text><text class="point-label" x="456" y="268">B</text><text class="point-label" x="238" y="133">C</text><text class="point-label" x="321" y="268">F</text>
+        <foreignObject class="math-label ml-blue" x="252" y="180" width="50" height="22"><div xmlns="http://www.w3.org/1999/xhtml">\(r=b\)</div></foreignObject>
+      </svg></div>
+      <div class="proof-steps"><h3>完整公式步骤</h3>
+        <p>直线 \(AB\) 与圆的另一交点为 \(F\)。当 \(A=90^\circ\) 时，\(AB\perp CA\)，直线 \(AB\) 在 \(A\) 处与圆相切，此时两个交点重合，记 \(F=A\)。从 \(C\) 向直线 \(AB\) 作垂线；圆心到弦 \(AF\) 的垂线平分弦。在从 \(A\) 指向 \(B\) 的有向坐标上令 \(x_A=0,x_B=c\)，垂足坐标为 \(x_H=b\cos A\)（这是坐标或有向长度，不是无条件为正的普通长度），故</p>
+        <div class="formula">\[x_F=2b\cos A,\qquad \overline{BA}=x_A-x_B=-c,\qquad \overline{BF}=x_F-x_B=2b\cos A-c.\]</div>
+        <p>“有向长度”允许 \(\overline{BA}\)、\(\overline{BF}\) 为负；它们不是普通非负线段长，而是终点坐标减起点坐标。点 \(B\) 对圆 \(\omega\) 的幂，一方面由圆心距离公式：</p>
+        <div class="formula">\[\operatorname{Pow}_{\omega}(B)=BC^2-b^2=a^2-b^2.\tag{1}\]</div>
+        <p>另一方面由有向割线乘积：</p>
+        <div class="formula">\[\begin{aligned}\operatorname{Pow}_{\omega}(B)&=\overline{BA}\cdot\overline{BF}\\&=(-c)(2b\cos A-c)\\&=c^2-2bc\cos A.\tag{2}\end{aligned}\]</div>
+        <p>比较 (1)、(2)：\(a^2-b^2=c^2-2bc\cos A\)，故 \(a^2=b^2+c^2-2bc\cos A\)。</p>
+        <p><strong>关键一句：</strong>必须让两个割线因子都服从同一有向坐标约定，不能只给其中一个改符号。</p>
+      </div><div class="proof-verdict"><strong>方法评价：</strong>用一个点幂同时容纳点在圆内、圆上、圆外三种位置，严密但符号门槛较高。</div>
+    </section>
+
+    <section id="proof-10" class="proof-layout--stacked" data-proof-number="10">
+      <div class="proof-head"><h2>方法十　托勒密定理法</h2><span class="meta">前置：外接圆、轴对称、托勒密、分类｜难度：★★★★</span></div>
+      <div class="proof-idea"><strong>核心想法：</strong>过 \(C\) 作与 \(AB\) 平行的弦，借对称确定四边形边长；再按平行弦的有向差 \(s\) 分类使用托勒密定理。</div>
+      <div class="proof-diagram"><svg viewBox="0 0 520 320" role="img" aria-label="托勒密定理法的 s 大于零示意图">
+        <circle class="circle-line" cx="250" cy="170" r="150"/><path class="edge" d="M120.10 245 L379.90 245 L379.90 95 L120.10 95 Z"/><path class="helper" d="M120.10 95 L379.90 245 M379.90 95 L120.10 245 M90 95 H410"/>
+        <circle class="point" cx="120.10" cy="245" r="5"/><circle class="point" cx="379.90" cy="245" r="5"/><circle class="point" cx="120.10" cy="95" r="5"/><circle class="point" cx="379.90" cy="95" r="5"/>
+        <text class="point-label" x="101" y="270">A</text><text class="point-label" x="388" y="270">B</text><text class="point-label" x="101" y="84">C</text><text class="point-label" x="388" y="84">D</text>
+        <foreignObject class="math-label ml-muted" x="155" y="38" width="220" height="22"><div xmlns="http://www.w3.org/1999/xhtml" style="font-size:12px">圆周顺序 \(A\!-\!B\!-\!D\!-\!C\)</div></foreignObject>
+      </svg></div>
+      <div class="proof-steps"><h3>完整公式步骤</h3>
+        <p class="warning"><strong>独立性提示：</strong>此处采用托勒密定理的独立几何证明；若先由余弦定理推出托勒密定理，再用本节反证余弦定理，会构成循环论证。</p>
+        <p>作 \(\triangle ABC\) 的外接圆。过 \(C\) 作直线平行于 \(AB\)，与圆的另一交点为 \(D\)；相切时记退化情形 \(D=C\)。关于 \(AB\) 的垂直平分线反射会交换 \(A,B\)，且保持该平行线不变，故交换 \(C,D\)。因此</p>
+        <div class="formula">\[AD=BC=a,\qquad BD=AC=b.\]</div>
+        <p>把 \(C,D\) 投影到 \(AB\) 上，由对称性，两投影关于 \(AB\) 中点对称。若从 \(A\) 指向 \(B\) 为正，则二者横坐标分别为 \(b\cos A\) 与 \(c-b\cos A\)。定义有向差</p>
+        <div class="formula">\[s=(c-b\cos A)-b\cos A=c-2b\cos A,\qquad CD=|s|.\]</div>
+        <p><strong>情形一：\(s&gt;0\)。</strong>圆周顺序为 \(A-B-D-C\)。四边是 \(AB=c,BD=b,DC=s,CA=b\)，对角线是 \(AD=a,BC=a\)。托勒密定理给出</p>
+        <div class="formula">\[a^2=cs+b^2=b^2+c(c-2b\cos A)=b^2+c^2-2bc\cos A.\]</div>
+        <p><strong>情形二：\(s&lt;0\)。</strong>圆周顺序为 \(A-D-C-B\)，普通长度 \(DC=-s\)。四边是 \(AD=a,DC=-s,CB=a,BA=c\)，对角线是 \(AC=b,DB=b\)。托勒密定理给出</p>
+        <div class="formula">\[b^2=a^2+c(-s),\qquad a^2=b^2+cs=b^2+c^2-2bc\cos A.\]</div>
+        <p><strong>情形三：\(s=0\)。</strong>此时 \(D=C\)，平行线在 \(C\) 处相切，四边形退化，不能套托勒密公式。对称关系说明 \(C\) 在 \(AB\) 的垂直平分线上，故 \(a=b\)；又 \(c=2b\cos A\)，于是</p>
+        <div class="formula">\[b^2+c^2-2bc\cos A=b^2+c^2-c^2=b^2=a^2.\]</div>
+        <p><strong>关键一句：</strong>使用托勒密前必须先写圆周顺序；\(CD\) 的普通长度是 \(|s|\)，符号改变会交换“边”与“对角线”的身份。</p>
+      </div><div class="proof-verdict"><strong>方法评价：</strong>古典而深刻，也最考验构造核验；三种圆周拓扑不能用一条未经分类的公式混写。</div>
+    </section>
+
+    <section id="method-comparison" aria-labelledby="comparison-title">
+      <h2 id="comparison-title">方法对比：从哪里看见交叉项</h2>
+      <p>十种方法不是十条孤立路线。它们都在解释同一件事：两条邻边的相对方向，怎样进入第三边的长度平方。</p>
+      <div class="wrap-table" role="region" aria-label="证明方法对比表" tabindex="0">
+        <table>
+          <thead><tr><th>方法族</th><th>代表方法</th><th>关键对象</th><th>适合课堂时机</th></tr></thead>
+          <tbody>
+            <tr><td>直观几何</td><td>分量、作高、面积重组</td><td>有向投影 \(b\cos A\)</td><td>首次理解定理与锐钝角统一</td></tr>
+            <tr><td>代数工具</td><td>坐标、向量、复数</td><td>平方展开的交叉项</td><td>复习距离、数量积与复数模</td></tr>
+            <tr><td>三角工具</td><td>正弦定理、弦长</td><td>平方和与和角恒等式</td><td>建立定理之间的联系</td></tr>
+            <tr><td>圆与古典几何</td><td>圆幂、托勒密</td><td>有向线段与圆内接关系</td><td>拓展课或竞赛几何复核</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="lesson-check" aria-labelledby="lesson-check-title">
+      <h2 id="lesson-check-title">课堂检查与继续思考</h2>
+      <div class="lesson-grid">
+        <article>
+          <h3>常见错误</h3>
+          <ul>
+            <li>钝角时把 \(b\cos A\) 强行当作非负线段长。</li>
+            <li>只写“平方相加”而漏掉交叉项的符号与来源。</li>
+            <li>使用正弦定理、数量积或托勒密时，没有说明它们必须独立于余弦定理建立。</li>
+            <li>圆几何中未核对圆周顺序，就直接套用弦或对角线关系。</li>
+          </ul>
+        </article>
+        <article>
+          <h3>随堂判断题</h3>
+          <ol>
+            <li>当 \(A=90^\circ\) 时，余弦定理退化为勾股定理。</li>
+            <li>当 \(A&gt;90^\circ\) 时，\(-2bc\cos A\) 会使 \(a^2\) 比 \(b^2+c^2\) 更大。</li>
+            <li>任意一种用到数量积的证明都天然独立于余弦定理。</li>
+          </ol>
+          <p><strong>参考：</strong>前两题正确；第三题错误，独立性取决于数量积夹角公式的建立方式。</p>
+        </article>
+        <article>
+          <h3>开放思考题</h3>
+          <ol>
+            <li>若固定 \(b,c\)，让 \(A\) 从锐角连续变为钝角，哪一种图最清楚地展示 \(a\) 的变化？</li>
+            <li>坐标法、向量法与复数法的三次“平方展开”，本质上有哪些相同之处？</li>
+            <li>为什么圆幂法和托勒密法尤其需要有向线段或分类讨论？</li>
+          </ol>
+        </article>
+        <article>
+          <h3>选法建议</h3>
+          <p>要建立直觉，先看分量投影与作高；要快速书写，选坐标或向量；要串联知识网络，比较正弦定理、外接圆、圆幂与托勒密。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="closing-summary" id="summary" aria-labelledby="summary-title">
+      <h2 id="summary-title">结课总结</h2>
+      <p>余弦定理可以看成“带方向信息的勾股定理”。十种证明虽然语言不同，却都把夹角信息转化为投影、交叉项、三角恒等式或圆中的长度关系。真正值得带走的不是十套背诵步骤，而是同一结构在不同数学工具中的迁移。</p>
+      <div class="formula">\[\boxed{\text{第三边的平方}=\text{两邻边平方和}-2\times\text{两邻边乘积}\times\cos\text{夹角}}\]</div>
+      <div class="memory-card">
+        <div class="mem-title">记忆锚点</div>
+        <div class="mem-body">
+          <strong>本质：</strong>余弦定理 = "带方向信息的勾股定理"。当 \(A=90^\circ\) 时自动退化为 \(a^2=b^2+c^2\)。<br>
+          <strong>四族十法：</strong>直观几何三法（投影、作高、面积）→ 代数三法（坐标、向量、复数）→ 三角一法（正弦定理）→ 圆几何三法（弦长、圆幂、托勒密）。<br>
+          <strong>共同结构：</strong>所有方法的核心都是把"两边夹角"信息转化为第三边的平方——几何法靠投影，代数法靠交叉项，三角法靠恒等式，圆法靠有向线段。<br>
+          <strong>最快上手：</strong>坐标法（三步代数运算）；最深刻：向量法（一行数量积展开）；最古典：托勒密法（需分类讨论圆周顺序）。
+        </div>
+      </div>
+    </section>
+  </main>
+  <button id="back-to-top" type="button" aria-label="回到页面顶部" hidden>回到顶部</button>
+  <script id="lecture-logic">
+    (function (global) {
+      'use strict';
+
+      function computeTriangle(b, c, angleDeg) {
+        var radians = angleDeg * Math.PI / 180;
+        var cosA = Math.cos(radians);
+        var x = b * cosA;
+        var y = b * Math.sin(radians);
+        var rhs = b * b + c * c - 2 * b * c * cosA;
+        var a = Math.hypot(x - c, y);
+        return { a: a, cosA: cosA, lhs: a * a, rhs: rhs, x: x, y: y };
+      }
+
+      function clampAngle(angleDeg) {
+        var numericAngle = Number(angleDeg);
+        if (!Number.isFinite(numericAngle)) numericAngle = 45;
+        return Math.max(20, Math.min(150, numericAngle));
+      }
+
+      function setAngle(angleDeg) {
+        return clampAngle(angleDeg);
+      }
+
+      function computeReadingProgress(scrollY, scrollHeight, clientHeight) {
+        var distance = Number(scrollHeight) - Number(clientHeight);
+        if (!Number.isFinite(distance) || distance <= 0) return 0;
+        var progress = Number(scrollY) / distance;
+        if (Number.isNaN(progress)) return 0;
+        return Math.max(0, Math.min(1, progress));
+      }
+
+      function computeReadingProgressPercent(scrollY, scrollHeight, clientHeight) {
+        return Math.round(computeReadingProgress(scrollY, scrollHeight, clientHeight) * 100);
+      }
+
+      function pickCurrentSection(candidates, baseline, viewportHeight) {
+        var currentId = null;
+        var currentDistance = Infinity;
+        candidates.forEach(function (candidate) {
+          if (candidate.hidden || candidate.bottom <= 0 || candidate.top >= viewportHeight) return;
+          var distance = Math.abs(candidate.top - baseline);
+          if (distance < currentDistance) {
+            currentId = candidate.id;
+            currentDistance = distance;
+          }
+        });
+        return currentId;
+      }
+
+      function computeGroupVisibility(groups) {
+        return groups.map(function (group) {
+          return group.links.some(function (link) { return !link.hidden; });
+        });
+      }
+
+      function createFrameScheduler(requestFrame, update) {
+        var pending = false;
+        return function schedule() {
+          if (pending) return;
+          pending = true;
+          requestFrame(function () {
+            pending = false;
+            update();
+          });
+        };
+      }
+
+      function focusPageTopAndScroll(pageTop, scrollTo) {
+        pageTop.focus({ preventScroll: true });
+        scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      function computeCanvasLayout(b, c, angleDeg, width, height, margin) {
+        var safeMargin = margin == null ? 16 : margin;
+        var drawingPad = safeMargin + 28;
+        var minModelX = Math.min(0, b * Math.cos(150 * Math.PI / 180));
+        var maxModelX = Math.max(c, b * Math.cos(20 * Math.PI / 180));
+        var availableWidth = Math.max(1, width - 2 * drawingPad);
+        var availableHeight = Math.max(1, height - 2 * drawingPad);
+        var scale = Math.min(58, availableWidth / (maxModelX - minModelX), availableHeight / b);
+        var result = computeTriangle(b, c, angleDeg);
+        var origin = { x: drawingPad - minModelX * scale, y: height - drawingPad };
+        var points = {
+          A: origin,
+          B: { x: origin.x + c * scale, y: origin.y },
+          C: { x: origin.x + result.x * scale, y: origin.y - result.y * scale },
+          D: { x: origin.x + result.x * scale, y: origin.y }
+        };
+        function labelPoint(x, y) {
+          return {
+            x: Math.max(safeMargin, Math.min(width - safeMargin, x)),
+            y: Math.max(safeMargin, Math.min(height - safeMargin, y))
+          };
+        }
+        return {
+          scale: scale,
+          points: points,
+          labels: {
+            labelA: labelPoint(points.A.x - 24, points.A.y + 28),
+            labelB: labelPoint(points.B.x + 10, points.B.y + 28),
+            labelC: labelPoint(points.C.x - 7, points.C.y - 14),
+            labelD: labelPoint(points.D.x - 7, points.D.y + 28)
+          }
+        };
+      }
+
+      global.CosineLecture = {
+        computeTriangle: computeTriangle,
+        computeCanvasLayout: computeCanvasLayout,
+        setAngle: setAngle,
+        computeReadingProgress: computeReadingProgress,
+        computeReadingProgressPercent: computeReadingProgressPercent,
+        pickCurrentSection: pickCurrentSection,
+        computeGroupVisibility: computeGroupVisibility,
+        createFrameScheduler: createFrameScheduler,
+        focusPageTopAndScroll: focusPageTopAndScroll
+      };
+
+      if (typeof document === 'undefined') return;
+
+      function onReady(callback) {
+        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', callback);
+        else callback();
+      }
+
+      onReady(function () {
+        var b = 5;
+        var c = 7;
+        var slider = document.getElementById('angle-slider');
+        var angleOutput = document.getElementById('angle-output');
+        var canvas = document.getElementById('triangle-canvas');
+        var context = canvas.getContext('2d');
+        var presetButtons = Array.prototype.slice.call(document.querySelectorAll('[data-angle]'));
+        var values = {
+          a: document.getElementById('value-a'),
+          b: document.getElementById('value-b'),
+          c: document.getElementById('value-c'),
+          cosA: document.getElementById('value-cos'),
+          lhs: document.getElementById('value-lhs'),
+          rhs: document.getElementById('value-rhs')
+        };
+        var dragging = false;
+        var currentLayout;
+
+        function pointLabel(label, x, y) {
+          context.fillStyle = '#17324d';
+          context.font = 'bold 18px system-ui, sans-serif';
+          context.fillText(label, x, y);
+        }
+
+        function drawLine(fromX, fromY, toX, toY, color, dashed) {
+          context.beginPath();
+          context.setLineDash(dashed ? [8, 7] : []);
+          context.strokeStyle = color;
+          context.lineWidth = dashed ? 2.5 : 4;
+          context.moveTo(fromX, fromY);
+          context.lineTo(toX, toY);
+          context.stroke();
+          context.setLineDash([]);
+        }
+
+        function draw(result, layout) {
+          var A = layout.points.A;
+          var B = layout.points.B;
+          var C = layout.points.C;
+          var D = layout.points.D;
+          context.clearRect(0, 0, canvas.width, canvas.height);
+
+          drawLine(35, A.y, canvas.width - 35, A.y, '#9aa9b8', true);
+          drawLine(A.x, A.y, B.x, B.y, '#17324d', false);
+          drawLine(A.x, A.y, C.x, C.y, '#17324d', false);
+          drawLine(B.x, B.y, C.x, C.y, '#17324d', false);
+          drawLine(C.x, C.y, D.x, D.y, '#d97706', true);
+          drawLine(A.x, A.y - 10, D.x, D.y - 10, '#2563a8', true);
+
+          context.strokeStyle = '#d97706';
+          context.lineWidth = 2;
+          context.strokeRect(D.x - (D.x < C.x ? 12 : 0), D.y - 12, 12, 12);
+
+          [{ p: A, label: 'A', lp: layout.labels.labelA }, { p: B, label: 'B', lp: layout.labels.labelB },
+            { p: C, label: 'C', lp: layout.labels.labelC }, { p: D, label: 'D', lp: layout.labels.labelD }].forEach(function (item) {
+            context.beginPath();
+            context.fillStyle = item.label === 'C' ? '#2563a8' : '#c2410c';
+            context.arc(item.p.x, item.p.y, item.label === 'C' ? 8 : 5, 0, Math.PI * 2);
+            context.fill();
+            pointLabel(item.label, item.lp.x, item.lp.y);
+          });
+
+          context.fillStyle = '#5f6f7f';
+          context.font = '15px system-ui, sans-serif';
+          context.fillText('投影 x = b cos A', (A.x + D.x) / 2 - 52, A.y - 20);
+          context.fillText('拖动 C', C.x + 14, C.y + 5);
+        }
+
+        function render(angleDeg) {
+          var result = computeTriangle(b, c, angleDeg);
+          currentLayout = computeCanvasLayout(b, c, angleDeg, canvas.width, canvas.height, 16);
+          slider.value = String(Math.round(angleDeg));
+          angleOutput.value = Math.round(angleDeg) + '°';
+          values.a.value = result.a.toFixed(4);
+          values.b.value = b.toFixed(4);
+          values.c.value = c.toFixed(4);
+          values.cosA.value = result.cosA.toFixed(4);
+          values.lhs.value = result.lhs.toFixed(6);
+          values.rhs.value = result.rhs.toFixed(6);
+          presetButtons.forEach(function (button) {
+            button.setAttribute('aria-pressed', String(Number(button.dataset.angle) === Math.round(angleDeg)));
+          });
+          draw(result, currentLayout);
+        }
+
+        function setAngle(angleDeg) {
+          var clampedAngle = clampAngle(angleDeg);
+          render(clampedAngle);
+          return clampedAngle;
+        }
+        global.CosineLecture.setAngle = setAngle;
+
+        slider.addEventListener('input', function () { setAngle(Number(slider.value)); });
+        presetButtons.forEach(function (button) {
+          button.addEventListener('click', function () { setAngle(Number(button.dataset.angle)); });
+        });
+
+        function canvasPoint(event) {
+          var rect = canvas.getBoundingClientRect();
+          return {
+            x: (event.clientX - rect.left) * canvas.width / rect.width,
+            y: (event.clientY - rect.top) * canvas.height / rect.height
+          };
+        }
+
+        canvas.addEventListener('pointerdown', function (event) {
+          var point = canvasPoint(event);
+          var cx = currentLayout.points.C.x;
+          var cy = currentLayout.points.C.y;
+          if (Math.hypot(point.x - cx, point.y - cy) <= 28) {
+            dragging = true;
+            canvas.setPointerCapture(event.pointerId);
+          }
+        });
+        canvas.addEventListener('pointermove', function (event) {
+          if (!dragging) return;
+          var point = canvasPoint(event);
+          var A = currentLayout.points.A;
+          var angle = Math.atan2(A.y - point.y, point.x - A.x) * 180 / Math.PI;
+          setAngle(Math.round(angle));
+        });
+        function stopDragging(event) {
+          if (!dragging) return;
+          dragging = false;
+          if (canvas.hasPointerCapture(event.pointerId)) canvas.releasePointerCapture(event.pointerId);
+        }
+        canvas.addEventListener('pointerup', stopDragging);
+        canvas.addEventListener('pointercancel', stopDragging);
+        setAngle(Number(slider.value));
+
+        var proofSections = Array.prototype.slice.call(document.querySelectorAll('section[id^="proof-"]'));
+        var categoryByIndex = ['直观几何', '直观几何', '直观几何', '代数工具', '代数工具', '代数工具', '三角工具', '圆与古典几何', '圆与古典几何', '圆与古典几何'];
+
+        function setProofExpanded(section, expanded) {
+          var toggle = section.querySelector('.proof-toggle');
+          var body = section.querySelector('.proof-body');
+          toggle.setAttribute('aria-expanded', String(expanded));
+          toggle.textContent = expanded ? '收起本节' : '展开本节';
+          body.hidden = !expanded;
+        }
+
+        proofSections.forEach(function (section, index) {
+          section.dataset.category = categoryByIndex[index];
+          var head = section.querySelector('.proof-head');
+          var body = document.createElement('div');
+          body.className = 'proof-body';
+          body.id = section.id + '-body';
+          while (head.nextSibling) body.appendChild(head.nextSibling);
+          section.appendChild(body);
+          var toggle = document.createElement('button');
+          toggle.type = 'button';
+          toggle.className = 'proof-toggle';
+          toggle.setAttribute('aria-controls', body.id);
+          head.appendChild(toggle);
+          setProofExpanded(section, true);
+          toggle.addEventListener('click', function () {
+            setProofExpanded(section, toggle.getAttribute('aria-expanded') !== 'true');
+            syncExpandAll();
+          });
+        });
+
+        var expandAll = document.getElementById('expand-all');
+        function syncExpandAll() {
+          var allExpanded = proofSections.every(function (section) {
+            return section.querySelector('.proof-toggle').getAttribute('aria-expanded') === 'true';
+          });
+          expandAll.setAttribute('aria-pressed', String(allExpanded));
+          expandAll.textContent = allExpanded ? '收起全部证明' : '展开全部证明';
+        }
+        expandAll.addEventListener('click', function () {
+          var expand = expandAll.getAttribute('aria-pressed') !== 'true';
+          proofSections.forEach(function (section) { setProofExpanded(section, expand); });
+          syncExpandAll();
+        });
+        syncExpandAll();
+
+        var presentationButton = document.getElementById('presentation-mode');
+        presentationButton.addEventListener('click', function () {
+          var active = presentationButton.getAttribute('aria-pressed') !== 'true';
+          presentationButton.setAttribute('aria-pressed', String(active));
+          document.body.classList.toggle('presentation-active', active);
+          proofSections.forEach(function (section) { setProofExpanded(section, true); });
+          syncExpandAll();
+        });
+
+        var proofNavLinks = Array.prototype.slice.call(document.querySelectorAll('#lecture-nav a[href^="#proof-"]'));
+        var proofNavGroups = Array.prototype.slice.call(document.querySelectorAll('#lecture-nav .nav-group'));
+        function syncProofNav(filter) {
+          proofNavLinks.forEach(function (link) {
+            var section = document.getElementById(link.getAttribute('href').slice(1));
+            var hidden = Boolean(section && section.hidden);
+            link.hidden = hidden;
+            if (hidden) link.tabIndex = -1;
+            else link.removeAttribute('tabindex');
+          });
+          var groupModels = proofNavGroups.map(function (group) {
+            return {
+              links: proofNavLinks.filter(function (link) {
+                return link.dataset.navGroup === group.dataset.navGroup;
+              })
+            };
+          });
+          var groupVisibility = computeGroupVisibility(groupModels);
+          proofNavGroups.forEach(function (group, index) {
+            group.hidden = !groupVisibility[index];
+          });
+        }
+
+        var filterButtons = Array.prototype.slice.call(document.querySelectorAll('[data-filter]'));
+        filterButtons.forEach(function (button) {
+          button.addEventListener('click', function () {
+            var filter = button.dataset.filter;
+            filterButtons.forEach(function (candidate) {
+              candidate.setAttribute('aria-pressed', String(candidate === button));
+            });
+            proofSections.forEach(function (section) {
+              section.hidden = filter !== '全部' && section.dataset.category !== filter;
+            });
+            syncProofNav();
+            scheduleReadingUpdate();
+          });
+        });
+
+        var readingProgress = document.getElementById('reading-progress');
+        var readingProgressValue = document.getElementById('reading-progress-value');
+        var backToTop = document.getElementById('back-to-top');
+        var pageTop = document.getElementById('page-top');
+        function updateReadingState() {
+          var root = document.documentElement;
+          var scrollY = global.scrollY || root.scrollTop || 0;
+          var progress = computeReadingProgress(scrollY, root.scrollHeight, root.clientHeight);
+          readingProgress.setAttribute('aria-valuenow', String(computeReadingProgressPercent(scrollY, root.scrollHeight, root.clientHeight)));
+          readingProgressValue.style.transform = 'scaleX(' + progress + ')';
+          backToTop.hidden = scrollY < 320;
+
+          var viewportHeight = global.innerHeight || root.clientHeight;
+          var baseline = Math.min(240, viewportHeight * 0.3);
+          var candidates = proofSections.map(function (section) {
+            var bounds = section.getBoundingClientRect();
+            return { id: section.id, hidden: section.hidden, top: bounds.top, bottom: bounds.bottom };
+          });
+          var currentSectionId = pickCurrentSection(candidates, baseline, viewportHeight);
+          proofNavLinks.forEach(function (link) {
+            link.removeAttribute('aria-current');
+          });
+          if (currentSectionId) {
+            var currentLink = proofNavLinks.find(function (link) {
+              return link.getAttribute('href') === '#' + currentSectionId;
+            });
+            if (currentLink) currentLink.setAttribute('aria-current', 'location');
+          }
+        }
+        var scheduleReadingUpdate = createFrameScheduler(global.requestAnimationFrame.bind(global), updateReadingState);
+        global.addEventListener('scroll', scheduleReadingUpdate, { passive: true });
+        global.addEventListener('resize', scheduleReadingUpdate);
+        backToTop.addEventListener('click', function () {
+          focusPageTopAndScroll(pageTop, global.scrollTo.bind(global));
+        });
+        syncProofNav('全部');
+        updateReadingState();
+
+        var tocButton = document.getElementById('toc-toggle');
+        var toc = document.getElementById('lecture-nav');
+        function setTocOpen(open) {
+          tocButton.setAttribute('aria-expanded', String(open));
+          toc.hidden = !open;
+        }
+        tocButton.addEventListener('click', function () {
+          setTocOpen(tocButton.getAttribute('aria-expanded') !== 'true');
+        });
+        function focusTocButtonAfterNavigation() {
+          global.setTimeout(function () {
+            tocButton.focus();
+          }, 0);
+        }
+        toc.addEventListener('click', function (event) {
+          if (!event.target.closest('a')) return;
+          if (global.matchMedia('(max-width: 760px)').matches) {
+            setTocOpen(false);
+            focusTocButtonAfterNavigation();
+          }
+        });
+        document.addEventListener('keydown', function (event) {
+          if (event.key === 'Escape' && tocButton.getAttribute('aria-expanded') === 'true') {
+            setTocOpen(false);
+            tocButton.focus();
+          }
+        });
+      });
+    }(window));
+  </script>
+</body>
+</html>

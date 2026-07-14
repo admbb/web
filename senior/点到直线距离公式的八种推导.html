@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>点到直线距离公式的八种推导</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body, {delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]})"></script>
+<style>
+:root {
+  --primary: #1a3a5c;
+  --primary-light: #2563a8;
+  --accent: #dc2626;
+  --accent-orange: #d97706;
+  --bg-page: #f8f9fe;
+  --bg-card: #ffffff;
+  --bg-formula: #f0f4ff;
+  --border-light: #e0e7f0;
+  --border-blue: #dbeafe;
+  --text-primary: #1a3a5c;
+  --text-secondary: #6b7280;
+  --text-accent: #dc2626;
+  --success: #059669;
+  --warning: #d97706;
+  --error: #dc2626;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  overflow-x: hidden;
+  font-family: "PingFang SC","Microsoft YaHei","Noto Serif SC","Source Han Serif SC",Georgia,serif;
+  background: var(--bg-page);
+  color: var(--text-primary);
+  line-height: 1.85;
+  font-size: 16px;
+}
+.container { max-width: 960px; margin: 0 auto; padding: 40px 24px 80px; }
+
+/* Cover */
+.cover {
+  background: var(--bg-card); border-radius: 18px; padding: 60px 40px 50px;
+  margin-bottom: 40px; border: 1px solid var(--border-light);
+  box-shadow: 0 4px 16px rgba(26,58,92,0.08); text-align: center; overflow: visible;
+}
+.cover-badge {
+  display: inline-block; background: var(--primary); color: #fff;
+  font-size: 13px; padding: 5px 18px; border-radius: 20px;
+  letter-spacing: 2px; margin-bottom: 24px;
+}
+.cover h1 { font-size: 32px; color: var(--primary); margin-bottom: 12px; font-weight: 800; letter-spacing: 2px; }
+.cover .subtitle { font-size: 15px; color: var(--text-secondary); margin-bottom: 6px; }
+.cover .tags { margin-top: 24px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+.cover .tag {
+  background: var(--bg-formula); border: 1px solid var(--border-blue);
+  border-radius: 20px; padding: 6px 16px; font-size: 13px; color: var(--primary-light);
+}
+
+/* Card */
+.card {
+  background: var(--bg-card); border-radius: 14px; padding: 28px 32px;
+  margin-bottom: 20px; border: 1px solid var(--border-light);
+  box-shadow: 0 2px 8px rgba(26,58,92,0.06); overflow: visible;
+}
+.section { margin-bottom: 48px; }
+.section-head { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
+.section-num {
+  width: 42px; height: 42px;
+  background: linear-gradient(135deg, #1a3a5c, #2563a8);
+  color: #fff; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; font-weight: 800; flex-shrink: 0;
+}
+h2 { font-size: 22px; color: var(--primary); margin: 0; }
+h3 { font-size: 18px; color: var(--primary); margin: 20px 0 10px; }
+h4 { font-size: 15px; color: var(--primary-light); margin: 14px 0 8px; }
+p { margin-bottom: 10px; font-size: 15px; }
+
+/* Formula */
+.formula-box {
+  background: var(--bg-formula); border-radius: 10px; padding: 18px 24px;
+  margin: 16px 0; text-align: center; font-size: 17px;
+  border: 1px solid var(--border-blue); overflow: visible;
+}
+.formula-box.hl-red { border-color: #dc2626; border-width: 2px; background: #fef2f2; }
+.formula-box.hl-green { border-color: #059669; border-width: 2px; background: #ecfdf5; }
+
+/* Example */
+.example-box {
+  background: #f8f9fe; border-left: 5px solid #1a3a5c;
+  border-radius: 0 8px 8px 0; padding: 20px 24px; margin: 20px 0; overflow: visible;
+}
+.example-num { font-size: 17px; font-weight: 800; color: #1a3a5c; margin-bottom: 10px; }
+.example-problem { font-size: 15px; margin-bottom: 14px; color: #1a3a5c; }
+
+/* Callout */
+.callout { border-radius: 10px; padding: 16px 22px; margin: 20px 0; font-size: 14px; line-height: 1.7; overflow: visible; }
+.callout.blue { background: #eff6ff; border-left: 5px solid #2563a8; color: #1e40af; }
+.callout.green { background: #ecfdf5; border-left: 5px solid #059669; color: #064e3b; }
+.callout.orange { background: #fffbea; border-left: 5px solid #d97706; color: #92400e; }
+.callout.red { background: #fef2f2; border-left: 5px solid #dc2626; color: #991b1b; }
+.callout-label { font-weight: 700; margin-bottom: 6px; font-size: 15px; }
+
+/* Memory */
+.memory-card {
+  background: linear-gradient(135deg, #fef3c7, #fffbeb);
+  border: 2px solid #fcd34d; border-radius: 14px;
+  padding: 24px; margin: 16px 0; overflow: visible;
+}
+.mem-icon { font-size: 28px; margin-bottom: 8px; }
+.mem-title { font-size: 18px; font-weight: 800; color: #d97706; margin-bottom: 10px; }
+.mem-body { font-size: 14px; line-height: 1.9; }
+
+/* Knowledge tree */
+.knowledge-tree { display: flex; flex-direction: column; align-items: center; gap: 14px; margin: 24px 0; }
+.tree-root {
+  background: var(--bg-formula); border: 2px solid var(--success);
+  border-radius: 12px; padding: 11px 22px; font-weight: 800;
+  font-size: 16px; color: var(--success);
+}
+.tree-branch-title { font-weight: 700; color: var(--primary); margin: 8px 0 4px; }
+.tree-row { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+.tree-leaf {
+  background: #fff; border: 1px solid var(--border-blue);
+  border-radius: 8px; padding: 7px 14px; font-size: 13px; color: var(--text-primary);
+}
+
+/* Step list */
+.step-list { margin: 12px 0; }
+.step-item { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 12px; font-size: 14px; line-height: 1.7; }
+.step-num {
+  width: 28px; height: 28px; background: var(--primary-light); color: #fff;
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 700; flex-shrink: 0;
+}
+
+/* Method table */
+.method-table { width: 100%; border-collapse: collapse; font-size: 14px; margin: 12px 0; }
+.method-table th { background: var(--primary); color: #fff; padding: 10px 8px; text-align: center; font-weight: 700; }
+.method-table td { padding: 10px 8px; text-align: center; border-bottom: 1px solid var(--border-light); background: #fff; }
+.method-table tr:nth-child(even) td { background: var(--bg-page); }
+.table-wrap { width: 100%; overflow-x: auto; margin: 12px 0; }
+.table-wrap .method-table { min-width: 620px; }
+
+/* Compare box */
+.compare-box {
+  display: flex; gap: 16px; margin: 16px 0;
+}
+.compare-col {
+  flex: 1; border-radius: 10px; padding: 16px 18px; font-size: 14px; line-height: 1.7;
+}
+.compare-col.pros { background: #ecfdf5; border: 1px solid #a7f3d0; }
+.compare-col.cons { background: #fef2f2; border: 1px solid #fecaca; }
+.compare-label { font-weight: 700; margin-bottom: 8px; font-size: 15px; }
+
+/* Demo */
+.demo-container {
+  background: var(--bg-card); border-radius: 14px; padding: 24px;
+  margin: 20px 0; border: 1px solid var(--border-light); overflow: visible;
+}
+.demo-title { font-size: 16px; font-weight: 700; color: var(--primary); margin-bottom: 14px; }
+.demo-svg-wrap { background: #fafbff; border: 1px solid var(--border-light); border-radius: 10px; overflow: visible; margin-bottom: 16px; }
+.demo-controls { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
+.demo-slider-group { display: flex; align-items: center; gap: 6px; font-size: 14px; }
+.demo-slider-group label { font-weight: 600; color: var(--primary); min-width: 28px; }
+.demo-slider-group input[type=range] { width: 100px; }
+.demo-slider-group .val { min-width: 32px; text-align: center; font-weight: 700; color: var(--accent); }
+.demo-result {
+  background: var(--bg-formula); border-radius: 8px; padding: 12px 18px;
+  margin-top: 12px; font-size: 15px; text-align: center; overflow: visible;
+}
+
+/* Derivation card */
+.deriv-card {
+  background: var(--bg-card); border-radius: 14px; padding: 24px 28px;
+  margin-bottom: 24px; border: 1px solid var(--border-light);
+  box-shadow: 0 2px 6px rgba(26,58,92,0.05); overflow: visible;
+}
+.deriv-head { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+.deriv-num {
+  width: 32px; height: 32px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px; font-weight: 800; color: #fff; flex-shrink: 0;
+}
+.deriv-num.geo { background: var(--success); }
+.deriv-num.alg { background: var(--primary-light); }
+.deriv-num.ana { background: var(--accent-orange); }
+.deriv-name { font-size: 17px; font-weight: 700; color: var(--primary); }
+.deriv-tag {
+  font-size: 11px; padding: 2px 10px; border-radius: 12px;
+  font-weight: 600; margin-left: auto;
+}
+.deriv-tag.geo { background: #ecfdf5; color: #064e3b; }
+.deriv-tag.alg { background: #eff6ff; color: #1e40af; }
+.deriv-tag.ana { background: #fffbea; color: #92400e; }
+.deriv-body { font-size: 14.5px; line-height: 1.85; }
+.deriv-body p { margin-bottom: 8px; }
+.deriv-svg {
+  background: #fafbff; border: 1px solid var(--border-light);
+  border-radius: 8px; margin: 14px 0; overflow: visible;
+}
+
+/* Branch separator */
+.branch-sep {
+  display: flex; align-items: center; gap: 12px;
+  margin: 32px 0 20px; padding: 0 4px;
+}
+.branch-sep-line { flex: 1; height: 2px; background: var(--border-light); }
+.branch-sep-label {
+  font-size: 14px; font-weight: 700; color: var(--primary-light);
+  padding: 4px 16px; background: var(--bg-formula); border-radius: 16px;
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- ═══════════ 封面 ═══════════ -->
+<div class="cover">
+  <div class="cover-badge">高中数学 · 解析几何</div>
+  <h1>点到直线距离公式的八种推导</h1>
+  <p class="subtitle">从面积法到拉格朗日乘数法——一个公式，八条路径，殊途同归</p>
+  <div class="tags">
+    <span class="tag">解析几何</span>
+    <span class="tag">距离公式</span>
+    <span class="tag">一题多解</span>
+    <span class="tag">数形结合</span>
+  </div>
+</div>
+
+<!-- ═══════════ 知识图谱 ═══════════ -->
+<div class="card section">
+  <div class="section-head">
+    <div class="section-num">★</div>
+    <h2>知识图谱：八法归三类</h2>
+  </div>
+  <p>点到直线距离公式是解析几何的基石。看似一个简单公式，背后却贯通了初中几何、高中代数、大学分析三大板块。以下知识树展示了八种推导方法的内在联系：</p>
+  <div class="knowledge-tree">
+    <div class="tree-root">点到直线距离公式</div>
+    <div style="font-size:13px;color:var(--text-secondary);">$$d = \frac{|Ax_0 + By_0 + C|}{\sqrt{A^2+B^2}}$$</div>
+    <div class="tree-branch-title">一、几何直观（§1–3）</div>
+    <div class="tree-row">
+      <div class="tree-leaf">法一：面积法</div>
+      <div class="tree-leaf">法二：求高法</div>
+      <div class="tree-leaf">法三：相似三角形法</div>
+    </div>
+    <div class="tree-branch-title">二、代数推演（§4–6）</div>
+    <div class="tree-row">
+      <div class="tree-leaf">法四：三角函数斜率法</div>
+      <div class="tree-leaf">法五：求点法（垂足坐标）</div>
+      <div class="tree-leaf">法六：对称求点法</div>
+    </div>
+    <div class="tree-branch-title">三、分析方法（§7–8）</div>
+    <div class="tree-row">
+      <div class="tree-leaf">法七：造圆切线法</div>
+      <div class="tree-leaf">法八：函数极值法</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ 核心公式 ═══════════ -->
+<div class="card section">
+  <div class="section-head">
+    <div class="section-num">◆</div>
+    <h2>核心公式</h2>
+  </div>
+  <p>设点 $P(x_0,\, y_0)$，直线 $l:\, Ax + By + C = 0$（$A$、$B$ 不同时为零），则点 $P$ 到直线 $l$ 的距离为：</p>
+  <div class="formula-box hl-red">
+    $$\boxed{\; d \;=\; \frac{\left|\, Ax_0 + By_0 + C \,\right|}{\sqrt{A^2 + B^2}}\;}$$
+  </div>
+  <p>以下八种推导方法，从不同角度抵达同一结论。每种方法均假设 $A \neq 0$ 且 $B \neq 0$（$A=0$ 或 $B=0$ 的情形可直接验证公式成立）。</p>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!--              第一篇：几何直观                     -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="branch-sep">
+  <div class="branch-sep-line"></div>
+  <div class="branch-sep-label">第一篇 · 几何直观</div>
+  <div class="branch-sep-line"></div>
+</div>
+
+<!-- ─── 法一：面积法 ─── -->
+<div class="deriv-card">
+  <div class="deriv-head">
+    <div class="deriv-num geo">1</div>
+    <div class="deriv-name">面积法</div>
+    <span class="deriv-tag geo">几何直观</span>
+  </div>
+  <div class="deriv-body">
+    <p><strong>核心思路：</strong>过 $P$ 分别作竖直线和水平线，与 $l$ 交于 $M$、$N$，构成直角 $\triangle PMN$。用两种方法算面积，一击命中 $PQ$。</p>
+
+    <div class="step-list">
+      <div class="step-item"><div class="step-num">1</div><div>过 $P(x_0,y_0)$ 作竖直线 $x=x_0$，交 $l$ 于 $M$。代入 $Ax+By+C=0$：$$y_M = -\frac{Ax_0+C}{B} \quad\Longrightarrow\quad |PM| = \left|y_0 - y_M\right| = \frac{|Ax_0+By_0+C|}{|B|}$$</div></div>
+      <div class="step-item"><div class="step-num">2</div><div>过 $P$ 作水平线 $y=y_0$，交 $l$ 于 $N$。代入：$$x_N = -\frac{By_0+C}{A} \quad\Longrightarrow\quad |PN| = \frac{|Ax_0+By_0+C|}{|A|}$$</div></div>
+      <div class="step-item"><div class="step-num">3</div><div>在直角 $\triangle PMN$ 中，$PQ \perp MN$（$Q$ 为垂足），由面积关系：$$\tfrac{1}{2}|PM|\cdot|PN| = \tfrac{1}{2}|MN|\cdot|PQ|$$ 其中 $|MN|=\sqrt{|PM|^2+|PN|^2} = |PM|\cdot|PN|\cdot\dfrac{\sqrt{A^2+B^2}}{|Ax_0+By_0+C|}$</div></div>
+      <div class="step-item"><div class="step-num">4</div><div>解出 $|PQ|$：$$d = |PQ| = \frac{|PM|\cdot|PN|}{|MN|} = \frac{|Ax_0+By_0+C|}{\sqrt{A^2+B^2}}$$</div></div>
+    </div>
+
+    <svg class="deriv-svg" viewBox="0 0 340 260" id="svg-area"></svg>
+
+    <div class="callout green">
+      <div class="callout-label">方法点评</div>
+      面积法只需初中知识（三角形面积公式），无需斜率或向量。关键是构造直角 $\triangle PMN$，将"点到直线距离"转化为"直角三角形的高"。
+    </div>
+  </div>
+</div>
+
+<!-- ─── 法二：求高法 ─── -->
+<div class="deriv-card">
+  <div class="deriv-head">
+    <div class="deriv-num geo">2</div>
+    <div class="deriv-name">求高法（截距三角形）</div>
+    <span class="deriv-tag geo">几何直观</span>
+  </div>
+  <div class="deriv-body">
+    <p><strong>核心思路：</strong>先求原点到直线的距离（利用截距三角形），再平移至一般点。</p>
+
+    <div class="step-list">
+      <div class="step-item"><div class="step-num">1</div><div>求 $l$ 与坐标轴的交点：令 $y=0$ 得 $R\!\left(-\dfrac{C}{A},\,0\right)$；令 $x=0$ 得 $S\!\left(0,\,-\dfrac{C}{B}\right)$。</div></div>
+      <div class="step-item"><div class="step-num">2</div><div>$|RS| = \sqrt{\dfrac{C^2}{A^2}+\dfrac{C^2}{B^2}} = \dfrac{|C|\sqrt{A^2+B^2}}{|AB|}$</div></div>
+      <div class="step-item"><div class="step-num">3</div><div>$\triangle ROS$ 的面积两种算法：$\;\dfrac{1}{2}\!\cdot\dfrac{|C|^2}{|AB|} = \dfrac{1}{2}|RS|\cdot h\;$，解得原点 $O$ 到 $l$ 的距离 $h = \dfrac{|C|}{\sqrt{A^2+B^2}}$</div></div>
+      <div class="step-item"><div class="step-num">4</div><div>平移坐标系至 $P(x_0,y_0)$：令 $x'=x-x_0,\;y'=y-y_0$，直线变为 $Ax'+By'+(Ax_0+By_0+C)=0$。将 $C$ 替换为 $Ax_0+By_0+C$：$$d = \frac{|Ax_0+By_0+C|}{\sqrt{A^2+B^2}}$$</div></div>
+    </div>
+
+    <svg class="deriv-svg" viewBox="0 0 340 260" id="svg-height"></svg>
+
+    <div class="callout green">
+      <div class="callout-label">方法点评</div>
+      先特殊（原点）后一般（平移），体现了"从特殊到一般"的数学思维。截距三角形的面积是桥梁。
+    </div>
+  </div>
+</div>
+
+<!-- ─── 法三：相似三角形法 ─── -->
+<div class="deriv-card">
+  <div class="deriv-head">
+    <div class="deriv-num geo">3</div>
+    <div class="deriv-name">相似三角形法</div>
+    <span class="deriv-tag geo">几何直观</span>
+  </div>
+  <div class="deriv-body">
+    <p><strong>核心思路：</strong>利用 $\triangle PQM \sim \triangle NPM$ 的相似比，直接建立 $PQ$ 与 $PM$、$PN$ 的关系。</p>
+
+    <div class="step-list">
+      <div class="step-item"><div class="step-num">1</div><div>设 $Q$ 为 $P$ 在 $l$ 上的垂足。过 $P$ 作竖直线交 $l$ 于 $M$，作水平线交 $l$ 于 $N$。则 $\angle PQM = \angle MPN = 90°$。</div></div>
+      <div class="step-item"><div class="step-num">2</div><div>由于 $\angle PMQ = \angle NMP$（公共角），$\triangle PQM \sim \triangle NPM$（AA相似），故：$$\frac{PQ}{PM} = \frac{PN}{MN} \quad\Longrightarrow\quad PQ = \frac{PM \cdot PN}{MN}$$</div></div>
+      <div class="step-item"><div class="step-num">3</div><div>由法一已知 $|PM|=\dfrac{|Ax_0+By_0+C|}{|B|}$，$|PN|=\dfrac{|Ax_0+By_0+C|}{|A|}$，$|MN|=\dfrac{|Ax_0+By_0+C|\sqrt{A^2+B^2}}{|AB|}$</div></div>
+      <div class="step-item"><div class="step-num">4</div><div>代入：$$d = PQ = \frac{\dfrac{|Ax_0+By_0+C|^2}{|AB|}}{\dfrac{|Ax_0+By_0+C|\sqrt{A^2+B^2}}{|AB|}} = \frac{|Ax_0+By_0+C|}{\sqrt{A^2+B^2}}$$</div></div>
+    </div>
+
+    <h4>补充：定比分点公式及定理</h4>
+    <p>上述相似三角形不仅给出了 $PQ$ 的长度，还揭示了垂足 $Q$ 在线段 $MN$ 上的精确位置。借助<strong>定比分点公式</strong>，我们可以直接求出垂足 $Q$ 的坐标——将相似三角形法从"求长度"推进到"求坐标"。</p>
+
+    <div class="callout blue">
+      <div class="callout-label">定比分点定理</div>
+      设 $P_1(x_1,\,y_1)$、$P_2(x_2,\,y_2)$ 为平面上两不同点，点 $P$ 分有向线段 $\overrightarrow{P_1P_2}$ 所成的比为 $\lambda$（即 $\overrightarrow{P_1P} = \lambda\,\overrightarrow{PP_2}$，$\lambda \neq -1$），则分点 $P$ 的坐标为：
+      $$x = \frac{x_1 + \lambda\, x_2}{1+\lambda}, \quad y = \frac{y_1 + \lambda\, y_2}{1+\lambda}$$
+      <span style="font-size:13px;">当 $\lambda > 0$ 时 $P$ 为内分点（在线段 $P_1P_2$ 上）；当 $\lambda < 0$（$\lambda \neq -1$）时 $P$ 为外分点；$\lambda = 1$ 时 $P$ 为中点。</span>
+    </div>
+
+    <div class="step-list">
+      <div class="step-item"><div class="step-num">5</div><div><strong>确定分比 $\lambda$。</strong>由步骤 2 的对应关系 $P\!\leftrightarrow\!N,\; Q\!\leftrightarrow\!P,\; M\!\leftrightarrow\!M$，得 $\dfrac{MQ}{PM} = \dfrac{PM}{MN}$，故 $MQ = \dfrac{PM^2}{MN}$。利用 $MN^2 = PM^2 + PN^2$，得 $QN = MN - MQ = \dfrac{PN^2}{MN}$。因此 $Q$ 分 $\overrightarrow{MN}$ 的比为：$$\lambda = \frac{MQ}{QN} = \frac{PM^2}{PN^2} = \frac{\;\dfrac{(Ax_0+By_0+C)^2}{B^2}\;}{\;\dfrac{(Ax_0+By_0+C)^2}{A^2}\;} = \frac{A^2}{B^2}$$</div></div>
+      <div class="step-item"><div class="step-num">6</div><div><strong>代入定比分点公式求 $Q$。</strong>已知 $M\!\left(x_0,\,-\dfrac{Ax_0+C}{B}\right)$、$N\!\left(-\dfrac{By_0+C}{A},\,y_0\right)$，$\lambda = \dfrac{A^2}{B^2}$，故：$$x_Q = \frac{x_0 + \dfrac{A^2}{B^2}\!\left(-\dfrac{By_0+C}{A}\right)}{1+\dfrac{A^2}{B^2}} = \frac{B^2 x_0 - A(By_0+C)}{A^2+B^2} = x_0 - \frac{A(Ax_0+By_0+C)}{A^2+B^2}$$ $$y_Q = \frac{-\dfrac{Ax_0+C}{B} + \dfrac{A^2}{B^2}\cdot y_0}{1+\dfrac{A^2}{B^2}} = \frac{A^2 y_0 - B(Ax_0+C)}{A^2+B^2} = y_0 - \frac{B(Ax_0+By_0+C)}{A^2+B^2}$$</div></div>
+      <div class="step-item"><div class="step-num">7</div><div><strong>用两点距离公式验证。</strong>$$d = |PQ| = \sqrt{(x_0-x_Q)^2+(y_0-y_Q)^2} = \sqrt{\left(\frac{A(Ax_0+By_0+C)}{A^2+B^2}\right)^{\!2}+\left(\frac{B(Ax_0+By_0+C)}{A^2+B^2}\right)^{\!2}}$$ $$= \frac{|Ax_0+By_0+C|\,\sqrt{A^2+B^2}}{A^2+B^2} = \frac{|Ax_0+By_0+C|}{\sqrt{A^2+B^2}}$$</div></div>
+    </div>
+
+    <div class="callout orange">
+      <div class="callout-label">定比分点视角的洞察</div>
+      分比 $\lambda = A^2/B^2$ 完全由直线方程的系数决定，与点 $P$ 的位置无关——无论 $P$ 在何处，垂足 $Q$ 始终以同一比例分割 $MN$。定比分点公式将"相似比"从纯粹的长度关系升级为"坐标计算工具"，使相似三角形法不仅能求距离，还能直接给出垂足坐标，与法五（求点法）殊途同归。
+    </div>
+
+    <svg class="deriv-svg" viewBox="0 0 340 260" id="svg-similar"></svg>
+
+    <div class="callout green">
+      <div class="callout-label">方法点评</div>
+      相似三角形法与面积法共用同一构图（$M$、$N$ 两点），但从"比例"而非"面积"切入。补充定比分点公式后，该方法进一步获得"求垂足坐标"的能力——从初中几何的相似比，自然过渡到高中解析几何的坐标运算，体现了知识体系的连贯性。
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!--              第二篇：代数推演                     -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="branch-sep">
+  <div class="branch-sep-line"></div>
+  <div class="branch-sep-label">第二篇 · 代数推演</div>
+  <div class="branch-sep-line"></div>
+</div>
+
+<!-- ─── 法四：三角函数斜率法 ─── -->
+<div class="deriv-card">
+  <div class="deriv-head">
+    <div class="deriv-num alg">4</div>
+    <div class="deriv-name">三角函数斜率法</div>
+    <span class="deriv-tag alg">代数推演</span>
+  </div>
+  <div class="deriv-body">
+    <p><strong>核心思路：</strong>引入倾斜角 $\alpha$，将距离用 $\cos\alpha$ 表示，利用斜率与三角函数的关系化简。</p>
+
+    <div class="step-list">
+      <div class="step-item"><div class="step-num">1</div><div>设 $l$ 的倾斜角为 $\alpha$，则 $\tan\alpha = -\dfrac{A}{B}$，$\cos\alpha = \dfrac{-B}{\pm\sqrt{A^2+B^2}}$，$\sin\alpha = \dfrac{A}{\pm\sqrt{A^2+B^2}}$。</div></div>
+      <div class="step-item"><div class="step-num">2</div><div>设垂足 $Q(x_Q, y_Q)$。$PQ$ 的斜率为 $\dfrac{1}{\tan\alpha}=\dfrac{B}{A}$（$PQ\perp l$），故：$$\frac{y_0-y_Q}{x_0-x_Q} = \frac{B}{A} \quad\Longrightarrow\quad y_Q - y_0 = \frac{B}{A}(x_Q - x_0)$$</div></div>
+      <div class="step-item"><div class="step-num">3</div><div>距离 $d = |PQ| = \dfrac{|x_0-x_Q|}{\cos\alpha}$。将 $Q$ 在 $l$ 上的条件 $Ax_Q+By_Q+C=0$ 与上式联立，解得：$$x_0 - x_Q = \frac{B(Ax_0+By_0+C)}{A^2+B^2}$$</div></div>
+      <div class="step-item"><div class="step-num">4</div><div>代入：$$d = \frac{|x_0-x_Q|}{|\cos\alpha|} = \frac{|B|\cdot|Ax_0+By_0+C|}{A^2+B^2} \cdot \frac{\sqrt{A^2+B^2}}{|B|} = \frac{|Ax_0+By_0+C|}{\sqrt{A^2+B^2}}$$</div></div>
+    </div>
+
+    <svg class="deriv-svg" viewBox="0 0 340 260" id="svg-trig"></svg>
+
+    <div class="callout blue">
+      <div class="callout-label">方法点评</div>
+      三角函数斜率法是教材常见推导之一。引入倾斜角 $\alpha$ 将几何问题三角化，$\cos\alpha$ 充当了"投影因子"。
+    </div>
+  </div>
+</div>
+
+<!-- ─── 法五：求点法 ─── -->
+<div class="deriv-card">
+  <div class="deriv-head">
+    <div class="deriv-num alg">5</div>
+    <div class="deriv-name">求点法（垂足坐标）</div>
+    <span class="deriv-tag alg">代数推演</span>
+  </div>
+  <div class="deriv-body">
+    <p><strong>核心思路：</strong>直接求出垂足 $Q$ 的坐标，再用两点距离公式。</p>
+
+    <div class="step-list">
+      <div class="step-item"><div class="step-num">1</div><div>$PQ \perp l$，$l$ 的法向量为 $(A,B)$，故 $PQ$ 的参数方程为：$x = x_0 + At,\; y = y_0 + Bt$</div></div>
+      <div class="step-item"><div class="step-num">2</div><div>$Q$ 在 $l$ 上：$A(x_0+At)+B(y_0+Bt)+C=0$，解得：$$t = -\frac{Ax_0+By_0+C}{A^2+B^2}$$</div></div>
+      <div class="step-item"><div class="step-num">3</div><div>$Q$ 的坐标：$x_Q = x_0 - \dfrac{A(Ax_0+By_0+C)}{A^2+B^2}$，$y_Q = y_0 - \dfrac{B(Ax_0+By_0+C)}{A^2+B^2}$</div></div>
+      <div class="step-item"><div class="step-num">4</div><div>距离：$$d = |PQ| = |t|\sqrt{A^2+B^2} = \frac{|Ax_0+By_0+C|}{A^2+B^2}\cdot\sqrt{A^2+B^2} = \frac{|Ax_0+By_0+C|}{\sqrt{A^2+B^2}}$$</div></div>
+    </div>
+
+    <svg class="deriv-svg" viewBox="0 0 340 260" id="svg-point"></svg>
+
+    <div class="callout blue">
+      <div class="callout-label">方法点评</div>
+      求点法最"暴力"——直接算出垂足坐标，没有任何技巧。但正因如此，它给出了垂足的显式表达式，在编程实现中最为实用。参数 $t$ 的引入是关键。
+    </div>
+  </div>
+</div>
+
+<!-- ─── 法六：对称求点法 ─── -->
+<div class="deriv-card">
+  <div class="deriv-head">
+    <div class="deriv-num alg">6</div>
+    <div class="deriv-name">对称求点法</div>
+    <span class="deriv-tag alg">代数推演</span>
+  </div>
+  <div class="deriv-body">
+    <p><strong>核心思路：</strong>求 $P$ 关于 $l$ 的对称点 $P'$，则 $d = \dfrac{1}{2}|PP'|$。</p>
+
+    <div class="step-list">
+      <div class="step-item"><div class="step-num">1</div><div>设 $P'(x',y')$。由对称性：$PP'$ 的中点 $M\!\left(\dfrac{x_0+x'}{2},\dfrac{y_0+y'}{2}\right)$ 在 $l$ 上，且 $PP' \perp l$。</div></div>
+      <div class="step-item"><div class="step-num">2</div><div>$PP' \perp l \;\Rightarrow\; \dfrac{x'-x_0}{A} = \dfrac{y'-y_0}{B} = t$，即 $x'=x_0+At$，$y'=y_0+Bt$。</div></div>
+      <div class="step-item"><div class="step-num">3</div><div>中点在 $l$ 上：$A\!\left(x_0+\dfrac{At}{2}\right)+B\!\left(y_0+\dfrac{Bt}{2}\right)+C=0$，解得 $t = -\dfrac{2(Ax_0+By_0+C)}{A^2+B^2}$</div></div>
+      <div class="step-item"><div class="step-num">4</div><div>$|PP'| = |t|\sqrt{A^2+B^2} = \dfrac{2|Ax_0+By_0+C|}{\sqrt{A^2+B^2}}$，故 $d = \dfrac{1}{2}|PP'| = \dfrac{|Ax_0+By_0+C|}{\sqrt{A^2+B^2}}$</div></div>
+    </div>
+
+    <svg class="deriv-svg" viewBox="0 0 340 260" id="svg-symmetric"></svg>
+
+    <div class="callout blue">
+      <div class="callout-label">方法点评</div>
+      对称求点法将"距离"问题转化为"求对称点"问题。对称点在解析几何中应用广泛（如反射光线路径），此法一举两得。
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!--              第三篇：分析方法                     -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="branch-sep">
+  <div class="branch-sep-line"></div>
+  <div class="branch-sep-label">第三篇 · 分析方法</div>
+  <div class="branch-sep-line"></div>
+</div>
+
+<!-- ─── 法七：造圆切线法 ─── -->
+<div class="deriv-card">
+  <div class="deriv-head">
+    <div class="deriv-num ana">7</div>
+    <div class="deriv-name">造圆切线法</div>
+    <span class="deriv-tag ana">分析方法</span>
+  </div>
+  <div class="deriv-body">
+    <p><strong>核心思路：</strong>以 $P$ 为圆心作圆，使圆与 $l$ 相切。相切条件（判别式 $\Delta=0$）给出半径 $r=d$。</p>
+
+    <div class="step-list">
+      <div class="step-item"><div class="step-num">1</div><div>圆 $(x-x_0)^2+(y-y_0)^2=r^2$。由 $l$ 解出 $y=-\dfrac{Ax+C}{B}$，代入圆方程。</div></div>
+      <div class="step-item"><div class="step-num">2</div><div>整理为关于 $x$ 的二次方程：$$(A^2+B^2)x^2 + 2[A(B y_0+C)-B^2 x_0]x + \cdots = 0$$</div></div>
+      <div class="step-item"><div class="step-num">3</div><div>相切 $\Leftrightarrow \Delta=0$。展开判别式并化简：$$\Delta = 4(A^2+B^2)r^2 - 4(Ax_0+By_0+C)^2 = 0$$</div></div>
+      <div class="step-item"><div class="step-num">4</div><div>解得 $r^2 = \dfrac{(Ax_0+By_0+C)^2}{A^2+B^2}$，即 $d = r = \dfrac{|Ax_0+By_0+C|}{\sqrt{A^2+B^2}}$</div></div>
+    </div>
+
+    <svg class="deriv-svg" viewBox="0 0 340 260" id="svg-circle"></svg>
+
+    <div class="callout orange">
+      <div class="callout-label">方法点评</div>
+      造圆切线法将距离问题转化为"圆与直线相切"的代数条件。判别式 $\Delta=0$ 是核心工具，体现了代数与几何的深度交融。
+    </div>
+  </div>
+</div>
+
+<!-- ─── 法八：函数极值法 ─── -->
+<div class="deriv-card">
+  <div class="deriv-head">
+    <div class="deriv-num ana">8</div>
+    <div class="deriv-name">函数极值法（拉格朗日乘数法）</div>
+    <span class="deriv-tag ana">分析方法</span>
+  </div>
+  <div class="deriv-body">
+    <p><strong>核心思路：</strong>距离最小化 $\Leftrightarrow$ 距离平方最小化。用拉格朗日乘数法在约束 $Ax+By+C=0$ 下求 $f(x,y)=(x-x_0)^2+(y-y_0)^2$ 的最小值。</p>
+
+    <div class="step-list">
+      <div class="step-item"><div class="step-num">1</div><div>构造拉格朗日函数：$\mathcal{L} = (x-x_0)^2+(y-y_0)^2 - \lambda(Ax+By+C)$</div></div>
+      <div class="step-item"><div class="step-num">2</div><div>偏导为零：$\dfrac{\partial\mathcal{L}}{\partial x}=2(x-x_0)-\lambda A=0$，$\dfrac{\partial\mathcal{L}}{\partial y}=2(y-y_0)-\lambda B=0$。故 $x-x_0=\dfrac{\lambda A}{2}$，$y-y_0=\dfrac{\lambda B}{2}$。</div></div>
+      <div class="step-item"><div class="step-num">3</div><div>代入约束：$A\!\left(x_0+\dfrac{\lambda A}{2}\right)+B\!\left(y_0+\dfrac{\lambda B}{2}\right)+C=0$，解得 $\lambda = -\dfrac{2(Ax_0+By_0+C)}{A^2+B^2}$</div></div>
+      <div class="step-item"><div class="step-num">4</div><div>最小距离平方：$d^2 = (x-x_0)^2+(y-y_0)^2 = \dfrac{\lambda^2}{4}(A^2+B^2) = \dfrac{(Ax_0+By_0+C)^2}{A^2+B^2}$，开方即得。</div></div>
+    </div>
+
+    <svg class="deriv-svg" viewBox="0 0 340 260" id="svg-lagrange"></svg>
+
+    <div class="callout orange">
+      <div class="callout-label">方法点评</div>
+      拉格朗日乘数法是高等数学的"重武器"。用在此处虽有些"杀鸡用牛刀"，但展示了优化方法的普适性——任何约束极值问题都能用同一框架处理。
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!--              交互演示                            -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="card section">
+  <div class="section-head">
+    <div class="section-num">▶</div>
+    <h2>交互演示：动态距离可视化</h2>
+  </div>
+  <p>拖动滑块改变点 $P$ 的位置和直线 $l$ 的参数，实时观察距离 $d$ 的变化。</p>
+
+  <div class="demo-container">
+    <div class="demo-svg-wrap">
+      <svg id="mainDemo" viewBox="0 0 560 400" style="width:100%;display:block;">
+        <defs>
+          <pattern id="grid" width="28" height="28" patternUnits="userSpaceOnUse">
+            <path d="M 28 0 L 0 0 0 28" fill="none" stroke="#e5e7eb" stroke-width="0.5"/>
+          </pattern>
+          <marker id="arrowR" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+            <polygon points="0 0, 8 3, 0 6" fill="#374151"/>
+          </marker>
+          <marker id="arrowU" markerWidth="6" markerHeight="8" refX="3" refY="0" orient="auto">
+            <polygon points="0 8, 3 0, 6 8" fill="#374151"/>
+          </marker>
+        </defs>
+        <rect width="560" height="400" fill="url(#grid)"/>
+        <!-- Axes -->
+        <line x1="0" y1="200" x2="555" y2="200" stroke="#374151" stroke-width="1.5" marker-end="url(#arrowR)"/>
+        <line x1="280" y1="395" x2="280" y2="5" stroke="#374151" stroke-width="1.5" marker-end="url(#arrowU)"/>
+        <text x="548" y="218" font-size="14" fill="#374151" font-style="italic">x</text>
+        <text x="290" y="16" font-size="14" fill="#374151" font-style="italic">y</text>
+        <!-- Tick marks -->
+        <g id="ticks" stroke="#9ca3af" stroke-width="0.8" font-size="10" fill="#9ca3af"></g>
+        <!-- Line l -->
+        <line id="demoLine" x1="0" y1="100" x2="560" y2="300" stroke="#2563a8" stroke-width="2.5"/>
+        <!-- Perpendicular PQ -->
+        <line id="demoPerp" x1="280" y1="120" x2="280" y2="200" stroke="#059669" stroke-width="1.8" stroke-dasharray="6,4"/>
+        <!-- Right angle mark (polyline for accurate corner indicator) -->
+        <polyline id="demoRight" points="0,0 0,0 0,0" fill="none" stroke="#059669" stroke-width="1.2" stroke-linejoin="miter"/>
+        <!-- Point P -->
+        <circle id="demoP" cx="280" cy="120" r="7" fill="#dc2626" stroke="#fff" stroke-width="2"/>
+        <!-- Point Q -->
+        <circle id="demoQ" cx="280" cy="200" r="4" fill="#059669"/>
+        <!-- Labels -->
+        <text id="demoLabelP" x="290" y="115" font-size="15" font-weight="700" fill="#dc2626">P</text>
+        <text id="demoLabelQ" x="290" y="215" font-size="13" font-weight="600" fill="#059669">Q</text>
+        <text id="demoLabelD" x="290" y="165" font-size="14" font-weight="700" fill="#059669">d</text>
+        <text id="demoLabelL" x="480" y="280" font-size="15" font-weight="700" fill="#2563a8" font-style="italic">l</text>
+      </svg>
+    </div>
+
+    <div class="demo-controls">
+      <div class="demo-slider-group">
+        <label>A =</label>
+        <input type="range" id="sliderA" min="-5" max="5" value="1" step="1">
+        <span class="val" id="valA">1</span>
+      </div>
+      <div class="demo-slider-group">
+        <label>B =</label>
+        <input type="range" id="sliderB" min="-5" max="5" value="2" step="1">
+        <span class="val" id="valB">2</span>
+      </div>
+      <div class="demo-slider-group">
+        <label>C =</label>
+        <input type="range" id="sliderC" min="-10" max="10" value="-4" step="1">
+        <span class="val" id="valC">-4</span>
+      </div>
+      <div class="demo-slider-group">
+        <label>x₀=</label>
+        <input type="range" id="sliderPx" min="-8" max="8" value="0" step="1">
+        <span class="val" id="valPx">0</span>
+      </div>
+      <div class="demo-slider-group">
+        <label>y₀=</label>
+        <input type="range" id="sliderPy" min="-6" max="6" value="3" step="1">
+        <span class="val" id="valPy">3</span>
+      </div>
+    </div>
+
+    <div class="demo-result" id="demoResult">
+      直线 $l$：$x + 2y - 4 = 0$，点 $P(0,\,3)$，距离 $d = \dfrac{|0+6-4|}{\sqrt{5}} = \dfrac{2}{\sqrt{5}} \approx 0.894$
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!--              方法对比总结                        -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="card section">
+  <div class="section-head">
+    <div class="section-num">∑</div>
+    <h2>八法对比与知识网络</h2>
+  </div>
+
+  <div class="table-wrap">
+    <table class="method-table">
+      <tr><th>方法</th><th>类别</th><th>核心工具</th><th>知识层级</th></tr>
+      <tr><td>面积法</td><td>几何直观</td><td>直角三角形面积</td><td>初中</td></tr>
+      <tr><td>求高法</td><td>几何直观</td><td>截距三角形 + 平移</td><td>初中 → 高中</td></tr>
+      <tr><td>相似三角形法</td><td>几何直观</td><td>AA相似比 + 定比分点</td><td>初中 → 高中</td></tr>
+      <tr><td>三角函数斜率法</td><td>代数推演</td><td>倾斜角 + 投影</td><td>高中</td></tr>
+      <tr><td>求点法</td><td>代数推演</td><td>法向量参数方程</td><td>高中</td></tr>
+      <tr><td>对称求点法</td><td>代数推演</td><td>对称点 + 中点条件</td><td>高中</td></tr>
+      <tr><td>造圆切线法</td><td>分析方法</td><td>判别式 Δ = 0</td><td>高中 → 大学</td></tr>
+      <tr><td>函数极值法</td><td>分析方法</td><td>拉格朗日乘数法</td><td>大学</td></tr>
+    </table>
+  </div>
+
+  <div class="callout blue">
+    <div class="callout-label">核心洞察</div>
+    八种方法看似路径各异，本质上都在做同一件事：将"点到直线的最短距离"这一几何直觉，用不同的数学语言精确表达。几何方法靠面积和比例，代数方法靠方程和斜率，分析方法靠优化和判别式——殊途同归，一击命中。
+  </div>
+
+  <div class="memory-card">
+    <div class="mem-icon">📝</div>
+    <div class="mem-title">记忆锚点</div>
+    <div class="mem-body">
+      <strong>公式：</strong>$d = \dfrac{|Ax_0+By_0+C|}{\sqrt{A^2+B^2}}$<br>
+      <strong>三组八法：</strong>几何三法（面积、求高、相似）→ 代数三法（斜率、求点、对称）→ 分析二法（圆切线、极值）<br>
+      <strong>共同结构：</strong>分子 = 将点代入直线的"绝对值"，分母 = 法向量 $(A,B)$ 的模长<br>
+      <strong>最快路径：</strong>求点法（直接算垂足）；最巧路径：面积法（初中即可理解）；最猛路径：拉格朗日乘数法（大学视角一步到位）
+    </div>
+  </div>
+</div>
+
+</div><!-- /container -->
+
+<script>
+// ═══════════════════════════════════════════
+//  静态SVG图示生成（8种推导方法各一张）
+// ═══════════════════════════════════════════
+
+// 通用参数
+var demo = {
+  ox: 100, oy: 170, sc: 22, // 各静态图的坐标原点和比例
+  P: [3, 3],     // P(x0,y0)
+  A: 1, B: 2, C: -5  // 直线 x+2y-5=0 → y=(5-x)/2
+};
+
+function m2s(x, y, ox, oy, sc) {
+  return [ox + x * sc, oy - y * sc];
+}
+
+function lineY(x, A, B, C) { return -(A*x+C)/B; }
+function lineX(y, A, B, C) { return -(B*y+C)/A; }
+
+function drawAxes(svg, ox, oy, sc, w, h) {
+  var ns = 'http://www.w3.org/2000/svg';
+  // x-axis
+  var xa = document.createElementNS(ns,'line');
+  xa.setAttribute('x1',10); xa.setAttribute('y1',oy);
+  xa.setAttribute('x2',w-10); xa.setAttribute('y2',oy);
+  xa.setAttribute('stroke','#9ca3af'); xa.setAttribute('stroke-width','1');
+  svg.appendChild(xa);
+  // y-axis
+  var ya = document.createElementNS(ns,'line');
+  ya.setAttribute('x1',ox); ya.setAttribute('y1',h-10);
+  ya.setAttribute('x2',ox); ya.setAttribute('y2',10);
+  ya.setAttribute('stroke','#9ca3af'); ya.setAttribute('stroke-width','1');
+  svg.appendChild(ya);
+  // labels
+  var xl = document.createElementNS(ns,'text');
+  xl.setAttribute('x',w-18); xl.setAttribute('y',oy+16);
+  xl.setAttribute('font-size','12'); xl.setAttribute('fill','#9ca3af');
+  xl.setAttribute('font-style','italic'); xl.textContent='x'; svg.appendChild(xl);
+  var yl = document.createElementNS(ns,'text');
+  yl.setAttribute('x',ox+8); yl.setAttribute('y',18);
+  yl.setAttribute('font-size','12'); yl.setAttribute('fill','#9ca3af');
+  yl.setAttribute('font-style','italic'); yl.textContent='y'; svg.appendChild(yl);
+}
+
+function drawLine(svg, x1,y1,x2,y2, color, width) {
+  var ns = 'http://www.w3.org/2000/svg';
+  var l = document.createElementNS(ns,'line');
+  l.setAttribute('x1',x1.toFixed(1)); l.setAttribute('y1',y1.toFixed(1));
+  l.setAttribute('x2',x2.toFixed(1)); l.setAttribute('y2',y2.toFixed(1));
+  l.setAttribute('stroke',color||'#2563a8'); l.setAttribute('stroke-width',width||'2');
+  svg.appendChild(l);
+}
+
+function drawDashed(svg, x1,y1,x2,y2, color) {
+  var ns = 'http://www.w3.org/2000/svg';
+  var l = document.createElementNS(ns,'line');
+  l.setAttribute('x1',x1.toFixed(1)); l.setAttribute('y1',y1.toFixed(1));
+  l.setAttribute('x2',x2.toFixed(1)); l.setAttribute('y2',y2.toFixed(1));
+  l.setAttribute('stroke',color||'#059669'); l.setAttribute('stroke-width','1.5');
+  l.setAttribute('stroke-dasharray','5,3');
+  svg.appendChild(l);
+}
+
+function drawCircle(svg, cx,cy,r, fill, stroke, sw) {
+  var ns = 'http://www.w3.org/2000/svg';
+  var c = document.createElementNS(ns,'circle');
+  c.setAttribute('cx',cx.toFixed(1)); c.setAttribute('cy',cy.toFixed(1));
+  c.setAttribute('r',r.toFixed(1));
+  c.setAttribute('fill',fill||'none'); c.setAttribute('stroke',stroke||'#2563a8');
+  c.setAttribute('stroke-width',sw||'1.5');
+  svg.appendChild(c);
+}
+
+function drawPoint(svg, x,y, r, fill, label, lx,ly) {
+  var ns = 'http://www.w3.org/2000/svg';
+  var c = document.createElementNS(ns,'circle');
+  c.setAttribute('cx',x.toFixed(1)); c.setAttribute('cy',y.toFixed(1));
+  c.setAttribute('r',r||'4'); c.setAttribute('fill',fill||'#dc2626');
+  svg.appendChild(c);
+  if (label) {
+    var t = document.createElementNS(ns,'text');
+    t.setAttribute('x',(lx||x+8).toFixed(1)); t.setAttribute('y',(ly||y-6).toFixed(1));
+    t.setAttribute('font-size','13'); t.setAttribute('font-weight','700');
+    t.setAttribute('fill',fill||'#dc2626'); t.textContent=label;
+    svg.appendChild(t);
+  }
+}
+
+function drawLabel(svg, x,y, text, color, size) {
+  var ns = 'http://www.w3.org/2000/svg';
+  var t = document.createElementNS(ns,'text');
+  t.setAttribute('x',x.toFixed(1)); t.setAttribute('y',y.toFixed(1));
+  t.setAttribute('font-size',size||'12'); t.setAttribute('fill',color||'#1a3a5c');
+  t.textContent=text; svg.appendChild(t);
+}
+
+// 带下标的数学文本，segments: [{t:'Q', ital:true}, {t:'('}, {t:'x', ital:true}, {t:'Q', sub:true}, ...]
+function drawMathText(svg, x, y, segments, color, size) {
+  var ns = 'http://www.w3.org/2000/svg';
+  var t = document.createElementNS(ns,'text');
+  t.setAttribute('x', x.toFixed(1));
+  t.setAttribute('y', y.toFixed(1));
+  t.setAttribute('font-size', size || '12');
+  t.setAttribute('fill', color || '#1a3a5c');
+  var baseSize = size || 12;
+  var subSize = Math.round(baseSize * 0.7);
+  var dyOffset = Math.round(baseSize * 0.28);
+  var curDy = 0;
+  for (var i = 0; i < segments.length; i++) {
+    var seg = segments[i];
+    var ts = document.createElementNS(ns,'tspan');
+    ts.textContent = seg.t;
+    if (seg.ital) ts.setAttribute('font-style','italic');
+    if (seg.bold) ts.setAttribute('font-weight','700');
+    if (seg.sub) {
+      ts.setAttribute('font-size', subSize.toString());
+      if (curDy === 0) { ts.setAttribute('dy', dyOffset.toString()); curDy = dyOffset; }
+    } else {
+      if (curDy !== 0) { ts.setAttribute('dy', (-curDy).toString()); curDy = 0; }
+    }
+    t.appendChild(ts);
+  }
+  svg.appendChild(t);
+}
+
+function drawRightAngle(svg, cx,cy, dx1,dy1, dx2,dy2, size) {
+  var ns = 'http://www.w3.org/2000/svg';
+  var s = size||6;
+  var p = document.createElementNS(ns,'polyline');
+  var p1x=cx+dx1*s, p1y=cy+dy1*s;
+  var p2x=cx+dx1*s+dx2*s, p2y=cy+dy1*s+dy2*s;
+  var p3x=cx+dx2*s, p3y=cy+dy2*s;
+  p.setAttribute('points', p1x.toFixed(1)+','+p1y.toFixed(1)+' '+p2x.toFixed(1)+','+p2y.toFixed(1)+' '+p3x.toFixed(1)+','+p3y.toFixed(1));
+  p.setAttribute('fill','none'); p.setAttribute('stroke','#059669'); p.setAttribute('stroke-width','1.2'); p.setAttribute('stroke-linejoin','miter');
+  svg.appendChild(p);
+}
+
+function getLineEnds(A,B,C, ox,oy,sc, w,h) {
+  var xMin = -ox/sc, xMax = (w-ox)/sc;
+  var yMin = -(h-oy)/sc, yMax = oy/sc;
+  var pts = [];
+  if (B !== 0) {
+    var y1 = lineY(xMin,A,B,C); if (y1>=yMin && y1<=yMax) pts.push([xMin,y1]);
+    var y2 = lineY(xMax,A,B,C); if (y2>=yMin && y2<=yMax) pts.push([xMax,y2]);
+  }
+  if (A !== 0) {
+    var x1 = lineX(yMin,A,B,C); if (x1>=xMin && x1<=xMax) pts.push([x1,yMin]);
+    var x2 = lineX(yMax,A,B,C); if (x2>=xMin && x2<=xMax) pts.push([x2,yMax]);
+  }
+  // deduplicate and take first two
+  var unique = [];
+  for (var i=0; i<pts.length; i++) {
+    var dup = false;
+    for (var j=0; j<unique.length; j++) {
+      if (Math.abs(pts[i][0]-unique[j][0])<0.01 && Math.abs(pts[i][1]-unique[j][1])<0.01) { dup=true; break; }
+    }
+    if (!dup) unique.push(pts[i]);
+  }
+  return unique.slice(0,2);
+}
+
+function buildStaticDiagram(svgId, type) {
+  var svg = document.getElementById(svgId);
+  if (!svg) return;
+  var w=340, h=260, ox=100, oy=170, sc=22;
+  var x0=3, y0=3, A=1, B=2, C=-5;
+
+  drawAxes(svg, ox, oy, sc, w, h);
+
+  // Line
+  var ends = getLineEnds(A,B,C, ox,oy,sc, w,h);
+  if (ends.length===2) {
+    var e1=m2s(ends[0][0],ends[0][1],ox,oy,sc), e2=m2s(ends[1][0],ends[1][1],ox,oy,sc);
+    drawLine(svg, e1[0],e1[1],e2[0],e2[1]);
+  }
+
+  // P
+  var Ps = m2s(x0,y0,ox,oy,sc);
+  drawPoint(svg, Ps[0],Ps[1], 5, '#dc2626', 'P', Ps[0]+8,Ps[1]-6);
+
+  // Q (foot of perpendicular)
+  var t = -(A*x0+B*y0+C)/(A*A+B*B);
+  var xQ = x0+A*t, yQ = y0+B*t;
+  var Qs = m2s(xQ,yQ,ox,oy,sc);
+  drawPoint(svg, Qs[0],Qs[1], 3.5, '#059669', 'Q', Qs[0]+6,Qs[1]+14);
+  drawDashed(svg, Ps[0],Ps[1],Qs[0],Qs[1], '#059669');
+
+  if (type==='area' || type==='similar') {
+    // M: vertical from P meets line
+    var yM = lineY(x0,A,B,C);
+    var Ms = m2s(x0,yM,ox,oy,sc);
+    drawDashed(svg, Ps[0],Ps[1],Ms[0],Ms[1], '#d97706');
+    drawPoint(svg, Ms[0],Ms[1], 3.5, '#d97706', 'M', Ms[0]+6,Ms[1]+14);
+    // N: horizontal from P meets line
+    var xN = lineX(y0,A,B,C);
+    var Ns = m2s(xN,y0,ox,oy,sc);
+    drawDashed(svg, Ps[0],Ps[1],Ns[0],Ns[1], '#7c3aed');
+    drawPoint(svg, Ns[0],Ns[1], 3.5, '#7c3aed', 'N', Ns[0]+6,Ns[1]-4);
+    // MN line
+    drawLine(svg, Ms[0],Ms[1],Ns[0],Ns[1], '#9ca3af', '1');
+
+    if (type==='similar') {
+      // Right angle at Q — use actual line direction (Q toward MN midpoint) for correct placement
+      var dx = Ps[0]-Qs[0], dy = Ps[1]-Qs[1];
+      var len = Math.sqrt(dx*dx+dy*dy);
+      if (len > 1) {
+        var ux=dx/len, uy=dy/len;
+        // Direction from Q toward midpoint of MN (along the line, toward visible segment)
+        var midMNx = (Ms[0]+Ns[0])/2, midMNy = (Ms[1]+Ns[1])/2;
+        var ldx = midMNx - Qs[0], ldy = midMNy - Qs[1];
+        var llen2 = Math.sqrt(ldx*ldx + ldy*ldy);
+        if (llen2 > 1) {
+          var lx = ldx/llen2, ly = ldy/llen2;
+          drawRightAngle(svg, Qs[0],Qs[1], ux,uy, lx,ly, 7);
+        }
+      }
+      // Ratio annotation: Q divides MN in ratio A² : B²
+      // Offset labels perpendicular to MN for clean placement
+      var midMQx = (Ms[0]+Qs[0])/2, midMQy = (Ms[1]+Qs[1])/2;
+      var midQNx = (Qs[0]+Ns[0])/2, midQNy = (Qs[1]+Ns[1])/2;
+      // Perpendicular to MN direction (normalized), offset 10px
+      var mnDx = Ns[0]-Ms[0], mnDy = Ns[1]-Ms[1];
+      var mnLen = Math.sqrt(mnDx*mnDx + mnDy*mnDy);
+      var perpX = 0, perpY = 0;
+      if (mnLen > 1) { perpX = -mnDy/mnLen * 10; perpY = mnDx/mnLen * 10; }
+      // Choose offset direction: away from P
+      var refX = midMQx + perpX - Ps[0], refY = midMQy + perpY - Ps[1];
+      var dotP = refX*(Ps[0]-midMQx) + refY*(Ps[1]-midMQy);
+      if (dotP > 0) { perpX = -perpX; perpY = -perpY; }
+      drawLabel(svg, midMQx+perpX-6, midMQy+perpY+3, 'A\u00b2', '#d97706', '11');
+      drawLabel(svg, midQNx+perpX-6, midQNy+perpY+3, 'B\u00b2', '#7c3aed', '11');
+    }
+  } else if (type==='height') {
+    // R: line meets x-axis
+    var xR = -C/A, yR = 0;
+    var Rs = m2s(xR,yR,ox,oy,sc);
+    drawPoint(svg, Rs[0],Rs[1], 3.5, '#d97706', 'R', Rs[0]+4,Rs[1]+14);
+    // S: line meets y-axis
+    var xS = 0, yS = -C/B;
+    var Ss = m2s(xS,yS,ox,oy,sc);
+    drawPoint(svg, Ss[0],Ss[1], 3.5, '#7c3aed', 'S', Ss[0]-18,Ss[1]-4);
+    // O
+    var Os = m2s(0,0,ox,oy,sc);
+    drawPoint(svg, Os[0],Os[1], 3, '#374151', 'O', Os[0]-14,Os[1]+14);
+    // height from O
+    var tO = -(A*0+B*0+C)/(A*A+B*B);
+    var xH = A*tO, yH = B*tO;
+    var Hs = m2s(xH,yH,ox,oy,sc);
+    drawDashed(svg, Os[0],Os[1],Hs[0],Hs[1], '#059669');
+    drawPoint(svg, Hs[0],Hs[1], 3, '#059669', 'H', Hs[0]+6,Hs[1]+12);
+  } else if (type==='trig') {
+    // Show angle alpha
+    var alpha = Math.atan2(-A, B); // inclination angle
+    // Draw angle arc at the intersection of line with x-axis
+    var xInt = -C/A, yInt = 0;
+    var Ints = m2s(xInt,yInt,ox,oy,sc);
+    drawPoint(svg, Ints[0],Ints[1], 3, '#374151', '', 0,0);
+    drawLabel(svg, Ints[0]-4,Ints[1]+16, 'α', '#d97706', '13');
+  } else if (type==='point') {
+    // Show parameter t direction
+    // Already have PQ drawn, add elegant coordinate label with subscripts
+    drawMathText(svg, Qs[0]-58, Qs[1]+4, [
+      {t:'Q', ital:true, bold:true},
+      {t:'('},
+      {t:'x', ital:true},
+      {t:'Q', sub:true},
+      {t:', '},
+      {t:'y', ital:true},
+      {t:'Q', sub:true},
+      {t:')'}
+    ], '#059669', '12');
+  } else if (type==='symmetric') {
+    // P' symmetric to P
+    var tP = -2*(A*x0+B*y0+C)/(A*A+B*B);
+    var xP2 = x0+A*tP, yP2 = y0+B*tP;
+    var P2s = m2s(xP2,yP2,ox,oy,sc);
+    drawDashed(svg, Qs[0],Qs[1],P2s[0],P2s[1], '#7c3aed');
+    drawPoint(svg, P2s[0],P2s[1], 4, '#7c3aed', "P'", P2s[0]+6,P2s[1]-6);
+    // midpoint M = Q
+    drawLabel(svg, Qs[0]+8,Qs[1]-8, 'M', '#059669', '12');
+  } else if (type==='circle') {
+    // Circle centered at P with radius = distance
+    var dist = Math.abs(A*x0+B*y0+C)/Math.sqrt(A*A+B*B);
+    var rPx = dist * sc;
+    drawCircle(svg, Ps[0],Ps[1], rPx, 'rgba(37,99,168,0.08)', '#2563a8', '1.5');
+    drawLabel(svg, Ps[0]+rPx*0.6,Ps[1]-rPx*0.6, 'r = d', '#2563a8', '12');
+  } else if (type==='lagrange') {
+    // Show level curve (circle) at minimum
+    var dist = Math.abs(A*x0+B*y0+C)/Math.sqrt(A*A+B*B);
+    var rPx = dist * sc;
+    drawCircle(svg, Ps[0],Ps[1], rPx, 'rgba(217,119,6,0.08)', '#d97706', '1.5');
+    drawLabel(svg, Ps[0]+rPx*0.5,Ps[1]-rPx*0.7, 'min f', '#d97706', '12');
+  }
+
+  // Label l
+  if (ends.length===2) {
+    var mid = m2s((ends[0][0]+ends[1][0])/2,(ends[0][1]+ends[1][1])/2,ox,oy,sc);
+    drawLabel(svg, Math.min(Math.max(mid[0]+10,30),300), Math.min(Math.max(mid[1]-10,20),250), 'l', '#2563a8', '14');
+  }
+}
+
+// ═══════════════════════════════════════════
+//  主交互演示
+// ═══════════════════════════════════════════
+var mainDemo = {
+  ox: 280, oy: 200, sc: 28,
+  W: 560, H: 400
+};
+
+function updateMainDemo() {
+  var A = parseInt(document.getElementById('sliderA').value);
+  var B = parseInt(document.getElementById('sliderB').value);
+  var C = parseInt(document.getElementById('sliderC').value);
+  var x0 = parseInt(document.getElementById('sliderPx').value);
+  var y0 = parseInt(document.getElementById('sliderPy').value);
+
+  // Handle A=B=0
+  if (A===0 && B===0) {
+    document.getElementById('demoResult').innerHTML = '<span style="color:#dc2626">A、B 不能同时为 0</span>';
+    return;
+  }
+
+  document.getElementById('valA').textContent = A;
+  document.getElementById('valB').textContent = B;
+  document.getElementById('valC').textContent = C;
+  document.getElementById('valPx').textContent = x0;
+  document.getElementById('valPy').textContent = y0;
+
+  var ox=mainDemo.ox, oy=mainDemo.oy, sc=mainDemo.sc;
+
+  // Point P in SVG
+  var Ps = m2s(x0,y0,ox,oy,sc);
+  document.getElementById('demoP').setAttribute('cx', Ps[0].toFixed(1));
+  document.getElementById('demoP').setAttribute('cy', Ps[1].toFixed(1));
+  document.getElementById('demoLabelP').setAttribute('x', (Ps[0]+10).toFixed(1));
+  document.getElementById('demoLabelP').setAttribute('y', (Ps[1]-8).toFixed(1));
+
+  // Line endpoints (visible range)
+  var xMinV = -ox/sc, xMaxV = (mainDemo.W-ox)/sc;
+  var linePts = [];
+  if (B !== 0) {
+    var y1 = lineY(xMinV,A,B,C); linePts.push([xMinV, y1]);
+    var y2 = lineY(xMaxV,A,B,C); linePts.push([xMaxV, y2]);
+  } else {
+    var xLine = -C/A;
+    linePts.push([xLine, (oy-mainDemo.H)/sc]);
+    linePts.push([xLine, oy/sc]);
+  }
+  if (linePts.length===2) {
+    var e1 = m2s(linePts[0][0],linePts[0][1],ox,oy,sc);
+    var e2 = m2s(linePts[1][0],linePts[1][1],ox,oy,sc);
+    document.getElementById('demoLine').setAttribute('x1', e1[0].toFixed(1));
+    document.getElementById('demoLine').setAttribute('y1', e1[1].toFixed(1));
+    document.getElementById('demoLine').setAttribute('x2', e2[0].toFixed(1));
+    document.getElementById('demoLine').setAttribute('y2', e2[1].toFixed(1));
+    // l label
+    document.getElementById('demoLabelL').setAttribute('x', (e2[0]-20).toFixed(1));
+    document.getElementById('demoLabelL').setAttribute('y', (e2[1]-10).toFixed(1));
+  }
+
+  // Foot of perpendicular Q
+  var tVal = -(A*x0+B*y0+C)/(A*A+B*B);
+  var xQ = x0+A*tVal, yQ = y0+B*tVal;
+  var Qs = m2s(xQ,yQ,ox,oy,sc);
+  document.getElementById('demoQ').setAttribute('cx', Qs[0].toFixed(1));
+  document.getElementById('demoQ').setAttribute('cy', Qs[1].toFixed(1));
+  document.getElementById('demoLabelQ').setAttribute('x', (Qs[0]+8).toFixed(1));
+  document.getElementById('demoLabelQ').setAttribute('y', (Qs[1]+16).toFixed(1));
+
+  // Perpendicular line
+  document.getElementById('demoPerp').setAttribute('x1', Ps[0].toFixed(1));
+  document.getElementById('demoPerp').setAttribute('y1', Ps[1].toFixed(1));
+  document.getElementById('demoPerp').setAttribute('x2', Qs[0].toFixed(1));
+  document.getElementById('demoPerp').setAttribute('y2', Qs[1].toFixed(1));
+
+  // Right angle mark — polyline corner indicator (accurate at any angle)
+  var dx = Ps[0]-Qs[0], dy = Ps[1]-Qs[1];
+  var len = Math.sqrt(dx*dx+dy*dy);
+  if (len > 2) {
+    var ux=dx/len, uy=dy/len;
+    // Line direction in SVG: math dir (B,-A) → SVG dir (B, A)
+    var lineLen = Math.sqrt(A*A+B*B);
+    // Use direction from Q toward the visible line midpoint for correct side
+    var lineMidX = (parseFloat(document.getElementById('demoLine').getAttribute('x1')) +
+                    parseFloat(document.getElementById('demoLine').getAttribute('x2'))) / 2;
+    var lineMidY = (parseFloat(document.getElementById('demoLine').getAttribute('y1')) +
+                    parseFloat(document.getElementById('demoLine').getAttribute('y2'))) / 2;
+    var ldx = lineMidX - Qs[0], ldy = lineMidY - Qs[1];
+    var llen2 = Math.sqrt(ldx*ldx + ldy*ldy);
+    var lx, ly;
+    if (llen2 > 1) { lx = ldx/llen2; ly = ldy/llen2; }
+    else { lx = B/lineLen; ly = A/lineLen; }
+    var sz=8;
+    var ra = document.getElementById('demoRight');
+    var rp1x=Qs[0]+ux*sz, rp1y=Qs[1]+uy*sz;
+    var rp2x=Qs[0]+ux*sz+lx*sz, rp2y=Qs[1]+uy*sz+ly*sz;
+    var rp3x=Qs[0]+lx*sz, rp3y=Qs[1]+ly*sz;
+    ra.setAttribute('points', rp1x.toFixed(1)+','+rp1y.toFixed(1)+' '+rp2x.toFixed(1)+','+rp2y.toFixed(1)+' '+rp3x.toFixed(1)+','+rp3y.toFixed(1));
+    ra.style.display = 'block';
+  } else {
+    document.getElementById('demoRight').style.display = 'none';
+  }
+
+  // Distance label
+  var midPx = (Ps[0]+Qs[0])/2, midPy = (Ps[1]+Qs[1])/2;
+  document.getElementById('demoLabelD').setAttribute('x', (midPx+10).toFixed(1));
+  document.getElementById('demoLabelD').setAttribute('y', (midPy-4).toFixed(1));
+
+  // Distance value
+  var dist = Math.abs(A*x0+B*y0+C)/Math.sqrt(A*A+B*B);
+  var numer = A*x0+B*y0+C;
+
+  // Build formula string with proper sign handling
+  var aStr = A===1 ? '' : A===-1 ? '-' : String(A);
+  var bStr = B===1 ? '' : B===-1 ? '-' : String(B);
+  var lineEq = '';
+  if (A !== 0) { lineEq += aStr+'x'; }
+  if (B>0) lineEq += (lineEq?' + ':'')+bStr+'y';
+  else if (B<0) lineEq += (lineEq?' - ':'-')+(-B===1?'':(-B))+'y';
+  if (C>0) lineEq += (lineEq?' + ':'')+C;
+  else if (C<0) lineEq += (lineEq?' - ':'')+(-C);
+  lineEq += ' = 0';
+
+  // Build Ax0+By0+C expression cleanly
+  var terms = [];
+  if (A !== 0) {
+    var ax = A * x0;
+    terms.push(ax >= 0 ? String(ax) : '-'+Math.abs(ax));
+  }
+  if (B !== 0) {
+    var by = B * y0;
+    if (terms.length === 0) { terms.push(by >= 0 ? String(by) : '-'+Math.abs(by)); }
+    else { terms.push(by >= 0 ? '+ '+by : '- '+Math.abs(by)); }
+  }
+  if (C !== 0) {
+    if (terms.length === 0) { terms.push(String(C)); }
+    else { terms.push(C >= 0 ? '+ '+C : '- '+Math.abs(C)); }
+  }
+  if (terms.length === 0) terms.push('0');
+  var exprStr = terms.join(' ');
+
+  var result = document.getElementById('demoResult');
+  result.innerHTML = '直线 $l$：$'+lineEq+'$，点 $P('+x0+',\\,'+y0+')$，距离 $d = \\dfrac{\\left|\\,'+exprStr+'\\,\\right|}{\\sqrt{'+A+'^2+'+B+'^2}} = \\dfrac{\\left|\\,'+numer+'\\,\\right|}{\\sqrt{'+(A*A+B*B)+'}} \\approx '+dist.toFixed(3)+'$';
+
+  // Re-render KaTeX
+  if (typeof renderMathInElement === 'function') {
+    renderMathInElement(result, {delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]});
+  }
+}
+
+// ═══════════════════════════════════════════
+//  初始化
+// ═══════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', function() {
+  // Build static diagrams
+  buildStaticDiagram('svg-area', 'area');
+  buildStaticDiagram('svg-height', 'height');
+  buildStaticDiagram('svg-similar', 'similar');
+  buildStaticDiagram('svg-trig', 'trig');
+  buildStaticDiagram('svg-point', 'point');
+  buildStaticDiagram('svg-symmetric', 'symmetric');
+  buildStaticDiagram('svg-circle', 'circle');
+  buildStaticDiagram('svg-lagrange', 'lagrange');
+
+  // Main demo
+  var sliders = ['sliderA','sliderB','sliderC','sliderPx','sliderPy'];
+  for (var i=0; i<sliders.length; i++) {
+    document.getElementById(sliders[i]).addEventListener('input', updateMainDemo);
+  }
+  updateMainDemo();
+});
+</script>
+</body>
+</html>

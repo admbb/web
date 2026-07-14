@@ -365,7 +365,7 @@ body{
 
 <!-- ============ 封面 ============ -->
 <header class="cover">
-  <div class="cover-sym">∃ &nbsp; ∀ &nbsp; ∈ &nbsp; ∪ &nbsp; ∩ &nbsp; ∅ &nbsp; ⇒</div>
+  <div class="cover-sym">∃ &nbsp; ∀ &nbsp; ∈ &nbsp; ⊆ &nbsp; ∁ &nbsp; ∪ &nbsp; ∩ &nbsp; ∅ &nbsp; ⇒ &nbsp; ⇔ &nbsp; ∞</div>
   <h1>高中数学常用符号讲义</h1>
   <div class="sub">
     高中数学以符号语言取代了大量文字叙述。提前掌握这些符号的含义与用法，<br>
@@ -407,14 +407,14 @@ body{
 </section>
 <div class="divider"></div>
 
-<!-- ============ 第二章：12 符号速查 ============ -->
+<!-- ============ 第二章：20 符号速查 ============ -->
 <section class="sec">
   <div class="sec-head">
     <div class="sec-num">第二章</div>
-    <div class="sec-title">开学首月常见的 12 个符号</div>
+    <div class="sec-title">开学首月常见的 20 个符号</div>
   </div>
   <div class="card" style="box-shadow:none;border:none;padding:0;background:transparent;">
-    <p style="margin-bottom:20px;">以下 12 个符号是高中数学第一个月内会反复出现的基础符号。每张卡片依次列出：符号本身、读法、含义、示例与注意事项。</p>
+    <p style="margin-bottom:20px;">以下 20 个符号是高中数学第一个月内会反复出现的基础符号。每张卡片依次列出：符号本身、读法、含义、示例与注意事项。</p>
     <div class="sym-grid">
 
       <!-- ∃ -->
@@ -444,6 +444,15 @@ body{
         <div class="sym-tip">注意：∈ 连接的是"元素"与"集合"，不可用于集合与集合之间。</div>
       </div>
 
+      <!-- ∉ -->
+      <div class="sym-card">
+        <div class="sym-icon">∉</div>
+        <div class="sym-read">读作：不属于</div>
+        <div class="sym-mean">某元素不是某集合的成员</div>
+        <div class="sym-example">-3 ∉ N → -3 不是自然数集合的成员。</div>
+        <div class="sym-tip">注意：∉ 是 ∈ 的否定形式，即"不属于"。同样连接"元素"与"集合"。</div>
+      </div>
+
       <!-- ∪ -->
       <div class="sym-card">
         <div class="sym-icon">∪</div>
@@ -471,6 +480,33 @@ body{
         <div class="sym-tip">注意：空集是一个确定的集合，只是其元素个数为零。</div>
       </div>
 
+      <!-- ⊆ -->
+      <div class="sym-card">
+        <div class="sym-icon">⊆</div>
+        <div class="sym-read">读作：包含于 / 是…的子集</div>
+        <div class="sym-mean">前者所有元素都属于后者</div>
+        <div class="sym-example">{1, 2} ⊆ {1, 2, 3} → {1,2} 是 {1,2,3} 的子集。</div>
+        <div class="sym-tip">注意：⊆ 连接"集合"与"集合"，允许两个集合相等。A ⊆ A 恒成立。</div>
+      </div>
+
+      <!-- ⊊ -->
+      <div class="sym-card">
+        <div class="sym-icon">⊊</div>
+        <div class="sym-read">读作：真包含于 / 是…的真子集</div>
+        <div class="sym-mean">前者是后者的子集，但两者不相等</div>
+        <div class="sym-example">{1, 2} ⊊ {1, 2, 3} 成立；但 {1, 2} ⊊ {1, 2} 不成立。</div>
+        <div class="sym-tip">注意：⊊ 比 ⊆ 更严格——要求后者至少多一个前者没有的元素。</div>
+      </div>
+
+      <!-- ∁ -->
+      <div class="sym-card">
+        <div class="sym-icon">∁</div>
+        <div class="sym-read">读作：补集（Complement）</div>
+        <div class="sym-mean">在全集中不在该集合的元素</div>
+        <div class="sym-example">U = {1,2,3,4}，A = {1,3}，则 ∁U A = {2,4}</div>
+        <div class="sym-tip">注意：补集必须相对于"全集 U"而言。∁U A 表示 U 中去掉 A 的部分。</div>
+      </div>
+
       <!-- ⇒ -->
       <div class="sym-card">
         <div class="sym-icon">⇒</div>
@@ -478,6 +514,15 @@ body{
         <div class="sym-mean">若前者成立，则后者必然成立</div>
         <div class="sym-example">是正方形 ⇒ 是长方形</div>
         <div class="sym-tip">注意：箭头具有方向性，A ⇒ B 与 B ⇒ A 并不等价。</div>
+      </div>
+
+      <!-- ⇔ -->
+      <div class="sym-card">
+        <div class="sym-icon">⇔</div>
+        <div class="sym-read">读作：等价于 / 当且仅当</div>
+        <div class="sym-mean">两者互为充分必要条件，同真同假</div>
+        <div class="sym-example">x² = 1 ⇔ x = 1 或 x = -1</div>
+        <div class="sym-tip">注意：⇔ 意味着 A ⇒ B 且 B ⇒ A 同时成立，即两个命题可以互相推出。</div>
       </div>
 
       <!-- f(x) -->
@@ -496,6 +541,15 @@ body{
         <div class="sym-mean">0, 1, 2, 3, …</div>
         <div class="sym-example">0 ∈ N，5 ∈ N，但 -3 ∉ N</div>
         <div class="sym-tip">注意：不同教材对自然数是否包含 0 有不同约定，以教师说明为准。</div>
+      </div>
+
+      <!-- N⁺ -->
+      <div class="sym-card">
+        <div class="sym-icon" style="font-style:italic;">N⁺ <span style="font-size:14px;color:var(--text-light);font-style:normal;">（或 N*）</span></div>
+        <div class="sym-read">正整数集合</div>
+        <div class="sym-mean">1, 2, 3, 4, …</div>
+        <div class="sym-example">5 ∈ N⁺，但 0 ∉ N⁺，-2 ∉ N⁺</div>
+        <div class="sym-tip">注意：N⁺ = N ∖ {0}，即在自然数集合中去掉 0。N* 是另一种常见写法。</div>
       </div>
 
       <!-- Z -->
@@ -525,6 +579,30 @@ body{
         <div class="sym-tip">注意："x ∈ R"即"x 为任意实数"，是高中最常用的数集。</div>
       </div>
 
+      <!-- C -->
+      <div class="sym-card">
+        <div class="sym-icon" style="font-style:italic;">C</div>
+        <div class="sym-read">复数集合</div>
+        <div class="sym-mean">形如 a + bi 的数（a, b ∈ R），含实数与虚数</div>
+        <div class="sym-example">i ∈ C，3 + 2i ∈ C，5 ∈ C</div>
+        <div class="sym-tip">注意：C 源自 Complex（复数）。实数是复数的特例（b = 0 时），故 R ⊆ C。</div>
+      </div>
+
+      <!-- ∞ -->
+      <div class="sym-card">
+        <div class="sym-icon">∞</div>
+        <div class="sym-read">读作：无穷（Infinity）</div>
+        <div class="sym-mean">表示无限延伸、无界限</div>
+        <div class="sym-example">(0, +∞) → 大于 0 的所有实数；x → ∞ → x 无限增大。</div>
+        <div class="sym-tip">注意：∞ 不是数，不能参与运算。写区间时 +∞ / -∞ 必须用圆括号。</div>
+      </div>
+
+    </div>
+    <div class="note blue" style="margin-top:20px;">
+      <div class="note-label">数集之间的包含关系</div>
+      上述数集之间存在层层嵌套的关系：<br>
+      <strong style="font-size:17px;letter-spacing:2px;">N⁺ ⊊ N ⊆ Z ⊆ Q ⊆ R ⊆ C</strong><br>
+      即：正整数是自然数的一部分，自然数是整数的一部分，整数是有理数的一部分，有理数是实数的一部分，实数是复数的一部分。每一层都是真子集或子集关系。
     </div>
   </div>
 </section>
@@ -590,6 +668,23 @@ body{
     </div>
   </div>
 
+  <!-- ⊆ -->
+  <div class="history">
+    <div class="history-title">包含符号 ⊆ 与 ⊊ 的由来</div>
+    <div class="history-body">
+      <p>子集符号 ⊆ 的原型最早出现在十九世纪末。德国数学家<strong>格奥尔格·康托尔</strong>（Georg Cantor, 1845–1918）创立集合论后，数学界亟需一套表示集合间包含关系的符号。</p>
+      <p style="margin-top:10px;">最初不同学者使用过多种记法。现代通用的 ⊆ 形式由<strong>恩斯特·施罗德</strong>（Ernst Schröder）在其 1890 年代的著作中推广，下方的横线表示"或等于"——这与 ≤ 的设计思路一致。</p>
+      <p style="margin-top:10px;"><strong>⊊</strong> 则去掉下方横线，表示"严格包含"（真子集），与 &lt; 的关系类似。</p>
+      <div class="note blue" style="margin-top:14px;">
+        <div class="note-label">符号类比</div>
+        ⊆ 与 ⊊ 的关系，正如同 ≤ 与 &lt; 的关系：<br>
+        ≤（小于或等于）↔ ⊆（子集，可相等）<br>
+        &lt;（严格小于）↔ ⊊（真子集，不可相等）<br>
+        一条横线之差，意义全然不同。
+      </div>
+    </div>
+  </div>
+
   <!-- ∅ -->
   <div class="history">
     <div class="history-title">空集 ∅ 的含义</div>
@@ -609,7 +704,7 @@ body{
 <section class="sec">
   <div class="sec-head">
     <div class="sec-num">第四章</div>
-    <div class="sec-title">易混淆的三组符号</div>
+    <div class="sec-title">易混淆的四组符号</div>
   </div>
 
   <div class="confuse-card">
@@ -630,24 +725,41 @@ body{
   </div>
 
   <div class="confuse-card">
-    <div class="confuse-head">二、∈（属于）与 ⊂（包含于）的区别</div>
+    <div class="confuse-head">二、∈（属于）与 ⊆（包含于）的区别</div>
     <div class="confuse-row">
       <div class="confuse-cell a">
         <strong>3 ∈ {1, 2, 3}</strong><br>
         一个<strong>元素</strong>属于一个集合。∈ 的左侧是元素。
       </div>
       <div class="confuse-cell b">
-        <strong>{1, 2} ⊂ {1, 2, 3}</strong><br>
-        一个<strong>集合</strong>包含于另一个集合。⊂ 的左侧是集合。
+        <strong>{1, 2} ⊆ {1, 2, 3}</strong><br>
+        一个<strong>集合</strong>包含于另一个集合。⊆ 的左侧是集合。
       </div>
     </div>
     <div class="note blue" style="margin-top:10px;">
-      <strong>记忆方法：</strong>∈ 的左侧写元素（如数字），⊂ 的左侧写集合（带花括号的表达式）。
+      <strong>记忆方法：</strong>∈ 的左侧写元素（如数字），⊆ 的左侧写集合（带花括号的表达式）。
     </div>
   </div>
 
   <div class="confuse-card">
-    <div class="confuse-head">三、⇒（推出）的方向性</div>
+    <div class="confuse-head">三、⊆（子集）与 ⊊（真子集）的区别</div>
+    <div class="confuse-row">
+      <div class="confuse-cell a">
+        <strong>{1, 2} ⊆ {1, 2}</strong><br>
+        成立。⊆ 允许两个集合<strong>相等</strong>。
+      </div>
+      <div class="confuse-cell b">
+        <strong>{1, 2} ⊊ {1, 2}</strong><br>
+        <strong>不成立。</strong>⊊ 要求后者至少多一个前者没有的元素。
+      </div>
+    </div>
+    <div class="note orange" style="margin-top:10px;">
+      <strong>区分要点：</strong>⊆ 是"小于或等于"的关系，⊊ 是"严格小于"的关系。若 A ⊊ B，则 A ⊆ B 一定成立；但反过来不一定。
+    </div>
+  </div>
+
+  <div class="confuse-card">
+    <div class="confuse-head">四、⇒（推出）的方向性</div>
     <p style="font-size:15px;margin-bottom:12px;">A ⇒ B 表示：若 A 成立，则 B <strong>必然</strong>成立。但逆命题 B ⇒ A 未必成立。</p>
     <div class="confuse-row">
       <div class="confuse-cell a">
@@ -706,22 +818,80 @@ body{
         <div class="trans-result">若 A 成立，则 B 必然成立。（A 是 B 的充分条件。）</div>
       </div>
 
+      <div class="trans-item">
+        <div class="trans-sym">A ⇔ B</div>
+        <button class="trans-btn" onclick="toggleTrans(this)">显示释义</button>
+        <div class="trans-result">A 与 B 等价——A 成立当且仅当 B 成立。（A 是 B 的充分必要条件。）</div>
+      </div>
+
+      <div class="trans-item">
+        <div class="trans-sym">A ⊆ B</div>
+        <button class="trans-btn" onclick="toggleTrans(this)">显示释义</button>
+        <div class="trans-result">集合 A 是集合 B 的子集——A 中的每一个元素都属于 B。（允许 A = B。）</div>
+      </div>
+
+      <div class="trans-item">
+        <div class="trans-sym">A ⊊ B</div>
+        <button class="trans-btn" onclick="toggleTrans(this)">显示释义</button>
+        <div class="trans-result">集合 A 是集合 B 的真子集——A ⊆ B 且 A ≠ B。（B 中至少存在一个 A 没有的元素。）</div>
+      </div>
+
+      <div class="trans-item">
+        <div class="trans-sym">∁U A</div>
+        <button class="trans-btn" onclick="toggleTrans(this)">显示释义</button>
+        <div class="trans-result">集合 A 在全集 U 中的补集——U 中所有不属于 A 的元素组成的集合。即 ∁U A = {x ∈ U | x ∉ A}。</div>
+      </div>
+
+      <div class="trans-item">
+        <div class="trans-sym">∀x ∈ N⁺，x ≥ 1</div>
+        <button class="trans-btn" onclick="toggleTrans(this)">显示释义</button>
+        <div class="trans-result">对任意正整数 x，x 都大于或等于 1。（正整数集合中最小的数是 1。）</div>
+      </div>
+
+      <div class="trans-item">
+        <div class="trans-sym">∃x ∈ C，x² = -1</div>
+        <button class="trans-btn" onclick="toggleTrans(this)">显示释义</button>
+        <div class="trans-result">存在一个复数 x，使得 x 的平方等于 -1。（即 x = i 或 x = -i，其中 i 为虚数单位。）</div>
+      </div>
+
     </div>
   </div>
 </section>
 <div class="divider"></div>
 
-<!-- ============ 第六章：学习建议 ============ -->
+<!-- ============ 第六章：符号自测 ============ -->
 <section class="sec">
   <div class="sec-head">
     <div class="sec-num">第六章</div>
+    <div class="sec-title">符号自测：检验你的掌握程度</div>
+  </div>
+  <div class="quiz-wrap" id="quizWrap">
+    <div class="quiz-bar">
+      <span class="qnum" id="qNum">第 1 / 8 题</span>
+      <span class="score" id="qScore">得分：0</span>
+    </div>
+    <div class="quiz-q" id="qText">加载中…</div>
+    <div class="quiz-opts" id="qOpts"></div>
+    <div class="quiz-fb" id="qFb"></div>
+    <div style="text-align:center;margin-top:8px;">
+      <button class="quiz-btn next" id="qNext" onclick="nextQuestion()" style="display:none;">下一题</button>
+      <button class="quiz-btn restart" id="qRestart" onclick="restartQuiz()" style="display:none;">重新测试</button>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<!-- ============ 第七章：学习建议 ============ -->
+<section class="sec">
+  <div class="sec-head">
+    <div class="sec-num">第七章</div>
     <div class="sec-title">使用建议</div>
   </div>
   <div class="card" style="box-shadow:none;border:none;padding:0;background:transparent;">
     <div class="steps">
       <div class="step">
         <div class="step-num">1</div>
-        <div class="step-body"><strong>熟读 12 个符号。</strong>首先做到看到符号能准确读出名称：∃ 读"存在"，∀ 读"任意"，∈ 读"属于"，∪ 读"并集"等。</div>
+        <div class="step-body"><strong>熟读 20 个符号。</strong>首先做到看到符号能准确读出名称：∃ 读"存在"，∀ 读"任意"，∈ 读"属于"，⊆ 读"包含于"，∪ 读"并集"等。</div>
       </div>
       <div class="step">
         <div class="step-num">2</div>
@@ -776,6 +946,177 @@ function toggleTrans(btn){
     btn.textContent = "收起释义";
   }
 }
+
+/* ========================================
+   交互式测验
+   ======================================== */
+var quizData = [
+  {
+    q: '"∃x ∈ R，x² = -1" 这个命题是真是假？',
+    opts: ['真——存在这样的实数', '假——实数范围内不存在平方等于 -1 的数', '无法判断', '取决于 x 的取值'],
+    answer: 1,
+    fb: '实数的平方恒非负，不存在实数 x 使得 x² = -1。若将 R 换成 C（复数集），则命题为真（x = i 或 x = -i）。'
+  },
+  {
+    q: '下列哪个写法是正确的？',
+    opts: ['3 ⊆ {1, 2, 3}', '{3} ∈ {1, 2, 3}', '3 ∈ {1, 2, 3}', '{1, 2} ⊊ {1, 2}'],
+    answer: 2,
+    fb: '3 是元素，应使用 ∈；{3} 是集合，应使用 ⊆；{1,2} ⊊ {1,2} 不成立，因为真子集要求不相等。只有 3 ∈ {1,2,3} 正确。'
+  },
+  {
+    q: 'N⁺ 表示什么集合？',
+    opts: ['自然数集合（含 0）', '正整数集合（1, 2, 3, …）', '整数集合', '有理数集合'],
+    answer: 1,
+    fb: 'N⁺ = N ∖ {0}，即自然数集合中去掉 0，得到正整数集合 {1, 2, 3, …}。N* 是另一种常见写法。'
+  },
+  {
+    q: '"A ⇔ B" 的含义是？',
+    opts: ['A 推出 B', 'B 推出 A', 'A 与 B 等价，互为充要条件', 'A 与 B 无关'],
+    answer: 2,
+    fb: '⇔ 表示等价，即 A ⇒ B 且 B ⇒ A 同时成立。A 是 B 的充分必要条件，两者同真同假。'
+  },
+  {
+    q: '设 U = {1, 2, 3, 4, 5}，A = {1, 3, 5}，则 ∁U A = ？',
+    opts: ['{1, 3, 5}', '{2, 4}', '{1, 2, 3, 4, 5}', '∅'],
+    answer: 1,
+    fb: '补集 ∁U A 是全集 U 中不属于 A 的元素组成的集合。U 中去掉 {1,3,5}，剩下 {2, 4}。'
+  },
+  {
+    q: '下列数集的包含关系，正确的是？',
+    opts: ['N ⊊ Z ⊊ Q ⊊ R ⊊ C', 'C ⊊ R ⊊ Q ⊊ Z ⊊ N', 'Z ⊊ N ⊊ Q ⊊ R ⊊ C', 'N ⊊ Q ⊊ Z ⊊ R ⊊ C'],
+    answer: 0,
+    fb: '正整数是自然数的真子集，自然数是整数的真子集，整数是有理数的真子集，有理数是实数的真子集，实数是复数的真子集。'
+  },
+  {
+    q: '"∀x ∈ R，x² ≥ 0" 的含义是？',
+    opts: ['存在一个实数，其平方非负', '对任意实数 x，x 的平方都大于或等于 0', '对任意实数 x，x 的平方都大于 0', '存在一个实数，其平方为正'],
+    answer: 1,
+    fb: '∀ 表示"任意"，即对每一个实数 x，x² ≥ 0 都成立。注意是 ≥ 0 而非 > 0，因为 0² = 0。'
+  },
+  {
+    q: '关于符号 ∞，下列说法正确的是？',
+    opts: ['∞ 是一个非常大的数', '∞ 可以参与四则运算', '∞ 表示无限延伸的符号，本身不是数', '∞ 是自然数集合的一部分'],
+    answer: 2,
+    fb: '∞ 不是数，不能参与运算。它表示无限延伸的方向。写区间时 +∞ / -∞ 必须用圆括号，如 (0, +∞)。'
+  }
+];
+
+var quizIdx = 0;
+var quizScore = 0;
+var quizAnswered = false;
+
+function renderQuestion(){
+  var item = quizData[quizIdx];
+  document.getElementById('qNum').textContent = '第 ' + (quizIdx + 1) + ' / ' + quizData.length + ' 题';
+  document.getElementById('qScore').textContent = '得分：' + quizScore;
+  document.getElementById('qText').textContent = item.q;
+  document.getElementById('qFb').className = 'quiz-fb';
+  document.getElementById('qFb').textContent = '';
+  document.getElementById('qNext').style.display = 'none';
+
+  var optsHtml = '';
+  for(var i = 0; i < item.opts.length; i++){
+    optsHtml += '<div class="quiz-opt" onclick="selectAnswer(' + i + ')">' + item.opts[i] + '</div>';
+  }
+  document.getElementById('qOpts').innerHTML = optsHtml;
+  quizAnswered = false;
+}
+
+function selectAnswer(idx){
+  if(quizAnswered) return;
+  quizAnswered = true;
+  var item = quizData[quizIdx];
+  var opts = document.querySelectorAll('#qOpts .quiz-opt');
+  for(var i = 0; i < opts.length; i++){
+    opts[i].classList.add('disabled');
+  }
+  opts[idx].classList.add(idx === item.answer ? 'correct' : 'wrong');
+  if(idx !== item.answer){
+    opts[item.answer].classList.add('correct');
+  }
+
+  var fb = document.getElementById('qFb');
+  if(idx === item.answer){
+    quizScore++;
+    fb.className = 'quiz-fb show ok';
+    fb.innerHTML = '<strong>✓ 回答正确！</strong> ' + item.fb;
+  } else {
+    fb.className = 'quiz-fb show no';
+    fb.innerHTML = '<strong>✗ 回答错误。</strong> ' + item.fb;
+  }
+  document.getElementById('qScore').textContent = '得分：' + quizScore;
+
+  if(quizIdx < quizData.length - 1){
+    document.getElementById('qNext').style.display = 'inline-block';
+    document.getElementById('qNext').textContent = '下一题';
+  } else {
+    document.getElementById('qNext').style.display = 'inline-block';
+    document.getElementById('qNext').textContent = '查看结果';
+  }
+}
+
+function nextQuestion(){
+  if(quizIdx < quizData.length - 1){
+    quizIdx++;
+    renderQuestion();
+  } else {
+    showResult();
+  }
+}
+
+function showResult(){
+  var total = quizData.length;
+  var pct = Math.round(quizScore / total * 100);
+  var msg, sub;
+  if(pct === 100){
+    msg = '满分！你对符号的掌握非常扎实。';
+    sub = '你已经为高中数学的学习做好了充分准备。';
+  } else if(pct >= 75){
+    msg = '表现优秀！得分 ' + quizScore + ' / ' + total;
+    sub = '大部分符号已掌握，建议回顾做错的题目涉及的符号。';
+  } else if(pct >= 50){
+    msg = '基础尚可。得分 ' + quizScore + ' / ' + total;
+    sub = '建议重新阅读符号卡片，重点关注做错的题目。';
+  } else {
+    msg = '还需努力。得分 ' + quizScore + ' / ' + total;
+    sub = '不必气馁，多读几遍符号卡片再来挑战！';
+  }
+
+  document.getElementById('qNum').textContent = '测试完成';
+  document.getElementById('qScore').textContent = '最终得分：' + quizScore + ' / ' + total;
+  document.getElementById('qText').style.display = 'none';
+  document.getElementById('qOpts').innerHTML = '';
+  document.getElementById('qFb').className = 'quiz-fb';
+  document.getElementById('qFb').innerHTML = '';
+  document.getElementById('qNext').style.display = 'none';
+
+  var wrap = document.getElementById('quizWrap');
+  var existing = document.getElementById('quizDone');
+  if(existing) existing.remove();
+
+  var done = document.createElement('div');
+  done.id = 'quizDone';
+  done.className = 'quiz-done';
+  done.innerHTML = '<div class="big">' + pct + ' 分</div>' +
+    '<div class="msg">' + msg + '</div>' +
+    '<div class="sub">' + sub + '</div>';
+  wrap.appendChild(done);
+
+  document.getElementById('qRestart').style.display = 'inline-block';
+}
+
+function restartQuiz(){
+  quizIdx = 0;
+  quizScore = 0;
+  var done = document.getElementById('quizDone');
+  if(done) done.remove();
+  document.getElementById('qText').style.display = '';
+  document.getElementById('qRestart').style.display = 'none';
+  renderQuestion();
+}
+
+/* 初始化测验 */
+renderQuestion();
 </script>
 </body>
 </html>
