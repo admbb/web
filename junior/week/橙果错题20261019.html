@@ -384,7 +384,7 @@ function normalizeQuestionLabel(name){
 function splitLabel(name){
   var s=normalizeQuestionLabel(name);
   var sub='';
-  var m=s.match(/\s*(第一解|第二解|解法一|解法二|解法三|拓展)\s*$/);
+  var m=s.match(/\s*(第一解|第二解|解法[0-9零一二两三四五六七八九十百千万]+|拓展)\s*$/);
   if(m){
     sub=m[1].replace('第一解','解法一').replace('第二解','解法二');
     s=s.slice(0,m.index);
