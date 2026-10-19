@@ -315,7 +315,7 @@ body::before{
 
 <button id="fs-btn" aria-hidden="true" aria-label="全屏" title="全屏 / 退出全屏">⛶</button>
 
-<script src="https://www.geogebra.org/apps/deployggb.js"></script>
+<script src="ggb-runtime/deployggb.js"></script>
 
 <script>
 (function(){
@@ -408,7 +408,7 @@ function loadGgb(idx){
   var w=ggbContainer.clientWidth||window.innerWidth;
   var h=ggbContainer.clientHeight||(window.innerHeight-40);
 
-  var perspValue=item.appName==='3d'?'T':'1';
+  var perspValue='T';   // 固定为纯 3D 视图：字母形式，数字会让 GeoGebra 内部取不到视图而崩溃
 
   var params={
     appName:item.appName,
@@ -429,20 +429,19 @@ function loadGgb(idx){
       setStatus('');
       try{
         if(api&&api.setPerspective){
-          setTimeout(function(){api.setPerspective(perspValue);},100);
-          setTimeout(function(){api.setPerspective(perspValue);},500);
+          setTimeout(function(){api.setPerspective('T');},100);
+          setTimeout(function(){api.setPerspective('T');},500);
         }
-        if(api&&api.evalCommand){
-          var cmd=perspValue==='T'?'SetPerspective("T")':'SetPerspective("1")';
-          setTimeout(function(){api.evalCommand(cmd);},100);
-          setTimeout(function(){api.evalCommand(cmd);},500);
-        }
+        // 原此处还有 api.evalCommand('SetPerspective("T")')，
+        // 它就是左下角 "Please check your input" 的直接来源，已删除。
+        // evalCommand 走的是「命令解释器」，不是视图 API，参数形式不兼容。
       }catch(e){}
     }
   };
 
   try{
     var applet=new GGBApplet(params,'5.0');
+    if(applet.setHTML5Codebase){applet.setHTML5Codebase('ggb-runtime/web3d',true);}
     ggbApplet=applet;
     requestAnimationFrame(function(){applet.inject(elId);});
   }catch(e){
