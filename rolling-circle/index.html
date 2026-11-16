@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>滚圆心轨迹 · 把拐角拼成一个圆</title>
+
+<style>
+:root{--ink:#263951;--muted:#657386;--blue:#426985;--red:#b34447;--line:#d8dee4;--paper:#f5f2eb;--yellow:#fff2bc}*{box-sizing:border-box}body{margin:0;color:var(--ink);font-family:"Microsoft YaHei","PingFang SC",sans-serif;background-color:var(--paper);background-image:linear-gradient(#26395109 1px,transparent 1px),linear-gradient(90deg,#26395109 1px,transparent 1px);background-size:24px 24px;line-height:1.55}button,select,input{font:inherit}button,select{border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:7px;padding:.48rem .7rem}button{cursor:pointer}button:disabled{opacity:.45;cursor:not-allowed}button:hover,button:focus-visible,select:focus-visible{outline:2px solid #7ba7c3;outline-offset:2px}button.active,button.primary{background:var(--blue);color:white;border-color:var(--blue)}main{max-width:1440px;margin:auto;padding:20px 18px 36px}.heading h1{font-family:"Noto Serif SC","Songti SC",SimSun,serif;font-size:clamp(1.6rem,3vw,2.3rem);margin:0}.heading p{margin:.35rem 0 1rem;color:var(--muted)}.heading b{background:var(--yellow);color:var(--ink);padding:2px 5px}.workspace{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(340px,.8fr);gap:16px;align-items:stretch}.card{background:#fff;border:1px solid var(--line);border-radius:9px;box-shadow:0 2px 6px #2639510a}.stage{position:relative;min-width:0;min-height:520px;overflow:hidden}.stage canvas{display:block;width:100%;height:100%;min-height:520px;touch-action:pan-y}.legend{position:absolute;top:12px;left:12px;display:flex;gap:12px;flex-wrap:wrap;background:#ffffffed;border:1px solid var(--line);border-radius:6px;padding:5px 10px;font-size:.8rem}.legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:4px}.side{display:flex;flex-direction:column;gap:12px;min-width:0}.panel{padding:15px 17px}.panel h2,.panel h3{font-size:1rem;margin:0 0 10px}.stats{display:grid;grid-template-columns:1fr 1fr;gap:8px}.stat{padding:9px 10px;border-radius:6px;background:#f6f8fa;border:1px solid #e5eaf0}.stat span{display:block;color:var(--muted);font-size:.77rem}.stat strong{font-size:1.22rem;font-variant-numeric:tabular-nums}.stat.em{background:#fff8dd;border-color:#e9d792}.hint{font-size:.84rem;color:var(--muted);margin:8px 0 0}.controls{display:grid;gap:10px}.control{display:grid;grid-template-columns:94px minmax(0,1fr) 45px;gap:8px;align-items:center;font-size:.86rem}.control output{text-align:right;font-variant-numeric:tabular-nums}.control[hidden]{display:none}.control input{width:100%;accent-color:var(--blue)}.row{display:flex;flex-wrap:wrap;gap:7px;align-items:center}.row select{flex:1;min-width:120px}.formula{border-left:4px solid var(--red);background:#fffdfa;font-size:clamp(1.05rem,1.8vw,1.4rem);padding:12px 16px}.formula small{display:block;color:var(--muted);font-size:.78rem}.sweep-guide-nav{display:flex;flex-wrap:wrap;gap:6px;margin:9px 0}.sweep-guide-nav button{font-size:.78rem;padding:.32rem .52rem}.sweep-guide-nav button[aria-pressed="true"]{background:#426985;color:#fff;border-color:#426985}.sweep-guide-current{margin:6px 0 2px;font-weight:700;color:#263951}.sweep-key{display:flex;flex-wrap:wrap;gap:8px;font-size:.78rem;color:#657386}.sweep-key i{display:inline-block;width:10px;height:10px;margin-right:4px;border-radius:2px}.sweep-steps{margin-top:8px;line-height:1.75;border-top:1px solid #d8dee4;padding-top:7px}.area{background:#f2f6f8;border-left:3px solid var(--blue);padding:10px;border-radius:4px;font-size:.9rem}.timeline{margin-top:16px;padding:15px}.timeline-head{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}.timeline input[type=range]{width:100%;accent-color:var(--red)}.chapters{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:7px;margin-top:10px}.chapters button{text-align:left;font-size:.8rem;min-height:48px}.caption{min-height:2em;margin:.5rem 0 0;color:var(--blue);font-weight:700}.explain{margin-top:16px;padding:16px 18px}.explain h2{font-size:1.05rem;margin:0 0 8px}.explain p{margin:.45rem 0;color:var(--muted);font-size:.9rem}footer{text-align:center;color:var(--muted);font-size:.8rem;padding:12px 0}#inner-row[hidden],#area-box[hidden]{display:none}@media(max-width:950px){.workspace{grid-template-columns:1fr}.stage,.stage canvas{min-height:480px}.chapters{grid-template-columns:repeat(3,minmax(0,1fr))}}@media(max-width:600px){main{padding:14px 12px 25px}.stage,.stage canvas{min-height:390px}.legend{font-size:.72rem}.control{grid-template-columns:82px minmax(0,1fr) 40px}.chapters{grid-template-columns:repeat(2,minmax(0,1fr))}.stats{grid-template-columns:1fr 1fr}.stat strong{font-size:1.06rem}.timeline-head{align-items:flex-start}}@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition:none!important}}
+
+.mode-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.mode-actions button{min-width:0;min-height:42px;text-align:center}
+
+</style>
+</head>
+<body><main>
+<header class="heading"><h1>滚圆心轨迹</h1><p>半径 <b>1</b> 的小圆沿边长 <b>2</b> 的正方形外侧滚一周，圆心走了多远？</p></header>
+<div class="workspace">
+<section class="stage card" aria-label="滚动与轨迹动画"><div class="legend"><span><i style="background:#426985"></i>直线段</span><span><i style="background:#b34447"></i>拐角圆弧</span><span><i style="background:#dda839"></i>接触点</span></div><canvas id="stage" aria-label="滚圆心的动态几何演示">你的浏览器不支持画布。</canvas></section>
+<aside class="side">
+<section class="panel card"><h2>一边滚，一边看</h2><div class="stats"><div class="stat"><span>原图形周长 P</span><strong id="p">8.000</strong></div><div class="stat"><span>蓝色直线总长</span><strong id="straight">8.000</strong></div><div class="stat"><span>红色弧线总长</span><strong id="arc">6.283</strong></div><div class="stat em"><span>圆心轨迹长 L</span><strong id="length">14.283</strong></div></div><p id="delta" class="hint"></p><p id="turns" class="hint"></p></section>
+<section class="panel card"><h2>自己试一试</h2><div class="controls"><div class="row"><label for="shape">图形</label><select id="shape"><option value="square">正方形</option><option value="rectangle">长方形</option><option value="triangle">正三角形</option><option value="scalene">普通三角形</option><option value="hexagon">正六边形</option><option value="circle">大圆</option></select></div><div class="row" id="inner-row"><span>滚动位置</span><button type="button" id="outer" class="active" aria-pressed="true">外侧</button><button type="button" id="inner" aria-pressed="false">内侧</button></div><div class="control"><label for="size" id="size-label">正方形边长</label><input id="size" type="range" min="1.5" max="10" step="0.1" value="2"><output id="size-value">2.0</output></div><div class="control" id="tri-x-control" hidden><label for="triX">顶点位置</label><input id="triX" type="range" min="-0.2" max="1.2" step="0.05" value="0.3"><output id="triX-value">0.30</output></div><div class="control" id="tri-height-control" hidden><label for="triHeight">高度比例</label><input id="triHeight" type="range" min="0.5" max="1.5" step="0.05" value="0.8"><output id="triHeight-value">0.80</output></div><div class="control"><label for="radius">小圆半径 r</label><input id="radius" type="range" min="0.2" max="3" step="0.1" value="1"><output id="radius-value">1.0</output></div><div class="control"><label for="speed">播放速度</label><input id="speed" type="range" min="0.5" max="2" step="0.25" value="1"><output id="speed-value">1×</output></div><div class="mode-actions" role="group" aria-label="轨迹与面积演示"><button id="split">拆解蓝红轨迹</button><button id="splice">巧解拼整圆</button><button id="area" aria-pressed="false">圆心围成面积</button><button id="sweep" aria-pressed="false">圆盘扫过面积</button></div></div><div id="area-box" class="area" hidden></div><div id="sweep-box" class="area" hidden></div><p id="size-hint" class="hint"></p><p id="status" class="hint"></p></section>
+<section class="formula card"><strong id="formula">L = P + 2πr</strong><small id="exact-length"></small><small id="subformula">直的照抄周长，弯的拼成一个整圆。</small></section>
+</aside></div>
+<section class="timeline card"><div class="timeline-head"><div class="row"><button id="play" class="primary">▶ 播放</button><button id="replay">↺ 重播</button><button id="story">播放分镜</button></div><output id="progress-label">0%</output></div><label for="progress">滚动进度</label><input id="progress" type="range" min="0" max="1000" value="0" aria-label="滚动进度"><p id="caption" class="caption">① 小圆贴着图形滚一圈，圆心走过的路线有多长？</p><div class="chapters" id="chapters"><button data-chapter="0" class="active">① 出题<br>边滚边画</button><button data-chapter="1">② 笨办法<br>一段段算</button><button data-chapter="2">③ 找规律<br>蓝线与红弧</button><button data-chapter="3">④ 巧解<br>拼成整圆</button><button data-chapter="4">⑤ 出公式<br>两种算法</button><button data-chapter="5">⑥ 迁移<br>换个图形</button></div></section>
+<section class="explain card"><h2>为什么能够这样拼？</h2><p>沿着边滚，圆心走的直线与边一样长。每到一个拐角，圆心就围绕这个角转一小段，半径都是 r。</p><p>沿凸图形外侧走一圈，所有拐弯合起来刚好转过 360°。所以这些小圆弧拼在一起，正好组成一个半径为 r 的整圆。</p><p>适用条件：图形凸出、沿外侧滚动且没有滑动。内侧滚动要单独计算；多边形的内角处，圆心轨迹出现折点，小圆停下后切换接触边。</p><p>“圆心围成面积”与“圆盘扫过面积”是两种不同的面积；分别点击按钮，可比较两种区域。</p></section>
+<footer>滚圆心轨迹 · 陈</footer>
+</main>
+<script>
+const RollGeometry=(function createRollGeometry(){
+  "use strict";
+  const TAU=Math.PI*2;
+  const V=(x,y)=>({x,y});
+  const plus=(a,b)=>V(a.x+b.x,a.y+b.y);
+  const minus=(a,b)=>V(a.x-b.x,a.y-b.y);
+  const times=(a,t)=>V(a.x*t,a.y*t);
+  const cross=(a,b)=>a.x*b.y-a.y*b.x;
+  const distance=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
+  const area=(pts)=>Math.abs(pts.reduce((s,p,i)=>s+cross(p,pts[(i+1)%pts.length]),0))/2;
+  function vertices(s){
+    const a=s.size;
+    let p;
+    if(s.shape==="square")p=[V(-a/2,-a/2),V(a/2,-a/2),V(a/2,a/2),V(-a/2,a/2)];
+    else if(s.shape==="rectangle"){let h=a*.65;p=[V(-a/2,-h/2),V(a/2,-h/2),V(a/2,h/2),V(-a/2,h/2)]}
+    else if(s.shape==="triangle"){let h=a*Math.sqrt(3)/2;p=[V(0,-2*h/3),V(a/2,h/3),V(-a/2,h/3)]}
+    else if(s.shape==="scalene"){
+      let h=a*s.triHeight,x=a*s.triX;
+      p=[V(x,-h),V(a,0),V(0,0)];
+      const center=V(p.reduce((z,q)=>z+q.x,0)/3,p.reduce((z,q)=>z+q.y,0)/3);
+      p=p.map(q=>minus(q,center));
+    }
+    else if(s.shape==="hexagon")p=Array.from({length:6},(_,i)=>V(a/2*Math.cos(-Math.PI/2+i*TAU/6),a/2*Math.sin(-Math.PI/2+i*TAU/6)));
+    else p=[];
+    return p;
+  }
+  function getEdges(pts){
+    return pts.map((a,i)=>{
+      const b=pts[(i+1)%pts.length],d=minus(b,a),l=Math.hypot(d.x,d.y);
+      const u=times(d,1/l);
+      return {a,b,l,length:l,u,normal:V(u.y,-u.x)};
+    });
+  }
+  function offsetCorners(edges,r){
+    return edges.map((edge,i)=>{
+      const prev=edges[(i+edges.length-1)%edges.length];
+      const a=minus(prev.b,times(prev.normal,r));
+      const b=minus(edge.a,times(edge.normal,r));
+      const denom=cross(prev.u,edge.u);
+      if(Math.abs(denom)<1e-12)return times(plus(a,b),.5);
+      return plus(a,times(prev.u,cross(minus(b,a),edge.u)/denom));
+    });
+  }
+  function innerLimit(state){
+    if(state.shape==="circle")return state.size;
+    const pts=vertices(state),edges=getEdges(pts);
+    if(state.shape==="square")return state.size/2;
+    if(state.shape==="rectangle")return state.size*.65/2;
+    if(state.shape==="hexagon")return state.size*Math.sqrt(3)/4;
+    return 2*area(pts)/edges.reduce((n,e)=>n+e.l,0);
+  }
+  function geometry(s){
+    const r=s.r, inside=!!s.inside;
+    if(s.shape==="circle"){
+      const R=s.size,centerR=R+(inside?-r:r),P=TAU*R,L=TAU*centerR;
+      return {circle:true,inside,R,centerR,P,L,total:L,A:Math.PI*R*R,straight:0,arc:0,edges:[],segments:[],pts:[],innerArea:Math.PI*centerR*centerR};
+    }
+    const pts=vertices(s),edges=getEdges(pts),P=edges.reduce((n,e)=>n+e.l,0),A=area(pts),segments=[];
+    if(inside){
+      const q=offsetCorners(edges,r);
+      for(let i=0;i<q.length;i++){
+        const a=q[i],b=q[(i+1)%q.length],length=distance(a,b);
+        segments.push({type:"line",a,b,length,edgeIndex:i,normal:edges[i].normal});
+      }
+      const L=segments.reduce((n,e)=>n+e.length,0);
+      return {circle:false,inside,pts,edges,segments,P,L,total:L,A,straight:L,arc:0,innerArea:area(q)};
+    }
+    for(let i=0;i<edges.length;i++){
+      const e=edges[i],next=edges[(i+1)%edges.length];
+      const a=plus(e.a,times(e.normal,r)),b=plus(e.b,times(e.normal,r));
+      segments.push({type:"line",a,b,length:e.l,edgeIndex:i,normal:e.normal});
+      const start=Math.atan2(e.normal.y,e.normal.x);
+      const end=Math.atan2(next.normal.y,next.normal.x);
+      const alpha=((end-start)%TAU+TAU)%TAU;
+      segments.push({type:"arc",c:e.b,start,alpha,length:alpha*r,
+        a:b,b:plus(e.b,times(next.normal,r)),edgeIndex:i});
+    }
+    const L=segments.reduce((n,e)=>n+e.length,0);
+    return {circle:false,inside,pts,edges,segments,P,L,total:L,A,straight:P,arc:L-P,innerArea:A};
+  }
+  function segmentPoint(seg,t,state){
+    t=Math.max(0,Math.min(1,t));
+    if(seg.type==="line")return plus(times(seg.a,1-t),times(seg.b,t));
+    return plus(seg.c,V(state.r*Math.cos(seg.start+seg.alpha*t),state.r*Math.sin(seg.start+seg.alpha*t)));
+  }
+  function roll(progress,state,model){
+    const p=Math.max(0,Math.min(1,progress)),d=model.total*p,r=state.r;
+    if(model.circle){
+      const angle=-Math.PI/2+TAU*p,unit=V(Math.cos(angle),Math.sin(angle));
+      return {c:times(unit,model.centerR),contact:times(unit,model.R),spin:(model.inside?-1:1)*d/r,d};
+    }
+    let left=d,seg=model.segments[model.segments.length-1],t=1;
+    for(const item of model.segments){
+      if(left<=item.length+1e-9){seg=item;t=item.length?Math.max(0,Math.min(1,left/item.length)):1;break}
+      left-=item.length;
+    }
+    const c=segmentPoint(seg,t,state);
+    let contact;
+    if(seg.type==="arc")contact=seg.c;
+    else contact=plus(c,times(seg.normal,model.inside?r:-r));
+    return {c,contact,spin:(model.inside?-1:1)*d/r,d};
+  }
+  function sweepArea(m,s){
+    const r=s.r;
+    if(m.circle){
+      if(m.inside)return Math.PI*(m.R*m.R-Math.max(0,m.R-2*r)**2);
+      return Math.PI*((m.R+2*r)**2-m.R*m.R);
+    }
+    if(!m.inside)return 2*r*m.P+4*Math.PI*r*r;
+    let hole=0;
+    if(2*r<innerLimit(s)-1e-9)hole=area(offsetCorners(m.edges,2*r));
+    return Math.max(0,m.innerArea+r*m.L+Math.PI*r*r-hole);
+  }
+  return {geometry,segmentPoint,roll,sweepArea,innerLimit};
+})();
+</script>
+<script>
+'use strict';
+// geometry：按顺时针边界生成直线段和各顶点的真实外角弧。
+const TAU=Math.PI*2, $=id=>document.getElementById(id), canvas=$('stage'),ctx=canvas.getContext('2d');
+const state={shape:'square',inside:false,size:2,r:1,triX:.3,triHeight:.8,speed:1,progress:0,playing:false,story:false,chapter:0,chapterTime:0,view:'roll',splice:0,last:0,area:false,sweep:false,sweepStep:3};
+const reduce=matchMedia('(prefers-reduced-motion: reduce)');let model;
+const add=(a,b)=>({x:a.x+b.x,y:a.y+b.y}), mul=(a,k)=>({x:a.x*k,y:a.y*k}), dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y), lerp=(a,b,t)=>a+(b-a)*t, ease=t=>t*t*(3-2*t);
+// 页面交互调用共享几何内核；状态集中保留在本页面。
+const geometry=()=>RollGeometry.geometry(state);
+const segmentPoint=(seg,t)=>RollGeometry.segmentPoint(seg,t,state);
+const roll=progress=>RollGeometry.roll(progress,state,model);
+const sweepArea=m=>RollGeometry.sweepArea(m,state);
+function fmt(n){return n.toFixed(3)}
+let formulaCache='', lastSweepGuide='';
+function renderFormula(inside){const plain=inside?(model.circle?'L = 2π(R − r)':'L = 内侧轨迹的周长'):'L = P + 2πr';const key=plain+Boolean(window.katex);if(key===formulaCache)return;formulaCache=key;if(window.katex && (!inside || model.circle))window.katex.render(inside?String.raw`L=2\pi(R-r)`:String.raw`L=P+2\pi r`, $('formula'), {throwOnError:false});else $('formula').textContent=plain}
+function updateUI(){model=geometry();
+  const names={square:'正方形边长',rectangle:'长方形的长',triangle:'三角形边长',scalene:'三角形底边',hexagon:'六边形外接圆直径',circle:'大圆半径 R'};
+  $('size-label').textContent=names[state.shape];
+  $('tri-x-control').hidden=state.shape!=='scalene';$('tri-height-control').hidden=state.shape!=='scalene';
+  $('triX-value').textContent=state.triX.toFixed(2);$('triHeight-value').textContent=state.triHeight.toFixed(2);
+  $('size-hint').textContent=state.shape==='scalene'?'顶点位置以底边左端为 0、右端为 1；高度比例是高与底边的比。三边约为 '+model.edges.map(e=>fmt(e.l)).join('、')+'。':state.shape==='rectangle'?'宽度固定为长的 0.65 倍，当前宽度 '+(state.size*.65).toFixed(3)+'。':state.shape==='hexagon'?'正六边形边长是外接圆直径的一半，当前边长 '+(state.size/2).toFixed(3)+'。':'';
+  const number=x=>String(Number(x.toFixed(8)));
+  let exact;
+  if(model.circle)exact='L = 2π × ('+number(state.size)+(model.inside?' − ':' + ')+number(state.r)+')';
+  else if(!model.inside)exact=state.shape==='scalene'?'L = 三边之和 + '+number(2*state.r)+'π':'L = '+number(model.P)+' + '+number(2*state.r)+'π';
+  else if(state.shape==='square')exact='L = 4 × ('+number(state.size)+' − 2 × '+number(state.r)+')';
+  else if(state.shape==='rectangle')exact='L = 2 × [('+number(state.size)+' − 2 × '+number(state.r)+') + ('+number(state.size*.65)+' − 2 × '+number(state.r)+')]';
+  else if(state.shape==='scalene')exact='L = 内侧三条线段之和';
+  else if(state.shape==='triangle')exact='L = 3 × '+number(state.size)+' − 6√3 × '+number(state.r);
+  else exact='L = 3 × '+number(state.size)+' − 4√3 × '+number(state.r);
+  $('exact-length').textContent=exact+' ≈ '+fmt(model.L);
+$('size-value').textContent=state.size.toFixed(1);$('radius-value').textContent=state.r.toFixed(1);$('speed-value').textContent=state.speed+'×';$('p').textContent=fmt(model.P);$('straight').textContent=model.circle?'—':fmt(model.straight);$('arc').textContent=model.circle?'—':fmt(model.arc);$('length').textContent=fmt(model.L);$('delta').textContent=model.inside?(model.circle?'内侧：L − P = −2πr = '+fmt(-TAU*state.r):'内滚轨迹比原周长少 '+fmt(model.P-model.L)):'L − P = 2πr = '+fmt(TAU*state.r);$('turns').textContent='当前已自转约 '+fmt(roll(state.progress).d/(TAU*state.r))+' 圈。'+(model.inside?'内滚时方向相反。':'外滚一周比原周长对应的圈数多 1 圈。');$('outer').classList.toggle('active',!state.inside);$('inner').classList.toggle('active',state.inside);$('outer').setAttribute('aria-pressed',String(!state.inside));$('inner').setAttribute('aria-pressed',String(state.inside));renderFormula(model.inside);$('subformula').textContent=model.inside?(model.circle?'内侧滚动：圆心到大圆圆心的距离是 R − r。':'内侧轨迹由靠里的线段组成，折点处接触边发生切换。'):'直的照抄周长，弯的拼成一个整圆。';$('status').textContent=model.inside?(model.circle?'沿大圆内侧滚动，r 必须小于 R；拼整圆分镜适用于外滚。':'小圆在折点暂时停下并切换接触边；半径须小于内切圆半径。拼整圆分镜适用于外滚。'):(model.circle?'大圆外侧：圆心走的是半径 R + r 的圆；线段及拐角剪拼仅用于多边形。':'拖动下方进度条，观察每一个拐角。');let ap=model.A+state.r*model.P+Math.PI*state.r**2;$('area-box').hidden=!state.area;$('sweep-box').hidden=!state.sweep;if(state.sweep){
+  const swept=sweepArea(model),r=state.r,step=state.sweepStep;let labels,descriptions,steps;
+  if(!model.inside&&!model.circle){
+    labels=['看边上','看拐角','合在一起'];
+    descriptions=['蓝色：沿每条边扫过的长方形，宽都是 2r。','红色：各拐角扫出的扇形，拼起来正好是一个半径为 2r 的圆。','绿色：把蓝色条带和红色扇形合起来，重叠的边界不重复计数。'];
+    steps='① 蓝色条带：2r × 原图周长 P ≈ '+fmt(2*r*model.P)+'。<br>② 红色扇形：π × (2r)² ≈ '+fmt(4*Math.PI*r*r)+'。<br>③ 合起来：2rP + π(2r)² ≈ '+fmt(swept)+'。';
+  }else if(!model.inside){
+    labels=['看大圆','减原圆','剩下范围'];
+    descriptions=['蓝色：从大圆圆心到圆盘最外侧，半径是 R + 2r。','橙色：中间原来的大圆不被圆盘内部扫过，要从大圆中扣掉。','绿色：剩下的圆环，就是圆盘绕外侧一周扫过的范围。'];
+    steps='① 外面的大圆面积：π × (R + 2r)² ≈ '+fmt(Math.PI*(model.R+2*r)**2)+'。<br>② 原来的大圆面积：πR² ≈ '+fmt(model.A)+'。<br>③ 大圆减原圆 ≈ '+fmt(swept)+'。';
+  }else if(model.circle){
+    const hole=Math.max(model.R-2*r,0);
+    labels=['看大圆','找空白','扫过范围'];
+    descriptions=['蓝色：先看整个大圆的内部。','橙色：中间离圆盘太远的部分没有扫到；如果半径已经为零，就没有空白圆。','绿色：从大圆里去掉中间空白，剩下的就是扫过的范围。'];
+    steps='① 大圆面积：πR² ≈ '+fmt(model.A)+'。<br>② 中间空白圆的半径 = '+(hole>0?'R − 2r':'0（小圆盘能扫到圆心）')+' = '+fmt(hole)+'，面积 ≈ '+fmt(Math.PI*hole*hole)+'。<br>③ 大圆减空白 ≈ '+fmt(swept)+'。';
+  }else{
+    const expanded=model.innerArea+r*model.L+Math.PI*r*r,missing=Math.max(0,expanded-swept);
+    labels=['看外扩','找空白','扫过范围'];
+    descriptions=['蓝色：以圆心走过的折线围成的图形为基础，向外扩一个小圆半径 r。尖角附近可能留在蓝色范围之外。','橙色：蓝色范围中间如果离轨迹超过 r，就不会被圆盘扫到；它是需要扣掉的空白。','绿色：外扩后的蓝色范围减去中间橙色空白，得到圆盘扫过的范围。'];
+    steps='① 先看圆心轨迹围成的面积，约 '+fmt(model.innerArea)+'；它的周长约 '+fmt(model.L)+'。<br>② 向外扩 r：面积 = 轨迹内面积 + r × 轨迹周长 + πr²，约 '+fmt(expanded)+'。<br>③ 中间未扫到的面积约 '+fmt(missing)+'；用外扩面积减去它，约 '+fmt(swept)+'。尖角可能仍未覆盖。';
+  }
+  const buttons=labels.map((label,i)=>'<button type="button" data-sweep-step="'+(i+1)+'" aria-pressed="'+(step===i+1)+'">'+(i+1)+' · '+label+'</button>').join('');
+  const guide='<b>圆盘滚一周扫过的面积 ≈ '+fmt(swept)+'</b><div class="sweep-guide-nav" aria-label="面积讲解步骤">'+buttons+'</div><div class="sweep-guide-current">'+descriptions[step-1]+'</div><div class="sweep-key"><span><i style="background:#82abc5"></i>先看的范围</span><span><i style="background:#e8a58f"></i>'+(model.inside||model.circle?'需要扣掉的部分':'拐角扇形')+'</span><span><i style="background:#79bba0"></i>最终扫过范围</span></div><div class="sweep-steps">'+steps+'</div>';
+  if(lastSweepGuide!==guide){$('sweep-box').innerHTML=guide;lastSweepGuide=guide;}
+}if(model.inside){
+  const insideArea=model.circle?Math.PI*model.centerR**2:model.innerArea;
+  let explanation=model.circle?'计算：π × (R − r)²':state.shape==='square'?'计算：(边长 − 2r)²':state.shape==='rectangle'?'计算：(长 − 2r) × (宽 − 2r)':'计算：根据内侧轨迹围成的图形求面积';
+  $('area-box').innerHTML='原图面积 A = '+fmt(model.A)+'<br>'+explanation+'<br><b>圆心轨迹围成的面积 = '+fmt(insideArea)+'</b><br>比原图少 '+fmt(model.A-insideArea)+'；图中黄色区域是圆心轨迹围成的范围。';
+}else $('area-box').innerHTML=model.circle?'① 先看原来的大圆：面积 ≈ '+fmt(model.A)+'。<br>② 圆心到大圆圆心的距离是 R + r = '+fmt(model.R+state.r)+'。<br><b>③ 圆心围成面积 = π × (R + r)² ≈ '+fmt(ap)+'</b><br>黄色范围包含原来的大圆。':'① 中间的原图形：面积 ≈ '+fmt(model.A)+'。<br>② 边上的长方形：宽 r × 原图周长 P ≈ '+fmt(state.r*model.P)+'。<br>③ 拐角处的扇形：拼成半径 r 的整圆，面积 πr² ≈ '+fmt(Math.PI*state.r**2)+'。<br><b>④ 三部分相加：圆心围成面积 ≈ '+fmt(ap)+'</b><br>黄色范围包含原图形；这和圆盘扫过的面积不同。'; $('progress').value=Math.round(state.progress*1000);$('progress-label').textContent=Math.round(state.progress*100)+'%';$('play').textContent=state.playing?'❚❚ 暂停':'▶ 播放';$('split').disabled=state.inside||model.circle;$('splice').disabled=state.inside||model.circle;$('story').disabled=state.inside;document.querySelectorAll('[data-chapter]').forEach(b=>b.disabled=state.inside);$('area').classList.toggle('active',state.area);$('area').setAttribute('aria-pressed',String(state.area));$('sweep').classList.toggle('active',state.sweep);$('sweep').setAttribute('aria-pressed',String(state.sweep))}
+function fit(){const box=canvas.getBoundingClientRect(),dpr=Math.min(devicePixelRatio||1,2);let cw=Math.round(box.width*dpr),ch=Math.round(box.height*dpr);if(canvas.width!==cw||canvas.height!==ch){canvas.width=cw;canvas.height=ch;}ctx.setTransform(dpr,0,0,dpr,0,0);return {w:box.width,h:box.height}}
+function pathSegment(seg,portion=1){ctx.beginPath();if(seg.type==='line'){ctx.moveTo(seg.a.x,seg.a.y);ctx.lineTo(lerp(seg.a.x,seg.b.x,portion),lerp(seg.a.y,seg.b.y,portion))}else ctx.arc(seg.c.x,seg.c.y,state.r,seg.start,seg.start+seg.alpha*portion);ctx.stroke()}
+function draw(){let {w,h}=fit(),m=model;ctx.clearRect(0,0,w,h);let showSplice=state.view==='splice'&&!m.circle&&!m.inside,sp=showSplice?state.splice:0;let baseExtent=state.shape==='scalene'?Math.max(...m.pts.flatMap(p=>[Math.abs(p.x),Math.abs(p.y)])):Math.max(state.size*.7,1);let extent=m.inside?(m.circle?m.R:baseExtent):(m.circle?m.R+state.r*2:baseExtent+state.r*2);let scale=Math.min((w-80)/(extent*2.3),(h-130)/(extent*2.25));scale=Math.max(8,scale);let cx=showSplice?w*.34:w*.5,cy=showSplice?h*.42:h*.49;ctx.save();ctx.translate(cx,cy);ctx.scale(scale,scale);ctx.lineJoin='round';ctx.lineCap='round';ctx.lineWidth=1.5/scale;
+// 使用粗线描绘完整圆心轨迹，粗线每一处截面都是半径为 r 的圆盘；重合区域只着色一次。
+function drawSweep(){ctx.save();ctx.strokeStyle='#3c9b7666';ctx.lineWidth=2*state.r;ctx.lineCap='round';ctx.lineJoin='round';ctx.beginPath();if(m.circle){ctx.arc(0,0,m.centerR,0,TAU)}else{const first=m.segments[0];ctx.moveTo(first.a.x,first.a.y);for(const seg of m.segments){if(seg.type==='line')ctx.lineTo(seg.b.x,seg.b.y);else ctx.arc(seg.c.x,seg.c.y,state.r,seg.start,seg.start+seg.alpha)}ctx.closePath()}ctx.stroke();ctx.restore()}
+if(state.sweep&&state.sweepStep===3&&!m.inside)drawSweep();
+// 原图与面积增量：外扩带画在原图后面。
+if(state.area&&!m.inside){ctx.fillStyle='#fff2bc';if(m.circle){ctx.beginPath();ctx.arc(0,0,m.R+state.r,0,TAU);ctx.fill()}else{ctx.beginPath();m.segments.forEach((s,i)=>{if(s.type==='line'){if(i===0)ctx.moveTo(s.a.x,s.a.y);ctx.lineTo(s.b.x,s.b.y)}else ctx.arc(s.c.x,s.c.y,state.r,s.start,s.start+s.alpha)});ctx.closePath();ctx.fill()}}
+ctx.fillStyle='#e9edf0';ctx.strokeStyle='#788899';ctx.lineWidth=1.5/scale;ctx.beginPath();if(m.circle)ctx.arc(0,0,m.R,0,TAU);else{ctx.moveTo(m.pts[0].x,m.pts[0].y);for(const p of m.pts.slice(1))ctx.lineTo(p.x,p.y);ctx.closePath()}ctx.fill();ctx.stroke();
+if(state.sweep&&state.sweepStep===3&&m.inside)drawSweep();
+// 面积讲解的中间步骤：依据同一组几何边和角真实绘制。
+if(state.sweep&&state.sweepStep<3){
+  const step=state.sweepStep,r=state.r;
+  if(!m.inside&&!m.circle){
+    for(let i=0;i<m.edges.length;i++){
+      const e=m.edges[i],a=e.a,b=e.b,aa=add(a,mul(e.normal,2*r)),bb=add(b,mul(e.normal,2*r));
+      ctx.fillStyle='#82abc5aa';ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.lineTo(bb.x,bb.y);ctx.lineTo(aa.x,aa.y);ctx.closePath();ctx.fill();
+      if(step===2){const arc=m.segments[i*2+1];ctx.fillStyle='#e8a58faa';ctx.beginPath();ctx.moveTo(arc.c.x,arc.c.y);ctx.arc(arc.c.x,arc.c.y,2*r,arc.start,arc.start+arc.alpha);ctx.closePath();ctx.fill()}
+    }
+  }else if(!m.inside&&m.circle){
+    ctx.fillStyle='#82abc5aa';ctx.beginPath();ctx.arc(0,0,m.R+2*r,0,TAU);ctx.fill();
+    if(step===2){ctx.fillStyle='#e8a58fcc';ctx.beginPath();ctx.arc(0,0,m.R,0,TAU);ctx.fill()}
+    ctx.strokeStyle='#657386';ctx.lineWidth=1.5/scale;ctx.beginPath();ctx.arc(0,0,m.R,0,TAU);ctx.stroke();
+  }else if(m.circle){
+    ctx.fillStyle='#82abc5aa';ctx.beginPath();ctx.arc(0,0,m.R,0,TAU);ctx.fill();
+    const hole=Math.max(m.R-2*r,0);if(step===2&&hole>0){ctx.fillStyle='#e8a58fcc';ctx.beginPath();ctx.arc(0,0,hole,0,TAU);ctx.fill()}
+  }else{
+    // 沿内侧轨迹构造向外平移的边与圆角，组成外扩范围。
+    const segs=m.segments, normals=segs.map(e=>({x:(e.b.y-e.a.y)/e.length,y:-(e.b.x-e.a.x)/e.length}));
+    ctx.fillStyle='#82abc5aa';ctx.beginPath();let p=add(segs[0].a,mul(normals[0],r));ctx.moveTo(p.x,p.y);
+    for(let i=0;i<segs.length;i++){const e=segs[i],n=normals[i],nn=normals[(i+1)%segs.length],end=add(e.b,mul(n,r)),a=Math.atan2(n.y,n.x),b=Math.atan2(nn.y,nn.x),delta=((b-a)%TAU+TAU)%TAU;ctx.lineTo(end.x,end.y);ctx.arc(e.b.x,e.b.y,r,a,a+delta)}ctx.closePath();ctx.fill();
+    if(step===2&&2*r<innerLimit()){
+      const hole=RollGeometry.geometry({...state,r:2*r}),hs=hole.segments;ctx.fillStyle='#e8a58fcc';ctx.beginPath();ctx.moveTo(hs[0].a.x,hs[0].a.y);for(const e of hs)ctx.lineTo(e.b.x,e.b.y);ctx.closePath();ctx.fill();
+    }
+  }
+}
+// 内滚：黄色填充的是圆心轨迹围成的区域，不是圆盘扫过的范围。
+if(state.area&&m.inside){ctx.fillStyle='#ffe49a99';ctx.strokeStyle='#d2a13d';ctx.lineWidth=1.5/scale;ctx.beginPath();if(m.circle){ctx.arc(0,0,m.centerR,0,TAU)}else{ctx.moveTo(m.segments[0].a.x,m.segments[0].a.y);for(const seg of m.segments)ctx.lineTo(seg.b.x,seg.b.y);ctx.closePath()}ctx.fill();ctx.stroke()}
+// 面积模式用蓝色条带和红色扇形区分增加部分。
+if(state.area&&!m.circle&&!m.inside){for(let i=0;i<m.edges.length;i++){let e=m.edges[i],a=e.a,b=e.b,aa=add(a,mul(e.normal,state.r)),bb=add(b,mul(e.normal,state.r));ctx.fillStyle='#42698535';ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.lineTo(bb.x,bb.y);ctx.lineTo(aa.x,aa.y);ctx.closePath();ctx.fill();let seg=m.segments[i*2+1];ctx.fillStyle='#b3444733';ctx.beginPath();ctx.moveTo(seg.c.x,seg.c.y);ctx.arc(seg.c.x,seg.c.y,state.r,seg.start,seg.start+seg.alpha);ctx.closePath();ctx.fill()}}
+// 轨迹按真实路程绘制，拖动时只画已经走过的部分。
+ctx.lineWidth=3/scale;let remaining=m.total*(state.view==='roll'?state.progress:1);if(m.circle){ctx.strokeStyle=m.inside?'#b34447':'#426985';ctx.beginPath();ctx.arc(0,0,m.centerR,-Math.PI/2,-Math.PI/2+TAU*(state.view==='roll'?state.progress:1));ctx.stroke()}else for(const seg of m.segments){let t=Math.max(0,Math.min(1,remaining/seg.length));if(t>0){ctx.strokeStyle=seg.type==='line'?'#426985':'#b34447';if(state.view==='split'&&!reduce.matches&&state.splitStart){let elapsed=performance.now()-state.splitStart;let phase=seg.type==='line'?0:900;if(elapsed>=phase&&elapsed<phase+900)ctx.lineWidth=(3+3*Math.sin((elapsed-phase)/900*Math.PI))/scale;else ctx.lineWidth=3/scale}pathSegment(seg,t)}remaining-=seg.length}
+let o=roll(state.progress);if(state.view==='roll'){ctx.fillStyle='#79b7dc55';ctx.strokeStyle='#426985';ctx.lineWidth=2/scale;ctx.beginPath();ctx.arc(o.c.x,o.c.y,state.r,0,TAU);ctx.fill();ctx.stroke();ctx.beginPath();ctx.moveTo(o.c.x,o.c.y);ctx.lineTo(o.c.x+state.r*Math.cos(o.spin-Math.PI/2),o.c.y+state.r*Math.sin(o.spin-Math.PI/2));ctx.stroke();ctx.fillStyle='#426985';ctx.beginPath();ctx.arc(o.c.x,o.c.y,4/scale,0,TAU);ctx.fill();ctx.fillStyle='#dda839';ctx.beginPath();ctx.arc(o.contact.x,o.contact.y,5/scale,0,TAU);ctx.fill()}
+ctx.restore();
+// 把每段标出来，让学生看见逐段计算的复杂程度。
+if(state.chapter===1&&state.view==='roll'&&!m.circle&&!m.inside){ctx.textAlign='center';ctx.font='bold 13px Microsoft YaHei';m.segments.forEach((seg,i)=>{let p=segmentPoint(seg,.5),x=cx+p.x*scale,y=cy+p.y*scale;ctx.fillStyle='#fff';ctx.fillRect(x-23,y-20,46,19);ctx.fillStyle=seg.type==='arc'?'#b34447':'#426985';ctx.fillText(seg.type==='arc'?Math.round(seg.alpha*180/Math.PI)+'°':fmt(seg.length),x,y-6)});ctx.fillStyle='#b34447';ctx.font='bold 18px Microsoft YaHei';ctx.fillText('逐段相加，能不能更简单？',w/2,h-22)}
+// splice：每段弧从原顶点移动到同一个圆心，角度累计后恰好首尾相接。
+if(showSplice){let rpx=Math.min(66,scale*state.r),target={x:w*.75,y:h*.43},angle=-Math.PI/2;ctx.lineWidth=4;for(let i=0;i<m.segments.length;i++){let seg=m.segments[i];if(seg.type!=='arc')continue;let k=ease(Math.max(0,Math.min(1,sp*1.6-i/m.segments.length*.6)));let from={x:cx+seg.c.x*scale,y:cy+seg.c.y*scale};let x=lerp(from.x,target.x,k),y=lerp(from.y,target.y,k),radius=lerp(scale*state.r,rpx,k),start=lerp(seg.start,angle,k);ctx.strokeStyle='#b34447';if(state.area){ctx.fillStyle='#b3444740';ctx.beginPath();ctx.moveTo(x,y);ctx.arc(x,y,radius,start,start+seg.alpha);ctx.closePath();ctx.fill()}ctx.beginPath();ctx.arc(x,y,radius,start,start+seg.alpha);ctx.stroke();angle+=seg.alpha}ctx.fillStyle='#b34447';ctx.textAlign='center';ctx.font='bold 16px Microsoft YaHei';ctx.fillText('360°',target.x,target.y-4);ctx.font='14px Microsoft YaHei';ctx.fillText(state.area?'扇形面积 = πr²':'弧长 = 2πr',target.x,target.y+19);let lineProgress=ease(Math.min(1,sp*1.5)),offset=0;ctx.strokeStyle='#426985';ctx.lineWidth=4;for(const seg of m.segments){if(seg.type!=='line')continue;let x1=w*.15+w*.7*offset/m.P;offset+=seg.length;let x2=w*.15+w*.7*offset/m.P;ctx.beginPath();ctx.moveTo(lerp(cx+seg.a.x*scale,x1,lineProgress),lerp(cy+seg.a.y*scale,h*.84,lineProgress));ctx.lineTo(lerp(cx+seg.b.x*scale,x2,lineProgress),lerp(cy+seg.b.y*scale,h*.84,lineProgress));ctx.stroke()}ctx.fillStyle='#426985';ctx.fillText(state.area?'蓝色条带面积 = rP':'蓝色直段首尾相接 = P',w*.5,h*.91)}
+}
+const texts=['① 小圆贴着图形滚一圈，圆心走过的路线有多长？','② 一段一段算：直段、拐角弧……有更简单的方法吗？','③ 蓝色直段和原来的边一样长；红色弧线加起来是什么？','④ 把蓝段接起来；把红弧剪下来，拼成一个完整的圆。','⑤ 直线总长 P，加上一个小圆周长 2πr。','⑥ 换个凸图形试试：直的照抄周长，弯的拼成整圆。'];
+function setChapter(i){state.chapter=i;state.chapterTime=0;state.playing=false;state.progress=i===0?0:1;state.view=i===3?'splice':i>=2?'split':'roll';state.splice=state.view==='splice'?(reduce.matches?1:0):0;document.querySelectorAll('[data-chapter]').forEach((b,k)=>b.classList.toggle('active',k===i));$('caption').textContent=model.circle&&i===2?'③ 圆形外滚：圆心绕大圆圆心运动，轨迹半径是 R + r。':model.circle&&i===3?'④ 圆形外滚没有多边形拐角；观察小圆半径如何增加轨迹半径。':model.circle&&i===4?'⑤ 圆心轨迹是半径 R + r 的圆，长度为 2π(R + r)。':i===4?'⑤ 逐段相加：'+fmt(model.P)+' + '+fmt(TAU*state.r)+' = '+fmt(model.L)+'；巧解：P + 2πr = '+fmt(model.L)+'。':texts[i];updateUI();draw()}
+function setShape(v){state.shape=v;clampInnerRadius();state.progress=0;state.playing=false;state.story=false;state.view='roll';state.splice=0;updateUI();draw()}
+// 内滚不允许圆半径达到内切圆半径，避免轨迹退化为点或线。
+function innerLimit(){return RollGeometry.innerLimit(state)}
+function clampInnerRadius(){if(state.inside){let limit=innerLimit(),maximum=Math.max(.2,Math.min(3,Math.floor((limit-1e-8)*10)/10));if(state.r>maximum)state.r=maximum;$('radius').max=maximum.toFixed(1);$('radius').value=state.r}else $('radius').max='3'}
+function resetRoll(){state.cornerHold=0;state.progress=0;state.playing=false;state.story=false;state.view='roll';$('caption').textContent=state.inside?'内滚：圆心沿内侧轨迹移动，观察接触点怎样变化。':texts[0];updateUI();draw()}
+$('shape').onchange=e=>setShape(e.target.value);
+$('outer').onclick=()=>{state.inside=false;clampInnerRadius();resetRoll()};
+$('inner').onclick=()=>{state.inside=true;clampInnerRadius();resetRoll()};
+for(const id of ['size','radius','speed','triX','triHeight'])$(id).oninput=e=>{state[id==='radius'?'r':id]=Number(e.target.value);clampInnerRadius();updateUI();draw()};
+$('play').onclick=()=>{state.story=false;state.view='roll';if(state.progress>=1)state.progress=0;state.playing=!state.playing;updateUI()};$('replay').onclick=()=>{state.story=false;state.view='roll';state.progress=0;state.playing=true;updateUI()};$('progress').oninput=e=>{state.cornerHold=0;state.story=false;state.playing=false;state.view='roll';state.progress=Number(e.target.value)/1000;updateUI();draw()};$('split').onclick=()=>{state.story=false;state.playing=false;state.view='split';state.splitStart=performance.now();state.progress=1;updateUI();draw()};$('splice').onclick=()=>{state.story=false;state.playing=false;state.progress=1;state.view='splice';state.splice=reduce.matches?1:0;if(model.circle){$('caption').textContent='大圆的圆心轨迹仍是圆；切换多边形可观看剪拼。'}updateUI();draw()};$('area').onclick=()=>{state.area=!state.area;if(state.area)state.sweep=false;updateUI();draw()};$('sweep').onclick=()=>{state.sweep=!state.sweep;if(state.sweep){state.area=false;state.sweepStep=3;state.story=false;state.playing=false;state.view='roll'}updateUI();draw()};$('sweep-box').addEventListener('click',e=>{const button=e.target.closest('[data-sweep-step]');if(!button)return;state.sweepStep=Number(button.dataset.sweepStep);updateUI();$('sweep-box').querySelector('[data-sweep-step="'+state.sweepStep+'"]').focus();draw()});$('chapters').onclick=e=>{let b=e.target.closest('[data-chapter]');if(b){state.story=false;setChapter(Number(b.dataset.chapter))}};$('story').onclick=()=>{setChapter(0);state.story=true;state.playing=true;updateUI()};
+// 分镜与绘制：拆解、拼接占总时长一半以上。
+function frame(now){let dt=state.last?Math.min((now-state.last)/1000,.08):0;state.last=now;if(state.story){let lengths=[5,4,9,18,5,5];state.chapterTime+=dt*state.speed;if(state.chapter===0)state.progress=Math.min(1,state.chapterTime/lengths[0]);if(state.chapter===5){const choices=['triangle','hexagon','circle'];const choice=choices[Math.min(2,Math.floor(state.chapterTime/1.65))];if(state.shape!==choice){state.shape=choice;state.inside=false;$('shape').value=choice}} if(state.chapterTime>=lengths[state.chapter]){if(state.chapter<5){let next=state.chapter+1;setChapter(next);state.story=true;state.playing=true}else{state.story=false;state.playing=false}}}else if(state.playing){
+  if(state.cornerHold>0){state.cornerHold=Math.max(0,state.cornerHold-dt)}
+  else {let next=Math.min(1,state.progress+dt*state.speed/12);
+    if(model.inside&&!model.circle){let boundary=0;for(let i=0;i<model.segments.length-1;i++){boundary+=model.segments[i].length/model.total;if(boundary>state.progress+1e-10&&boundary<=next){next=boundary;state.cornerHold=.35;break}}}
+    state.progress=next;if(state.progress>=1)state.playing=false;
+  }
+}if(state.view==='splice'&&state.splice<1)state.splice=reduce.matches?1:Math.min(1,state.splice+dt*.22);updateUI();draw();requestAnimationFrame(frame)}
+new ResizeObserver(()=>draw()).observe(canvas.parentElement);updateUI();draw();requestAnimationFrame(frame);
+
+</script></body></html>
