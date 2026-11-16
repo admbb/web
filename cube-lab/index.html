@@ -6,9 +6,7 @@
 <title>3D 积木计数脑力学校 · CubeLab — 空间思维与立体几何</title>
 
 <!-- 本地 KaTeX 离线加载器（规范标准） -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.css">
-<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.js"></script>
-<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/contrib/auto-render.min.js" onload="if(window.renderMathInElement)renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false},{left:'\\(',right:'\\)',display:false},{left:'\\[',right:'\\]',display:true}],throwOnError:false});"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.css"><script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.js"></script><script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/contrib/auto-render.min.js" onload="if(window.renderMathInElement)renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false},{left:'\\(',right:'\\)',display:false},{left:'\\[',right:'\\]',display:true}],throwOnError:false});"></script>
 
 <style>
 
@@ -937,7 +935,7 @@ body {
 <header class="site-header">
   <div class="header-inner">
     <div class="nav-left">
-      <a href="/web/" class="nav-back" id="nav-back">← 返回分类</a>
+      <a href="/primary/" class="nav-back" id="nav-back">← 返回分类</a>
       <span class="nav-badge">小学数学 · 空间思维与立体几何</span>
     </div>
     <div class="nav-right">
@@ -949,7 +947,7 @@ body {
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
         <span>全屏</span>
       </button>
-      <a href="/web/" class="nav-home" id="nav-home">网站首页 ↗</a>
+      <a href="/" class="nav-home" id="nav-home">网站首页 ↗</a>
     </div>
   </div>
 </header>
@@ -3186,6 +3184,44 @@ const SoundEngine = (function() {
 
 // Three.js Voxel 3D Stage
 const VoxelStage = (function() {
+function makeCanvasFallback(canvas){
+  const ctx=canvas.getContext('2d');
+  const api={
+    shadowMap:{enabled:false,type:0},
+    setPixelRatio(){},
+    setSize(w,h){canvas.width=Math.max(1,Math.round(w));canvas.height=Math.max(1,Math.round(h));},
+    render(){
+      const w=canvas.width,h=canvas.height;
+      ctx.clearRect(0,0,w,h);
+      ctx.fillStyle='#fffdf9';ctx.fillRect(0,0,w,h);
+      const list=currentVoxels||[];
+      if(!list.length)return;
+      const bb=VoxelMath.getBoundingBox(list);
+      const scale=Math.min(w/(Math.max(3,bb.length+bb.width)*0.9),h/(Math.max(3,bb.height)*1.6+(bb.length+bb.width)*.55),60);
+      const cos=Math.cos(camTheta),sin=Math.sin(camTheta);
+      const elevated=Math.max(.08,Math.cos(camPhi));
+      const centerX=(bb.minX+bb.maxX)/2,centerY=(bb.minY+bb.maxY)/2,centerZ=(bb.minZ+bb.maxZ)/2;
+      const project=(x,y,z)=>[(x-centerX)*cos*scale+(z-centerZ)*sin*scale+w/2, -(y-centerY)*scale*elevated*1.7+((x-centerX)*sin-(z-centerZ)*cos)*scale*.45+h/2];
+      const corners=[[0,0,0],[1,0,0],[1,1,0],[0,1,0],[0,0,1],[1,0,1],[1,1,1],[0,1,1]];
+      const faces=[[3,2,6,7],[1,5,6,2],[4,5,6,7],[0,1,2,3],[0,4,7,3],[0,1,5,4]];
+      const light=['#71c2ff','#3488ca','#9edcff','#8bb6df','#438fc3','#6ea9d9'];
+      const polygons=[];
+      list.forEach(v=>{
+        const pts=corners.map(p=>project(v.x+p[0]-.5,v.y+p[1]-.5,v.z+p[2]-.5));
+        for(let i=0;i<faces.length;i++){
+          const ids=faces[i],a=pts[ids[0]],b=pts[ids[1]],c=pts[ids[2]];
+          const signed=(b[0]-a[0])*(c[1]-a[1])-(b[1]-a[1])*(c[0]-a[0]);
+          if(signed<=0)continue;
+          const depth=(v.x-centerX)*sin+(v.z-centerZ)*cos+(v.y-centerY)*.7;
+          polygons.push({pts:ids.map(j=>pts[j]),depth,color:light[i]});
+        }
+      });
+      polygons.sort((a,b)=>a.depth-b.depth);
+      polygons.forEach(f=>{ctx.beginPath();f.pts.forEach((p,i)=>i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]));ctx.closePath();ctx.fillStyle=f.color;ctx.fill();ctx.strokeStyle='#375979';ctx.lineWidth=1;ctx.stroke();});
+    }
+  };
+  return api;
+}
   let renderer = null;
   let scene = null;
   let camera = null;
@@ -3236,7 +3272,14 @@ const VoxelStage = (function() {
     const height = container.clientHeight || 560;
 
     // Renderer
-    renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+    try { renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true }); }
+    catch (error) {
+      console.warn('WebGL unavailable; switching to 2D isometric cube renderer',error);
+      const oldCanvas=canvas;
+      canvas=oldCanvas.cloneNode(false);
+      oldCanvas.replaceWith(canvas);
+      renderer=makeCanvasFallback(canvas);
+    }
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     renderer.shadowMap.enabled = true;
@@ -4896,8 +4939,8 @@ window.addEventListener('DOMContentLoaded', () => {
     const markers = ['/.publish/', '/' + encodeURIComponent('教学资料') + '/', '/教学资料/'];
     for (const marker of markers) { const i = u.indexOf(marker); if (i >= 0) { siteRoot = u.slice(0, i) + (marker === '/.publish/' ? '/.publish/' : '/'); break; } }
   }
-  document.getElementById('nav-back').href = siteRoot + 'primary/';
-  document.getElementById('nav-home').href = siteRoot;
+  document.getElementById('nav-back').href = '/web/';
+  document.getElementById('nav-home').href = '/web/';
   // Init Sound
   document.getElementById('btn-sound-toggle').addEventListener('click', () => {
     const isMuted = SoundEngine.toggleMute();
